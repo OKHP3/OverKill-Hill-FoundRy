@@ -1,0 +1,40 @@
+================================================================================
+FILE: dataLedger_processing
+PURPOSE: Semi-volatile, in-flight state, swap files, process logs. Purge as needed.
+CONTRACT: Only what is needed for current engine runs. No canon, no history.
+MAINTAINER: [Name]
+DATE_CREATED: [YYYY-MM-DD]
+================================================================================
+
+[INDEX]
+1. [ACTIVE RUNS]
+2. [TEMP LOGS]
+3. [ERROR/DEBUG]
+================================================================================
+
+=== [ACTIVE RUNS] ===
+--- [RUN: PME_2025-06-13_001] ---
+Engine: PME
+Input: Capsule Sophea_EntropyFilter_v1
+CurrentRung: 3
+Output: [intermediate prose]
+State: In Progress
+Timestamp: [YYYY-MM-DD HH:MM]
+--- [END-RUN] ---
+
+=== [TEMP LOGS] ===
+--- [LOG: CME_RiffSession7] ---
+Engine: CME
+RawInput: “What if entropy is an invitation, not a threat?”
+Output: Capsule fragment
+Timestamp: [YYYY-MM-DD HH:MM]
+--- [END-LOG] ---
+
+=== [ERROR/DEBUG] ===
+--- [ERROR: PIE_2025-06-13_003] ---
+Error: Null input
+Context: Engine run on Capsule [missing]
+Timestamp: [YYYY-MM-DD HH:MM]
+Status: Resolved
+--- [END-ERROR] ---
+================================================================================

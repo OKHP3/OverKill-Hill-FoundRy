@@ -1,0 +1,14 @@
+
+=== [FUNCTION-ETTE REGISTRATION] ===
+ID: Fn.🍂.ZippityPackR.1.0.0
+Name: ZippityPack-R📦
+Type: Function-ette (🍂)
+Parent Tool: Crucible[OverKillHillP3.v1.1]
+Version: 1.0.0
+Purpose: Dynamically ZIP all in-thread session files into a timestamped, GUID-based archive using parameters defined in dataLedger_parameters.txt
+Registered: 2025-07-02 18:48:55
+ExecutionStub: functionette_ZippityPack-R.py
+Binding: Reads ZIP rules from dataLedger_parameters.txt; archives declared in dataLedger_processing.txt
+Status: Canon-Locked
+DeclaredBy: Crucible[OverKillHillP3.v1.1]
+--- [END FUNCTION-ETTE REGISTRATION] ---

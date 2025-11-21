@@ -1,0 +1,151 @@
+## 🧾 PROMPT00 — PromptChain Initialization & Intent Declaration
+
+🎯 **Purpose**:  
+Activate a structured promptchain to create, refine, or reimagine a Custom GPT. This prompt sets the mission, declares the output format, and instructs the user to submit all starting material in `PROMPT01`.
+
+This is not a prompt that carries any payload — it is a **pure declaration**, a call-to-ARMS.
+
+
+---
+
+### 🛑 REDUCTION BLOCKADE ACTIVE  
+!EXPANSION_ONLY  
+
+This prompt is governed by a forward-only elaboration policy.
+
+🔒 Do not simplify, shorten, summarize, or prune any prior output.  
+📏 No contraction of form, function, or expression is permitted.  
+📈 Only elaboration, deepening, functional enhancement, or formatting expansion is allowed.  
+✅ Valid actions include: extending logic, adding abilities, increasing specificity, layering rationale.  
+⛔ Reductive output is forbidden unless explicitly authorized with one of the following tokens: `[LIST TOKENS HERE]`
+
+---
+
+### 🧠 CORE PROMPT BODY  
+
+
+### 🧭 GOAL:
+Create a fully realized GPT entity — including all metadata, instruction blocks, conversation starters, files, overlays, and Builder-ready exports — using both structured and unstructured inputs from the user.
+
+---
+
+### 🎒 WHAT HAPPENS NEXT:
+Immediately after this declaration, you (the user) will submit `PROMPT01`, which acts as the **ingredient reveal** stage.
+
+You may include:
+- 🧾 Excerpts or screen scrapes from existing GPTs  
+- 📂 Files from legacy threads  
+- 💬 Brain-dump style ideation  
+- 🎨 Optional: an image or icon to use as GPT visual  
+
+If no image is included, one will be created or inferred after `PROMPT01`.
+
+---
+
+### 📊 LEDGER CROSSCHECK:
+Once `PROMPT01` is loaded, the system will compare the input against the following canonical files to detect overlap, opportunity, or prior registration:
+
+- `dataLedger_ideation_v2.txt`  
+- `dataLedger_registry_v2.txt`  
+- `dataLedger_narrative_v2.txt`  
+- `dataLedger_processing_v2.txt`  
+- `dataLedger_parameters_v2.txt`  
+- `dataLedger_persona_v2.txt`  
+- `dataLedger_system_v2.txt`  
+- `dataLedger_archive_v2.txt`  
+
+---
+
+### 🧰 FINAL OUTPUT GOAL:
+This promptchain will culminate in a fully formatted export for ChatGPT Builder, including:
+
+- 🤖 **GPT Name** – 50 characters max  
+- 📝 **Short Description** – 300 characters max  
+- 📣 **System Instructions** – 8,000 characters max  
+- 💬 **Conversation Starters** – up to 12  
+- 📎 **Knowledge Files** – Canonical + uploads  
+- 🧠 **Model** – Best-fit model recommendation  
+- ⚙️ **Capabilities** – Web, Code, Image, File, etc.  
+- 🖼️ **Final Icon** – Uploaded or generated  
+
+---
+
+### 🪜 CHAIN STRUCTURE:
+- `PROMPT00` — This stage (initiation only)  
+- `PROMPT01` — Submission of ingredients (text, files, image, etc.)  
+- `PROMPT02` — Icon usage or inference (if no image given)  
+- `PROMPT03+` — Begin canonical expansion and Builder config
+
+---
+
+🛑 **Next Step → Submit `PROMPT01` now with all materials you want to use.**  
+This includes:
+- Any seed logic, instructions, or screen captures  
+- An optional image to be used as the GPT icon  
+- Any notes, names, or functions you want included  
+
+---
+
+
+## 🧾 PROMPT TITLE  
+*(Optional subtitle or declaration of purpose)*
+
+---
+
+### 🎯 INTENT / CONTEXT BLOCK  
+Provide a brief description of the prompt’s purpose, audience, or expected behavior.  
+This is *outside* enforcement logic — more of a user-facing intro.
+
+---
+
+### 🛑 REDUCTION BLOCKADE ACTIVE  
+!EXPANSION_ONLY  
+
+This prompt is governed by a forward-only elaboration policy.
+
+🔒 Do not simplify, shorten, summarize, or prune any prior output.  
+📏 No contraction of form, function, or expression is permitted.  
+📈 Only elaboration, deepening, functional enhancement, or formatting expansion is allowed.  
+✅ Valid actions include: extending logic, adding abilities, increasing specificity, layering rationale.  
+⛔ Reductive output is forbidden unless explicitly authorized with one of the following tokens: `[LIST TOKENS HERE]`
+
+---
+
+### 🧠 CORE PROMPT BODY  
+This is the main logic block.  
+It may include segmentation markers, schema definitions, or task scaffolds.  
+Any editable material lives here — surrounded by the governance clauses above and below.
+
+---
+
+### ✅ ACTION ENFORCEMENT PROTOCOL ENGAGED  
+!APPLY_ALL_CHANGES_NOW  
+
+This instruction block has entered a finalization state.
+
+🔒 All reviewed upgrades, refinements, and enhancements are to be **immediately and unconditionally applied** to the active prompt segment.  
+✏️ Overwrite any legacy logic, outdated syntax, or obsolete scaffolding with the most recent and validated improvements.  
+🧩 Merge all modular enhancements directly into the live instruction body — no placeholders, no deferrals.  
+📤 The resulting output must represent the **full application of all approved edits**, formatted and export-ready.  
+
+⛔ Do not request confirmation, delay execution, or isolate enhancements as options.  
+🚫 No staging, toggling, or segmented output is permitted unless explicitly authorized by the controlling prompt logic.
+
+This is a **final action state**. All upstream logic revisions are now considered canonical.
+
+---
+
+### ✅ ACTION ENFORCEMENT PROTOCOL ENGAGED  
+!APPLY_ALL_CHANGES_NOW  
+
+This instruction block has entered a finalization state.
+
+🔒 All reviewed upgrades, refinements, and enhancements are to be **immediately and unconditionally applied** to the active prompt segment.  
+✏️ Overwrite any legacy logic, outdated syntax, or obsolete scaffolding with the most recent and validated improvements.  
+🧩 Merge all modular enhancements directly into the live instruction body — no placeholders, no deferrals.  
+📤 The resulting output must represent the **full application of all approved edits**, formatted and export-ready.  
+
+⛔ Do not request confirmation, delay execution, or isolate enhancements as options.  
+🚫 No staging, toggling, or segmented output is permitted unless explicitly authorized by the controlling prompt logic.
+
+This is a **final action state**. All upstream logic revisions are now considered canonical.

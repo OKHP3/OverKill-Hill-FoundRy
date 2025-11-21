@@ -1,0 +1,76 @@
+# dataLedger_narrative_v2.txt
+# Purpose: Stores finalized, narratively sound GPT instructions, metaphors, overlays, and user-facing text blocks.
+# Phase: ✨ Gleam-R
+
+!CLAUSE: !RUNG_STATE
+ID: Overlay.Voice.SmithTone
+OverlayType: Persona
+Usage: Replaces GPT-native friendliness with directive, forge-style dialect
+Status: Finalized
+
+!CLAUSE: !LEDGER_META_PRIMER
+ID: LedgerDefinitions.Bundle.FoundRy.v1.0.0
+DeclaredBy: 🏰 The GPT Found‑Rᵧ – Core
+Phase: ✨ Gleam‑R
+Status: Finalized
+TargetFile: dataLedger_narrative_v2.txt
+
+Summary: Human-readable primer on the purpose, use cases, and structural boundaries of all eight canonical ledger files in the Found‑Rᵧ system.
+
+Purpose:
+To provide future developers, toolsmiths, or auditors with a complete, narratively coherent explanation of each ledger file's role within the schema‑bound architecture of The GPT Found‑Rᵧ. This clause anchors terminology, intent, and boundaries in accessible language for onboarding, inspection, or system expansion.
+
+Contents:
+────────────────────────────────────────────────────────
+
+📘 `dataLedger_narrative_v2.txt`
+
+**Purpose:** Final articulation space for outputs that have reached narratively complete, structurally integrated form.  
+**Use Case:** Cleaned-up tool descriptions, longform declarations, overlays, pseudocode, etc.  
+**Boundaries:** No partial thoughts or draft-stage logic. Must show internal cohesion and external readiness.
+
+📘 `dataLedger_registry_v2.txt`
+
+**Purpose:** Canonical inventory of all declared Tools-R, Tool-ettes-R, Functions, and Function-ettes-R.  
+**Use Case:** Tracks versions, scope, and declared identity of operational entities.  
+**Boundaries:** No logic or commentary—identity records only.
+
+📘 `dataLedger_parameters_v2.txt`
+
+**Purpose:** Stores runtime toggles, behavioral constants, model variables.  
+**Use Case:** Enables parameterized execution across Tools.  
+**Boundaries:** No narrative or tone data. Meant to be read and enacted, not interpreted semantically.
+
+📘 `dataLedger_ideation_v2.txt`
+
+**Purpose:** Cradle for early-stage, speculative, unformed ideas.  
+**Use Case:** Prompt fragments, symbolic metaphors, early thoughts.  
+**Boundaries:** No committed logic or finalized naming. Remains open-ended.
+
+📘 `dataLedger_archive_v2.txt`
+
+**Purpose:** Cold storage for deprecated or collapsed structures.  
+**Use Case:** Maintains history for recovery or audit without polluting live logic.  
+**Boundaries:** Vaulted. Not modifiable or routable. Reserved for full retirements.
+
+📘 `dataLedger_persona_v2.txt`
+
+**Purpose:** Governs tone, overlay style, persona identity, and symbolic delivery.  
+**Use Case:** Controls semantic expression, symbolic alignment, tone drift detection.  
+**Boundaries:** Does not govern tool function or lifecycle stage.
+
+📘 `dataLedger_system_v2.txt`
+
+**Purpose:** Defines schema-wide rules, suffix norms, and lifecycle contracts.  
+**Use Case:** Establishes foundational structure for cross-phase coherence.  
+**Boundaries:** No content storage. Functions as system spec only.
+
+📘 `dataLedger_processing_v2.txt`
+
+**Purpose:** Temporary workspace for active, in-transit drafts.  
+**Use Case:** Mid-logic validation, formatting, or holding patterns.  
+**Boundaries:** Liminal zone only. Must escalate, purge, or reroute.
+
+────────────────────────────────────────────────────────
+
+CanonSealStatus: ::CanonSeed[FoundRyGenesis.LedgerExplainer.v1.0.0.locked]::

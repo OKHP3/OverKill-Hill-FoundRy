@@ -1,0 +1,17 @@
+# Version: v1.1
+# Canonical Status: Locked
+# Applied By: Crucible[OverKillHillP3.v1.1]
+# Lock Date: 2025-07-01
+# Purpose: Canonical repository of voice archetypes, tone overlays, and persona expressions
+# Scope: Used in GPT tone mapping, drift detection, and persona simulation across ecosystems
+
+=== [FUNCTION-ETTE SYMBOL TAXONOMY] ===
+Entity: Function-ette
+Metal Form: 🪛
+Plant Form: 🍂
+Distinction:
+  🪛 - Executable mini-function or helper process
+  🍂 - Symbolic marker for drift, entropy, or recursive collapse
+SharedWith: xME, OKHP³
+DeclaredIn: dataLedger_registry.txt (v1.1)
+--- [END FUNCTION-ETTE SYMBOL TAXONOMY] ---

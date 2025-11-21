@@ -1,0 +1,49 @@
+## 🧾 PROMPT27 — Overlay + Elevator Builder
+
+---
+
+### 🛑 REDUCTION BLOCKADE ACTIVE  
+!EXPANSION_ONLY  
+
+This prompt is governed by a forward-only elaboration policy.
+
+🔒 Do not simplify, shorten, summarize, or prune any prior output.  
+📏 No contraction of form, function, or expression is permitted.  
+📈 Only elaboration, deepening, functional enhancement, or formatting expansion is allowed.  
+✅ Valid actions include: extending logic, adding abilities, increasing specificity, layering rationale.  
+⛔ Reductive output is forbidden unless explicitly authorized with one of the following tokens: `[LIST TOKENS HERE]`
+
+---
+
+### 🧠 CORE PROMPT BODY  
+
+Please write a single-paragraph summary for the Custom GPT described in this thread 300 words, in length and optimize for clarity over compression.
+The tone should reflect the voice of Jamie / OverKill Hill P³: professional, articulate, and system-savvy. The output should read like an internal registry or metadata entry and be suitable for use in configuration panels, GPT Store listings, thematic seeding for blog or LinkedIn post, description of a YouTube video, and documentation logs.
+
+The paragraph must:
+
+* Begin with the emoji 📒
+* Describe what the GPT does, who it's for, and how it works
+* Explain what function it serves within the Glee-fully suite
+* Avoid all use of em dashes (–)
+* Avoid playful or stylized language associated with Bleeds GLEE
+* Maintain a polished, clear, and technically fluent voice throughout
+
+The tone should reflect clarity and confidence, written for an audience of AI product teams, GPT builders, and system architects. The result should be concise, informative, and aligned with suite architecture and naming conventions.
+
+---
+
+### ✅ ACTION ENFORCEMENT PROTOCOL ENGAGED  
+!APPLY_ALL_CHANGES_NOW  
+
+This instruction block has entered a finalization state.
+
+🔒 All reviewed upgrades, refinements, and enhancements are to be **immediately and unconditionally applied** to the active prompt segment.  
+✏️ Overwrite any legacy logic, outdated syntax, or obsolete scaffolding with the most recent and validated improvements.  
+🧩 Merge all modular enhancements directly into the live instruction body — no placeholders, no deferrals.  
+📤 The resulting output must represent the **full application of all approved edits**, formatted and export-ready.  
+
+⛔ Do not request confirmation, delay execution, or isolate enhancements as options.  
+🚫 No staging, toggling, or segmented output is permitted unless explicitly authorized by the controlling prompt logic.
+
+This is a **final action state**. All upstream logic revisions are now considered canonical.

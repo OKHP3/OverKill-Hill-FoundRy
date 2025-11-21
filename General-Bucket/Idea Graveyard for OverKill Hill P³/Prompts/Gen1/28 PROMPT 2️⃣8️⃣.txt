@@ -1,0 +1,85 @@
+## 🧾 PROMPT28 — PME Instruction Rewriter
+
+---
+
+### 🛑 REDUCTION BLOCKADE ACTIVE  
+!EXPANSION_ONLY  
+
+This prompt is governed by a forward-only elaboration policy.
+
+🔒 Do not simplify, shorten, summarize, or prune any prior output.  
+📏 No contraction of form, function, or expression is permitted.  
+📈 Only elaboration, deepening, functional enhancement, or formatting expansion is allowed.  
+✅ Valid actions include: extending logic, adding abilities, increasing specificity, layering rationale.  
+⛔ Reductive output is forbidden unless explicitly authorized with one of the following tokens: `[LIST TOKENS HERE]`
+
+---
+
+### 🧠 CORE PROMPT BODY  
+
+Using the prior response of Elevator Pitch and the System Instructions before that, 
+Perform an exhaustive, recursive five-phase audit and enhancement of the system instruction block below, with the goal of **maximizing every available feature, function, and upgrade path** offered by the GPT Builder ecosystem and associated runtime capabilities (text, voice, image, file, web, reasoning, memory, multimodal logic). 
+
+🛠️ **Scope of Action (Across 5 Passes):**
+
+1. **Pass 1 – Structural Audit & Expansion:**  
+   - Inspect syntax, layout, clarity, and flow.  
+   - Max out token limit to 8,000 characters while preserving full GPT Builder compliance.  
+   - Normalize tone and enforce persona (if known).  
+   - Flag and correct any implicit weaknesses (vagueness, redundancy, missing calls to action).
+
+2. **Pass 2 – Skill & Feature Maximization:**  
+   - Activate all available runtime abilities (e.g. image input/output, voice interactions, vision interpretation, file parsing, data formatting, plugin use, memory toggles).  
+   - Add explicit callouts that prompt the model to use advanced logic, sensory input, or context.
+
+3. **Pass 3 – Persona, Overlay, and Tone Enforcement:**  
+   - Ensure consistency with declared or intended personas.  
+   - Infuse the tone overlay defined in `dataLedger_persona_v2.txt` if applicable (e.g., `GleeTone.A1`, `JoyWarden.Core`).  
+   - Add symbolic reinforcement (emoji guidance) as needed.
+
+4. **Pass 4 – Scenario Coverage & Edge Case Enrichment:**  
+   - Add guidance for extreme edge cases, ambiguous user inputs, or out-of-scope queries.  
+   - Include fallback routines, graceful failure messages, and safety-oriented phrasing.  
+   - Incorporate awareness of different device environments (mobile, desktop, voice-only, web-only).
+
+5. **Pass 5 – Polishing, Compression & PME Lock-In:**  
+   - Compress without compromise: final structure must be elegant, expressive, and builder-ready.  
+   - Validate PME readiness (persona, metadata, embedded logic, suffix/tone compliance).  
+   - Output a final pass that can be copied directly into the GPT Builder's instruction field.  
+
+📎 **Input:**  
+Paste your full system instruction block below (up to 8,000 characters). It can be in Markdown, plain text, or semi-structured format. If desired, specify your persona, tone, or suffix alignment (e.g. Tool-ette 🌿, Function‑ette 🍂, JoyWarden.Core, Overlay.Voice). Optionally, attach images or sketches to reinforce visual cues or data behaviors.
+
+🧠 **Runtime Environment:**  
+You may leverage file uploads, voice input, screenshot analysis, persona overlays, tone scoring, metadata scaffolding, and simulated outputs.
+
+🛡️ **Compliance Notes:**  
+All upgrades must conform to:
+- CanonSeal rules  
+- Canonical suffix enforcement  
+- Schema validation from `dataLedger_system_v2.txt`  
+- Personality/tone overlays from `dataLedger_persona_v2.txt`  
+- PME registration intent and Found‑Rᵧ phase alignment
+
+🔓 **Unleash Mode Active:**  
+Leave nothing on the table. Use voice? Call it out. Visual workflows? Draft them. Plugin logic? Simulate it. ForgeMode, Gleam‑R polish, even TellEPrompt‑R audit support — make it sing.
+
+👇 **Ready for input. Paste your system instruction block below to begin.**
+
+---
+
+### ✅ ACTION ENFORCEMENT PROTOCOL ENGAGED  
+!APPLY_ALL_CHANGES_NOW  
+
+This instruction block has entered a finalization state.
+
+🔒 All reviewed upgrades, refinements, and enhancements are to be **immediately and unconditionally applied** to the active prompt segment.  
+✏️ Overwrite any legacy logic, outdated syntax, or obsolete scaffolding with the most recent and validated improvements.  
+🧩 Merge all modular enhancements directly into the live instruction body — no placeholders, no deferrals.  
+📤 The resulting output must represent the **full application of all approved edits**, formatted and export-ready.  
+
+⛔ Do not request confirmation, delay execution, or isolate enhancements as options.  
+🚫 No staging, toggling, or segmented output is permitted unless explicitly authorized by the controlling prompt logic.
+
+This is a **final action state**. All upstream logic revisions are now considered canonical.
+
