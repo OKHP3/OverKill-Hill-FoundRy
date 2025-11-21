@@ -1,0 +1,39 @@
+================================================================================
+MAGNUS CAPSULE LEDGER v1
+Project: The Magnus Progenitor Saga
+Maintainer: [Jamie Hill]
+File Created: [2025-06-13]
+File Purpose: Master log of all lossless capsules, theme recoveries, and symbolic anchors
+Routing: All protocol outputs (LosslessCapsule_v2_fileout) append here ONLY
+================================================================================
+
+Instructions:
+• Do not modify previous ledger entries except for fixing clear typos.
+• Each new capsule or theme block must start with a clear delimiter (see below).
+• For future imports, maintain this header block at the top of the file.
+
+--------------------------------------------------------------------------------
+
+[CAPSULE ENTRY FORMAT]
+
+----------------------------------------
+Capsule Name: [Insert_Name_v1]
+Type: Character / Theme / Symbol / Motif
+Role: [Anchor, disruptor, echo, etc.]
+Traits: [Bullet list or compact description]
+Philosophy: [Short worldview or contradiction]
+Voice: [Speech pattern, metaphor set, tone]
+Narrative Function: [Origin, arc, symbolic role]
+Crosslinks: [Glossary bridge, protocol echo, etc.]
+Source Thread: [Thread name, date, or batch]
+Timestamp: [YYYY-MM-DD HH:MM]
+Capsule Status: ✅ Capsule Complete | 🟢 Capsule Partial
+----------------------------------------
+
+[Paste or generate capsule body here. Repeat above block for each new capsule.]
+
+================================================================================
+
+[END OF TEMPLATE HEADER – Capsules begin below this line]
+
+================================================================================
