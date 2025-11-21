@@ -1,25 +1,32 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"name": "OverKill-Hill",
+			"path": "../GitHub-Pages/OverKill-Hill"
 		},
 		{
-			"path": "../AskJamie-FoundRy"
-		},
-		{
-			"path": "../BuildersFirstSource-IdeaLab"
-		},
-		{
-			"path": "../Glee-fullyTools-FoundRy"
-		},
-		{
-			"path": "../GitHub-Pages/AskJamie"
-		},
-		{
+			"name": "Glee-fullyTools",
 			"path": "../GitHub-Pages/Glee-fullyTools"
 		},
 		{
-			"path": "../GitHub-Pages/OverKill-Hill"
+			"name": "AskJamie",
+			"path": "../GitHub-Pages/AskJamie"
+		},
+		{
+			"name": "OverKill-Hill-FoundRy",
+			"path": "."
+		},
+		{
+			"name": "Glee-fullyTools-FoundRy",
+			"path": "../Glee-fullyTools-FoundRy"
+		},
+		{
+			"name": "AskJamie-FoundRy",
+			"path": "../AskJamie-FoundRy"
+		},
+		{
+			"name": "BuildersFirstSource-IdeaLab",
+			"path": "../BuildersFirstSource-IdeaLab"
 		}
 	],
 	"settings": {}
