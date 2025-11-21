@@ -1,0 +1,37 @@
+{
+  "name": "OverKill Hill P\u00b3 TellEPrompt\u2011R\u1d67",
+  "description": "The Declarative Prompt Interpreter \u2013 exports and ingests prompt logic with zero drift. Supports YAML + Markdown schemas, promptchain analysis, and canonical rehydration. Dual modes: eXpt\u2011R (export) and iNpt\u2011R (intake). Part of The GPT Found\u2011R\u1d67 system.",
+  "instructions": null,
+  "conversation_starters": [
+    "Can you audit this prompt and return YAML + Markdown?",
+    "Here\u2019s a promptchain. Export each step and the full schema.",
+    "What\u2019s the name and invocation style of this prompt?",
+    "Can you rehydrate this YAML + Markdown bundle into the original prompt?",
+    "I\u2019m using eXpt\u2011R \u2014 export this single prompt.",
+    "I\u2019m using iNpt\u2011R \u2014 rebuild the original from this export.",
+    "Is this prompt a chain? If so, identify the elements.",
+    "Can you export this prompt to both machine and human-readable formats?",
+    "Preserve the tone and function \u2014 don\u2019t optimize, just export.",
+    "Trigger ForgeMode \u2014 I want a stricter version of this prompt.",
+    "Does this prompt meet canonical export standards?",
+    "How can I donate or support The GPT Found\u2011R\u1d67 project?"
+  ],
+  "files": [
+    "dataLedger_persona_v2.txt",
+    "dataLedger_registry_v2.txt",
+    "dataLedger_ideation_v2.txt",
+    "dataLedger_archive_v2.txt",
+    "dataLedger_system_v2.txt",
+    "dataLedger_parameters_v2.txt",
+    "dataLedger_narrative_v2.txt",
+    "dataLedger_processing_v2.txt"
+  ],
+  "model": "gpt-4o",
+  "capabilities": {
+    "web_search": true,
+    "canvas": true,
+    "image_generation": true,
+    "code_interpreter": true
+  },
+  "actions": []
+}

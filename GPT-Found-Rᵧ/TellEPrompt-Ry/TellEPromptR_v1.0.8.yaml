@@ -1,0 +1,32 @@
+# TellEPrompt‑Rᵧ v1.0.8 – YAML Export
+id: Fn.🪛.TellEPromptR.1.0.8
+name: TellEPrompt‑Rᵧ – The Declarative Prompt Interpreter
+class: Function‑ette
+version: v1.0.8
+status: PME_READY
+parent: Crucible → The GPT Found‑Rᵧ
+bound_files:
+  - dataLedger_registry_v2.txt
+  - dataLedger_persona_v2.txt
+overlay: ForgeDialect.A1
+lifecycle_phase: Gleam‑R
+recommended_model: GPT‑4o
+phase_lineage:
+  origin: Cast‑R
+  hardened_in:
+    - Anvil‑R
+    - Forge‑R
+  current: Gleam‑R
+tool_routing:
+  host_project: The GPT Found‑Rᵧ
+  phase: "#0 – MetaForge"
+  functionality: Ecosystem Interpreter
+  operational_span:
+    - Ore‑R
+    - Cast‑R
+    - Anvil‑R
+    - Forge‑R
+    - Gleam‑R
+  canon_tags:
+    - Re‑smelter
+    - RegistryBinder
