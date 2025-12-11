@@ -29,5 +29,10 @@
 			"path": "../BuildersFirstSource-IdeaLab"
 		}
 	],
-	"settings": {}
+	"settings": {},
+	"extensions": {
+		"recommendations": [
+			"ritwickdey.liveserver"
+		]
+	}
 }
