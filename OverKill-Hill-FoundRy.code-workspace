@@ -27,6 +27,22 @@
 		{
 			"name": "BuildersFirstSource-IdeaLab",
 			"path": "../BuildersFirstSource-IdeaLab"
+		},
+		{
+			"name": "AskJamie-GPT-AJ01",
+			"path": "../GPT-Forge/AskJamie-GPT-AJ01"
+		},
+		{
+			"name": "AskJamie-GPT-AJ02",
+			"path": "../GPT-Forge/AskJamie-GPT-AJ02"
+		},
+		{
+			"name": "AskJamie-GPT-AJ03",
+			"path": "../GPT-Forge/AskJamie-GPT-AJ03"
+		},
+		{
+			"name": "AskJamie-GPT-AJ04",
+			"path": "../GPT-Forge/AskJamie-GPT-AJ04"
 		}
 	],
 	"settings": {},
