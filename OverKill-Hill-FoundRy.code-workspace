@@ -43,6 +43,10 @@
 		{
 			"name": "AskJamie-GPT-AJ04",
 			"path": "../GPT-Forge/AskJamie-GPT-AJ04"
+		},
+		{
+			"name": "AskJamie-GPT-BRG00",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG00"
 		}
 	],
 	"settings": {},
