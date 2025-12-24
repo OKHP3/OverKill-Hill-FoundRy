@@ -59,6 +59,38 @@
 		{
 			"name": "AskJamie-GPT-BRG03",
 			"path": "../GPT-Forge/AskJamie-GPT-BRG03"
+		},
+		{
+			"name": "AskJamie-GPT-BRG04",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG04"
+		},
+		{
+			"name": "AskJamie-GPT-BRG05",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG05"
+		},
+		{
+			"name": "AskJamie-GPT-BRG06",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG06"
+		},
+		{
+			"name": "AskJamie-GPT-BRG07",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG07"
+		},
+		{
+			"name": "AskJamie-GPT-BRG08",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG08"
+		},
+		{
+			"name": "AskJamie-GPT-BRG09",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG09"
+		},
+		{
+			"name": "AskJamie-GPT-BRG10",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG10"
+		},
+		{
+			"name": "AskJamie-GPT-BRG11",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG11"
 		}
 	],
 	"settings": {},
