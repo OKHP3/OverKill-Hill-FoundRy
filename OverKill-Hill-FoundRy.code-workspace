@@ -47,6 +47,18 @@
 		{
 			"name": "AskJamie-GPT-BRG00",
 			"path": "../GPT-Forge/AskJamie-GPT-BRG00"
+		},
+		{
+			"name": "AskJamie-GPT-BRG01",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG01"
+		},
+		{
+			"name": "AskJamie-GPT-BRG02",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG02"
+		},
+		{
+			"name": "AskJamie-GPT-BRG03",
+			"path": "../GPT-Forge/AskJamie-GPT-BRG03"
 		}
 	],
 	"settings": {},
