@@ -97,7 +97,9 @@
 			"path": "../GPT-Forge/AskJamie-GPT-BRG12"
 		}
 	],
-	"settings": {},
+	"settings": {
+		"editor.formatOnSave": true
+	},
 	"extensions": {
 		"recommendations": [
 			"ritwickdey.liveserver"
