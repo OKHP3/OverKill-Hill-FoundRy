@@ -99,10 +99,5 @@
 	],
 	"settings": {
 		"editor.formatOnSave": true
-	},
-	"extensions": {
-		"recommendations": [
-			"ritwickdey.liveserver"
-		]
 	}
 }
