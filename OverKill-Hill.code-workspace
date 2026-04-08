@@ -25,6 +25,10 @@
 			"path": "../AskJamie-FoundRy"
 		},
 		{
+			"name": "first-diagram-is-a-liar",
+			"path": "../Writings/first-diagram-is-a-liar"
+		},
+		{
 			"name": "BuildersFirstSource-IdeaLab",
 			"path": "../BuildersFirstSource-IdeaLab"
 		},
@@ -95,10 +99,6 @@
 		{
 			"name": "AskJamie-GPT-BRG12",
 			"path": "../GPT-Forge/AskJamie-GPT-BRG12"
-		},
-		{
-			"name": "first-diagram-is-a-liar",
-			"path": "../Writings/first-diagram-is-a-liar"
 		}
 	],
 	"settings": {
