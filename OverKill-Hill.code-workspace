@@ -103,6 +103,10 @@
 		{
 			"name": "mermaid-theme-builder",
 			"path": "../Projects/mermaid-theme-builder"
+		},
+		{
+			"name": "mermaid-diagram-bpmn",
+			"path": "../Projects/mermaid-diagram-bpmn"
 		}
 	],
 	"settings": {
