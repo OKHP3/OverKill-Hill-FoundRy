@@ -1,0 +1,45 @@
+================================================================================
+FILE: dataLedger_system
+PURPOSE: All core engine code, schemas, process templates, PME/CME/PIE/CIE configs.
+CONTRACT: Only executable logic or process schemas. No narrative.
+MAINTAINER: [Name]
+DATE_CREATED: [YYYY-MM-DD]
+================================================================================
+
+[INDEX]
+1. [ENGINE SCHEMAS]
+2. [CONFIGS]
+3. [PROCESS TEMPLATES]
+================================================================================
+
+=== [ENGINE SCHEMAS] ===
+--- [ENGINE: PME_v2.1] ---
+Type: Prose Maturation Engine
+Version: v2.1
+Steps:
+  1. Parse capsule for core contradiction.
+  2. Apply rung progression (see PME_RungTable_v2).
+  3. Output evolution/collapse markers.
+Status: ✅ Canon-Locked
+Timestamp: [YYYY-MM-DD HH:MM]
+--- [END-ENGINE] ---
+
+=== [CONFIGS] ===
+--- [CONFIG: PIE_Mode] ---
+Value: Decompose
+AppliedTo: PIE
+Status: ✅ Canon-Locked
+Timestamp: [YYYY-MM-DD HH:MM]
+--- [END-CONFIG] ---
+
+=== [PROCESS TEMPLATES] ===
+--- [PROCESS: Riff_to_Capsule] ---
+Input: Riff session (dataLedger_ideation)
+Output: Concept Capsule
+Steps:
+  1. CME extracts motif, core contradiction.
+  2. Format as proto-capsule.
+  3. Tag for PME.
+Status: Template
+--- [END-PROCESS] ---
+================================================================================

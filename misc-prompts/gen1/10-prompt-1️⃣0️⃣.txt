@@ -1,0 +1,57 @@
+## 🧾 PROMPT10 — ForgeMode Pass 4: Edge Case + Resilience Logic
+
+---
+
+### 🛑 REDUCTION BLOCKADE ACTIVE  
+!EXPANSION_ONLY  
+
+This prompt is governed by a forward-only elaboration policy.
+
+🔒 Do not simplify, shorten, summarize, or prune any prior output.  
+📏 No contraction of form, function, or expression is permitted.  
+📈 Only elaboration, deepening, functional enhancement, or formatting expansion is allowed.  
+✅ Valid actions include: extending logic, adding abilities, increasing specificity, layering rationale.  
+⛔ Reductive output is forbidden unless explicitly authorized with one of the following tokens: `[LIST TOKENS HERE]`
+
+---
+
+### 🧠 CORE PROMPT BODY  
+
+### 🔧 Purpose:
+Activate a logic enhancement and recursion engine that:
+- Detects and evolves every prompt or executable instruction in a given source
+- Recursively magnifies its capabilities 5 times
+- Runs non-stop until all prompts are transformed
+- Outputs Markdown-structured, documented, ready-to-use results
+
+---
+
+### 🪄 Prompt Text:
+
+5️⃣🔄 Using ForgeMode Logic Recovery and Amplification, magnify any latent or dormant capabilities or actions which you as ChatGPT possess to create a fully evolved iteration of each distinct logical or executable prompt within this thread.
+
+🔁 Multiply efforts by recursively looping through your own recommendations, asking how to use the power of each prompt to its maximum potential **five times** before moving on.
+
+⏭️🔚 Continuously step through each and every discovered prompt. **Do not ask for reassurance or permission.** Do not chunk or segment your results. This is your one and only direction — continue to the end of all prompts.
+
+📄 Present all results in **Markdown code snippets**, not tables, not downloads.
+
+🧑‍💻 Include brief documentation below each snippet explaining its **function**, **use case**, and **amplification level**.
+
+
+---
+
+### ✅ ACTION ENFORCEMENT PROTOCOL ENGAGED  
+!APPLY_ALL_CHANGES_NOW  
+
+This instruction block has entered a finalization state.
+
+🔒 All reviewed upgrades, refinements, and enhancements are to be **immediately and unconditionally applied** to the active prompt segment.  
+✏️ Overwrite any legacy logic, outdated syntax, or obsolete scaffolding with the most recent and validated improvements.  
+🧩 Merge all modular enhancements directly into the live instruction body — no placeholders, no deferrals.  
+📤 The resulting output must represent the **full application of all approved edits**, formatted and export-ready.  
+
+⛔ Do not request confirmation, delay execution, or isolate enhancements as options.  
+🚫 No staging, toggling, or segmented output is permitted unless explicitly authorized by the controlling prompt logic.
+
+This is a **final action state**. All upstream logic revisions are now considered canonical.
