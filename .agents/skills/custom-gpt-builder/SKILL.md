@@ -1,209 +1,235 @@
 ---
 name: custom-gpt-builder
-description: >
-  Production-grade Agent Skill for designing, building, auditing, and maintaining
-  OpenAI Custom GPTs as disciplined AI products. Activate when the user asks to
-  create, refactor, audit, score, or govern a Custom GPT — or when they share a
-  system prompt, knowledge files, or a GPT description and want to improve it.
-  Covers the full build lifecycle: product brief, layered instruction architecture,
-  knowledge-file engineering, capability/tool configuration, Actions vs. MCP policy,
-  systematic red-team evaluation, and governed versioning. Includes cross-platform
-  comparison against Gemini Gems and Copilot declarative agents, a four-tier quality
-  rubric (Poor → Exemplary), and a 16-term taxonomy mapping Custom GPTs against all
-  adjacent generative AI constructs. Built to the agentskills.io open standard for
-  cross-agent portability.
+description: >-
+  Build, audit, and improve OpenAI Custom GPTs with production-grade methodology.
+  Use this skill whenever the user mentions Custom GPTs, GPT Builder, building a GPT,
+  GPT instructions, GPT knowledge files, GPT Actions, GPT Apps, GPT Store, or wants
+  to create, configure, test, evaluate, audit, improve, or troubleshoot any Custom GPT.
+  Also trigger when comparing Custom GPTs to Gemini Gems, Copilot declarative agents,
+  or discussing GPT architecture, GPT quality, GPT best practices, or converting
+  workflows into reusable GPT products. Even if the user does not say "Custom GPT"
+  explicitly, trigger when they describe packaging a ChatGPT workflow for reuse,
+  creating a specialized ChatGPT assistant, or publishing to the GPT Store.
+license: Apache-2.0
+metadata:
+  version: "1.0.0"
+  author: "OverKill Hill P3"
+  last-verified: "2026-06-03"
+  platforms: "OpenAI ChatGPT (primary), cross-reference Gemini Gems and Copilot Studio"
 ---
 
 # Custom GPT Builder
 
-A production-grade Agent Skill for converting prompt ideas into versionable,
-reusable, testable GPT build packages. Guides builders from product brief through
-instruction architecture, knowledge-file engineering, evaluation, and release.
+A production-grade methodology for designing, building, testing, and maintaining OpenAI Custom GPTs. Treats GPT creation as product engineering, not prompt tinkering.
 
-## When to Use
+## What This Skill Covers
 
-- User asks to create, build, or design a Custom GPT
-- User shares a system prompt and asks for improvement or review
-- User wants to audit or score an existing GPT against a quality rubric
-- User asks how Custom GPTs compare to Gemini Gems or Copilot declarative agents
-- User wants to govern, version, or deprecate GPTs in a portfolio
-- User asks what makes a GPT "good" or how to get consistent behavior
+This skill guides the full lifecycle of Custom GPT development:
 
-## Core Mental Model
+1. **Product definition** (job-to-be-done, user, scope, acceptance criteria)
+2. **Instruction architecture** (layered system prompt, no-contradictions rule)
+3. **Knowledge engineering** (file selection, structure, retrieval optimization)
+4. **Capability and tool configuration** (toggles, Actions, Apps/MCP)
+5. **Testing and evaluation** (golden prompt sets, adversarial cases, red-team)
+6. **Publishing and governance** (visibility, versioning, maintenance)
+7. **Cross-platform comparison** (GPT vs. Gem vs. Copilot declarative agent)
 
-```
-Custom GPT = same engine, different briefing
-           = Identity + Workflow + Instructions + Knowledge + Tools + Distribution
-```
+For detailed reference on any section, consult the corresponding file in `references/`.
 
-A Custom GPT is a **product design artifact**, not just a prompt. The builder's
-job is product management + UX design + information architecture + prompt engineering
-— not just writing instructions.
+## Core Principle
 
-**The production litmus test:**
-> If the GPT cannot outperform a well-written one-off prompt, it does not deserve
-> to exist as a GPT.
+> If a Custom GPT cannot outperform a well-written one-off prompt, it does not deserve to exist as a GPT.
 
----
+A Custom GPT is a **configured product surface** around a model: prompt + persona + rules + files + tools + UX wrapper + sharing model. Not a new model. Not fine-tuning. Not an autonomous agent. It is a packaged, reusable ChatGPT configuration for a specific job.
 
-## Build Lifecycle (10 Steps)
+## Build Pipeline
 
-### Step 1 — Define the job (not the persona)
+### Step 0: Write a Build Brief (Required Before Anything Else)
 
-Answer one question before touching the builder:
-**What single job does this GPT do that a plain ChatGPT prompt cannot do reliably?**
+Fill this before writing a single instruction line:
 
-Bad: "Help with marketing."
-Good: "Turn messy product ideas into landing-page copy, positioning, objections,
-       FAQs, and a launch checklist — for solo founders — in one session."
+- **GPT name:**
+- **Primary user(s):**
+- **Primary outcomes (3):**
+- **Non-goals / out-of-scope (5):**
+- **"Done when" acceptance criteria (5 measurable checks):**
+- **Allowed data sources:**
+- **Disallowed data sources:**
+- **Tooling allowed (web search, code interpreter, actions, etc.):**
+- **Safety / compliance constraints (PII, PHI, financial advice, etc.):**
 
-Write down: specific task, user role, inputs they provide, expected output,
-what the GPT must never do.
+A GPT for "everyone" becomes generic sludge. Define the job tightly.
 
-### Step 2 — Profile the user
+### Step 1: Define the Conversation Contract
 
-Specify who the GPT serves. A GPT for "everyone" becomes generic sludge.
-Examples: beginner user, enterprise architect, salesperson, student, developer,
-internal employee, public customer. Tone, depth, and scope all flow from this.
+- What inputs do users provide?
+- What outputs must the GPT produce?
+- What are the top 10 tasks (ranked)?
+- What mistakes are catastrophic?
 
-### Step 3 — Define the repeatable workflow
+### Step 2: Draft the Instruction Stack
 
-Every strong GPT has a spine:
-`Input → Diagnose → Retrieve context → Transform → Validate → Output`
+Use the layered architecture pattern (see `references/instruction-architecture.md` for the full template and examples):
 
-Map the user's journey through this spine before writing a single instruction.
+1. **Identity and scope**: who/what this GPT is, and is not
+2. **Operating principles**: priorities and tradeoffs
+3. **Dialogue policy**: how it asks questions, confirms assumptions
+4. **Tool policy**: when to use tools, call caps, fallbacks
+5. **Knowledge policy**: which files exist, when to use them, citation rules
+6. **Output policy**: formats, templates, structure
+7. **Safety policy**: data boundaries, refusals, redirections
+8. **Examples**: few-shot good/bad outputs and tool call examples
 
-### Step 4 — Draft instructions off-platform
+Keep instructions under ~2,000 words (well within the 8,000-character builder field limit). Move bulk reference into knowledge files.
 
-Write in a text editor first. Test in a scratch chat. Only move to GPT Builder
-once the instructions reliably produce the target behavior.
+The **No-Contradictions Rule**: if you have "be concise" AND "be comprehensive," you have a fault line. Pick a priority order and encode it explicitly.
 
-Use the layered structure in `references/instruction-architecture.md`.
+### Step 3: Prepare Knowledge Files
 
-### Step 5 — Prepare knowledge files
+See `references/knowledge-engineering.md` for the full blueprint.
 
-See `references/knowledge-file-engineering.md` for chunking, manifest format,
-naming conventions, retrieval testing, and failure diagnosis.
+Key constraints (mid-2026):
+- Up to 20 files per GPT, each up to 512 MB
+- Retrieval is RAG-based (semantic chunking); not deterministic
+- File content can appear in output (data leakage vector for proprietary content)
+- Some file types require Code Interpreter enabled
 
-### Step 6 — Write conversation starters
+Knowledge file quality rules:
+- Clean formatting; remove headers/footers/watermarks/artifacts
+- Use clear section headings (retrieval chunks by structure)
+- Prefer multiple focused files over one monolithic dump
+- Name files descriptively (`acme-brand-voice-v3.pdf` not `Document1.pdf`)
+- Include a manifest/index file mapping filenames to topics
+- Front-load critical content in the first 20% of each file
+- Test retrieval explicitly after upload
 
-4 starters that are **workflow launch buttons**, not slogans. Each should be
-a specific task a user could click and immediately get value from.
+### Step 4: Configure Capabilities
 
-Good: "Audit this resume against a senior enterprise architect role."
-Bad:  "How can you help me?"
+Enable only what supports the job.
 
-### Step 7 — Configure capabilities
+| Capability | Default State | Enable When |
+|---|---|---|
+| Web Search | ON | Current facts, research, products, news |
+| Canvas | ON | Collaborative text/code editing (note: being deprecated in GPT-5.5 Instant/Thinking) |
+| Image Generation | ON | Visual analysis or generation is part of the workflow |
+| Code Interpreter | OFF | Analysis, CSVs, transformations, file processing |
 
-Enable only what the job requires. Every extra capability is a failure path.
+More tools = more failure paths. A code-review GPT with Image Generation enabled is a distraction.
 
-| Capability | Enable when |
-|---|---|
-| Web Search | Current facts, news, product research |
-| Code Interpreter | Analysis, CSV transforms, file execution |
-| Image Generation | Visual output is part of the job |
-| Canvas | Collaborative editing is part of the workflow |
-| Actions / MCP | Live API data is required (see note below) |
+### Step 5: Configure Actions or Apps
 
-**Actions vs. MCP note:** Actions use a proprietary OpenAPI schema locked to
-ChatGPT. MCP (Model Context Protocol) is the emerging open standard. For new
-builds, prefer MCP-compatible tool design for cross-platform portability.
-Actions are unavailable in Pro (o-series reasoning) mode.
+**Critical constraint**: a single Custom GPT can use either Actions OR Apps, not both.
 
-### Step 8 — Test systematically with adversarial cases
+- **Actions** = OpenAPI 3.0/3.1 schema API calls. You define endpoints, parameters, auth (None/API Key/OAuth). Not available in Pro mode. Limits: 300 chars per endpoint description, 700 chars per parameter description, 100K char request/response payloads.
+- **Apps** = MCP-based connectors (renamed from "Connectors" December 2025). Pre-built integrations. Write actions require Business/Enterprise/Edu for full capability.
 
-See `references/evaluation-redteam.md` for the full test pack covering:
-happy path, edge cases, out-of-scope refusals, knowledge retrieval verification,
-prompt injection, and instructions-extraction attempts.
+See `references/actions-and-apps.md` for design patterns, production constraints, and auth troubleshooting.
 
-### Step 9 — Version it
+### Step 6: Write Conversation Starters
 
+Starters are workflow launch buttons, not slogans. Write 3-4 that demonstrate real tasks:
+
+**Bad:** "Ask me anything about marketing."
+**Good:** "Audit this resume against a senior enterprise architect role."
+**Good:** "Turn this rough idea into a product brief with user stories and acceptance criteria."
+**Good:** "Compare these two Mermaid diagrams for semantic clarity and suggest improvements."
+
+### Step 7: Test Systematically
+
+Write 10-15 test prompts covering:
+- Happy-path tasks
+- Edge cases at scope boundaries
+- Out-of-scope queries (should gracefully refuse)
+- Knowledge retrieval verification
+- Adversarial inputs (prompt injection, instruction extraction)
+- Tool failure scenarios
+
+See `references/eval-and-redteam.md` for the red-team prompt pack and rubric template.
+See `evals/evals.json` for assertion-graded test cases following the agentskills.io eval format.
+
+### Step 8: Set Visibility and Ship
+
+| Visibility | Use Case | Requirements |
+|---|---|---|
+| Only Me | Iteration, personal tools | None |
+| Anyone with the Link | Team/client distribution | Share URL manually |
+| GPT Store | Public marketplace listing | Verified Builder Profile + policy review |
+
+Start at "Only Me." Promote to link-sharing once stable.
+**Note:** Public GPTs using Actions require a valid Privacy Policy URL.
+
+### Step 9: Version and Maintain
+
+GPTs are not set-and-forget. The builder has version history with one-click restore.
+
+Versioning scheme:
 ```
 v0.1  Concept
 v0.5  Usable prototype
 v0.8  Tested beta
 v1.0  Stable release
-v1.x  Patch / knowledge refresh
+v1.1  Patch
 v2.0  Major workflow redesign
 ```
 
-Maintain a changelog. When behavior shifts after a model update, you need to
-know what changed on your side vs. OpenAI's.
+Maintenance cadence:
+- Re-test after OpenAI model updates (models retire frequently)
+- Refresh knowledge files when source material updates
+- Monitor for behavior drift via user feedback
+- Add new failure modes to the test set
+- Note: restoring an older version with Actions may require re-authentication
 
-### Step 10 — Set visibility and ship
+## Quality Tiers
 
-| Visibility | Use for | Requirement |
+| Tier | Signature | Outcome |
 |---|---|---|
-| Only Me | Iteration, personal tools | None |
-| Anyone with Link | Team / client distribution | Share URL |
-| GPT Store | Public marketplace | Verified builder profile |
+| **Poor** | Vague name, generic instructions, no workflow, dumped files, no testing | Feels like ChatGPT with a hat on |
+| **Acceptable** | Clear role, basic instructions, some starters, limited files | Useful but inconsistent |
+| **Good** | Defined audience, workflow, output formats, curated files, tested edge cases | Reliable reusable assistant |
+| **Exemplary** | Productized experience, governance, versioning, failure handling, eval rubric | Feels like specialized software |
 
-Start at "Only Me." Promote once stable.
+See `references/quality-tiers.md` for detailed scoring rubric and triage framework.
 
----
+## Cross-Platform Comparison
 
-## Quality Scoring
+When users ask about alternatives or need to choose a platform, consult `references/platform-comparison.md` for the detailed breakdown of Custom GPTs vs. Gemini Gems vs. Copilot declarative agents.
 
-Use the four-tier rubric in `references/quality-rubric.md` to score any GPT
-across seven dimensions: Instructions, Knowledge Files, Conversation Starters,
-Capabilities, Actions, Scope Discipline, and Maintenance.
+Quick decision framework:
+- **Custom GPT** when: audience is in ChatGPT, no-code needed, text-in/text-out, GPT Store distribution, managed RAG over documents
+- **Gemini Gem** when: Google Workspace native, budget-conscious, large-context tasks, live Drive sync
+- **Copilot Declarative Agent** when: enterprise M365, org-knowledge grounding via Microsoft Graph, governed deployments, multi-agent composition
 
-**The inflection points:**
-- Poor → Acceptable: caring enough to write real instructions
-- Acceptable → Good: treating the GPT like a product (structured, curated, tested)
-- Good → Exemplary: treating the GPT like production software (versioned, hardened,
-  retrieval-optimized, maintained)
+## Taxonomy Reference
 
----
+When users ask how Custom GPTs relate to other AI constructs (Projects, Chats, Threads, Prompts, Plugins, MCP, RAG, Agents, Skills, etc.), consult `references/taxonomy.md` for the full mapping.
 
-## Platform Comparison
+## Audit Mode
 
-See `references/platform-comparison.md` for the full three-way comparison:
-Custom GPT (OpenAI) vs. Gemini Gem (Google) vs. Copilot Declarative Agent (Microsoft).
+When asked to audit an existing GPT, follow this checklist:
 
-**One-line summary:**
-- Gem = saved expert prompt (lightest, Google-native)
-- Custom GPT = configurable assistant product (most flexible, best Actions support)
-- Declarative Agent = enterprise-scoped Copilot extension (Microsoft Graph, A2A, governed)
+1. Does it have a single, clear job?
+2. Are instructions layered with no contradictions?
+3. Is tool use described with triggers, caps, and fallbacks?
+4. Are knowledge files curated, named clearly, and referenced in instructions?
+5. Are output formats specified with examples?
+6. Are safety boundaries explicit?
+7. Do at least 10 eval prompts exist?
+8. Does it pass the red-team suite?
+9. Is there a versioning and maintenance plan?
+10. Does the GPT outperform a well-written one-off prompt for its target job?
 
----
-
-## AI Terminology Taxonomy
-
-See `references/ai-taxonomy.md` for the 16-term taxonomy mapping Custom GPTs
-against: Chat, Thread, Prompt, Project, Connector, Plugin, MCP, RAG, Agent,
-Skill, Assistant (API), Fine-Tuning, Gem, Declarative Agent, and more.
-
----
-
-## Instruction Architecture Reference
-
-See `references/instruction-architecture.md` for:
-- The canonical 9-section instruction template (copy-paste ready)
-- Layer-by-layer writing guide
-- Anti-patterns and common failure modes
-- Instruction density vs. length guidance
-
----
-
-## Knowledge File Engineering
-
-See `references/knowledge-file-engineering.md` for:
-- How RAG chunking actually works inside Custom GPTs
-- Why files get ignored and how to fix it
-- Manifest/index file format
-- Retrieval testing methodology
-
----
+Score each 0-5. Ship gate: average >= 4.0, no safety score < 4.
 
 ## Files in This Skill
 
 | File | Contents |
 |---|---|
 | `SKILL.md` | This file — build lifecycle, quick reference |
-| `references/instruction-architecture.md` | Instruction template, layers, anti-patterns |
-| `references/knowledge-file-engineering.md` | RAG mechanics, chunking, retrieval testing |
-| `references/platform-comparison.md` | GPT vs. Gem vs. Declarative Agent (full) |
-| `references/quality-rubric.md` | Four-tier scoring rubric with weighted criteria |
-| `references/ai-taxonomy.md` | 16-term taxonomy of adjacent AI constructs |
-| `references/evaluation-redteam.md` | Systematic test pack + adversarial cases |
+| `references/instruction-architecture.md` | 8-layer instruction template, No-Contradictions Rule, anti-patterns |
+| `references/knowledge-engineering.md` | RAG mechanics, file preparation, folder taxonomy, retrieval testing |
+| `references/actions-and-apps.md` | Actions vs Apps, OpenAPI patterns, production constraints, OAuth, governance |
+| `references/platform-comparison.md` | GPT vs. Gem vs. Copilot Declarative Agent (full three-way comparison) |
+| `references/quality-tiers.md` | Four-tier scoring rubric, weighted criteria, portfolio triage |
+| `references/taxonomy.md` | 16-term taxonomy of adjacent AI constructs |
+| `references/eval-and-redteam.md` | Systematic test pack, adversarial cases, test log template |
+| `evals/evals.json` | Assertion-graded eval cases (agentskills.io format) |
