@@ -13,24 +13,33 @@
 | Dimension | Custom GPT (OpenAI) | Gemini Gem (Google) | Copilot Declarative Agent (Microsoft) |
 |---|---|---|---|
 | **Home platform** | ChatGPT | Gemini | Microsoft 365 Copilot / Copilot Studio |
-| **Underlying model** | GPT-4o (and variants) | Gemini 1.5 / 2.0 | GPT-4o via Azure OpenAI |
+| **Underlying model (mid-2026)** | GPT-5.3 Instant (default); GPT-5.4 Thinking/Pro (paid reasoning); GPT-5.5/5.5 Pro (rolled out Apr–May 2026) | Gemini 2.0 and 2.5 family | GPT-4o/GPT-4 family via Azure OpenAI |
 | **Licensing to build** | ChatGPT Plus ($20/mo) or higher | Free (basic Gems); Advanced ($19.99/mo) for full features | M365 Copilot enterprise license |
 | **Licensing to use** | Plus minimum for shared GPTs | Free on Gemini Basic | M365 Copilot seat |
-| **Instructions** | Free-text system prompt, no published char limit | Free-text + "magic wand" auto-rewrite assist | Free-text or auto-generated from natural-language description |
+| **Instructions** | Free-text system prompt; ~8,000 char hard limit in builder UI | Free-text + "magic wand" auto-rewrite assist | Free-text or auto-generated from natural-language description |
+| **Configure tab fields** | Name, Description, Instructions, Conversation starters, Recommended model, Knowledge, Capabilities, Apps or Actions | Name, Instructions, Default Tool, Knowledge | Name, Description, Instructions, Knowledge sources, Capabilities, Plugins |
+| **Recommended model field** | Yes (newer field — steers users toward the best fit) | N/A | N/A |
 | **Context window** | 128K tokens (typical) | Up to 1M tokens (8× ChatGPT) | Varies; inherits Copilot's model limits |
-| **Knowledge files** | Upload files → vector-indexed RAG retrieval | Upload files + live Google Drive sync | SharePoint sites, OneDrive, M365 Graph, Copilot Connectors, uploaded files |
+| **Knowledge files** | Upload files → vector-indexed RAG retrieval; 20 files max, 512 MB each | Upload files + live Google Drive sync | SharePoint sites, OneDrive, M365 Graph, Copilot Connectors, uploaded files |
 | **Knowledge architecture** | Personal file store (static upload) | Upload + live Drive sync | Microsoft Graph (org-wide search across M365 data) |
-| **Tool/capability toggles** | Web Search, Canvas, DALL-E, Code Interpreter (binary on/off) | Single "Default Tool": None / Create Image / Canvas / Deep Research / Music / Guided Learning | Code interpreter, image generator, capabilities per Copilot plan |
-| **API / external data** | Actions via custom OpenAPI schema (JSON/YAML) + OAuth | No custom API actions; Google ecosystem integrations only | API plugins, Power Automate connectors, custom engine agents for complex logic |
+| **Tool/capability toggles** | Web Search (ON), Canvas (ON — deprecated in GPT-5.5 Instant/Thinking), Image Generation (ON), Code Interpreter & Data Analysis (OFF) | Single "Default Tool": None / Create Image / Canvas / Deep Research / Music / Guided Learning | Code interpreter, image generator, capabilities per Copilot plan |
+| **API / external data** | Actions via custom OpenAPI schema (JSON/YAML) + OAuth; OR Apps (MCP-based, renamed from Connectors Dec 2025) — not both simultaneously | No custom API actions; Google ecosystem integrations only | API plugins, Power Automate connectors, custom engine agents for complex logic |
 | **Multi-agent** | No native A2A | No native A2A | A2A protocol; agents can compose and delegate to other agents |
-| **Sharing model** | Private / Link / GPT Store (public marketplace, 200K+ GPTs) | Private / Public (Gem Gallery, 10K+ public Gems) | Admin-governed via Integrated Apps; tenant-level controls |
+| **Sharing model** | Private / Link / GPT Store (public marketplace, 200K+ GPTs); workspace RBAC (Can chat / Can view settings / Can edit) | Private / Public (Gem Gallery) | Admin-governed via Integrated Apps; tenant-level controls |
 | **Builder accessibility** | Low barrier, high ceiling | Lowest barrier, medium ceiling | Medium barrier, highest ceiling |
 | **Customization ceiling** | High: instructions + knowledge + actions + capability toggles | Medium: instructions + knowledge + single tool selection | High: instructions + Graph + plugins + Power Automate + A2A |
 | **Ecosystem lock-in** | OpenAI / ChatGPT only | Deep Google Workspace integration | Deep M365 integration: Teams, Outlook, SharePoint, OneDrive natively |
 | **Computer use / automation** | Code Interpreter only (sandboxed Python) | Limited | Emerging computer use (web/desktop app interaction where APIs unavailable) |
-| **Governance** | Builder controls visibility | Minimal governance controls | IT admin governed; tenant policies apply |
-| **Monetization** | GPT Store revenue sharing (limited program) | None | None (enterprise license) |
+| **Governance** | Builder controls visibility; version history with restore in ••• menu | Minimal governance controls | IT admin governed; tenant policies apply; audit trails |
+| **Monetization** | GPT Store revenue sharing (US builders; formula undisclosed) | None | None (enterprise license) |
 | **OpenAPI / Actions limits** | 300 chars/endpoint description, 700 chars/param, 100K char payloads | N/A | Plugin schemas; platform limits apply |
+
+**Important notes on mid-2026 model lineup:**
+- GPT-4o, GPT-4.1, GPT-4.1 mini, o4-mini, and original GPT-5 retired from ChatGPT February 13, 2026
+- GPT-5.1 models retired March 11, 2026
+- GPT-5.5 Instant became the free-tier default May 5, 2026
+- Business/Enterprise/Edu tenants retained GPT-4 family access longer than consumer tiers
+- Canvas is being deprecated in GPT-5.5 Instant/Thinking; writing/coding moving to in-chat blocks
 
 ---
 
@@ -49,7 +58,7 @@ uploads into a reusable assistant.
 **Where Custom GPTs win over Gems:**
 - Actions: full custom API integration via OpenAPI schemas (Gems have no equivalent)
 - Capability control: binary toggles per tool (Gems have a single tool selector)
-- Publishing: GPT Store with 200K+ listings (Gems have Gem Gallery, smaller reach)
+- Publishing: GPT Store with 200K+ listings (Gem Gallery is smaller)
 - Instruction depth: more established builder patterns, larger community of templates
 
 **When to use a Gem instead of a Custom GPT:**
@@ -109,6 +118,13 @@ Start here:
 └── General case / prosumer / indie builder → Custom GPT
 ```
 
+**Hedging against lock-in:** Author canonical workflows as Agent Skills (portable, version-controlled, testable) and wrap a thin Custom GPT for ChatGPT reach. Both ecosystems are converging on MCP, so a clean MCP tool layer pays off in both paradigms.
+
+**When to move from Custom GPT to Agent Skill:**
+- You need the same capability on ≥2 agent platforms
+- You need objective pass/fail QA (not just preview testing)
+- Model updates are causing silent behavior regressions
+
 ---
 
 ## Evolution Timeline
@@ -123,8 +139,12 @@ Start here:
 | Mid 2024 | Gemini Gems launch | Google | Active |
 | Late 2024 | Copilot Studio Agent Builder (declarative agents) | Microsoft | Active |
 | 2024–2025 | MCP protocol emerges | Anthropic (broadly adopted) | Active, growing |
+| Oct 2025 | Agent Skills standard launched | Anthropic (open standard) | Active |
 | 2025 | Claude Projects launch | Anthropic | Active |
-| Early 2026 | GPT-4o retired from ChatGPT (newer models replace) | OpenAI | Models sunset |
+| Dec 2025 | OpenAI renames Connectors → Apps; Apps/MCP support added to GPTs | OpenAI | Active |
+| Feb 2026 | GPT-4o and earlier models retired from ChatGPT; GPT-5 family default | OpenAI | Models sunset |
+| Mar 2026 | OpenAI Codex Plugin Directory launches | OpenAI | Active |
+| Apr–May 2026 | GPT-5.5/5.5 Pro rollout; GPT-5.5 Instant becomes free-tier default | OpenAI | Active |
 | Mid 2026 | Multi-agent orchestration (A2A), computer use | Microsoft, Google, Anthropic | Emerging |
 
 The trajectory: isolated chatbots → configurable assistants → tool-using agents →
