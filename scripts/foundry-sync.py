@@ -16,9 +16,9 @@ import pathlib
 import sys
 
 REQUIRED_PATHS = [
-    "AGENTS.md",
-    "README.md",
-    "CHANGELOG.md",
+    "agents.md",
+    "readme.md",
+    "changelog.md",
     "manifest.yaml",
     "_template",
     "registry",
@@ -31,7 +31,7 @@ RECOMMENDED_PATHS = [
     "scripts",
     "registry/index.yaml",
     "registry/triage-log.md",
-    "schemas/repo-manifest.schema.yaml",
+    "schemas/repo-manifest-schema.yaml",
     "docs/governance-model.md",
 ]
 
