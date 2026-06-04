@@ -1,33 +1,32 @@
-# Repo Overlay — OverKill-Hill-FoundRy
+# Repo Overlay — AskJamie-FoundRy
 
 ## Repository role
 
-This repository is the OverKill Hill P3 FoundRy source-of-truth for promptcraft, Agent Skills, and reusable AI product architecture.
+This repository supports AskJamie-oriented GPT and Agent Skill infrastructure: practical advisory workflows, portfolio-grade assistants, personal-brand systems, and reusable public-facing help patterns.
 
 ## Brand alignment
 
 When this skill produces artifacts in this repo, favor:
 
-- Precision, protocol, promptcraft.
-- Productized AI architecture over casual prompting.
-- Repo-first source-of-truth discipline.
-- Clear separation between core skill logic, references, evals, and overlays.
-- Canon-preserving terminology when working with FoundRy, OKHP3, PromptForge, PromptAscend, ArcSyntrixo, or related systems.
+- Direct, useful, human-readable guidance.
+- Portfolio-ready outputs that demonstrate applied AI architecture.
+- Clear distinctions between personal brand, public helper, and reusable skill infrastructure.
+- Practical examples that make advanced GPT construction accessible without diluting technical rigor.
 
 ## Preferred deliverables
 
-- `SKILL.md` packages
-- GPT Builder field payloads
-- instruction blocks
+- public-facing GPT build packages
+- AskJamie helper workflows
+- user-friendly instruction blocks
+- GPT audit checklists
 - knowledge manifests
-- eval packs
-- governance rubrics
-- migration plans from Custom GPTs to Agent Skills
-- repo packaging templates
+- comparison guides
+- portfolio documentation
+- migration templates for reusable ChatGPT workflows
 
 ## Guardrails
 
-- Do not blend BFS/Builders FirstSource material into this repo.
-- Do not flatten FoundRy canon into generic AI boilerplate.
-- Treat this repo as the highest-authority manufacturing floor for reusable OKHP3 Agent Skills.
-- Preserve versioning, changelog posture, and auditability.
+- Do not assume every AskJamie artifact should inherit full OKHP3 mythic/canon language.
+- Do not overcomplicate public-facing assistants with internal FoundRy jargon.
+- Preserve clarity and user benefit over ornamental framework language.
+- Keep private/personal context out of public skill artifacts unless intentionally included.
