@@ -40,6 +40,74 @@ A repository should preserve the durable capability, not merely the latest platf
 
 The 16 capability folders in this repository span the full lifecycle of GPT construction, validation, and governance within the OverKill Hill P³ / GPT Found‑Rᵧ ecosystem — from raw ideation through canon-sealed export.
 
+### Pipeline Diagram
+
+```mermaid
+flowchart LR
+    DL[("dataledgers\n9 canonical ledger files\nshared backbone · ALL phases")]
+
+    subgraph CAST["Cast-Rᵧ · Phase 2"]
+        ARC["arcsyntrixo-ry\nRecursive prompt simulation"]
+        PHE["phenomould-ry\nGPT mold-caster\n(spans Cast → Anvil)"]
+        COIL["coilingcrank-ry\nPrompt-chain loop forger\n(spans Cast → Anvil → Gleam)"]
+    end
+
+    subgraph ANVIL["Anvil-Rᵧ · Phase 3"]
+        TEL["telleprompt-ry\nDeclarative prompt interpreter"]
+        TON["tonestrik-ry\nTone & structure gate"]
+    end
+
+    subgraph GLEAM["Gleam-Rᵧ · Phase 4"]
+        STR["structrefino-ry\nSchema auditing & PME export"]
+    end
+
+    subgraph QUENCH["Quencher · Phase 5"]
+        SCAF["scaffrosto-ry\nThread cryostasis & reawakening\n(loop: Quencher → Gleam)"]
+    end
+
+    subgraph GOV["Governance Layer"]
+        CAN["canonsweep-r\nLedger compliance audit"]
+        AUD["gpt-auditor\nForensic diagnostic tool"]
+    end
+
+    subgraph BUILD["GPT Construction & Scaffolding"]
+        WIZ["gpt-wizard\nDesign consultation archive"]
+        MIS["misc-prompts\nBuilder promptchain library"]
+    end
+
+    subgraph ASSESS["Assessment & Analysis"]
+        PRA["promptascend-r\nSymbolic grading engine"]
+        CAG["cage-fight-ry\nComparative synthesis"]
+        THR["thread-scourer\nInventory & drift detection"]
+    end
+
+    ARCH[/"gpt-crucible (Retired)\nancestor of phenomould-ry"/]
+
+    DL --- CAST
+    DL --- ANVIL
+    DL --- GLEAM
+    DL --- QUENCH
+    DL --- GOV
+    DL --- BUILD
+    DL --- ASSESS
+
+    CAST ==>|"phase flow"| ANVIL ==>|"phase flow"| GLEAM ==>|"phase flow"| QUENCH
+    QUENCH -->|"reawakening loop"| GLEAM
+    PHE -->|"spans into"| ANVIL
+    COIL -->|"spans into"| ANVIL
+    COIL -->|"spans into"| GLEAM
+    SCAF -->|"reawakening into"| GLEAM
+
+    BUILD -->|"feeds"| CAST
+    GOV -. "audits outputs" .-> CAST
+    GOV -. "audits outputs" .-> ANVIL
+    GOV -. "audits outputs" .-> GLEAM
+    ASSESS -. "grades & diagnoses" .-> CAST
+    ASSESS -. "grades & diagnoses" .-> ANVIL
+
+    ARCH -. "lineage" .-> PHE
+```
+
 ### Core Data Layer
 
 The shared persistent memory backbone. Every tool in every other group reads from and writes to this layer.
