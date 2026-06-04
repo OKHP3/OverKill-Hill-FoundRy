@@ -6,8 +6,8 @@ version: v1.0.8
 status: PME_READY
 parent: Crucible → The GPT Found‑Rᵧ
 bound_files:
-  - dataLedger_registry_v2.txt
-  - dataLedger_persona_v2.txt
+  - dataledger_registry_v2.txt
+  - dataledger_persona_v2.txt
 overlay: ForgeDialect.A1
 lifecycle_phase: Gleam‑R
 recommended_model: GPT‑4o

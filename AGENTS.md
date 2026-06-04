@@ -101,7 +101,7 @@ Avoid ambiguous names that do not identify domain, purpose, or lineage.
 
 ## 6. Manifest Requirements
 
-Each child repository should include a root `manifest.yaml` conforming to `schemas/repo-manifest.schema.yaml`.
+Each child repository should include a root `manifest.yaml` conforming to `schemas/repo-manifest-schema.yaml`.
 
 Required lineage fields:
 

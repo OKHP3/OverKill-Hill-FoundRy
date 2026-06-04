@@ -7,17 +7,17 @@ canonical_gpt:
   canon_seal: "PhenoMould\u2011R.v2.0.locked"
   overlay: ForgeDialect.A1
   persona: Watchkeeper.Core
-  hydration_manifest: dehydration manifest v3.0.md
+  hydration_manifest: dehydration-manifest-v3-0.md
   instruction_block_status: PME_READY
   version: '2.0'
   date_created: '2025-07-30'
   bound_project: "The GPT Found\u2011R\u1D67"
   author: "OverKill Hill P\xB3"
-  registry_ledger: dataLedger_registry_v3.md
+  registry_ledger: dataledger_registry_v3.md
   linked_ledgers:
-  - dataLedger_registry_v3.md
-  - dataLedger_persona_v3.md
-  - dataLedger_parameters_v3.md
-  - dataLedger_system_v3.md
-  - dataLedger_hydration_v3.md
-  - dataLedger_narrative_v3.md
+  - dataledger_registry_v3.md
+  - dataledger_persona_v3.md
+  - dataledger_parameters_v3.md
+  - dataledger_system_v3.md
+  - dataledger_hydration_v3.md
+  - dataledger_narrative_v3.md

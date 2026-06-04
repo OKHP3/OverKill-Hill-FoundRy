@@ -5,7 +5,7 @@ description: "Rate your promptcraft mastery using three distinct metaphors: Jedi
   \ \u2014 with unreachable final tiers to keep you striving forever."
 ecosystem: "OverKill Hill P\xB3"
 gpt_id: "PromptAscend\u2011R"
-hydration_file: dataLedger_hydration_v3.md
+hydration_file: dataledger_hydration_v3.md
 model: gpt-4o
 overlay: ForgeDialect.A1
 persona: ProtocolEnforcer.Core

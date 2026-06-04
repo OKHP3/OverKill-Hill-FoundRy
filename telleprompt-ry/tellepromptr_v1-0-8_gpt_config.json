@@ -17,14 +17,14 @@
     "How can I donate or support The GPT Found\u2011R\u1d67 project?"
   ],
   "files": [
-    "dataLedger_persona_v2.txt",
-    "dataLedger_registry_v2.txt",
-    "dataLedger_ideation_v2.txt",
-    "dataLedger_archive_v2.txt",
-    "dataLedger_system_v2.txt",
-    "dataLedger_parameters_v2.txt",
-    "dataLedger_narrative_v2.txt",
-    "dataLedger_processing_v2.txt"
+    "dataledger_persona_v2.txt",
+    "dataledger_registry_v2.txt",
+    "dataledger_ideation_v2.txt",
+    "dataledger_archive_v2.txt",
+    "dataledger_system_v2.txt",
+    "dataledger_parameters_v2.txt",
+    "dataledger_narrative_v2.txt",
+    "dataledger_processing_v2.txt"
   ],
   "model": "gpt-4o",
   "capabilities": {
