@@ -15,9 +15,9 @@ OKHP3/OverKill-Hill
 ## 2. Required Root Files
 
 ```text
-AGENTS.md
-README.md
-CHANGELOG.md
+agents.md
+readme.md
+changelog.md
 LICENSE.md
 manifest.yaml
 ```
@@ -56,7 +56,7 @@ Agents working in this repo must:
 - Preserve source artifacts in `origin/`.
 - Put refined deployable instructions in `skill/`.
 - Put research and rationale in `research/` and `docs/`.
-- Record meaningful changes in `CHANGELOG.md`.
+- Record meaningful changes in `changelog.md`.
 - Avoid deleting legacy GPT, Gem, or Copilot artifacts unless explicitly instructed.
 
 ## 6. Public Graduation
