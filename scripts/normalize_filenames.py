@@ -45,6 +45,39 @@ CHAR_SUBSTITUTIONS: dict[str, str] = {
     "&": "and",      # AMPERSAND
 }
 
+# Well-known filenames that must stay in their conventional form (case-sensitive).
+# GitHub renders README, CHANGELOG, CONTRIBUTING, AGENTS, etc. specially when ALLCAPS.
+PRESERVE_NAMES: frozenset[str] = frozenset({
+    "README.md",
+    "README.rst",
+    "README.txt",
+    "README",
+    "CHANGELOG.md",
+    "CHANGELOG.rst",
+    "CHANGELOG.txt",
+    "CHANGELOG",
+    "CONTRIBUTING.md",
+    "CONTRIBUTING.rst",
+    "CONTRIBUTING",
+    "LICENSE",
+    "LICENSE.md",
+    "LICENSE.txt",
+    "AUTHORS",
+    "AUTHORS.md",
+    "OWNERS",
+    "CODEOWNERS",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "AGENTS.md",
+    "NOTICE",
+    "NOTICE.md",
+    "PATENT",
+    "PATENTS",
+    "COPYING",
+    "COPYING.md",
+})
+
 # Multi-component compound extensions — checked longest-first.
 COMPOUND_EXTENSIONS: tuple[str, ...] = (
     ".d.ts.map",
@@ -256,6 +289,8 @@ def build_file_plan(
         if exclude_extensions is not None and ext.lower() in exclude_extensions:
             continue
 
+        if src.name in PRESERVE_NAMES:
+            continue
         new_name = clean_filename(src.name, keep_unicode=keep_unicode, is_dir=False)
         dst = src.with_name(new_name)
         if src.name == dst.name:

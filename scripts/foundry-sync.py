@@ -16,9 +16,9 @@ import pathlib
 import sys
 
 REQUIRED_PATHS = [
-    "agents.md",
-    "readme.md",
-    "changelog.md",
+    "AGENTS.md",
+    "README.md",
+    "CHANGELOG.md",
     "manifest.yaml",
     "_template",
     "registry",
