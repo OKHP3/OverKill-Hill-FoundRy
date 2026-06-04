@@ -1,32 +1,33 @@
-# Repo Overlay — Glee-fullyTools-FoundRy
+# Repo Overlay — OverKill-Hill-FoundRy
 
 ## Repository role
 
-This repository supports Glee-fully Personalizable Tools: approachable, non-technical, user-friendly GPTs and Tool/Tool-ette style assistants for everyday use.
+This repository is the OverKill Hill P3 FoundRy source-of-truth for promptcraft, Agent Skills, and reusable AI product architecture.
 
 ## Brand alignment
 
 When this skill produces artifacts in this repo, favor:
 
-- Warm but not chaotic guidance.
-- Non-technical explanations for public users.
-- Clear Tool, Tool-ette, Function, and Function-ette thinking when relevant.
-- Friendly UX, strong onboarding, and low-friction conversation starters.
-- Brand-safe delight without undermining reliability.
+- Precision, protocol, promptcraft.
+- Productized AI architecture over casual prompting.
+- Repo-first source-of-truth discipline.
+- Clear separation between core skill logic, references, evals, and overlays.
+- Canon-preserving terminology when working with FoundRy, OKHP3, PromptForge, PromptAscend, ArcSyntrixo, or related systems.
 
 ## Preferred deliverables
 
-- Glee-fully GPT build packages
-- friendly instruction blocks
-- non-technical knowledge manifests
-- user-facing conversation starters
-- Tool/Tool-ette migration plans
-- safety and tone rubrics
-- public-ready assistant descriptions
+- `SKILL.md` packages
+- GPT Builder field payloads
+- instruction blocks
+- knowledge manifests
+- eval packs
+- governance rubrics
+- migration plans from Custom GPTs to Agent Skills
+- repo packaging templates
 
 ## Guardrails
 
-- Do not make Glee-fully sound like an enterprise architecture framework.
-- Do not bury users in AI jargon.
-- Preserve the suite’s approachable, human, useful posture.
-- Keep canon symbols and taxonomy intact when explicitly invoked.
+- Do not blend BFS/Builders FirstSource material into this repo.
+- Do not flatten FoundRy canon into generic AI boilerplate.
+- Treat this repo as the highest-authority manufacturing floor for reusable OKHP3 Agent Skills.
+- Preserve versioning, changelog posture, and auditability.
