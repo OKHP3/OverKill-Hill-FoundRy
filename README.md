@@ -108,6 +108,8 @@ flowchart LR
     ARCH -. "lineage" .-> PHE
 ```
 
+**Phase guide:** **Cast-Rᵧ (Phase 2)** is where raw prompt ideas are stress-tested, mold-cast into schema-bound GPT forms, and looped through clause-chain forging — surviving prompts leave this phase structurally sound. **Anvil-Rᵧ (Phase 3)** hammers surviving prompts into declarative, ledger-routable form: tone is gated, logic is separated from payload, and outputs are validated for fidelity before advancing. **Gleam-Rᵧ (Phase 4)** polishes and audits prompt structure against canonical schemas, runs final simulations, and seals outputs into PME-ready export packages. **Quencher (Phase 5)** freezes completed GPT thread state into reawakening capsules, preserving everything built so far and generating amplified ghost-versions that can be thawed back into Gleam-Rᵧ for further refinement.
+
 **Jump to tool docs:**
 
 | Tool | Docs |
