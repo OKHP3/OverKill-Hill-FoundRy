@@ -108,6 +108,27 @@ flowchart LR
     ARCH -. "lineage" .-> PHE
 ```
 
+**Jump to tool docs:**
+
+| Tool | Docs |
+|---|---|
+| dataledgers | [README](dataledgers/README.md) |
+| arcsyntrixo-ry | [README](arcsyntrixo-ry/README.md) |
+| phenomould-ry | [README](phenomould-ry/README.md) |
+| coilingcrank-ry | [README](coilingcrank-ry/README.md) |
+| telleprompt-ry | [README](telleprompt-ry/README.md) |
+| tonestrik-ry | [README](tonestrik-ry/README.md) |
+| structrefino-ry | [README](structrefino-ry/README.md) |
+| scaffrosto-ry | [README](scaffrosto-ry/README.md) |
+| canonsweep-r | [README](canonsweep-r/README.md) |
+| gpt-auditor | [README](gpt-auditor/README.md) |
+| gpt-wizard | [README](gpt-wizard/README.md) |
+| misc-prompts | [README](misc-prompts/README.md) |
+| promptascend-r | [README](promptascend-r/README.md) |
+| cage-fight-ry | [README](cage-fight-ry/README.md) |
+| thread-scourer | [README](thread-scourer/README.md) |
+| gpt-crucible | [README](gpt-crucible/README.md) |
+
 ### Core Data Layer
 
 The shared persistent memory backbone. Every tool in every other group reads from and writes to this layer.
