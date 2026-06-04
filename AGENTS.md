@@ -145,6 +145,26 @@ docs/        Relay design, governance, and migration guidance
 .github/     GitHub workflow and issue template scaffolds
 ```
 
-## 10. Canonical Principle
+## 10. Filename Compliance Enforcement
+
+All filenames in this repository must follow lowercase-kebab-case ASCII conventions enforced by `scripts/normalize_filenames.py`.
+
+A GitHub Actions workflow at `.github/workflows/filename-check.yml` runs on every pull request and push to `main`. It performs a dry-run check and **fails the CI job** if any filenames require renaming.
+
+If the check fails locally or in CI:
+
+```bash
+# Preview what would change
+python3 scripts/normalize_filenames.py . --recursive --ascii-only --include-dirs
+
+# Apply the renames
+python3 scripts/normalize_filenames.py . --recursive --ascii-only --include-dirs --apply
+```
+
+Hidden paths (`.git`, `.github`, `.agents`, `.cache`, `.config`, `.local`, `.replit`) and the default-excluded dirs (`_template`, `lib`, `artifacts`) are exempt from the check.
+
+AI agents introducing new files must ensure names are lowercase-kebab-case ASCII before committing.
+
+## 11. Canonical Principle
 
 The durable unit is the capability, not the platform wrapper. GPTs, skills, agents, local modules, websites, and articles are deployment targets. The repository is the source of truth.
