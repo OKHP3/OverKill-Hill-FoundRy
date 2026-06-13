@@ -1,170 +1,73 @@
-# AGENTS.md — OverKill-Hill-FoundRy
+# Agent Operating Notes for ReFolDec
 
-## 0. Role
+This repository is a public artifact surface for **ReFolDec — the Recursively Folding Codec**.
 
-This repository is the OverKill Hill P³ FoundRy relay. It translates the golden governance from `OKHP3/OverKill-Hill` into reusable scaffolds for OKH child repositories, including experimental architectures, recursive systems, promptcraft assets, narrative frameworks, writing projects, local AI workbenches, Mermaid tooling, and FoundRy capability prototypes.
+Agents working in this repo should preserve the distinction between private capture and public artifact publication.
 
-This repo is not merely a content repository. It is a template-of-templates and governance relay.
+---
 
-## 1. Authority Chain
+## Primary objective
 
-```text
-OKHP3/OverKill-Hill
-  → OKHP3/OverKill-Hill-FoundRy
-    → OKH child repositories
-```
+Help mature ReFolDec from raw conceptual insight into durable public documentation, schemas, examples, process models, and eventually Agent Skills.
 
-Universal governance should originate in `OKHP3/OverKill-Hill`. This relay may adapt implementation details for the OverKill Hill domain, but must not silently fork universal rules.
+---
 
-## 2. Relay Responsibilities
+## Source boundary
 
-This repository owns:
+- Notion is private workshop context.
+- GitHub is the public canonical surface.
+- Do not add private Notion links as required public references.
+- If a Notion page contains useful public material, copy or distill that material into Markdown in this repo.
 
-- Child repository scaffolds in `_template/`
-- Repo registry files in `registry/`
-- Manifest and validation schemas in `schemas/`
-- Relay documentation in `docs/`
-- GitHub workflow templates in `.github/`
-- Governance guidance for OKH child repos
+---
 
-## 3. Child Repository Scope
+## Preferred artifact pattern
 
-This relay governs repositories matching these families:
+When adding or revising content:
 
-- `foundry-*`
-- `vault-*`
-- `article-*`
-- `narrative-*`
-- `mermaid-*`
-- `mac-studio-*`
-- OKH research, app, writing, local AI, and promptcraft repositories
+1. identify the artifact type;
+2. identify its maturity state;
+3. preserve the fold/unfold/refold relationship;
+4. link to public repo files rather than private workspaces;
+5. keep prose clear enough for non-OKHP³ readers.
 
-Known child examples include:
+---
 
-- `foundry-are00-abrahamic-reference-engine`
-- `foundry-hmt01-homestead-r`
-- `foundry-psr00-pathscrib-r`
-- `foundry-unt00-un-nocked-truth`
-- `mermaid-theme-builder`
-- `mermaid-diagram-bpmn`
-- `mac-studio-local-ai-workbench`
-- `infusing-a-soul`
-- `first-diagram-is-a-liar`
-- `3-years-with-chatgpt`
-- `magnus-progenitor-saga`
-- `vault-codacies-biases-as-constants`
-- `bimdb-building-information-modeling-database`
+## Voice and style
 
-## 4. Required Child Repo Files
+Use precise, high-density Markdown.
 
-Every governed child repo should eventually contain:
+Avoid hype. ReFolDec should read like a serious conceptual operating model, not a productivity slogan.
 
-```text
-AGENTS.md
-README.md
-CHANGELOG.md
-LICENSE.md
-manifest.yaml
-```
+---
 
-Capability repos should additionally include:
+## Canonical language
 
-```text
-docs/
-origin/
-skill/
-prompts/
-research/
-tests/
-schemas/
-assets/
-exports/
-archive/
-```
+Use this definition unless intentionally revising the concept:
 
-## 5. Naming Rules
+> ReFolDec — the Recursively Folding Codec — is a bidirectional process-capture and transformation framework for folding raw thought into structured artifacts, then unfolding mature artifacts back into their source primitives, patterns, and reusable instructions.
 
-Use lowercase kebab-case for new repositories unless a public brand repository already has a legacy casing requirement.
+---
 
-Preferred OKH patterns:
+## Operating model
 
-```text
-foundry-[code][##]-[project-slug]
-vault-[concept-slug]
-article-[project-slug]
-narrative-[world-or-system-slug]
-mermaid-[function-slug]
-mac-studio-[function-slug]
-```
+Use three primary motions:
 
-Avoid ambiguous names that do not identify domain, purpose, or lineage.
+- **Fold** — move raw or weakly structured material toward a mature artifact.
+- **Unfold** — decompose a mature artifact into source primitives, assumptions, patterns, and reusable pieces.
+- **Refold** — recombine improved primitives into a stronger artifact, process, model, or skill.
 
-## 6. Manifest Requirements
+---
 
-Each child repository should include a root `manifest.yaml` conforming to `schemas/repo-manifest-schema.yaml`.
+## Commit hygiene
 
-Required lineage fields:
+Prefer small, named commits that each add or refine one layer:
 
-```yaml
-brand_domain: overkillhill
-parent_foundry: OKHP3/OverKill-Hill-FoundRy
-governance.naming_pattern: ""
-```
-
-## 7. Visibility and Graduation
-
-Private repos may become public only after:
-
-- PII scrub
-- employer/conflict review
-- source/license review
-- README externalization
-- manifest completion
-- public-readiness checklist completion
-
-Repositories with sensitive client or employer context must not be graduated automatically.
-
-## 8. Agent Behavior
-
-AI agents working in this repo must:
-
-- Preserve governance hierarchy.
-- Prefer small, auditable changes.
-- Avoid deleting historical artifacts unless explicitly instructed.
-- Treat `_template/` as deployable scaffold source.
-- Update `registry/index.yaml` when child repo relationships are created or materially changed.
-- Keep public-facing copy clear, practical, and portfolio-grade.
-
-## 9. Directory Contract
-
-```text
-_template/   Child repo starter scaffold
-registry/    Child repo catalog and triage logs
-schemas/     Manifest and registry validation schemas
-docs/        Relay design, governance, and migration guidance
-.github/     GitHub workflow and issue template scaffolds
-```
-
-## 10. Filename Compliance Enforcement
-
-All filenames in this repository must follow lowercase-kebab-case ASCII conventions enforced by `scripts/normalize_filenames.py`.
-
-A GitHub Actions workflow at `.github/workflows/filename-check.yml` runs on every pull request and push to `main`. It performs a dry-run check and **fails the CI job** if any filenames require renaming.
-
-If the check fails locally or in CI:
-
-```bash
-# Preview what would change
-python3 scripts/normalize_filenames.py . --recursive --ascii-only --include-dirs
-
-# Apply the renames
-python3 scripts/normalize_filenames.py . --recursive --ascii-only --include-dirs --apply
-```
-
-Hidden paths (`.git`, `.github`, `.agents`, `.cache`, `.config`, `.local`, `.replit`) and the default-excluded dirs (`_template`, `lib`, `artifacts`) are exempt from the check.
-
-AI agents introducing new files must ensure names are lowercase-kebab-case ASCII before committing.
-
-## 11. Canonical Principle
-
-The durable unit is the capability, not the platform wrapper. GPTs, skills, agents, local modules, websites, and articles are deployment targets. The repository is the source of truth.
+- identity;
+- specification;
+- example;
+- schema;
+- operating model;
+- Agent Skill;
+- diagram;
+- site integration.
