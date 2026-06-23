@@ -1,8 +1,29 @@
-# Agent Operating Notes for ReFolDec
+# Agent Operating Notes — OverKill-Hill-FoundRy
 
-This repository is a public artifact surface for **ReFolDec — the Recursively Folding Codec**.
+## Project identity
+
+- **Suite**: FoundRy / OverKill Hill
+- **Type**: Development Lab
+- **GitHub**: https://github.com/OKHP3/OverKill-Hill-FoundRy
+- **Notion Anchor**: https://app.notion.com/p/8afe938f8e0541d2a459bf945328359a
+- **Status**: [ TODO: Active / In Development / Archived / On Hold ]
+
+**Purpose**: FoundRy development and testing environment for OverKill Hill brand tools and experiments. This repository is a public artifact surface for **ReFolDec — the Recursively Folding Codec**.
 
 Agents working in this repo should preserve the distinction between private capture and public artifact publication.
+
+---
+
+## Local paths
+
+- **Windows**: `C:\Users\jamie\OKH-Local\Projects\overkill-hill-foundry`
+- **Mac**: `/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy`
+
+---
+
+## Related repos
+
+- [overkill-hill](https://github.com/OKHP3/OverKill-Hill)
 
 ---
 
@@ -56,6 +77,28 @@ Use three primary motions:
 - **Fold** — move raw or weakly structured material toward a mature artifact.
 - **Unfold** — decompose a mature artifact into source primitives, assumptions, patterns, and reusable pieces.
 - **Refold** — recombine improved primitives into a stronger artifact, process, model, or skill.
+
+---
+
+## Brand rules
+
+- No em dashes in any generated content
+- Preserve standalone punchy lines — do not consolidate into paragraphs
+- ROY principle: understanding produced / explanation invested — verbosity must earn its space
+- AutoCAD version is R10 (locked, not negotiable)
+- [ TODO: Any repo-specific constraints ]
+
+---
+
+## Key conventions
+
+[ TODO: Branch strategy, naming conventions, anything agents should know before touching files ]
+
+---
+
+## Tech stack
+
+[ TODO: Languages, frameworks, key dependencies ]
 
 ---
 
