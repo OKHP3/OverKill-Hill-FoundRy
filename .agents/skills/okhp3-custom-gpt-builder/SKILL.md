@@ -1,12 +1,6 @@
 ---
-name: custom-gpt-builder
-description: >-
-  Build, audit, and improve OpenAI Custom GPTs with production-grade methodology.
-  Use this skill when the user asks to create, configure, test, evaluate, audit,
-  improve, troubleshoot, compare, document, or package a Custom GPT or reusable
-  ChatGPT workflow. Also use it for GPT Builder instructions, knowledge files,
-  Actions, Apps/connectors, GPT Store readiness, Gemini Gem comparison, Copilot
-  declarative-agent comparison, or conversion between Custom GPTs and Agent Skills.
+name: okhp3-custom-gpt-builder
+description: "Build, audit, and improve OpenAI Custom GPTs with production-grade methodology. Use this skill when the user asks to create, configure, test, evaluate, audit, improve, troubleshoot, compare, document, or package a Custom GPT or reusable ChatGPT workflow. Also use it for GPT Builder instructions, knowledge files, Actions, Apps/connectors, GPT Store readiness, Gemini Gem comparison, Copilot declarative-agent comparison, or conversion between Custom GPTs and Agent Skills."
 license: CC-BY-4.0
 metadata:
   version: "1.1.0"
