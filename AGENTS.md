@@ -16,7 +16,7 @@ Agents working in this repo should preserve the distinction between private capt
 
 ## Local paths
 
-- **Windows**: `C:\Users\jamie\OKH-Local\Projects\overkill-hill-foundry`
+- **Windows**: `C:\Users\jamie\OKH-Local\04_GitHub_Mirrors\overkill-hill-foundry`
 - **Mac**: `/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy`
 
 ---
