@@ -114,3 +114,5 @@ Prefer small, named commits that each add or refine one layer:
 - Agent Skill;
 - diagram;
 - site integration.
+
+## Imported Claude Cowork project instructions
