@@ -1,0 +1,79 @@
+{
+  "inventory_date": "2026-07-20",
+  "technologies": [
+    {
+      "name": "Python",
+      "kind": "runtime",
+      "current": "3.12",
+      "declared_by": ".replit",
+      "latest_api": "https://www.python.org/api/v2/downloads/release/?is_published=true&limit=1000",
+      "latest_api_type": "python-downloads",
+      "stable_policy": "latest published non-prerelease Python 3.x release"
+    },
+    {
+      "name": "Bash",
+      "kind": "shell",
+      "current": "5.3 (observed locally; not pinned in repository)",
+      "declared_by": "scripts/post-merge.sh",
+      "latest": "5.3",
+      "latest_source": "https://www.gnu.org/software/bash/manual/"
+    },
+    {
+      "name": "Nixpkgs/Replit channel",
+      "kind": "platform",
+      "current": "stable-25_05",
+      "declared_by": ".replit",
+      "latest": "not machine-resolved",
+      "latest_source": "https://wiki.nixos.org/wiki/Nix_channels",
+      "manual_review": true
+    },
+    {
+      "name": "Git",
+      "kind": "tooling",
+      "current": "2.55.0.windows.2 (observed locally; not pinned in repository)",
+      "declared_by": ".git metadata and repository workflow",
+      "latest_api": "https://api.github.com/repos/git-for-windows/git/releases?per_page=20",
+      "stable_policy": "first non-prerelease release"
+    },
+    {
+      "name": "Markdown",
+      "kind": "format",
+      "current": "not version-pinned; CommonMark/GitHub Flavored Markdown behavior",
+      "declared_by": "*.md files",
+      "latest": "no single release version",
+      "latest_source": "https://github.github.com/gfm/"
+    },
+    {
+      "name": "YAML",
+      "kind": "format",
+      "current": "1.2 family; files do not declare a YAML directive",
+      "declared_by": "*.yaml and *.yml files",
+      "latest": "1.2.2",
+      "latest_source": "https://yaml.org/spec/1.2.2/"
+    },
+    {
+      "name": "JSON",
+      "kind": "format",
+      "current": "RFC 8259-compatible JSON; no version field",
+      "declared_by": "*.json files",
+      "latest": "RFC 8259",
+      "latest_source": "https://www.rfc-editor.org/rfc/rfc8259"
+    },
+    {
+      "name": "JSON Schema",
+      "kind": "schema standard",
+      "current": "2020-12",
+      "declared_by": "schemas/refoldec-artifact.schema.json",
+      "latest": "2020-12",
+      "latest_source": "https://json-schema.org/specification"
+    },
+    {
+      "name": "GitHub Actions",
+      "kind": "automation",
+      "current": "workflow syntax; actions/checkout@v5 and actions/setup-python@v6",
+      "declared_by": ".github/workflows/technology-audit.yml",
+      "latest": "checkout v5; setup-python v6",
+      "latest_source": "https://github.com/actions/checkout/releases"
+    }
+  ]
+}
