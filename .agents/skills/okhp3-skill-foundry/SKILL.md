@@ -16,7 +16,7 @@ description: >
 license: MIT
 metadata:
   author: Jamie Hill (OverKill Hill P³)
-  version: "1.0.0"
+  version: "1.2.0"
   category: meta-tooling
   origin: okhp3/skillz
   homepage: https://overkillhill.com
@@ -28,6 +28,8 @@ metadata:
 **OverKill Hill P³** · [overkillhill.com](https://overkillhill.com) · [github.com/OKHP3](https://github.com/OKHP3)
 
 The Foundry is an eight-phase, repeatable methodology for taking a skill from blank page to production-ready: brand-attributed, live-eval-benchmarked, and fix-driven. It was developed across 30 live executor runs against five ARE skills and encodes what that process proved. It is not a fork of any prior skill-creation tool. It is a clean-room methodology derived from practice.
+
+**Evidence discipline:** distinguish verified platform facts, source-derived practices, theories, preferences, and unknowns. A benchmark can validate a skill's output behavior; it does not prove a platform claim or a theory about model internals.
 
 **The primary quality signal is the with/without gap.** A skill that scores 1.0 with skill access and 0.3 without is doing real work. A skill that scores 0.9 both ways is a placeholder. Everything the Foundry does points at that gap.
 
@@ -60,7 +62,9 @@ Before writing any SKILL.md, establish three things:
 
 **Brand decision** -- Is this an OKHP3-attributed skill? If yes, the full YAML metadata block is required. If no, minimal YAML (name + description) is sufficient. All skills in this repo are OKHP3-attributed.
 
-Do not proceed to Phase 2 until these three are written down.
+**Evidence map** -- For every nontrivial rule or external claim, record its source and class: `verified_platform_fact`, `source_derived_practice`, `theory`, `preference`, `inferred`, or `unknown`. When source material contains a prompt chain, retain only the unique procedures, inputs, exit gates, and recovery paths. A rule with no basis must be removed, made a testable hypothesis, or explicitly marked as a local preference.
+
+Do not proceed to Phase 2 until these four are written down.
 
 ---
 
@@ -86,6 +90,8 @@ skill-name/
 
 **Under 500 lines.** When the SKILL.md body approaches 500 lines, move detail into a reference file and add a clear pointer: "Read `references/foo.md` for the full spec."
 
+**Procedures over chain incantations.** A chain-derived workflow must allow simplification, owner review, and return to evidence. Do not carry forward irreversible status labels, private template variables, or unsupported capability claims. Test the observable procedure, not the chain's claimed authority.
+
 ---
 
 ## Phase 3 -- Eval design
@@ -95,6 +101,8 @@ Design exactly 3 test cases. Each tests a distinct, concrete capability -- not a
 **The 4-expectation pattern.** Each test case gets exactly 4 binary expectations. Four is the right number: enough to discriminate, not so many that a single run's noise dominates. Write them before any runs start.
 
 **Evidence anchoring.** Every expectation must reference something specific that only the skill would provide: a function name, an API endpoint, an exact string, a data structure, a field name, a specific error class. Expectations that can pass from general LLM knowledge do not measure the skill's contribution -- they measure the baseline.
+
+When an expectation concerns a theory or source-derived practice, test the promised procedure or output property, not an unprovable internal mechanism. When it concerns a volatile product feature, mark the feature as verified only against a current primary source.
 
 Bad: "Response mentions using a caching strategy."
 Good: "Response references the sessionStorage cache using the key prefix `are_wiki_`."
@@ -233,6 +241,8 @@ Three fix types:
 After applying fixes, bump the patch version (1.0.0 -> 1.0.1 for content fixes, minor version 1.0.0 -> 1.1.0 for structural changes). Document the fix in the benchmark notes. Rerun only the failing evals (not all 6) unless the fix touches shared content.
 
 Stop iterating when: with_skill mean >= 0.9 AND delta >= 0.5 AND all failing expectations have documented fixes.
+
+For a rule based on a theory, preserve its label after the output test passes. Passing an eval establishes behavior under that test; it does not establish the theory as universal fact.
 
 ---
 

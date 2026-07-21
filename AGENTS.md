@@ -56,7 +56,8 @@ ReFolDec is not a generic productivity slogan, a private journal archive, or a r
 - `_template/`: scaffold for governed child repositories. Its nested `AGENTS.md` applies to repositories created from the template, not to this root repository.
 - `scripts/`: Python audits, filename-normalization utility, sync report, and post-merge hook.
 - `.agents/skills/`: local Agent Skills and the generated project skill catalog. Skill-local instructions apply when that skill is used.
-- `arcsyntrixo-ry/`, `cage-fight-ry/`, `canonsweep-r/`, `coilingcrank-ry/`, `dataledgers/`, `gpt-auditor/`, `gpt-crucible/`, `gpt-wizard/`, `misc-prompts/`, `phenomould-ry/`, `promptascend-r/`, `scaffrosto-ry/`, `structrefino-ry/`, `telleprompt-ry/`, `thread-scourer/`, and `tonestrik-ry/`: capability, prompt, ledger, and research archives with local README files where available. Treat each as a separate artifact area, not as a root runtime.
+- `custom-gpts/proto/`: normalized home for the OverKill Hill proto-GPT capability, prompt, ledger, and research archives. Each direct child has a root `README.md`. Treat these as separate artifact areas, not as a root runtime.
+- `custom-gpts/consolidated/`: durable, public-safe distillations recovered from retired Custom GPT, prompt-chain, and data-ledger source material. These documents are reference methods, not a runtime memory layer.
 - `artifacts/api-server/` and `lib/`: tracked generated-looking distribution and type-output residue. No matching root package manifest or source tree was found. Do not treat these paths as an application entry point or modify them during documentation and guidance work.
 - `.github/`: currently contains only `.gitkeep`; no CI workflow was found.
 - `.replit`: declares Python 3.12 and a workflow that runs the FoundRy sync audit.
