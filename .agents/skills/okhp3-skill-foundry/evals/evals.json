@@ -1,6 +1,6 @@
 {
   "skill_name": "okhp3-skill-foundry",
-  "skill_version": "1.2.0",
+  "skill_version": "1.1.0",
   "note": "Self-evals -- tests the Foundry skill on concrete authoring tasks",
   "evals": [
     {
@@ -45,7 +45,7 @@
         },
         {
           "id": 4,
-          "text": "Response explains the evidence-anchoring requirement: that without-skill should fail most expectations, that expectations must reference skill-specific content not derivable from general LLM knowledge, and that output tests do not prove platform claims or model-internal theories"
+          "text": "Response explains the evidence-anchoring requirement: that without-skill should fail most expectations, and that expectations must reference skill-specific content not derivable from general LLM knowledge"
         }
       ]
     },

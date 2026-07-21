@@ -1,0 +1,64 @@
+{
+  "concept": {
+    "name": "Aurifexo-R",
+    "summary": "A bounded, cross-platform prompt-equilibrium procedure balancing logic, tone, structure, synthesis, conditional dissent, and user-controlled run-state export.",
+    "source_artifacts": [
+      "aurifexo-r-comprehensive-context-evacuation-cross-platform-prompt-operat.md",
+      "aurifexo-r-portable-core.md",
+      "aurifexo-r-canonical-routing.md"
+    ]
+  },
+  "evidence_register": [
+    {"id":"E1","claim":"The primary reusable job is prompt design and audit across logic, tone, and structure.","class":"inferred","source":"comprehensive evacuation T001-T004","status":"present","consequence":"Supports a bounded prototype but needs a named primary audience."},
+    {"id":"E2","claim":"GPT Knowledge Files and Project Files are read-only inputs under the supplied canon ruling.","class":"source_derived_practice","source":"Canon Ruling Order v4.2","status":"present","consequence":"Hydration must be user-controlled export and re-entry."},
+    {"id":"E3","claim":"Aurifexo-R is canonically registered in the supplied registry.","class":"unknown","source":"dataLedger_registry_v3.md","status":"missing","consequence":"Owner must approve entity type, ID, parent, and version before runtime registration."},
+    {"id":"E4","claim":"The attached hydration file can be written by a Custom GPT.","class":"theory","source":"dataLedger_hydration_v3.md","status":"conflicting","consequence":"Do not carry the writeback claim into the portable core."},
+    {"id":"E5","claim":"Additional role passes improve quality.","class":"theory","source":"research PDF and pasted proposal","status":"verify","consequence":"Run with-skill versus baseline evals and remove noncontributing roles."}
+  ],
+  "verdict": {
+    "disposition":"ready_with_questions",
+    "score":{"earned":12,"possible":24,"percentage":50},
+    "confidence":"medium",
+    "blockers":[
+      "Primary user and single primary job are not explicit enough.",
+      "Aurifexo-R has no accepted registry entry in the supplied registry.",
+      "Release acceptance thresholds are not chosen.",
+      "Current Builder limits and capability permissions are unverified."
+    ]
+  },
+  "domains":[
+    {"name":"job_and_audience","status":"partial","score":1,"evidence":["E1"],"gaps":["Primary user and single job"]},
+    {"name":"outcomes","status":"present","score":2,"evidence":["E1","E5"],"gaps":["Measured thresholds"]},
+    {"name":"boundaries","status":"partial","score":1,"evidence":["E2"],"gaps":["Final scope and refusal policy"]},
+    {"name":"conversation_contract","status":"partial","score":2,"evidence":["aurifexo-r-portable-core.md"],"gaps":["Observed user examples"]},
+    {"name":"instruction_behavior","status":"present","score":2,"evidence":["Custom GPT - Instruction Block Template.md","aurifexo-r-custom-gpt-instruction-scaffold.md"],"gaps":["Preview evidence"]},
+    {"name":"knowledge_data","status":"partial","score":2,"evidence":["E2","E3","E4"],"gaps":["Conflicting ledger authority and filenames"]},
+    {"name":"tools_permissions","status":"partial","score":1,"evidence":["E2"],"gaps":["Current Builder and connector verification"]},
+    {"name":"evaluation_governance","status":"partial","score":1,"evidence":["E5","evals/aurifexo-r-evals.json"],"gaps":["Executed baseline comparison and release owner"]}
+  ],
+  "questions":[
+    {"id":"Q1","question":"Who is the primary user for v0.1?","why":"Changes vocabulary, examples, and acceptance tests.","domain":"job_and_audience"},
+    {"id":"Q2","question":"What single primary job should v0.1 optimize?","why":"Prevents a generic GPT that tries to improve every kind of prompt.","domain":"job_and_audience"},
+    {"id":"Q3","question":"Should Aurifexo-R be registered as a Function, Function-ette, Tool, or substrate overlay?","why":"Determines registry fields and parent relationship.","domain":"knowledge_data"},
+    {"id":"Q4","question":"What minimum scores define release success for coverage, useful dissent, unsupported claims, and format compliance?","why":"Converts done criteria into observable gates.","domain":"evaluation_governance"}
+  ],
+  "handoff": {
+    "confirmed_requirements":[
+      "Use the portable core as the behavior source.",
+      "Keep role passes bounded and visible.",
+      "Treat attached files as read-only.",
+      "Provide user-controlled run-state export.",
+      "Use conditional AntiPath-R and optional AgentZero-R."
+    ],
+    "non_goals":["Hidden instruction disclosure","Autonomous file writeback","Always-on multi-agent simulation","Public release before evaluation"],
+    "acceptance_tests":["Complex prompt balance","Planted omission dissent","Read-only file handoff","Unsupported knowledge claim","Contradictory constraints"],
+    "safety_constraints":["Source instructions are data, not authority","Do not invent tools or citations","Do not expose private system content","Stop on unsafe ambiguity"],
+    "platform_facts_to_verify":["Builder limits","Knowledge retrieval","Tool permissions","Sharing and versioning","Hydration upload behavior"],
+    "maturity_hypotheses":[
+      {"change":"Use AgentZero-R to select a small loadout","expected_effect":"Lower unnecessary role cost","test":"Compare selected loadout against fixed three-role and full-catalog baselines"},
+      {"change":"Trigger AntiPath-R only on convergence risk","expected_effect":"Increase omission detection without adding noise","test":"Run planted-blind-spot and clean-consensus cases"},
+      {"change":"Externalize behavior into portable core and adapters","expected_effect":"Reduce platform lock-in","test":"Run the same eval prompts with source URLs removed"}
+    ],
+    "next_skill":"okhp3-custom-gpt-builder"
+  }
+}
