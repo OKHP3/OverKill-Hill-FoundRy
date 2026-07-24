@@ -18,6 +18,7 @@ The root repository is a single Git repository. No nested Git repositories were 
 - `manifest.yaml` identifies this repository as a FoundRy relay with lifecycle status `active`.
 - The repository preserves a boundary between private capture and public publication. Notion is described as the private workshop, while GitHub is the versioned artifact surface.
 - The repository contains governance files, schemas, examples, FoundRy child-repository materials, prompt archives, and local Agent Skills.
+- `technology-inventory.json`, `docs/technology-inventory.md`, and `scripts/technology-audit.py` document and audit the repository's supported runtimes and tooling.
 
 ### Inferred
 
@@ -53,13 +54,16 @@ ReFolDec is not a generic productivity slogan, a private journal archive, or a r
 - `schemas/`: ReFolDec artifact schema and FoundRy registry and repository-manifest schemas.
 - `examples/`: public fold, unfold, and refold examples.
 - `registry/`: FoundRy repository index and triage log.
+- `technology-inventory.json` and `docs/technology-inventory.md`: machine-readable and human-readable technology inventory.
+- `.github/workflows/technology-audit.yml`: scheduled and manually triggerable technology-release audit; this is the repository's only current CI workflow.
+- `.github/dependabot.yml`: weekly GitHub Actions dependency update configuration.
 - `_template/`: scaffold for governed child repositories. Its nested `AGENTS.md` applies to repositories created from the template, not to this root repository.
 - `scripts/`: Python audits, filename-normalization utility, sync report, and post-merge hook.
 - `.agents/skills/`: local Agent Skills and the generated project skill catalog. Skill-local instructions apply when that skill is used.
 - `custom-gpts/proto/`: normalized home for the OverKill Hill proto-GPT capability, prompt, ledger, and research archives. Each direct child has a root `README.md`. Treat these as separate artifact areas, not as a root runtime.
 - `custom-gpts/consolidated/`: durable, public-safe distillations recovered from retired Custom GPT, prompt-chain, and data-ledger source material. These documents are reference methods, not a runtime memory layer.
 - `artifacts/api-server/` and `lib/`: tracked generated-looking distribution and type-output residue. No matching root package manifest or source tree was found. Do not treat these paths as an application entry point or modify them during documentation and guidance work.
-- `.github/`: currently contains only `.gitkeep`; no CI workflow was found.
+- `.github/`: contains the technology-audit workflow, Dependabot configuration, and the retained `.gitkeep` placeholder.
 - `.replit`: declares Python 3.12 and a workflow that runs the FoundRy sync audit.
 
 ## 5. Architecture and boundaries
@@ -133,7 +137,7 @@ There is no repository-wide automated test suite. For documentation changes, als
 - `README.md` links to `LICENSE`, but no root `LICENSE` file was found.
 - `registry/index.yaml` has `last_reviewed: TBD` and should be reviewed before being treated as a current inventory.
 - The provenance and ownership of the tracked generated-looking output under `artifacts/api-server/dist/` and `lib/*/dist/` are not documented.
-- No root source package, test suite, CI pipeline, or deployable runtime was found. Any future implementation work should document its own entry points and validation commands.
+- No root source package, repository-wide test suite, or deployable runtime was found. The only current CI workflow is the technology-release audit; any future implementation work should document its own entry points and validation commands.
 - The repository does not state a confirmed external user group, production guarantee, or release process.
 
 ## 11. Keeping this guide current

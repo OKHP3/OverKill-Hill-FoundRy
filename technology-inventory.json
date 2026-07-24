@@ -70,9 +70,9 @@
     {
       "name": "GitHub Actions",
       "kind": "automation",
-      "current": "workflow syntax; actions/checkout@v5 and actions/setup-python@v6",
+      "current": "workflow syntax; actions/checkout@v7 and actions/setup-python@v7",
       "declared_by": ".github/workflows/technology-audit.yml",
-      "latest": "checkout v5; setup-python v6",
+      "latest": "checkout v7; setup-python v7",
       "latest_source": "https://github.com/actions/checkout/releases"
     }
   ]

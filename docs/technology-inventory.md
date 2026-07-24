@@ -14,9 +14,9 @@ This repository is a documentation and governance relay, not a TypeScript, Vite,
 | YAML | YAML 1.2 family; no explicit directive in files | 1.2.2 | [YAML 1.2.2](https://yaml.org/spec/1.2.2/) |
 | JSON | RFC 8259-compatible syntax; no version field | RFC 8259 | [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) |
 | JSON Schema | Draft 2020-12 explicitly declared | 2020-12 | [refoldec-artifact.schema.json](../schemas/refoldec-artifact.schema.json), [JSON Schema specification](https://json-schema.org/specification) |
-| GitHub Actions | `actions/checkout@v5`, `actions/setup-python@v6` in the audit workflow | checkout v5; setup-python v6 | [workflow](../.github/workflows/technology-audit.yml), [checkout releases](https://github.com/actions/checkout/releases), [setup-python releases](https://github.com/actions/setup-python/releases) |
+| GitHub Actions | `actions/checkout@v7`, `actions/setup-python@v7` in the audit workflow | checkout v7; setup-python v7 | [workflow](../.github/workflows/technology-audit.yml), [checkout releases](https://github.com/actions/checkout/releases), [setup-python releases](https://github.com/actions/setup-python/releases) |
 
-Not present: JavaScript, TypeScript, Node.js, npm, Vite, React, Vue, Tailwind CSS, Docker, or a Python package dependency set. GitHub Actions is also not currently used; the workflow added for this inventory is the first one.
+Not present: JavaScript, TypeScript, Node.js, npm, Vite, React, Vue, Tailwind CSS, Docker, or a Python package dependency set. GitHub Actions is used only for the technology audit workflow.
 
 ## Update plan
 
