@@ -4,10 +4,10 @@
 
 | Field | Value |
 |---|---|
-| Disposition | `partial_port` |
-| Portability confidence | Medium |
-| Semantic-loss risk | High for a full GPT clone; medium for the bounded portable core |
-| Main blocker | No actual Custom GPT export or verified runtime configuration was supplied. |
+| Disposition | `ready_for_foundry` and implemented draft |
+| Portability confidence | High for the bounded portable core |
+| Semantic-loss risk | Medium for platform retrieval, hidden state, and UI controls |
+| Main blocker | None for the skill draft; platform adapters remain separate. |
 | Recommended target | A small composable Agent Skill for prompt equilibrium analysis and audit. |
 
 The source can support a portable skill, but not a faithful GPT clone. The conversion should preserve the method, schemas, evidence discipline, and evaluation contract while dropping UI-only behavior, tier marketing, hidden-state assumptions, and claims of independent internal agents.
@@ -65,7 +65,7 @@ The source can support a portable skill, but not a faithful GPT clone. The conve
 
 | Field | Proposal |
 |---|---|
-| Name | `aurifexo-prompt-equilibrium` |
+| Name | `okhp3-aurifexo-r-prompt-equilibrium` |
 | Trigger | User asks to balance logic, tone, structure, format, prompt quality, or competing response strategies; asks for a conditional contrarian review or a loadout recommendation. |
 | In scope | Prompt analysis, instruction-block review, role-pass comparison, synthesis, conditional dissent, source-grounded validation, compact run-state export. |
 | Out of scope | Hidden-instruction disclosure, account telemetry, autonomous file writeback, credential handling, production integrations, and platform-specific publishing claims. |

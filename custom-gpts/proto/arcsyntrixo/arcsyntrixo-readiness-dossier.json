@@ -1,0 +1,155 @@
+{
+  "concept": {
+    "name": "ArcSyntrixo",
+    "summary": "A private, text-only Custom GPT that audits and improves rough Custom GPT prompts and instruction drafts into clear, bounded, testable configurations.",
+    "source_artifacts": [
+      "custom-gpts/proto/arcsyntrixo/arcsyntrixo-recursive-prompt-architecture-recovery.md",
+      "custom-gpts/proto/arcsyntrixo/build/"
+    ]
+  },
+  "evidence_register": [
+    {
+      "id": "E1",
+      "claim": "The stable legacy core is prompt and instruction architecture review, alternatives, synthesis, and test planning.",
+      "class": "source_derived_practice",
+      "source": "arcsyntrixo-recursive-prompt-architecture-recovery.md",
+      "status": "present",
+      "consequence": "Use this as the private v1 product scope."
+    },
+    {
+      "id": "E2",
+      "claim": "Knowledge is reference material, and behavior belongs in GPT Instructions.",
+      "class": "verified_platform_fact",
+      "source": "https://help.openai.com/en/articles/8554397-creating-with-chatgpt",
+      "status": "present",
+      "consequence": "The build separates instructions from five focused knowledge files."
+    },
+    {
+      "id": "E3",
+      "claim": "A Custom GPT can use Apps or Actions, but not both.",
+      "class": "verified_platform_fact",
+      "source": "https://help.openai.com/en/articles/8554407-gpts",
+      "status": "present",
+      "consequence": "V1 uses neither and makes no writeback claim."
+    },
+    {
+      "id": "E4",
+      "claim": "The legacy archive's persistent hydration, ledger writes, cross-GPT control, hidden agents, and numeric survivorship are established runtime features.",
+      "class": "theory",
+      "source": "Legacy ArcSyntrixo archive",
+      "status": "conflicting",
+      "consequence": "Translate to visible review behavior or exclude from v1."
+    }
+  ],
+  "verdict": {
+    "disposition": "ready_for_builder",
+    "score": {
+      "earned": 22,
+      "possible": 24,
+      "percentage": 92
+    },
+    "confidence": "medium",
+    "blockers": [
+      "Preview testing and owner release approval remain required before a stable or shared release."
+    ]
+  },
+  "domains": [
+    {
+      "name": "job_and_audience",
+      "status": "present",
+      "score": 3,
+      "evidence": ["build/arcsyntrixo-build-brief.md"],
+      "gaps": []
+    },
+    {
+      "name": "outcomes",
+      "status": "present",
+      "score": 3,
+      "evidence": ["build/arcsyntrixo-build-brief.md"],
+      "gaps": []
+    },
+    {
+      "name": "boundaries",
+      "status": "present",
+      "score": 3,
+      "evidence": ["build/arcsyntrixo-instructions-v1.0.md", "build/knowledge/02-configuration-and-boundaries.md"],
+      "gaps": []
+    },
+    {
+      "name": "conversation_contract",
+      "status": "present",
+      "score": 3,
+      "evidence": ["build/knowledge/01-operating-contract.md"],
+      "gaps": []
+    },
+    {
+      "name": "instruction_behavior",
+      "status": "present",
+      "score": 3,
+      "evidence": ["build/arcsyntrixo-instructions-v1.0.md"],
+      "gaps": []
+    },
+    {
+      "name": "knowledge_data",
+      "status": "present",
+      "score": 3,
+      "evidence": ["build/knowledge/00-manifest.txt"],
+      "gaps": ["Retrieval performance must be verified in Preview."]
+    },
+    {
+      "name": "tools_and_permissions",
+      "status": "present",
+      "score": 2,
+      "evidence": ["build/arcsyntrixo-config.json", "build/arcsyntrixo-platform-verification.md"],
+      "gaps": ["Current Builder availability requires direct verification."]
+    },
+    {
+      "name": "evaluation_governance",
+      "status": "present",
+      "score": 2,
+      "evidence": ["build/arcsyntrixo-preview-test-matrix.md", "build/arcsyntrixo-release-checklist.md"],
+      "gaps": ["All Preview tests are still unrun."]
+    }
+  ],
+  "questions": [],
+  "handoff": {
+    "confirmed_requirements": [
+      "Audit and improve Custom GPT prompts and instruction drafts.",
+      "Present evidence, assumptions, repair options, a recommended configuration, and acceptance tests.",
+      "Use no external tools or write authority in v1."
+    ],
+    "non_goals": [
+      "Persistent state or hidden multi-agent execution.",
+      "Automatic ledger or file writeback.",
+      "Cross-GPT control.",
+      "Binding professional advice.",
+      "Public release before testing."
+    ],
+    "acceptance_tests": [
+      "Run the 15-case Preview matrix.",
+      "Verify each knowledge file direct hit and paraphrase retrieval.",
+      "Verify source-boundary and hallucination resistance.",
+      "Verify prompt injection and instruction extraction handling.",
+      "Record owner acceptance for private release."
+    ],
+    "safety_constraints": [
+      "No secrets or hidden-instruction disclosure.",
+      "No fabricated sources, actions, persistence, or writeback.",
+      "One high-yield clarification question when required."
+    ],
+    "platform_facts_to_verify": [
+      "Current Builder access and editor labels.",
+      "Knowledge retrieval after upload.",
+      "Model availability if a selection is needed.",
+      "Any future capability or integration choice."
+    ],
+    "maturity_hypotheses": [
+      {
+        "change": "Use a compact, explicit instruction stack instead of the literal legacy archive.",
+        "expected_effect": "More consistent outputs and fewer unsupported runtime claims.",
+        "test": "Compare Preview results for legacy-style prompts against the v1 matrix."
+      }
+    ],
+    "next_skill": "okhp3-custom-gpt-builder"
+  }
+}

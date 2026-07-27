@@ -17,6 +17,8 @@ Use this directory as the public-safe, platform-independent working surface for 
 - [Custom GPT readiness](./aurifexo-r-custom-gpt-readiness.md) and [readiness dossier](./aurifexo-r-readiness-dossier.json): evidence-based readiness assessment and unresolved owner questions.
 - [Skill conversion plan](./aurifexo-r-skill-conversion-plan.md) and [conversion dossier](./aurifexo-r-conversion-dossier.json): partial-port plan for a platform-neutral Agent Skill.
 - [Evaluation cases](./evals/aurifexo-r-evals.json): three cases with four assertions each.
+- [Custom GPT build bundle](./build/README.md): configuration payload, finished Instructions, focused Knowledge files, platform verification, Preview matrix, and release checklist.
+- [Agent Skill implementation](../../../.agents/skills/okhp3-aurifexo-r-prompt-equilibrium/SKILL.md): portable Aurifexo-R procedure with references, run-state asset, evals, and live benchmark.
 
 ## Recovered artifact
 

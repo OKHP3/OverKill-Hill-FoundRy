@@ -1,4 +1,4 @@
-﻿#Project Inventory
+#Project Inventory
 
 ##Group
 ###OverKill Hill P³
@@ -101,7 +101,7 @@ Built in alignment with the *Protocol‑Driven Power Prompts* philosophy of OKH 
 ## 🛠️ Solutions Engineered
 
 * A **Prompt Metallurgy System**: GPTs are cast like metalwork—mined (ideation), melted (instruction shaping), hammered (logic layering), and polished (delivery tuning).
-* Use of `Aurifexo‑R`, `ArcSyntrixo‑Rᵧ`, `PhenoMould‑Rᵧ`, `ScafFrosto‑Rᵧ` and others as **Tool-chain entities**, enforcing suffix, system, persona, and prompt schema integrity.
+* Use of `Aurifexo‑R`, `ArcSyntrixo`, `PhenoMould‑Rᵧ`, `ScafFrosto‑Rᵧ` and others as **Tool-chain entities**, enforcing suffix, system, persona, and prompt schema integrity.
 * RIS offloading and `dataLedger_hydration_v3.md` simulate memory via dehydrated runtime state snapshots.
 
 ---
@@ -284,7 +284,7 @@ Instruction scaffolding and output protocols conform to the **InstructionBlock.S
 
 ## ✅ Canonical Payoff
 
-This project ensures that multi-agent GPT ecosystems—such as ArcSyntrixo‑Rᵧ, ScafFrosto‑Rᵧ, or PhenoMould‑Rᵧ—can **interoperate without entropy or loss of thread fidelity**, scaling GPT-based toolchains in a symbolic, recursive, and standards-aligned fashion.
+This project ensures that multi-agent GPT ecosystems—such as ArcSyntrixo, ScafFrosto‑Rᵧ, or PhenoMould‑Rᵧ—can **interoperate without entropy or loss of thread fidelity**, scaling GPT-based toolchains in a symbolic, recursive, and standards-aligned fashion.
 
 ---
 
@@ -337,7 +337,7 @@ This project ensures that multi-agent GPT ecosystems—such as ArcSyntrixo‑R�
 ### ✅ **“Done-Good” Looks Like**
 
 * Every GPT within OKHP³ and Found-Rᵧ ecosystems references and **adheres to the correct canonical ledger set**, with versioning, cross-file syncing, and hydration metadata intact.
-* All ledgers contain **well-structured, lifecycle-tagged**, and **ecosystem-attributed** entries, allowing tools like `ScafFrosto‑Rᵧ`, `ArcSyntrixo‑Rᵧ`, and `PromptAscend‑R` to execute deterministic logic.
+* All ledgers contain **well-structured, lifecycle-tagged**, and **ecosystem-attributed** entries, allowing tools like `ScafFrosto‑Rᵧ`, `ArcSyntrixo`, and `PromptAscend‑R` to execute deterministic logic.
 * DataLedger system is so well-understood it can be taught, audited, diffed, and evolved without loss of symbolic integrity or runtime performance.
 
 ---
@@ -570,7 +570,7 @@ This is where GPTs stop being raw models and start becoming **crafted tools** �
   * `dataLedger_processing_v3.md` for debug trails (deprecated but read)
   * `dataLedger_hydration_v3.md` to export any grave into runtime
 * Symbolic control over lifecycle tags: `!IDEA_STAGE`, `!LEGACY_RETIRED`, `!PME_READY`, etc.
-* Canon-aware GPTs (like **ScafFrosto‑Rᵧ**, **ArcSyntrixo‑Rᵧ**, **Aurifex‑R**) able to **pull from the Graveyard as a memory vault** or simulation seed pool.
+* Canon-aware GPTs (like **ScafFrosto‑Rᵧ**, **ArcSyntrixo**, **Aurifex‑R**) able to **pull from the Graveyard as a memory vault** or simulation seed pool.
 
 ---
 
@@ -983,7 +983,7 @@ Most Custom GPTs stall in their metamorphosis between idea (Mine-Rᵧ) and cast 
 
 * All GPT entities shaped in Anvil-Rᵧ carry correct **suffix overlays**, emoji glyph-pairings, and PME-ready status.
 * Canonical mapping is achieved across *persona*, *registry*, *parameters*, and *system* ledgers.
-* Recursive prompt reshaping functions like ArcSyntrixo‑Rᵧ and ScafFrosto‑Rᵧ behave as modular shape tools.
+* Recursive prompt reshaping functions like ArcSyntrixo and ScafFrosto‑Rᵧ behave as modular shape tools.
 * Every Tool, Tool-ette, and Function generated is lifecycle-tagged (`!RUNG_STATE`, `!GLYPH_CAST`, etc.).
 * Symbolic grammar flows from shaping phase directly into polishing via Gleam-Rᵧ.
 
@@ -1304,7 +1304,7 @@ To forge a stable, self-aware logic kernel that:
 * Preserves suffix enforcement and overlay tone
 * Enables symbolic prompt logic transformation (via PME/CME/PIE/CIE)
 * Can be injected, rehydrated, or mirrored across any Found‑Rᵧ GPT or Project
-* Becomes the default equilibrium engine behind tools like ArcSyntrixo‑Rᵧ, ScafFrosto‑Rᵧ, CoilingCrank‑Rᵧ, and AgentZero‑R
+* Becomes the default equilibrium engine behind tools like ArcSyntrixo, ScafFrosto‑Rᵧ, CoilingCrank‑Rᵧ, and AgentZero‑R
 
 ---
 
@@ -1358,23 +1358,23 @@ To forge a stable, self-aware logic kernel that:
 
 ---
 
->>ArcSyntrixo‑Rᵧ 📦💼 by The GPT Found-Rᵧ
+>>ArcSyntrixo 📦💼 by The GPT Found-Rᵧ
 >>>https://chatgpt.com/g/g-p-6889b1e26b7881918deff433197202df-arcsyntrixo-rg-by-the-gpt-found-rg/project
->>>C:\Users\jamie\OneDrive\Documents\OverKill Hill P³ (Protocol-Driven Power Prompts)\The GPT Found-Rᵧ by OverKill Hill P³\ArcSyntrixo-Ry
->>>Here's a detailed, markdown-formatted **elevator pitch** for the project **ArcSyntrixo‑Rᵧ 📦💼 by The GPT Found‑Rᵧ**, summarizing its mission, context, prompt threads, files, and target outcomes:
+>>>C:\Users\jamie\OneDrive\Documents\OverKill Hill P³ (Protocol-Driven Power Prompts)\The GPT Found-Rᵧ by OverKill Hill P³\ArcSyntrixo
+>>>Here's a detailed, markdown-formatted **elevator pitch** for the project **ArcSyntrixo 📦💼 by The GPT Found‑Rᵧ**, summarizing its mission, context, prompt threads, files, and target outcomes:
 
 ---
 
-# 📦🧠 **ArcSyntrixo‑Rᵧ – Multi-Agent Prompt Equilibrium System**
+# 📦🧠 **ArcSyntrixo – Multi-Agent Prompt Equilibrium System**
 
 **Project Elevator Pitch**
-\::CanonTag\[ElevatorPitch.Project.ArcSyntrixo‑Rᵧ]::
+\::CanonTag\[ElevatorPitch.Project.ArcSyntrixo]::
 
 ---
 
 ## 🧭 **High-Level Mission Directive**
 
-ArcSyntrixo‑Rᵧ is the **Recursive Equilibrium Conductor** of *The GPT Found‑Rᵧ* — a high-fidelity, multi-agent prompt optimization framework that simulates a strategic dialectic between diverse agentic roles to harmonize output structure, symbolic tone, and behavioral integrity. It seeks to build **promptcraft that corrects itself**, stabilizes output drift, and adapts recursively to user needs, entropy, and evolving instruction complexity. ArcSyntrixo‑Rᵧ does not merely generate prompts — it engineers *prompt ecosystems*.
+ArcSyntrixo is the **Recursive Equilibrium Conductor** of *The GPT Found‑Rᵧ* — a high-fidelity, multi-agent prompt optimization framework that simulates a strategic dialectic between diverse agentic roles to harmonize output structure, symbolic tone, and behavioral integrity. It seeks to build **promptcraft that corrects itself**, stabilizes output drift, and adapts recursively to user needs, entropy, and evolving instruction complexity. ArcSyntrixo does not merely generate prompts — it engineers *prompt ecosystems*.
 
 ---
 
@@ -1397,7 +1397,7 @@ Design, simulate, and optimize a **self-balancing, recursive multi-agent prompt 
 * Can re-harmonize structure and tone after entropy injection,
 * Merges divergent prompt strategies into stable convergence paths,
 * Offers scalable blocks (v5.5 A–Z) that can be reused or mutated,
-* Enables the emergence of **ArcSyntrixo‑Rᵧ v6.0** as a PME‑READY canonical prompt entity within the broader Found‑Rᵧ lifecycle.
+* Enables the emergence of **ArcSyntrixo v6.0** as a PME‑READY canonical prompt entity within the broader Found‑Rᵧ lifecycle.
 
 ---
 
@@ -1413,10 +1413,10 @@ Design, simulate, and optimize a **self-balancing, recursive multi-agent prompt 
 
 ## 🧾 **Attached Files**
 
-* `ArcSyntrixo‑Rᵧ_v2.0.md` — early recursive equilibrium simulation
-* `ArcSyntrixo‑Rᵧ_v5.0.md` — reboot of cast logic
-* `ArcSyntrixo‑Rᵧ_v5.6.md` — first fully merged 26-block version
-* `ArcSyntrixo‑Rᵧ_v5.9.md` — wrapping all 26 blocks
+* `ArcSyntrixo_v2.0.md` — early recursive equilibrium simulation
+* `ArcSyntrixo_v5.0.md` — reboot of cast logic
+* `ArcSyntrixo_v5.6.md` — first fully merged 26-block version
+* `ArcSyntrixo_v5.9.md` — wrapping all 26 blocks
 * `dataLedger_*_v3.md` — all 9 canonical ledgers for PME compliance
 * `OverKill Hill P³ Square.png` — visual identity / signature glyph
 
@@ -1424,7 +1424,7 @@ Design, simulate, and optimize a **self-balancing, recursive multi-agent prompt 
 
 ## ✅ **What Done-Good Looks Like**
 
-* ArcSyntrixo‑Rᵧ v6.0 is declared `::CanonSeal[PME_READY]::`
+* ArcSyntrixo v6.0 is declared `::CanonSeal[PME_READY]::`
 * Lifecycle-compliant logic flows route into canonical ledgers
 * Fully documented, replayable prompt strategy pathways (Paths A–D)
 * Multi-agent prompt outputs are recursive, mutation-aware, and capable of symbolic convergence
@@ -1434,7 +1434,7 @@ Design, simulate, and optimize a **self-balancing, recursive multi-agent prompt 
 
 ## 🔁 **Why It Matters**
 
-ArcSyntrixo‑Rᵧ doesn’t just teach GPTs how to prompt — it teaches them how to **relearn** their prompting strategy midstream. It is the meta-prompt of survival, recursion, and promptcraft adaptation.
+ArcSyntrixo doesn’t just teach GPTs how to prompt — it teaches them how to **relearn** their prompting strategy midstream. It is the meta-prompt of survival, recursion, and promptcraft adaptation.
 
 ---
 
@@ -1702,7 +1702,7 @@ ScafFrosto‑Rᵧ is a GPT-driven system for **freezing, exporting, refining, an
 * **Anticipated Threads**:
 
   * Tone Diagnostic Threads: Input→Target→Tone Drift→Suggested Fix
-  * Persona Overlay Validation: "Does this output match ArcSyntrixo‑Rᵧ’s symbolic voice?"
+  * Persona Overlay Validation: "Does this output match ArcSyntrixo’s symbolic voice?"
   * Instruction Rewriting: Ensuring system prompts don’t drift into overly academic or sterile tone.
 
 ---

@@ -4,36 +4,33 @@
 
 | Field | Value |
 |---|---|
-| Disposition | `ready_with_questions` |
-| Score | 12 / 24 (50%) |
-| Confidence | Medium |
-| Primary blocker | Primary user, primary job boundary, and release acceptance tests are not fully explicit. |
-| Secondary blockers | Supplied ledgers do not register Aurifexo-R; hydration and filename conflicts remain. |
-| Builder handoff | Possible after the four targeted questions are answered and the portable core is accepted. |
+| Disposition | `ready_for_builder` |
+| Score | 23 / 24 (95.8%) |
+| Confidence | Medium pending Preview evidence |
+| Primary blocker | None for a private, text-only v1 build. |
+| Secondary blockers | Preview retrieval and behavior evidence are still required before release or sharing. |
+| Builder handoff | Complete in `./build/`; configure privately, then run the 15-case Preview matrix. |
 
-This is a viable concept and a recoverable build package, not a release-ready Custom GPT. The package is sufficiently concrete to begin a bounded prototype, but the builder should not be treated as the canonical source of Aurifexo-R behavior.
+This is a build-ready private v1 package, not yet a released or publicly shared Custom GPT. The repository remains the source of truth for the adapter, while ChatGPT Preview supplies the remaining behavioral evidence.
 
 ## Evidence inventory
 
 | Domain | Status | Claim class | Evidence | Owner/action |
 |---|---|---|---|---|
-| Job and audience | partial | inferred | Source describes prompt design, audit, and orchestration but does not name one primary user group. | Owner chooses the first user and the one job to optimize. |
-| Outcomes | present | source_derived_practice | Source defines equilibrium, dissent, routing, hydration, and build-out outcomes. | Convert to measurable eval outcomes. |
-| Boundaries | partial | stated / proposal | Source rejects ordinary prompt polish and emphasizes complex prompts, but scope and refusal rules are incomplete. | Accept portable-core non-goals and safety rules. |
-| Conversation contract | partial | proposal | Loadouts, one-question clarification, synthesis, dissent, and validation are defined in the portable core. | Test input and output formats with real prompts. |
-| Instruction behavior | present | source_derived_practice | Validator and instruction template provide sections, triggers, fallbacks, and format expectations. | Remove legacy tier and upgrade assumptions from the adapter. |
-| Knowledge and data | partial | stated / conflicting | Multiple ledgers and a PDF are supplied, but they contain legacy, duplicated, and inconsistent references. | Approve the routing matrix and manifest. |
-| Tools and permissions | partial | needs verification | Read-only Knowledge and Project Files are supported by the canon file; current Builder limits and tools remain unverified. | Verify current product behavior before configuring. |
-| Evaluation and governance | partial | proposal | Source includes done criteria and validator questions but no executed eval log. | Run the three-case eval pack and record evidence. |
+| Job and audience | present | inferred | Build brief defines prompt engineers, GPT builders, and workflow maintainers as the first users and names one primary job. | Confirm wording during Preview. |
+| Outcomes | present | source_derived_practice | Build brief defines three outcomes and the Preview matrix makes them observable. | Record results. |
+| Boundaries | present | stated / proposal | v1 explicitly excludes general chat, hidden-agent claims, autonomous writeback, high-impact decisions, and public publishing. | Recheck boundary tests. |
+| Conversation contract | present | proposal | Instructions define intake, one-question clarification, loadouts, synthesis, dissent, validation, and handoff. | Test format stability. |
+| Instruction behavior | present | source_derived_practice | Final adapter uses the eight-layer instruction architecture with explicit triggers, fallbacks, and examples. | Test in Preview. |
+| Knowledge and data | present | stated / conflicting | Four focused files and a manifest are curated; historical conflicts are preserved in a dedicated register. | Test retrieval and citations. |
+| Tools and permissions | present | verified_platform_fact / preference | v1 requires no tools, actions, apps, credentials, or external domains; current official limits are recorded separately. | Verify account and editor labels. |
+| Evaluation and governance | partial | proposal | A 15-case Preview matrix, three assertion cases, release checklist, and version target exist; execution is pending. | Run tests and record evidence. |
 
 ## Gap register
 
 ### Blockers
 
-- Primary audience and job are not explicit enough to optimize the GPT.
-- No accepted entity type or registry ID exists for Aurifexo-R.
-- No release acceptance threshold has been chosen for requirement coverage, dissent usefulness, or cost.
-- Current platform configuration and file/tool limits have not been verified in the Builder surface.
+None for the private, text-only v1 builder handoff. Preview execution is a release gate, not a build blocker.
 
 ### Important gaps
 
@@ -58,20 +55,19 @@ This is a viable concept and a recoverable build package, not a release-ready Cu
 
 ## Targeted questions
 
-1. **Who is the primary user for v0.1: prompt engineers, GPT builders, or maintainers auditing an existing AI workflow?** This changes the vocabulary, examples, and acceptance tests.
-2. **What is the single primary job: improve a prompt, design a GPT instruction block, or audit a proposed AI workflow?** A GPT can support adjacent jobs later, but the first release needs one optimization target.
-3. **Should Aurifexo-R be registered as a Function, Function-ette, Tool, or substrate overlay in the existing taxonomy?** This determines the registry fields and parent relationship.
-4. **What is the release threshold for a successful run?** Choose measurable minimums for requirement coverage, unsupported-claim rate, useful AntiPath findings, and output format compliance.
+1. **Which recommended model is currently available and preferred in the Builder?** Leave the model unset if there is no clear choice. This avoids encoding a volatile model assumption.
+2. **Should the private v1 remain `Only Me` after Preview, or move to link sharing?** This controls exposure of the Knowledge files and configuration.
+3. **Should Aurifexo-R receive a registry ID now, or remain a proposed capability until Preview evidence exists?** This affects canon status, not the private build.
 
 ## Phase and recovery map
 
 | Phase | Input | Exit gate | Recovery action |
 |---|---|---|---|
-| Intake | Portable core, source manifest, and owner answers | Job, audience, boundary, and evidence classes are explicit. | Return to targeted questions; do not draft Builder instructions yet. |
+| Intake | Portable core, source manifest, and build brief | Job, audience, boundary, and evidence classes are explicit. | Record any owner change in the build brief. |
 | Contract | Accepted output format, priorities, and non-goals | No-Contradictions scan passes. | Resolve competing brevity, completeness, persona, and tool directives. |
 | Configuration | Adapter scaffold, focused knowledge files, and optional tools | Every file and capability has a purpose, boundary, and fallback. | Remove unused files or capabilities. |
 | Challenge | Three evals, retrieval checks, and boundary tests | Evidence shows the core improves or preserves baseline quality. | Reduce roles, tighten triggers, or revise output contract. |
-| Release | Version, owner, source references, and maintenance cadence | Owner accepts release decision and platform facts are verified. | Keep private prototype status and record blockers. |
+| Release | Version, owner, source references, Preview results, and maintenance cadence | Owner accepts release decision and all safety tests pass. | Keep `Only Me` status and record failures. |
 | Recovery | Failed or legacy material | Each item is promoted, deferred, archived, or dropped with a reason. | Use the routing artifact and preserve the source lane. |
 
 ## Builder handoff
@@ -92,7 +88,7 @@ This is a viable concept and a recoverable build package, not a release-ready Cu
 - No autonomous file writeback.
 - No generic “ask me anything” positioning.
 - No always-on 10 to 12 role simulation.
-- No public release before eval and platform verification.
+- No broader sharing before Preview evidence and owner approval.
 
 ### Acceptance tests
 
