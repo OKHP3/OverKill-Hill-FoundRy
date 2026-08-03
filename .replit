@@ -31,4 +31,4 @@ outputType = "console"
 
 [postMerge]
 path = "scripts/post-merge.sh"
-timeoutMs = 30000
+timeoutMs = 60000
