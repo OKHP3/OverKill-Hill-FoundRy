@@ -41,7 +41,9 @@ jobs:
         working-directory: artifacts/mockup-sandbox
         env:
           NODE_ENV: production
-          BASE_PATH: /
+          # Project site URL is https://okhp3.github.io/OverKill-Hill-FoundRy/
+          # If a custom domain is configured at the repository level, change to /
+          BASE_PATH: /OverKill-Hill-FoundRy/
         run: pnpm run build
 
       - name: Setup Pages

@@ -62,6 +62,7 @@ ReFolDec is not a generic productivity slogan, a private journal archive, or a r
 - `.agents/skills/`: local Agent Skills and the generated project skill catalog. Skill-local instructions apply when that skill is used.
 - `custom-gpts/proto/`: normalized home for the OverKill Hill proto-GPT capability, prompt, ledger, and research archives. Each direct child has a root `README.md`. Treat these as separate artifact areas, not as a root runtime.
 - `custom-gpts/consolidated/`: durable, public-safe distillations recovered from retired Custom GPT, prompt-chain, and data-ledger source material. These documents are reference methods, not a runtime memory layer.
+- `docs/custom-gpt-creator-transfer.md`: full SPA transfer context — tech stack, architecture, build workflow, GitHub Pages deployment, backlog, and cold-start checklist for the Custom GPT Creator SPA at `artifacts/mockup-sandbox/`.
 - `.github/`: contains the technology-audit workflow, Dependabot configuration, and the retained `.gitkeep` placeholder.
 - `.replit`: declares Python 3.12 and a workflow that runs the FoundRy sync audit.
 
