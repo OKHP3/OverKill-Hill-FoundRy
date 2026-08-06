@@ -1,0 +1,10 @@
+# Local operating-system metadata
+.DS_Store
+desktop.ini
+
+# Generated Python cache
+__pycache__/
+*.py[cod]
+
+# Local evaluation workspaces and scratch output
+.agents/skills/*/workspace/

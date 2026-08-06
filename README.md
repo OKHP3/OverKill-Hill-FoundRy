@@ -76,18 +76,18 @@ OKHP³
 .
 ├── README.md
 ├── AGENTS.md
-├── SPEC.md
-├── ROADMAP.md
+├── docs/
+│   ├── specification.md
+│   ├── roadmap.md
+│   ├── notion-github-operating-model.md
+│   ├── process-of-process-capture.md
+│   ├── publication-boundary.md
+│   └── vocabulary.md
 ├── CHANGELOG.md
 ├── LICENSE
 ├── refoldec.manifest.json
 ├── schemas/
 │   └── refoldec-artifact.schema.json
-├── docs/
-│   ├── notion-github-operating-model.md
-│   ├── process-of-process-capture.md
-│   ├── publication-boundary.md
-│   └── vocabulary.md
 └── examples/
     └── raw-thought-to-artifact.md
 ```

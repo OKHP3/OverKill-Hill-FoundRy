@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
-INVENTORY = ROOT / "technology-inventory.json"
+INVENTORY = ROOT / "docs" / "technology-inventory.json"
 
 
 def github_latest(url: str) -> str:

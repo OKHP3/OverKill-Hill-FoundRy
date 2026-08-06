@@ -16,6 +16,7 @@ Each direct child uses lowercase ASCII kebab-case and has a root `README.md`. Th
 | `gpt-auditor` | GPT audit archive |
 | `gpt-crucible` | GPT builder and lineage archive |
 | `gpt-wizard` | GPT design and template archive |
+| `misc-prompts` | Historical operational prompt-chain index |
 | `phenomould-ry` | GPT mold-casting archive |
 | `promptascend-r` | Promptcraft assessment archive |
 | `scaffrosto-ry` | Prompt-scaffolding archive |

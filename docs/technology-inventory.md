@@ -20,7 +20,7 @@ Not present: JavaScript, TypeScript, Node.js, npm, Vite, React, Vue, Tailwind CS
 
 ## Update plan
 
-1. `technology-inventory.json` is the machine-readable source of truth.
+1. `technology-inventory.json` in this directory is the machine-readable source of truth.
 2. `scripts/technology-audit.py` checks GitHub-hosted releases for Python and Git for Windows and reports manual-review items such as the Replit Nix channel and standards.
 3. `.github/workflows/technology-audit.yml` runs the audit weekly and on changes to the inventory or runtime configuration. If a lookup fails, the workflow fails visibly rather than silently claiming freshness.
 4. `.github/dependabot.yml` keeps the GitHub Actions used by the audit workflow current.
