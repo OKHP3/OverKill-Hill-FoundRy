@@ -1,0 +1,17 @@
+schema_version: "1.0"
+# Brand style registry for OverKill-Hill-FoundRy.
+# Managed by okhp3-brand-style-registry skill.
+# Do not edit the profile files directly; update the source in
+# .agents/skills/okhp3-brand-style-registry/assets/profile-seeds/ and
+# re-run the skill to regenerate this registry.
+library:
+  name: OverKill Hill P³ Style Library
+  profiles:
+    - id: overkill-hill
+      display_name: OverKill Hill P³
+      path: profiles/overkill-hill.yaml
+      status: seed
+      version: "1.1.0"
+      tags: [industrial, technical, dark, forge]
+      active_surfaces:
+        - artifacts/mockup-sandbox   # Custom GPT Creator SPA

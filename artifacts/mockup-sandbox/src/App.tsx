@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BUILD_STEPS, NAV_EXTRAS } from "./data/knowledge";
-import BuildBrief from "./pages/BuildBrief";
-import ConversationContract from "./pages/ConversationContract";
-import InstructionStack from "./pages/InstructionStack";
-import KnowledgeFiles from "./pages/KnowledgeFiles";
-import Capabilities from "./pages/Capabilities";
-import ActionsApps from "./pages/ActionsApps";
-import ConversationStarters from "./pages/ConversationStarters";
-import TestMatrix from "./pages/TestMatrix";
-import ShipGovern from "./pages/ShipGovern";
-import AuditMode from "./pages/AuditMode";
-import PlatformCompare from "./pages/PlatformCompare";
-import ExportPackage from "./pages/ExportPackage";
+
+// Skill 7 (vercel-react-best-practices): lazy-load all page chunks so the
+// initial bundle only ships the shell; pages load on first navigation.
+const BuildBrief           = lazy(() => import("./pages/BuildBrief"));
+const ConversationContract = lazy(() => import("./pages/ConversationContract"));
+const InstructionStack     = lazy(() => import("./pages/InstructionStack"));
+const KnowledgeFiles       = lazy(() => import("./pages/KnowledgeFiles"));
+const Capabilities         = lazy(() => import("./pages/Capabilities"));
+const ActionsApps          = lazy(() => import("./pages/ActionsApps"));
+const ConversationStarters = lazy(() => import("./pages/ConversationStarters"));
+const TestMatrix           = lazy(() => import("./pages/TestMatrix"));
+const ShipGovern           = lazy(() => import("./pages/ShipGovern"));
+const AuditMode            = lazy(() => import("./pages/AuditMode"));
+const PlatformCompare      = lazy(() => import("./pages/PlatformCompare"));
+const ExportPackage        = lazy(() => import("./pages/ExportPackage"));
 
 export type PageId = number | "audit" | "compare" | "export";
 
@@ -142,6 +145,7 @@ export default function App() {
                     transition: "background 150ms, color 150ms",
                     fontFamily: "var(--font-body)",
                   }}
+                  aria-current={isActive ? "page" : undefined}
                   onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = "var(--color-forge-muted)"; }}
                   onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                 >
@@ -175,6 +179,7 @@ export default function App() {
                     transition: "background 150ms, color 150ms",
                     fontFamily: "var(--font-body)",
                   }}
+                  aria-current={isActive ? "page" : undefined}
                   onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = "var(--color-forge-muted)"; }}
                   onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                 >
@@ -207,6 +212,8 @@ export default function App() {
             onClick={() => setSidebarOpen(v => !v)}
             style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-forge-muted-fg)", fontSize: "1.1rem", padding: "0.2rem 0.4rem", borderRadius: "4px" }}
             title="Toggle sidebar"
+            aria-label="Toggle sidebar"
+            aria-expanded={sidebarOpen}
           >
             ☰
           </button>
@@ -227,9 +234,17 @@ export default function App() {
           </div>
         </header>
 
-        {/* Content */}
+        {/* Content — Suspense boundary keeps the shell interactive while a
+            page chunk loads on first visit (vercel-react-best-practices:
+            bundle-dynamic-imports). */}
         <main style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }} className="fade-in-up">
-          {renderPage()}
+          <Suspense fallback={
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--color-forge-muted-fg)", fontFamily: "var(--font-mono)", fontSize: "0.85rem" }}>
+              Loading…
+            </div>
+          }>
+            {renderPage()}
+          </Suspense>
         </main>
       </div>
     </div>

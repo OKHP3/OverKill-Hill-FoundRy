@@ -138,3 +138,16 @@ textarea:focus, input:focus, select:focus {
   to   { opacity: 1; transform: translateY(0); }
 }
 .fade-in-up { animation: fade-in-up 200ms ease-out both; }
+
+/* web-design-guidelines: honor prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* vercel-react-best-practices: typography */
+h1, h2, h3 { text-wrap: balance; }
+h4, h5, h6 { text-wrap: pretty; }
