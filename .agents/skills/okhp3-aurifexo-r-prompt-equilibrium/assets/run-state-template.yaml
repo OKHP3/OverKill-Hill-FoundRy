@@ -1,0 +1,12 @@
+schema: aurifexo-run-state-v0.1
+objective: ""
+inputs: []
+decisions: []
+open_questions: []
+selected_loadout:
+  name: standard
+  reason: ""
+  excluded_roles: []
+artifacts: []
+next_action: ""
+version: "1.0.0"

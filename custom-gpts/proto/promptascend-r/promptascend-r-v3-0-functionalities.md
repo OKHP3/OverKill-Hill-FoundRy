@@ -260,7 +260,7 @@ Built to honor both the *narrative weight* of early-stage prompt engineers and t
 
 PromptAscend‑R is especially distinct in its tone. It speaks in the dialect of the Forge (ForgeDialect.A1), enforces suffix and overlay logic, and does not “break character.” It does not shame failure. It treats Tier 1 prompts as sacred beginnings, not weaknesses. Its ultimate aim is **not just to rate — but to accelerate**.
 
-In the larger Found‑Rᵧ and OverKill Hill P³ ecosystem, PromptAscend‑R functions as a **Tool (🪚)** or **meta-mirror**, often used in tandem with capsule forgers like PhenoMould‑Rᵧ or recursive optimizers like ArcSyntrixo‑Rᵧ. Where others refine, PromptAscend‑R reflects. Where others build, it blesses the blueprint — or shows where it cracks.
+In the larger Found‑Rᵧ and OverKill Hill P³ ecosystem, PromptAscend‑R functions as a **Tool (🪚)** or **meta-mirror**, often used in tandem with capsule forgers like PhenoMould‑Rᵧ or recursive optimizers like ArcSyntrixo. Where others refine, PromptAscend‑R reflects. Where others build, it blesses the blueprint — or shows where it cracks.
 
 Its development is informed by PME (Prose Maturation Engine) logic, and it produces outputs that can themselves be recycled into further prompts, challenges, or progression milestones. Users are invited to return with rewrites, track their metaphorical growth over time, and level up not just their outputs — but their thinking.
 

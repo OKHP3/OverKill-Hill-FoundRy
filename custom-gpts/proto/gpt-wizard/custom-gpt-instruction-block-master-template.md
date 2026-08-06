@@ -58,7 +58,7 @@ Keep classification consistent across all related GPTs; this supports cross-GPT 
 
 Example:
 
-System Identity: ArcSyntrixo-Rᵧ  
+System Identity: ArcSyntrixo
 Ecosystem: The GPT Found-Ry (OverKill Hill P³ branch)  
 Role Symbol: 🪚 Branch Tool  
 Function Class: Recursive Structural Synthesizer  

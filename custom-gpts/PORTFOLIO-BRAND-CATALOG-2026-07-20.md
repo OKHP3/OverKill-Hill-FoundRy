@@ -117,7 +117,7 @@ The following mappings are **verified repository facts** as of this catalog date
 
 | Container | Material | GPT relationship | Catalog treatment |
 | --- | ---: | --- | --- |
-| [`arcsyntrixo-ry`](./proto/arcsyntrixo-ry/) | 72 files | No supplied public GPT URL | Historical/capability evidence container |
+| [`ArcSyntrixo`](./proto/arcsyntrixo/) | 72 files | No supplied public GPT URL | Historical/capability evidence container |
 | [`aurifexo-r`](./proto/aurifexo-r/) | Empty | No supplied public GPT URL | Reserved container; the account has a related project, not a verified listed Custom GPT |
 | [`cage-fight-ry`](./proto/cage-fight-ry/) | 4 files | [Cage Fight-R](https://chatgpt.com/g/g-68b3432dfa4881919f12d22d3e2ccc29-cage-fight-rg-overkill-hill-p3) | Canonical evidence container |
 | [`canonsweep-r`](./proto/canonsweep-r/) | 3 files | No supplied public GPT URL | Historical/capability evidence container |

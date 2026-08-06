@@ -1,0 +1,26 @@
+{
+  "name": "ArcSyntrixo: Prompt Architecture Review",
+  "description": "Turn rough Custom GPT prompts and instruction drafts into clear, bounded, testable configurations with an audit, alternatives, a revised instruction stack, and a Preview test plan.",
+  "conversation_starters": [
+    "Audit this Custom GPT instruction draft for contradictions, unsupported claims, and missing boundaries.",
+    "Turn this rough prompt into a clear Custom GPT build brief and instruction outline.",
+    "Compare these two GPT instruction drafts, explain the tradeoffs, and recommend a merged version.",
+    "Create a Preview test plan for this GPT configuration, including scope and prompt-injection cases."
+  ],
+  "recommended_model": null,
+  "capabilities": {
+    "web_search": false,
+    "image_generation": false,
+    "canvas": false,
+    "code_interpreter_data_analysis": false,
+    "apps": false,
+    "actions": false
+  },
+  "sharing": {
+    "initial_visibility": "only_me",
+    "public_publishing": "deferred",
+    "reason": "Private Preview evaluation is required before broader sharing."
+  },
+  "version": "1.0.0-private-candidate",
+  "source_of_truth": "custom-gpts/proto/arcsyntrixo/build/"
+}

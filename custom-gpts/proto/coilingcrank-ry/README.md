@@ -120,9 +120,9 @@ Before starting a CoilingCrank-Rᵧ thread:
 
 ## Ecosystem Position
 
-CoilingCrank-Rᵧ is a **mid-pipeline chain orchestrator**. It does not originate prompts (that is Cast-Rᵧ initiation, handled by ArcSyntrixo-Rᵧ) and does not audit compliance after the fact (that is CanonSweep-R). Instead it governs the linking and routing mechanics *during* the forge:
+CoilingCrank-Rᵧ is a **mid-pipeline chain orchestrator**. It does not originate prompts (that is Cast-Rᵧ initiation, handled by ArcSyntrixo) and does not audit compliance after the fact (that is CanonSweep-R). Instead it governs the linking and routing mechanics *during* the forge:
 
-- **Receives from:** ArcSyntrixo-Rᵧ (Cast-Rᵧ outputs), ideation layer clause nodes
+- **Receives from:** ArcSyntrixo (Cast-Rᵧ outputs), ideation layer clause nodes
 - **Routes to:** all 8 v2 dataLedgers based on clause type and phase
 - **Feeds into:** TellePrompt-Rᵧ (Anvil-Rᵧ), StructRefino-Rᵧ (Gleam-Rᵧ), and narrative surface exports
 - **Versioned as:** v1.0.0-Hybrid, CanonSealed

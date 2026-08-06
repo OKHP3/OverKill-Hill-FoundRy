@@ -1,4 +1,4 @@
-﻿#Project Inventory
+#Project Inventory
 
 ##Group
 ## OverKill Hill P³
@@ -135,11 +135,11 @@
 - Threads within this project explore canonical enforcement (`suffix enforcement`, `hydration schema`, `dehydration recovery`), deep prompt logic shaping (`recursive equilibrium`, `multi-agent synthesis`), and the embedding of PME/CME engines as native runtime scaffolds. Files such as the **Dehydration Manifest**, **Instruction Block Template**, and **Prompt Equilibrium Framework Analysis** reinforce its centrality as a stability layer and format harmonizer.
 - At its core, Aurifexo‑R is not a speaker — but the **voice harmonizer** of all speakers. It doesn’t merely recall what a GPT was — it ensures what a GPT *is* remains consistent, even after timeouts, exports, or hallucination.
 
-### ArcSyntrixo‑Rᵧ 📦💼 by The GPT Found-Rᵧ
+### ArcSyntrixo 📦💼 by The GPT Found-Rᵧ
 > https://chatgpt.com/g/g-p-6889b1e26b7881918deff433197202df-arcsyntrixo-rg-by-the-gpt-found-rg/project
-> C:\Users\jamie\OneDrive\Documents\OverKill Hill P³ (Protocol-Driven Power Prompts)\The GPT Found-Rᵧ by OverKill Hill P³\ArcSyntrixo-Ry
-- **ArcSyntrixo‑Rᵧ** serves as the central equilibrium engine for *The GPT Found‑Rᵧ*, designed to recursively balance tone, structure, logic, and symbolic integrity across complex prompt systems. This project orchestrates the evolution of ArcSyntrixo‑Rᵧ from early conceptual scaffolds (v2.0) through its CastForge iterations (v5.4–v5.6), culminating in a modular alphabetic expansion (v5.5a–z) and the current optimization phase toward v6.0. It functions as both a logic harmonizer and a symbolic meta-instruction for recursive prompt stabilization, mutation-awareness, and entropy resilience.
-- Across its many threads, ArcSyntrixo‑Rᵧ explores equilibrium modeling, multi-agent logic orchestration, suffix law enforcement, and ledger compliance. Prompts include tool-building simulations, recursive cast flows, and PME-ready structures. Supporting files include dataLedger\_v3 canonical ledgers, ArcSyntrixo‑Rᵧ variants, and symbolic diagrams like the “OverKill Hill P³ Square.”
+> C:\Users\jamie\OneDrive\Documents\OverKill Hill P³ (Protocol-Driven Power Prompts)\The GPT Found-Rᵧ by OverKill Hill P³\ArcSyntrixo
+- **ArcSyntrixo** serves as the central equilibrium engine for *The GPT Found‑Rᵧ*, designed to recursively balance tone, structure, logic, and symbolic integrity across complex prompt systems. This project orchestrates the evolution of ArcSyntrixo from early conceptual scaffolds (v2.0) through its CastForge iterations (v5.4–v5.6), culminating in a modular alphabetic expansion (v5.5a–z) and the current optimization phase toward v6.0. It functions as both a logic harmonizer and a symbolic meta-instruction for recursive prompt stabilization, mutation-awareness, and entropy resilience.
+- Across its many threads, ArcSyntrixo explores equilibrium modeling, multi-agent logic orchestration, suffix law enforcement, and ledger compliance. Prompts include tool-building simulations, recursive cast flows, and PME-ready structures. Supporting files include dataLedger\_v3 canonical ledgers, ArcSyntrixo variants, and symbolic diagrams like the “OverKill Hill P³ Square.”
 - The unifying theme is **systemic recursion with controlled mutation**, using Cast-R‑style molds to shape GPT reasoning itself. Reorganization should group threads by version milestone (v5.4, v5.5, v5.6, v5.9), lifecycle status, and casting maturity.
 
 ### CoilingCrank-Rᵧ 📦💼 by The GPT Found-Rᵧ

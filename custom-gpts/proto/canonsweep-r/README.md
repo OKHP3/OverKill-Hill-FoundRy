@@ -105,7 +105,7 @@ CanonSweep-R audits against all 8 canonical dataledgers. The four most directly 
 CanonSweep-R is a governance utility — it sits above the standard prompt execution pipeline as a **compliance surveillance layer**. It does not produce content; it audits content produced elsewhere.
 
 Within the OverKill Hill P³ ecosystem:
-- **Audits outputs from:** ArcSyntrixo-Rᵧ, TellePrompt-Rᵧ, ScafFrosto-Rᵧ, PhenoMould-Rᵧ, and any other Cast-Rᵧ or Gleam-Rᵧ phase tools that write to the dataledgers
+- **Audits outputs from:** ArcSyntrixo, TellePrompt-Rᵧ, ScafFrosto-Rᵧ, PhenoMould-Rᵧ, and any other Cast-Rᵧ or Gleam-Rᵧ phase tools that write to the dataledgers
 - **Reports to:** `dataLedger_registry_v3.md` (compliance seals), `dataLedger_processing_v3.md` (failures and recovery work)
 - **Registered as:** a `🪛` Function-ette in `dataLedger_registry_v3.md`
 - **Portability:** designed for OverKill Hill P³ but portable to Glee-fully and Found-Rᵧ with suffix injection

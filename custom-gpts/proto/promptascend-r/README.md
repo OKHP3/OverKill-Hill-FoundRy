@@ -166,7 +166,7 @@ PromptAscend-Rᵧ is a **threshold guardian** in the Found-Rᵧ — it does not 
 | Tool | Relationship |
 |---|---|
 | [`phenomould-ry/`](../phenomould-ry/) | PhenoMould-Rᵧ casts GPTs; PromptAscend-Rᵧ assesses the promptcraft behind them |
-| [`arcsyntrixo-ry/`](../arcsyntrixo-ry/) | ArcSyntrixo-Rᵧ refines recursion; PromptAscend-Rᵧ reflects recursive depth on the Lexashev scale |
+| [`ArcSyntrixo/`](../ArcSyntrixo/) | ArcSyntrixo refines recursion; PromptAscend-Rᵧ reflects recursive depth on the Lexashev scale |
 | [`gpt-auditor/`](../gpt-auditor/) | GPT Auditor validates finished GPTs; PromptAscend-Rᵧ validates the promptcrafter |
 | [`tonestrik-ry/`](../tonestrik-ry/) | ToneStrik-Rᵧ audits tone post-build; PromptAscend-Rᵧ grades tone on the Jedi Path |
 | [`telleprompt-ry/`](../telleprompt-ry/) | TellEPrompt-Rᵧ analyzes what a prompt intends to do in execution context; PromptAscend-Rᵧ assesses the prompt as an artifact |

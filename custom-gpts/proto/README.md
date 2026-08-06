@@ -8,7 +8,7 @@ Each direct child uses lowercase ASCII kebab-case and has a root `README.md`. Th
 
 | Container | Role |
 | --- | --- |
-| `arcsyntrixo-ry` | Recursive capability archive |
+| `ArcSyntrixo` | Recursive capability archive |
 | `aurifexo-r` | Reserved proto-GPT container |
 | `cage-fight-ry` | Comparison and evaluation proto-GPT |
 | `canonsweep-r` | Canon and compliance archive |
