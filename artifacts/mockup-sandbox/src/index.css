@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@theme {
+  /* OverKill Hill P³ — Forge palette */
+  --color-forge-bg:        #111827;
+  --color-forge-surface:   #181f26;
+  --color-forge-panel:     #1e2936;
+  --color-forge-border:    #2a3a4a;
+  --color-forge-muted:     #374151;
+  --color-forge-fg:        #e5e7eb;
+  --color-forge-muted-fg:  #9ca3af;
+  --color-forge-accent:    #c46a2c;
+  --color-forge-accent-hi: #e6a03c;
+  --color-forge-teal:      #1c3a34;
+  --color-forge-teal-hi:   #2d5a50;
+  --color-forge-rust:      #5b3a27;
+  --color-forge-espresso:  #2a2320;
+  --color-forge-paper:     #f6f2ee;
+  --color-forge-success:   #22c55e;
+  --color-forge-warn:      #f59e0b;
+  --color-forge-danger:    #ef4444;
+
+  --font-heading: "Alfa Slab One", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-forge-bg);
+  color: var(--color-forge-fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-forge-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-forge-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-forge-accent); }
+
+/* Typography */
+h1, h2, h3 { font-family: var(--font-heading); letter-spacing: 0.01em; }
+code, pre, .mono { font-family: var(--font-mono); }
+
+/* Focus */
+:focus-visible { outline: 2px solid var(--color-forge-accent); outline-offset: 2px; }
+
+/* Tailwind v4 dark-mode baseline */
+@layer base {
+  :root {
+    --background: var(--color-forge-bg);
+    --foreground: var(--color-forge-fg);
+    --card: var(--color-forge-surface);
+    --card-foreground: var(--color-forge-fg);
+    --primary: var(--color-forge-accent);
+    --primary-foreground: var(--color-forge-paper);
+    --secondary: var(--color-forge-panel);
+    --secondary-foreground: var(--color-forge-fg);
+    --muted: var(--color-forge-muted);
+    --muted-foreground: var(--color-forge-muted-fg);
+    --accent: var(--color-forge-accent);
+    --accent-foreground: var(--color-forge-paper);
+    --border: var(--color-forge-border);
+    --input: var(--color-forge-panel);
+    --ring: var(--color-forge-accent);
+    --radius: 0.75rem;
+    color-scheme: dark;
+  }
+}
+
+/* Textarea / Input resets for dark forge look */
+textarea, input, select {
+  background-color: var(--color-forge-panel);
+  color: var(--color-forge-fg);
+  border: 1px solid var(--color-forge-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  width: 100%;
+  transition: border-color 150ms;
+}
+textarea:focus, input:focus, select:focus {
+  outline: none;
+  border-color: var(--color-forge-accent);
+}
+
+/* Char counter */
+.char-counter { font-family: var(--font-mono); font-size: 0.75rem; }
+.char-warn { color: var(--color-forge-warn); }
+.char-ok { color: var(--color-forge-muted-fg); }
+.char-over { color: var(--color-forge-danger); }
+
+/* Nav step states */
+.step-active { background: var(--color-forge-accent) !important; color: var(--color-forge-paper) !important; }
+.step-done   { border-color: var(--color-forge-accent); color: var(--color-forge-accent); }
+.step-todo   { border-color: var(--color-forge-border); color: var(--color-forge-muted-fg); }
+
+/* Utility: forge panel */
+.forge-panel {
+  background: var(--color-forge-panel);
+  border: 1px solid var(--color-forge-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+/* Quality tiers */
+.tier-poor       { border-left: 3px solid var(--color-forge-danger); }
+.tier-acceptable { border-left: 3px solid var(--color-forge-warn); }
+.tier-good       { border-left: 3px solid var(--color-forge-success); }
+.tier-exemplary  { border-left: 3px solid var(--color-forge-accent); }
+
+/* Mermaid-style callout boxes */
+.callout {
+  background: var(--color-forge-surface);
+  border: 1px solid var(--color-forge-border);
+  border-left: 3px solid var(--color-forge-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin: 0.75rem 0;
+}
+
+/* Animate-in */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fade-in-up 200ms ease-out both; }

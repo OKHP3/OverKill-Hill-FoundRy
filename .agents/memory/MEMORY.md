@@ -1,0 +1,2 @@
+- [Custom GPT Creator SPA](spa-build.md) — SPA is live at port 5000; workflow "Custom GPT Creator SPA"; all source files authored from scratch.
+- [Workspace pnpm setup](pnpm-setup.md) — `pnpm install --filter @workspace/mockup-sandbox` required before Vite runs; `tsconfig.base.json` must exist at repo root.
