@@ -45,6 +45,11 @@ style:
       authority: declared
       confidence: high
       notes: "Applied to hover states (150ms) and progress/transition elements (300ms) in the SPA."
+    - claim: "Light mode tokens declared at :root[data-theme='light'] — bg #eff2f5, surface #f6f2ee, fg #0f172a, accent stays orange."
+      source: https://raw.githubusercontent.com/OKHP3/OverKill-Hill/main/assets/css/theme.css
+      authority: declared
+      confidence: high
+      notes: "Three-way ☀/⊙/☾ toggle added to SPA topbar; no-flash inline script prevents FOUC; system mode resolves via matchMedia."
     - claim: "Brand name 'OKH P³' must not wrap — use white-space:nowrap and NBSP guards."
       source: okhp3-brand-style-registry SKILL.md cardinal rule
       authority: declared
