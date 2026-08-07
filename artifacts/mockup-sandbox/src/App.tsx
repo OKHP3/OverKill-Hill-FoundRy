@@ -162,12 +162,13 @@ export default function App() {
             <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.78rem", color: "var(--color-forge-accent)", lineHeight: 1.15 }}>
               Creator
             </div>
+            {/* cardinal rule: brand name must not wrap — nowrap + NBSP guards */}
             <div style={{
               fontFamily: "var(--font-mono)", fontSize: "0.58rem",
               color: "var(--color-forge-muted-fg)", letterSpacing: "0.08em",
-              marginTop: "0.15rem",
+              marginTop: "0.15rem", whiteSpace: "nowrap",
             }}>
-              OKH P³ · THE FORGE
+              OKH&nbsp;P³&nbsp;·&nbsp;THE&nbsp;FORGE
             </div>
           </div>
         </div>
@@ -187,7 +188,8 @@ export default function App() {
               ? "var(--color-forge-success)"
               : "linear-gradient(to right, var(--color-forge-accent), var(--color-forge-accent-hi))",
             borderRadius: 3,
-            transition: "width 400ms cubic-bezier(0.4,0,0.2,1)",
+            /* profile motion rule: measured 300ms transitions */
+            transition: "width 300ms ease-in-out",
             boxShadow: progress > 0 ? "0 0 6px rgba(196,106,44,0.5)" : "none",
           }} />
         </div>
@@ -299,14 +301,14 @@ export default function App() {
         })}
       </nav>
 
-      {/* ── Footer ── */}
+      {/* ── Footer — cardinal rule: brand name nowrap + NBSP ── */}
       <div style={{
         padding: "0.65rem 1rem",
         borderTop: "1px solid var(--color-forge-border)",
         fontFamily: "var(--font-mono)", fontSize: "0.6rem",
         color: "var(--color-forge-muted-fg)",
       }}>
-        OKH P³ · Apache-2.0<br />
+        <span style={{ whiteSpace: "nowrap" }}>OKH&nbsp;P³</span>&nbsp;·&nbsp;Apache-2.0<br />
         Skill v1.0.0 · 2026-06-03
       </div>
     </aside>

@@ -16,6 +16,10 @@
   --color-forge-rust:      #5b3a27;
   --color-forge-espresso:  #2a2320;
   --color-forge-paper:     #f6f2ee;
+  /* Profile foundation tokens — olive and ochre complete the declared palette */
+  --color-forge-olive:     #676a2c;
+  --color-forge-ochre:     #a06e28;
+
   --color-forge-success:   #22c55e;
   --color-forge-warn:      #f59e0b;
   --color-forge-danger:    #ef4444;
