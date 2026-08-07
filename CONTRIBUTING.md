@@ -92,6 +92,12 @@ The filename normalizer is dry-run by default. Do not pass `--apply` unless a re
 
 ---
 
+## Code of conduct
+
+All contributors are expected to follow the project's `CODE_OF_CONDUCT.md`. Participation in this project constitutes agreement to its terms. Enforcement contacts are listed in that file.
+
+---
+
 ## Reporting issues
 
 Open a GitHub Issue to report documentation errors, broken links, schema gaps, or missing examples. Provide enough context that a maintainer can reproduce or verify the issue without access to private material.
