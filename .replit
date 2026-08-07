@@ -1,4 +1,6 @@
 modules = ["python-3.12", "nodejs-20"]
+description = "The OverKill Hill Found-Ry — 9-step build pipeline for production-grade Custom GPTs, Gemini Gems, and Copilot Agents. OverKill Hill P³™."
+
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
