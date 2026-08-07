@@ -1,72 +1,72 @@
-# ReFolDec
+# OverKill Hill FoundRy
 
-**The Recursively Folding Codec**
+**OKHP3 / OverKill-Hill-FoundRy**
 
-ReFolDec is a bidirectional process-capture and transformation framework for folding raw thought into structured artifacts, then unfolding mature artifacts back into their source primitives, patterns, and reusable instructions.
-
-It exists because valuable thinking often evaporates unless it is captured, structured, matured, linked, and reused. ReFolDec gives that movement a name, a model, and a public artifact surface.
+A Replit workspace and GitHub repository for the OverKill Hill P3 family. The primary artifact is the **Custom GPT Creator SPA** — a browser-only, 9-step tool for designing, documenting, auditing, and exporting production-grade OpenAI Custom GPTs (and Gemini Gems / Copilot Declarative Agents). It is also the living home for 41+ OKHP3 Agent Skills, the brand-style registry, and the ReFolDec process framework.
 
 ---
 
-## Core thesis
+## Custom GPT Creator SPA
 
-Most creative, operational, technical, and agentic work follows the same hidden arc:
+The SPA lives at `artifacts/mockup-sandbox/` and runs at `localhost:5000` in the Replit workspace. No backend. No database. No auth. All state is `localStorage`.
 
-```text
-raw signal → thought → note → concept → process → artifact → system → canon
+### Build pipeline
+
+| Step | Name | What you define |
+|---|---|---|
+| 0 | Build Brief | Job, users, outcomes, non-goals, acceptance criteria, compliance |
+| 1 | Conversation Contract | Inputs, outputs, top tasks, catastrophic failure modes |
+| 2 | Instruction Stack | 8-layer architecture up to 8,000 chars |
+| 3 | Knowledge Files | Manifest up to 20 files x 512 MB, retrieval routing notes |
+| 4 | Capabilities | Toggle each capability on or off with explicit rationale |
+| 5 | Actions / Apps | OpenAPI schema authoring or MCP app selection (mutually exclusive) |
+| 6 | Conversation Starters | 3-4 workflow-launch prompts, not slogans |
+| 7 | Test Matrix | 10-15 test cases across 6 categories, red-team pack included |
+| 8 | Ship & Govern | Visibility, versioning, owner, change log, scheduled review |
+
+Additional tools: Audit Mode (10-item rubric scorer), Platform Comparison, and Export Package.
+
+### Tech stack
+
+| Layer | Choice |
+|---|---|
+| Bundler | Vite 7 |
+| Framework | React 19 |
+| Styling | Tailwind CSS v4 (`@theme` block in `src/index.css`) |
+| Language | TypeScript |
+| Package manager | pnpm workspace |
+| State | `localStorage` only (`cgpt-step-0` through `cgpt-step-8`) |
+
+### Visual identity
+
+The Forge Protocol theme: dot-grid content area, step-badge sidebar pipeline, forge-mark logo lockup. Light / dark / system-mode toggle (sun / circle / moon) using `data-theme` on `<html>`. No-flash inline script in `index.html` resolves the preference before first paint.
+
+| Token | Dark | Light |
+|---|---|---|
+| Background | `#111827` | `#eff2f5` |
+| Surface | `#181f26` | `#f6f2ee` |
+| Foreground | `#e5e7eb` | `#0f172a` |
+| Accent (orange) | `#c46a2c` | `#c46a2c` |
+| Display font | Alfa Slab One | Alfa Slab One |
+| Body font | DM Sans | DM Sans |
+| Mono font | JetBrains Mono | JetBrains Mono |
+
+---
+
+## Running the workspace
+
+```bash
+# Install (pnpm workspace)
+pnpm install --filter @workspace/mockup-sandbox
+
+# Start the SPA (port 5000)
+PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev
+
+# Run the FoundRy sync audit
+python3 scripts/foundry-sync.py
 ```
 
-ReFolDec makes that arc explicit and reversible.
-
-- **Fold** raw material upward into structured artifacts.
-- **Unfold** mature artifacts downward into primitives, patterns, assumptions, and reusable instructions.
-- **Refold** what was learned into stronger processes, diagrams, documentation, and agent skills.
-
-The framework generalizes the earlier xME/xIE idea:
-
-- **xME** — x Maturation Engine: moves an object toward more mature, structured, usable states.
-- **xIE** — x Inversion Engine: moves an object back toward primitives, assumptions, source signals, or component parts.
-- **ReFolDec** — the bidirectional codec that manages both motions as a recursive operating pattern.
-
----
-
-## What this repository is
-
-This repo is the public source-of-truth for the ReFolDec concept, notation, operating model, examples, and agent-facing instructions.
-
-It is intentionally public. Private Notion pages may be used as a workshop, but this repository should not depend on Notion-only links for public understanding. When a Notion artifact needs to become public, its useful content should be copied or distilled into Markdown here.
-
----
-
-## Why this exists
-
-ReFolDec emerged from several converging OKHP³ lines of work:
-
-- **Magnus Progenitor Saga** — fiction as a narrative proving ground for recursion, intelligence, continuity, and authored systems.
-- **Biases as Constants: Vault Codices** — nonfiction as the audit ledger for AI-assisted writing, author-agent collaboration, and method formation.
-- **xME/xIE/xMIE** — the recognition that concepts can mature upward and invert downward regardless of domain.
-- **BPMN for Mermaid / xPMN** — process visualization as a navigable surface for underlying process context.
-- **Agent Skills** — repeatable human processes packaged as reusable non-human execution instructions.
-- **Notion + GitHub** — capture plane plus canonical publication plane.
-
-The conclusion: these were not disconnected projects. They were partial views of a larger pattern — the process of process-capture.
-
----
-
-## Conceptual stack
-
-```text
-OKHP³
-└── ReFolDec — Recursively Folding Codec
-    ├── Fold: raw thought → structured artifact
-    ├── Unfold: artifact → primitives, patterns, source signals
-    ├── Refold: improved artifact → reusable process
-    ├── xME / xIE: maturation and inversion mechanics
-    ├── Process FoundRy: process-capture operating surface
-    ├── xPMN / BPMN for Mermaid: visual notation profile
-    ├── Agent Skills: executable process packaging
-    └── Notion + GitHub: private capture plane + public canonical plane
-```
+The Replit workflow named **Custom GPT Creator SPA** handles the SPA startup automatically.
 
 ---
 
@@ -74,60 +74,74 @@ OKHP³
 
 ```text
 .
-├── README.md
-├── AGENTS.md
-├── docs/
-│   ├── specification.md
-│   ├── roadmap.md
-│   ├── notion-github-operating-model.md
-│   ├── process-of-process-capture.md
-│   ├── publication-boundary.md
-│   └── vocabulary.md
-├── CHANGELOG.md
-├── LICENSE
-├── refoldec.manifest.json
-├── schemas/
-│   └── refoldec-artifact.schema.json
-└── examples/
-    └── raw-thought-to-artifact.md
+├── artifacts/mockup-sandbox/     Custom GPT Creator SPA (React/Vite)
+│   ├── src/
+│   │   ├── App.tsx               Shell, routing, theme toggle
+│   │   ├── index.css             Brand tokens, light/dark theme, component CSS
+│   │   ├── pages/                9 build steps + 3 tool pages
+│   │   └── data/knowledge.ts     Reference data (limits, auth types, audit rubric)
+│   └── index.html                Entry point with no-flash theme script
+├── .agents/skills/               41+ OKHP3 Agent Skills (SKILL.md format)
+├── brand-styles/                 Brand registry and profile YAML files
+├── custom-gpts/                  Proto-GPT capability archives and distillations
+├── docs/                         ReFolDec specification, roadmap, operating model
+├── schemas/                      ReFolDec artifact schema and registry schemas
+├── scripts/                      Python audit utilities (sync, manifest, registry)
+├── registry/                     FoundRy repository index
+├── _template/                    Scaffold for governed child repositories
+├── AGENTS.md                     Canonical guide for human and agent contributors
+├── CONTRIBUTING.md               Workflow guidance for contributors
+├── CODE_OF_CONDUCT.md            Contributor Covenant 2.1
+├── SECURITY.md                   Vulnerability reporting process
+├── LICENSE                       Apache-2.0
+└── manifest.yaml                 FoundRy governance metadata
 ```
 
 ---
 
-## Operating model
+## Agent Skills
 
-ReFolDec treats artifacts as transformable objects with maturity states.
+The `.agents/skills/` directory contains 41+ reusable OKHP3 Agent Skills. Each skill follows the SKILL.md format with trigger conditions, inputs, outputs, and a step-by-step procedure.
 
-| Motion | Description | Example |
-|---|---|---|
-| Fold | Compress and structure raw material into a more mature artifact | Meeting notes → process document |
-| Unfold | Expand or decompose an artifact into its primitives and assumptions | README → concepts, audience, claims, gaps |
-| Refold | Recompose the improved primitives into a stronger artifact | Gaps + concepts → revised spec |
-| Link | Connect symbolic views to source context | Diagram node → Markdown page |
-| Package | Turn repeatable process into reusable instructions | Workflow → Agent Skill |
+Skills cover: process capture, brand style registry, Custom GPT authoring, equilibrium review, session handoff, skill foundry, thread extraction, Notion routing, repository organization, and more.
 
 ---
 
-## Non-goals
+## ReFolDec
 
-ReFolDec is not:
+The conceptual framework underpinning this workspace. ReFolDec (Recursively Folding Codec) is a bidirectional process-capture model:
 
-- a generic productivity slogan;
-- a replacement for BPMN, Mermaid, Notion, GitHub, or Agent Skills;
-- a private journal archive;
-- a one-off writing workflow;
-- a claim that every thought deserves formalization.
+- **Fold** raw material upward into structured artifacts.
+- **Unfold** mature artifacts downward into primitives, patterns, and reusable instructions.
+- **Refold** the improved primitives into stronger processes, diagrams, and skills.
 
-It is a framework for deciding **which thoughts are worth capturing**, how to mature them, how to invert them, and how to preserve them as reusable process knowledge.
+Full specification: `docs/specification.md`.
 
 ---
 
-## Status
+## Validation
 
-Early public scaffold. The repository is being shaped into a durable home for the concept and its operating artifacts.
+```bash
+python3 scripts/foundry-sync.py --strict
+python3 scripts/manifest-audit.py
+python3 scripts/registry-audit.py
+python3 scripts/sync-report.py
+python3 -m json.tool refoldec.manifest.json >/dev/null
+bash -n scripts/post-merge.sh
+python3 scripts/normalize_filenames.py . --recursive
+```
+
+---
+
+## Contributing
+
+See `CONTRIBUTING.md` for branch conventions, commit style, and validation steps.
+See `CODE_OF_CONDUCT.md` for community standards.
+
+Do not add a backend, router, database, or auth flow to the SPA. Do not add `npm install` guards bypasses. Keep the SPA client-only.
 
 ---
 
 ## License
 
-See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
