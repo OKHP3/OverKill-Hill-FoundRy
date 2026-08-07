@@ -29,7 +29,7 @@ export default function PlatformCompare() {
   };
 
   return (
-    <div style={{ maxWidth: 900 }}>
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           ⚖️ Platform Comparison

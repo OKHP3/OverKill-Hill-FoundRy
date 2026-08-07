@@ -228,3 +228,293 @@ h4, h5, h6 { text-wrap: pretty; }
   background: var(--color-forge-accent);
   color: var(--color-forge-paper);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE SHELL LAYOUT
+   Breakpoints: mobile <640, tablet 640-1023, desktop ≥1024
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Root shell ───────────────────────────────────────────── */
+.forge-shell {
+  display: flex;
+  height: 100%;
+  background: var(--color-forge-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Sidebar base ─────────────────────────────────────────── */
+.forge-sidebar {
+  width: 252px;
+  min-width: 252px;
+  background: var(--color-forge-surface);
+  border-right: 1px solid var(--color-forge-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  /* smooth desktop collapse */
+  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 150ms;
+}
+
+/* Desktop closed state — collapse to zero width in flow */
+@media (min-width: 1024px) {
+  .forge-sidebar:not(.forge-sidebar--open) {
+    width: 0;
+    min-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    border-right: none;
+  }
+}
+
+/* Mobile / tablet — sidebar becomes a fixed overlay drawer */
+.forge-sidebar--overlay {
+  position: fixed !important;
+  top: 0; left: 0;
+  height: 100dvh;
+  width: min(280px, 88vw) !important;
+  min-width: 0 !important;
+  z-index: 50;
+  overflow-y: auto;
+  /* slide from left */
+  transform: translateX(-110%);
+  transition: transform 260ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 260ms;
+  box-shadow: none;
+}
+.forge-sidebar--overlay.forge-sidebar--open {
+  transform: translateX(0);
+  box-shadow: 8px 0 48px rgba(0, 0, 0, 0.5);
+}
+
+/* Light mode overlay shadow */
+html[data-theme="light"] .forge-sidebar--overlay.forge-sidebar--open {
+  box-shadow: 8px 0 40px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Backdrop ─────────────────────────────────────────────── */
+.forge-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  z-index: 49;
+  cursor: pointer;
+  animation: fade-in 200ms ease-out both;
+}
+html[data-theme="light"] .forge-backdrop {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+/* ── Main content wrapper ─────────────────────────────────── */
+.forge-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0; /* prevent flex child overflow */
+}
+
+/* ── Topbar ───────────────────────────────────────────────── */
+.forge-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
+  height: 48px;
+  background: var(--color-forge-surface);
+  border-bottom: 1px solid var(--color-forge-border);
+  flex-shrink: 0;
+}
+
+.forge-hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-forge-muted-fg);
+  font-size: 1rem;
+  padding: 0.25rem 0.35rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  transition: color 150ms;
+  flex-shrink: 0;
+}
+.forge-hamburger:hover { color: var(--color-forge-fg); }
+
+.forge-topbar-pill {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-forge-accent);
+  background: var(--color-forge-panel);
+  border: 1px solid var(--color-forge-border);
+  border-radius: 5px;
+  padding: 0.15rem 0.5rem;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+/* Hide pill on small screens to prevent topbar crowding */
+@media (max-width: 580px) {
+  .forge-topbar-pill { display: none; }
+}
+
+.forge-topbar-label {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  color: var(--color-forge-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+@media (max-width: 400px) {
+  .forge-topbar-label { font-size: 0.8rem; }
+}
+
+.forge-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--color-forge-panel);
+  border: 1px solid var(--color-forge-border);
+  border-radius: var(--radius-md);
+  padding: 0.28rem 0.85rem;
+  color: var(--color-forge-fg);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  transition: border-color 150ms, color 150ms;
+  white-space: nowrap;
+}
+.forge-export-btn:hover {
+  border-color: var(--color-forge-accent);
+  color: var(--color-forge-accent);
+}
+/* Hide "Export" text label on very small screens — keep the icon */
+@media (max-width: 480px) {
+  .forge-export-label { display: none; }
+  .forge-export-btn   { padding: 0.28rem 0.6rem; }
+}
+
+/* ── Content scroll area ──────────────────────────────────── */
+.forge-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.75rem;
+}
+@media (max-width: 768px) {
+  .forge-content { padding: 1.25rem 1rem; }
+}
+@media (max-width: 480px) {
+  .forge-content { padding: 0.875rem 0.75rem; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE GRID UTILITIES
+   Used by page components instead of hardcoded inline styles.
+   ══════════════════════════════════════════════════════════════ */
+
+/* 2-column → 1-column on mobile */
+.forge-cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.forge-cols-2 > * { min-width: 0; }
+@media (max-width: 580px) {
+  .forge-cols-2 { grid-template-columns: 1fr; }
+}
+
+/* 3-column → 2-col tablet → 1-col mobile */
+.forge-cols-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.forge-cols-3 > * { min-width: 0; }
+@media (max-width: 720px) {
+  .forge-cols-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 460px) {
+  .forge-cols-3 { grid-template-columns: 1fr; }
+}
+
+/* InstructionStack: 220px sidebar + editor pane → stacked on mobile */
+.forge-instruction-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1rem;
+}
+.forge-instruction-layout > * { min-width: 0; }
+@media (max-width: 680px) {
+  .forge-instruction-layout { grid-template-columns: 1fr; }
+}
+
+/* KnowledgeFiles file row: filename + topic + type-select */
+.forge-file-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.forge-file-row > * { min-width: 0; }
+@media (max-width: 560px) {
+  .forge-file-row {
+    grid-template-columns: 1fr;
+  }
+  .forge-file-row select {
+    min-width: 0 !important;
+    width: 100%;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT MODE REFINEMENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* Slightly more visible dot grid in light mode */
+html[data-theme="light"] .forge-grid {
+  background-image: radial-gradient(circle, rgba(15, 23, 42, 0.13) 1px, transparent 1px);
+}
+
+/* Code blocks use espresso (very dark) — override to warm paper in light mode */
+html[data-theme="light"] pre,
+html[data-theme="light"] .forge-code-block {
+  background-color: #e8e3dc !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+/* Slightly stronger input borders in light mode for better contrast */
+html[data-theme="light"] textarea,
+html[data-theme="light"] input,
+html[data-theme="light"] select {
+  border-color: rgba(15, 23, 42, 0.22);
+}
+
+/* Sidebar hover state in light mode */
+html[data-theme="light"] .sidebar-item:hover {
+  background: rgba(196, 106, 44, 0.1) !important;
+}
+
+/* forge-panel in light mode — add subtle shadow for depth */
+html[data-theme="light"] .forge-panel {
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+/* Callout left border pops better against light bg */
+html[data-theme="light"] .callout {
+  background: rgba(196, 106, 44, 0.05);
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LARGE SCREEN ERGONOMICS  (≥1440px)
+   Wide viewports: pad the topbar for breathing room; sidebar
+   stays at 252px but the content area gets comfortable margins.
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 1440px) {
+  .forge-content { padding: 2rem 2.5rem; }
+  .forge-topbar  { padding: 0 1.75rem; }
+}

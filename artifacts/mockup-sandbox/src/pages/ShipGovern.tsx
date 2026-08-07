@@ -38,7 +38,7 @@ export default function ShipGovern({ onPrev }: Props) {
     (data.visibility !== "store" || data.builderProfileVerified);
 
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 760, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 8 · Ship & Govern
@@ -51,7 +51,7 @@ export default function ShipGovern({ onPrev }: Props) {
       {/* Visibility */}
       <div style={{ marginBottom: "1.5rem" }}>
         <label style={labelStyle}>Visibility</label>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", marginTop: "0.35rem" }}>
+        <div className="forge-cols-3" style={{ gap: "0.75rem", marginTop: "0.35rem" }}>
           {VISIBILITY_OPTIONS.map(opt => (
             <button key={opt.value} onClick={() => setData(prev => ({ ...prev, visibility: opt.value }))}
               style={{
@@ -82,7 +82,7 @@ export default function ShipGovern({ onPrev }: Props) {
       {/* Versioning */}
       <div style={{ marginBottom: "1.5rem" }}>
         <label style={labelStyle}>Current Version</label>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.5rem", marginBottom: "0.75rem" }}>
+        <div className="forge-cols-3" style={{ gap: "0.5rem", marginBottom: "0.75rem" }}>
           {VERSION_SCHEME.map(vs => (
             <button key={vs.version} onClick={() => setData(prev => ({ ...prev, currentVersion: vs.version }))}
               style={{

@@ -30,7 +30,7 @@ export default function ConversationStarters({ onNext, onPrev }: Props) {
   const filledCount = starters.filter(s => s.trim()).length;
 
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 760, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 6 · Conversation Starters
@@ -41,7 +41,7 @@ export default function ConversationStarters({ onNext, onPrev }: Props) {
       </div>
 
       {/* Bad/Good examples */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div className="forge-cols-2" style={{ gap: "1rem", marginBottom: "1.5rem" }}>
         <div className="forge-panel" style={{ borderLeft: "3px solid var(--color-forge-danger)" }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--color-forge-danger)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             ✗ Bad starters

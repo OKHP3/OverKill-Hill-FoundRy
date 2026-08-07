@@ -41,7 +41,7 @@ export default function BuildBrief({ onNext }: Props) {
   const total = Object.keys(DEFAULT).length;
 
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 760, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 0 · Build Brief
@@ -78,7 +78,7 @@ export default function BuildBrief({ onNext }: Props) {
             placeholder={"1. Correctly identifies policy violations in 10/10 test quotes\n2. Refuses to invent discount approvals\n3. Cites the correct policy clause in outputs\n4. Gracefully handles missing inputs by asking targeted questions\n5. Produces output in the specified 3-section format consistently"} />
         </Field>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div className="forge-cols-2" style={{ gap: "1rem" }}>
           <Field label="Allowed Data Sources" hint="What the GPT can reference">
             <textarea value={data.allowedSources} onChange={set("allowedSources")} autoComplete="off" rows={3}
               placeholder="Uploaded policy files, current conversation context, web search for public data" />

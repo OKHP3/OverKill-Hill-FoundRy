@@ -153,15 +153,33 @@ function StepBadge({ num, active, done }: { num: number; active: boolean; done: 
 
 export default function App() {
   const [page, setPage] = useState<PageId>(0);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const { stepsDone, markDone } = useAppState();
   const { preference: themePref, setPreference: setThemePref } = useTheme();
 
+  // Responsive sidebar: open on desktop (≥1024px), closed on mobile by default
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [isMobile, setIsMobile]       = useState(() => window.innerWidth < 1024);
+
   useEffect(() => {
-    if (window.innerWidth < 768) setSidebarOpen(false);
+    const onResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      setSidebarOpen(!mobile);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const navigate = (id: PageId) => setPage(id);
+  // Prevent body scroll while mobile overlay is open
+  useEffect(() => {
+    document.body.style.overflow = (isMobile && sidebarOpen) ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [isMobile, sidebarOpen]);
+
+  const navigate = (id: PageId) => {
+    setPage(id);
+    if (isMobile) setSidebarOpen(false); // close overlay after nav on mobile
+  };
   const goNext = () => {
     if (typeof page === "number") {
       markDone(page);
@@ -194,18 +212,15 @@ export default function App() {
   const progress = Math.round((stepsDone.size / BUILD_STEPS.length) * 100);
 
   /* ── Sidebar ──────────────────────────────────────────────── */
-  const sidebar = (
-    <aside className="forge-sidebar" style={{
-      width: 252,
-      minWidth: 252,
-      background: "var(--color-forge-surface)",
-      borderRight: "1px solid var(--color-forge-border)",
-      display: "flex",
-      flexDirection: "column",
-      overflowY: "auto",
-      flexShrink: 0,
-    }}>
-
+  const sidebarEl = (
+    <aside
+      className={[
+        "forge-sidebar",
+        sidebarOpen  ? "forge-sidebar--open"    : "",
+        isMobile     ? "forge-sidebar--overlay" : "",
+      ].filter(Boolean).join(" ")}
+      aria-label="Navigation"
+    >
       {/* ── Logo lockup ── */}
       <div style={{
         padding: "1.25rem 1rem 1rem",
@@ -213,7 +228,7 @@ export default function App() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "0.85rem" }}>
           <ForgeMark size={36} />
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.9rem", color: "var(--color-forge-fg)", lineHeight: 1.15 }}>
               OverKill Hill
             </div>
@@ -229,6 +244,21 @@ export default function App() {
               OKH&nbsp;P³&nbsp;·&nbsp;THE&nbsp;FORGE
             </div>
           </div>
+          {/* Close button — visible on mobile only */}
+          {isMobile && (
+            <button
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close navigation"
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                color: "var(--color-forge-muted-fg)", fontSize: "1.1rem",
+                padding: "0.25rem 0.4rem", borderRadius: 5, lineHeight: 1,
+                flexShrink: 0,
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Progress bar */}
@@ -246,7 +276,6 @@ export default function App() {
               ? "var(--color-forge-success)"
               : "linear-gradient(to right, var(--color-forge-accent), var(--color-forge-accent-hi))",
             borderRadius: 3,
-            /* profile motion rule: measured 300ms transitions */
             transition: "width 300ms ease-in-out",
             boxShadow: progress > 0 ? "0 0 6px rgba(196,106,44,0.5)" : "none",
           }} />
@@ -255,7 +284,6 @@ export default function App() {
 
       {/* ── Build Pipeline nav ── */}
       <nav style={{ padding: "0.75rem 0", flex: 1 }}>
-        {/* Section label */}
         <div style={{
           padding: "0 1rem 0.4rem",
           fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.1em",
@@ -264,14 +292,12 @@ export default function App() {
           Build Pipeline
         </div>
 
-        {/* Steps with vertical pipeline connector */}
         <div style={{ position: "relative" }}>
-          {/* Connector line runs down the center of the badges */}
+          {/* Connector line */}
           <div style={{
             position: "absolute",
             left: "calc(1rem + 11px)",
-            top: 8, bottom: 8,
-            width: 1,
+            top: 8, bottom: 8, width: 1,
             background: `linear-gradient(to bottom, var(--color-forge-border) 0%, var(--color-forge-border) 85%, transparent 100%)`,
             pointerEvents: "none",
           }} />
@@ -359,7 +385,7 @@ export default function App() {
         })}
       </nav>
 
-      {/* ── Footer — cardinal rule: brand name nowrap + NBSP ── */}
+      {/* ── Footer ── */}
       <div style={{
         padding: "0.65rem 1rem",
         borderTop: "1px solid var(--color-forge-border)",
@@ -384,79 +410,36 @@ export default function App() {
     : "TOOL";
 
   const topbar = (
-    <header style={{
-      display: "flex", alignItems: "center", gap: "0.75rem",
-      padding: "0 1.25rem",
-      height: 48,
-      background: "var(--color-forge-surface)",
-      borderBottom: "1px solid var(--color-forge-border)",
-      flexShrink: 0,
-    }}>
+    <header className="forge-topbar">
       {/* Hamburger */}
       <button
         onClick={() => setSidebarOpen(v => !v)}
         aria-label="Toggle sidebar"
         aria-expanded={sidebarOpen}
-        style={{
-          background: "none", border: "none", cursor: "pointer",
-          color: "var(--color-forge-muted-fg)", fontSize: "1rem",
-          padding: "0.25rem 0.35rem", borderRadius: 5,
-          display: "flex", alignItems: "center",
-          transition: "color 150ms",
-        }}
-        onMouseEnter={e => (e.currentTarget.style.color = "var(--color-forge-fg)")}
-        onMouseLeave={e => (e.currentTarget.style.color = "var(--color-forge-muted-fg)")}
+        className="forge-hamburger"
       >
         ☰
       </button>
 
-      {/* Step meta pill */}
-      <div style={{
-        fontFamily: "var(--font-mono)", fontSize: "0.6rem",
-        color: "var(--color-forge-accent)",
-        background: "var(--color-forge-panel)",
-        border: "1px solid var(--color-forge-border)",
-        borderRadius: 5, padding: "0.15rem 0.5rem",
-        letterSpacing: "0.06em", flexShrink: 0,
-      }}>
+      {/* Step meta pill — hidden on small screens via CSS */}
+      <div className="forge-topbar-pill">
         {stepMeta}
       </div>
 
-      {/* Step label */}
-      <span style={{
-        fontFamily: "var(--font-heading)", fontSize: "0.92rem",
-        color: "var(--color-forge-fg)",
-        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-      }}>
+      {/* Step label — truncates gracefully */}
+      <span className="forge-topbar-label">
         {stepLabel}
       </span>
 
-      {/* Right — theme toggle + export */}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.6rem" }}>
+      {/* Right controls */}
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.6rem", flexShrink: 0 }}>
         <ThemeToggle preference={themePref} setPreference={setThemePref} />
         <button
           onClick={() => navigate("export")}
-          style={{
-            display: "flex", alignItems: "center", gap: "0.4rem",
-            background: "var(--color-forge-panel)",
-            border: "1px solid var(--color-forge-border)",
-            borderRadius: "var(--radius-md)",
-            padding: "0.28rem 0.85rem",
-            color: "var(--color-forge-fg)", cursor: "pointer",
-            fontSize: "0.78rem", fontFamily: "var(--font-body)",
-            transition: "border-color 150ms, color 150ms",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = "var(--color-forge-accent)";
-            (e.currentTarget as HTMLElement).style.color = "var(--color-forge-accent)";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = "var(--color-forge-border)";
-            (e.currentTarget as HTMLElement).style.color = "var(--color-forge-fg)";
-          }}
+          className="forge-export-btn"
         >
-          <span>📦</span>
-          <span>Export</span>
+          <span aria-hidden="true">📦</span>
+          <span className="forge-export-label">Export</span>
         </button>
       </div>
     </header>
@@ -464,17 +447,21 @@ export default function App() {
 
   /* ── Render ───────────────────────────────────────────────── */
   return (
-    <div style={{ display: "flex", height: "100%", background: "var(--color-forge-bg)" }}>
-      {sidebarOpen && sidebar}
+    <div className="forge-shell">
+      {/* Mobile backdrop — dims content behind open sidebar overlay */}
+      {isMobile && sidebarOpen && (
+        <div
+          className="forge-backdrop"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {sidebarEl}
+
+      <div className="forge-main-wrapper">
         {topbar}
-
-        {/* Content — forge grid texture + Suspense boundary */}
-        <main
-          className="forge-grid fade-in-up"
-          style={{ flex: 1, overflowY: "auto", padding: "1.75rem" }}
-        >
+        <main className="forge-grid forge-content fade-in-up">
           <Suspense fallback={
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "center",

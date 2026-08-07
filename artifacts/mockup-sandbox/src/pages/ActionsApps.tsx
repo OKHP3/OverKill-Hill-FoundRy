@@ -38,7 +38,7 @@ export default function ActionsApps({ onNext, onPrev }: Props) {
   }, [data.openApiSchema]);
 
   return (
-    <div style={{ maxWidth: 820 }}>
+    <div style={{ maxWidth: 820, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 5 · Actions / Apps
@@ -59,7 +59,7 @@ export default function ActionsApps({ onNext, onPrev }: Props) {
       </div>
 
       {/* Choice selector */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", marginBottom: "1.5rem" }}>
+      <div className="forge-cols-3" style={{ gap: "0.75rem", marginBottom: "1.5rem" }}>
         {[
           { value: "none", label: "No Integration", icon: "🚫", desc: "Instructions and knowledge only" },
           { value: "actions", label: "Actions (OpenAPI)", icon: "⚡", desc: "Your own API via OpenAPI schema" },

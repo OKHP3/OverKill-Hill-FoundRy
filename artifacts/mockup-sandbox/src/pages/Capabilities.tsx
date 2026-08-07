@@ -30,7 +30,7 @@ export default function Capabilities({ onNext, onPrev }: Props) {
   const enabledCount = Object.values(caps).filter(Boolean).length;
 
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 760, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 4 · Capabilities

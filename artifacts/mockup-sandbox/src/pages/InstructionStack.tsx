@@ -51,7 +51,7 @@ export default function InstructionStack({ onNext, onPrev }: Props) {
   const contradictionWarning = hasConcise && hasComprehensive;
 
   return (
-    <div style={{ maxWidth: 900 }}>
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 2 · Instruction Stack
@@ -61,7 +61,7 @@ export default function InstructionStack({ onNext, onPrev }: Props) {
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "1rem" }}>
+      <div className="forge-instruction-layout">
         {/* Layer nav */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           {INSTRUCTION_LAYERS.map(layer => {

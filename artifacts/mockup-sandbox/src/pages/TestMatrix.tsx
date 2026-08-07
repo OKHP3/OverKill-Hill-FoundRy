@@ -55,7 +55,7 @@ export default function TestMatrix({ onNext, onPrev }: Props) {
   const hasMissingCategory = coverage.some(c => c.count === 0);
 
   return (
-    <div style={{ maxWidth: 900 }}>
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 7 · Test Matrix
@@ -151,7 +151,7 @@ export default function TestMatrix({ onNext, onPrev }: Props) {
                     style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-forge-danger)", fontSize: "0.85rem", padding: "0.1rem 0.25rem" }}>✕</button>
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+              <div className="forge-cols-2" style={{ gap: "0.5rem" }}>
                 <textarea value={tc.prompt} onChange={e => updateCase(tc.id, "prompt", e.target.value)} rows={2}
                   placeholder={catInfo?.description || "Test prompt..."}
                   style={{ fontSize: "0.82rem", resize: "none" }} />

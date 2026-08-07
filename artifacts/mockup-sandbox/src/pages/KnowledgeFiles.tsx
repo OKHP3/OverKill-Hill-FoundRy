@@ -28,7 +28,7 @@ export default function KnowledgeFiles({ onNext, onPrev }: Props) {
     setData(prev => ({ ...prev, files: prev.files.map(f => f.id === id ? { ...f, [k]: v } : f) }));
 
   return (
-    <div style={{ maxWidth: 820 }}>
+    <div style={{ maxWidth: 820, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "var(--color-forge-accent)", margin: 0 }}>
           Step 3 · Knowledge Files
@@ -39,7 +39,7 @@ export default function KnowledgeFiles({ onNext, onPrev }: Props) {
       </div>
 
       {/* Constraints banner */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", marginBottom: "1.5rem" }}>
+      <div className="forge-cols-3" style={{ gap: "0.75rem", marginBottom: "1.5rem" }}>
         {[
           { label: "Max files", value: "20", note: "per GPT" },
           { label: "Max size", value: "512 MB", note: "per file" },
@@ -85,7 +85,7 @@ export default function KnowledgeFiles({ onNext, onPrev }: Props) {
           <div key={file.id} style={{ marginBottom: "0.75rem", padding: "1rem", background: "var(--color-forge-panel)", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)" }}>
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", minWidth: "1.5rem" }}>#{idx + 1}</span>
-              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "0.5rem" }}>
+              <div className="forge-file-row" style={{ flex: 1 }}>
                 <input value={file.filename} onChange={e => updateFile(file.id, "filename", e.target.value)}
                   autoComplete="off" placeholder="filename-descriptive-v1.pdf" style={{ fontSize: "0.85rem" }} />
                 <input value={file.topic} onChange={e => updateFile(file.id, "topic", e.target.value)}
