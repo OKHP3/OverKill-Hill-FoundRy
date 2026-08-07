@@ -215,10 +215,10 @@ export default function App() {
           <ForgeMark size={36} />
           <div>
             <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.9rem", color: "var(--color-forge-fg)", lineHeight: 1.15 }}>
-              Custom GPT
+              OverKill Hill
             </div>
             <div style={{ fontFamily: "var(--font-heading)", fontSize: "0.78rem", color: "var(--color-forge-accent)", lineHeight: 1.15 }}>
-              Creator
+              Found-Ry
             </div>
             {/* cardinal rule: brand name must not wrap — nowrap + NBSP guards */}
             <div style={{

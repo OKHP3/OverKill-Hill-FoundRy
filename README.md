@@ -2,11 +2,11 @@
 
 **OKHP3 / OverKill-Hill-FoundRy**
 
-A Replit workspace and GitHub repository for the OverKill Hill P3 family. The primary artifact is the **Custom GPT Creator SPA** — a browser-only, 9-step tool for designing, documenting, auditing, and exporting production-grade OpenAI Custom GPTs (and Gemini Gems / Copilot Declarative Agents). It is also the living home for 41+ OKHP3 Agent Skills, the brand-style registry, and the ReFolDec process framework.
+A Replit workspace and GitHub repository for the OverKill Hill P3 family. The primary artifact is **The OverKill Hill Found-Ry** — a browser-only, 9-step tool for designing, documenting, auditing, and exporting production-grade OpenAI Custom GPTs (and Gemini Gems / Copilot Declarative Agents). It is also the living home for 41+ OKHP3 Agent Skills, the brand-style registry, and the ReFolDec process framework.
 
 ---
 
-## Custom GPT Creator SPA
+## The OverKill Hill Found-Ry
 
 The SPA lives at `artifacts/mockup-sandbox/` and runs at `localhost:5000` in the Replit workspace. No backend. No database. No auth. All state is `localStorage`.
 
@@ -66,7 +66,7 @@ PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev
 python3 scripts/foundry-sync.py
 ```
 
-The Replit workflow named **Custom GPT Creator SPA** handles the SPA startup automatically.
+The Replit workflow named **Custom GPT Creator SPA** handles startup automatically.
 
 ---
 
@@ -74,7 +74,7 @@ The Replit workflow named **Custom GPT Creator SPA** handles the SPA startup aut
 
 ```text
 .
-├── artifacts/mockup-sandbox/     Custom GPT Creator SPA (React/Vite)
+├── artifacts/mockup-sandbox/     The OverKill Hill Found-Ry (React/Vite)
 │   ├── src/
 │   │   ├── App.tsx               Shell, routing, theme toggle
 │   │   ├── index.css             Brand tokens, light/dark theme, component CSS
