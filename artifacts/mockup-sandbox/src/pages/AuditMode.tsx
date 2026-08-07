@@ -51,7 +51,7 @@ export default function AuditMode() {
       <div style={{ marginBottom: "1.5rem" }}>
         <label style={labelStyle}>GPT name / URL being audited</label>
         <input value={gptName} onChange={e => setGptName(e.target.value)}
-          placeholder="e.g. Margin Guard v1.2 · chatgpt.com/g/g-abc123" />
+          autoComplete="off" placeholder="e.g. Margin Guard v1.2 · chatgpt.com/g/g-abc123" />
       </div>
 
       {/* Score cards */}
@@ -96,7 +96,7 @@ export default function AuditMode() {
               </div>
               <div style={{ marginTop: "0.5rem", paddingLeft: "1.75rem" }}>
                 <input value={notes[item.id] || ""} onChange={e => setNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
-                  placeholder="Notes / evidence..."
+                  autoComplete="off" placeholder="Notes / evidence..."
                   style={{ fontSize: "0.78rem" }} />
               </div>
             </div>

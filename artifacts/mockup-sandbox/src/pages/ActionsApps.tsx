@@ -110,7 +110,7 @@ export default function ActionsApps({ onNext, onPrev }: Props) {
               Required for any published GPT that uses Actions. Missing this blocks GPT Store submission.
             </div>
             <input value={data.privacyPolicyUrl} onChange={set("privacyPolicyUrl")}
-              placeholder="https://yoursite.com/privacy-policy" />
+              autoComplete="url" placeholder="https://yoursite.com/privacy-policy" />
           </div>
 
           <div>
@@ -125,13 +125,14 @@ export default function ActionsApps({ onNext, onPrev }: Props) {
               Write descriptions for the model, not humans. Max: {ACTIONS_LIMITS.endpointDescriptionMaxChars} chars/endpoint, {ACTIONS_LIMITS.parameterDescriptionMaxChars} chars/param.
             </div>
             <textarea value={data.openApiSchema} onChange={set("openApiSchema")} rows={14}
+              autoComplete="off"
               style={{ fontFamily: "var(--font-mono)", fontSize: "0.78rem", resize: "vertical" }}
               placeholder="Paste or type your OpenAPI 3.0/3.1 schema here, or click 'Load Template' for a working example." />
           </div>
 
           <div>
             <label style={labelStyle}>Error handling instructions (for Layer 4: Tool Policy)</label>
-            <textarea value={data.errorHandling} onChange={set("errorHandling")} rows={3}
+            <textarea value={data.errorHandling} onChange={set("errorHandling")} autoComplete="off" rows={3}
               placeholder="If the API returns an error or times out, tell the user the service is temporarily unavailable. Do not fabricate data. Suggest they try again in a few minutes." />
           </div>
 
@@ -170,7 +171,7 @@ export default function ActionsApps({ onNext, onPrev }: Props) {
           </div>
           <div>
             <label style={labelStyle}>Notes on apps/connectors needed</label>
-            <textarea value={data.appsNotes} onChange={set("appsNotes")} rows={5}
+            <textarea value={data.appsNotes} onChange={set("appsNotes")} autoComplete="off" rows={5}
               placeholder={"Which pre-built integrations are needed?\ne.g.\n- Salesforce (for live account data)\n- Jira (for ticket lookup)\n- Google Workspace (for Docs and Drive)\n\nNote any governance requirements from your org's workspace admin."} />
           </div>
         </div>

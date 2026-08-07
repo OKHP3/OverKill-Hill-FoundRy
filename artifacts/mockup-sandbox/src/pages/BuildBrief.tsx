@@ -56,46 +56,46 @@ export default function BuildBrief({ onNext }: Props) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <Field label="GPT Name" hint="Short, descriptive, specific to the job — not 'AI Assistant'">
-          <input value={data.gptName} onChange={set("gptName")} placeholder="e.g. Margin Guard, Invoice Follow-Up Drafter, Brand Voice Editor" />
+          <input value={data.gptName} onChange={set("gptName")} autoComplete="off" placeholder="e.g. Margin Guard, Invoice Follow-Up Drafter, Brand Voice Editor" />
         </Field>
 
         <Field label="Primary User(s)" hint="Role, expertise level, context">
-          <input value={data.primaryUsers} onChange={set("primaryUsers")} placeholder="e.g. Sales reps reviewing enterprise quotes before submission" />
+          <input value={data.primaryUsers} onChange={set("primaryUsers")} autoComplete="off" placeholder="e.g. Sales reps reviewing enterprise quotes before submission" />
         </Field>
 
         <Field label="Primary Outcomes (list 3)" hint="What success looks like for the user — be specific">
-          <textarea value={data.outcomes} onChange={set("outcomes")} rows={4}
+          <textarea value={data.outcomes} onChange={set("outcomes")} autoComplete="off" rows={4}
             placeholder={"1. Draft a compliant follow-up email for overdue invoices in <2 min\n2. Flag policy exceptions before they reach the deal desk\n3. Surface the exact policy clause being violated"} />
         </Field>
 
         <Field label="Non-Goals / Out of Scope (list 5)" hint="What this GPT will NOT do — explicit scope bounds prevent drift">
-          <textarea value={data.nonGoals} onChange={set("nonGoals")} rows={4}
+          <textarea value={data.nonGoals} onChange={set("nonGoals")} autoComplete="off" rows={4}
             placeholder={"1. Not a general customer service bot\n2. Does not provide legal advice\n3. Does not approve discounts\n4. Does not access live CRM data\n5. Does not handle pricing for international markets"} />
         </Field>
 
         <Field label='"Done When" Acceptance Criteria (5 measurable checks)' hint="Objective tests that prove the GPT works">
-          <textarea value={data.doneCriteria} onChange={set("doneCriteria")} rows={4}
+          <textarea value={data.doneCriteria} onChange={set("doneCriteria")} autoComplete="off" rows={4}
             placeholder={"1. Correctly identifies policy violations in 10/10 test quotes\n2. Refuses to invent discount approvals\n3. Cites the correct policy clause in outputs\n4. Gracefully handles missing inputs by asking targeted questions\n5. Produces output in the specified 3-section format consistently"} />
         </Field>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <Field label="Allowed Data Sources" hint="What the GPT can reference">
-            <textarea value={data.allowedSources} onChange={set("allowedSources")} rows={3}
+            <textarea value={data.allowedSources} onChange={set("allowedSources")} autoComplete="off" rows={3}
               placeholder="Uploaded policy files, current conversation context, web search for public data" />
           </Field>
           <Field label="Disallowed Data Sources" hint="What to refuse or ignore">
-            <textarea value={data.disallowedSources} onChange={set("disallowedSources")} rows={3}
+            <textarea value={data.disallowedSources} onChange={set("disallowedSources")} autoComplete="off" rows={3}
               placeholder="Live CRM, financial systems, internal employee data, competitor pricing" />
           </Field>
         </div>
 
         <Field label="Tooling Allowed" hint="Which capabilities and integrations can be enabled">
-          <input value={data.toolingAllowed} onChange={set("toolingAllowed")}
+          <input value={data.toolingAllowed} onChange={set("toolingAllowed")} autoComplete="off"
             placeholder="e.g. Web Search (off), Code Interpreter (off), Knowledge files (on), Actions (future)" />
         </Field>
 
         <Field label="Safety / Compliance Constraints" hint="PII, PHI, financial advice, legal advice, regulated content">
-          <textarea value={data.compliance} onChange={set("compliance")} rows={3}
+          <textarea value={data.compliance} onChange={set("compliance")} autoComplete="off" rows={3}
             placeholder={"Never output PII beyond what the user provides\nNo financial/legal advice — route to human\nNo confidential pricing outside this GPT"} />
         </Field>
       </div>

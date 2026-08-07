@@ -87,9 +87,9 @@ export default function KnowledgeFiles({ onNext, onPrev }: Props) {
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", minWidth: "1.5rem" }}>#{idx + 1}</span>
               <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "0.5rem" }}>
                 <input value={file.filename} onChange={e => updateFile(file.id, "filename", e.target.value)}
-                  placeholder="filename-descriptive-v1.pdf" style={{ fontSize: "0.85rem" }} />
+                  autoComplete="off" placeholder="filename-descriptive-v1.pdf" style={{ fontSize: "0.85rem" }} />
                 <input value={file.topic} onChange={e => updateFile(file.id, "topic", e.target.value)}
-                  placeholder="Topic / when the GPT should consult this" style={{ fontSize: "0.85rem" }} />
+                  autoComplete="off" placeholder="Topic / when the GPT should consult this" style={{ fontSize: "0.85rem" }} />
                 <select value={file.type} onChange={e => updateFile(file.id, "type", e.target.value)}
                   style={{ minWidth: "110px", fontSize: "0.82rem" }}>
                   {FILE_TYPES.map(t => <option key={t}>{t}</option>)}
@@ -100,7 +100,7 @@ export default function KnowledgeFiles({ onNext, onPrev }: Props) {
             </div>
             <div style={{ marginTop: "0.5rem", paddingLeft: "2.25rem" }}>
               <input value={file.notes} onChange={e => updateFile(file.id, "notes", e.target.value)}
-                placeholder="Notes for instruction routing (e.g. 'When user asks about pricing, consult this file first')"
+                autoComplete="off" placeholder="Notes for instruction routing (e.g. 'When user asks about pricing, consult this file first')"
                 style={{ fontSize: "0.8rem" }} />
             </div>
           </div>
@@ -129,7 +129,7 @@ If the answer is not in the knowledge files, say so explicitly.`}
         <label style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "var(--color-forge-accent)", marginBottom: "0.35rem" }}>
           Retrieval testing notes
         </label>
-        <textarea value={data.retrievalNotes} onChange={e => setData(prev => ({ ...prev, retrievalNotes: e.target.value }))} rows={3}
+        <textarea value={data.retrievalNotes} onChange={e => setData(prev => ({ ...prev, retrievalNotes: e.target.value }))} autoComplete="off" rows={3}
           placeholder="After uploading, ask questions that require info from specific files. If the GPT ignores them, add explicit routing instructions. Note any retrieval failures here." />
       </div>
 

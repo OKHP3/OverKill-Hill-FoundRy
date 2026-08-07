@@ -102,7 +102,7 @@ export default function ShipGovern({ onPrev }: Props) {
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
         <div>
           <label style={labelStyle}>Owner / Maintainer</label>
-          <input value={data.ownerName} onChange={set("ownerName")} placeholder="Team name, person, or org unit responsible for this GPT" />
+          <input value={data.ownerName} onChange={set("ownerName")} autoComplete="organization" placeholder="Team name, person, or org unit responsible for this GPT" />
         </div>
         <div>
           <label style={labelStyle}>Change log entry for this version</label>

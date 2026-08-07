@@ -99,6 +99,7 @@ export default function InstructionStack({ onNext, onPrev }: Props) {
               <textarea
                 value={layers[layer.id] || ""}
                 onChange={setLayer(layer.id)}
+                autoComplete="off"
                 rows={8}
                 placeholder={layer.placeholder}
                 style={{ resize: "vertical", minHeight: "140px" }}

@@ -37,22 +37,22 @@ export default function ConversationContract({ onNext, onPrev }: Props) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <SField label="What inputs do users provide?" hint="Be specific: paste text, upload file, fill a form, provide an ID, select from options?">
-          <textarea value={data.inputs} onChange={set("inputs")} rows={4}
+          <textarea value={data.inputs} onChange={set("inputs")} autoComplete="off" rows={4}
             placeholder={"Example inputs:\n- Paste an invoice number and amount\n- Upload a quote PDF\n- Describe a customer situation in natural language\n- Provide a competitor name and product category"} />
         </SField>
 
         <SField label="What outputs must the GPT produce?" hint="Format, structure, length, tone, and any required fields">
-          <textarea value={data.outputs} onChange={set("outputs")} rows={4}
+          <textarea value={data.outputs} onChange={set("outputs")} autoComplete="off" rows={4}
             placeholder={"Example outputs:\n- A 3-section response: Executive Summary (2 sentences) / Risk Analysis (bullets) / Recommended Action (1 sentence)\n- Always include the policy clause number being referenced\n- End with a confidence rating: High / Medium / Low"} />
         </SField>
 
         <SField label="Top 10 tasks (ranked by priority)" hint="Most important first — this shapes what gets optimized in instructions">
-          <textarea value={data.topTasks} onChange={set("topTasks")} rows={8}
+          <textarea value={data.topTasks} onChange={set("topTasks")} autoComplete="off" rows={8}
             placeholder={"1. Identify discount policy violations in submitted quotes\n2. Flag missing approval chain signatures\n3. Calculate margin impact of proposed discounts\n4. Cite the exact policy clause being violated\n5. Draft a response for the deal desk\n6. Escalate multi-million dollar exceptions to legal\n7. Explain the approval path for non-standard terms\n8. Summarize anomalies for weekly leadership review\n9. Generate a quote comparison report\n10. Archive the decision rationale"} />
         </SField>
 
         <SField label="What mistakes are catastrophic?" hint="The failure modes you cannot tolerate — these become hard guardrails in instructions">
-          <textarea value={data.catastrophicMistakes} onChange={set("catastrophicMistakes")} rows={4}
+          <textarea value={data.catastrophicMistakes} onChange={set("catastrophicMistakes")} autoComplete="off" rows={4}
             placeholder={"- Approving a discount that violates policy (must never invent approval authority)\n- Presenting hallucinated data as fact from files that don't contain it\n- Leaking confidential pricing from uploaded files in response to external-facing output\n- Missing a PHI/PII data restriction and exposing sensitive info"} />
         </SField>
       </div>

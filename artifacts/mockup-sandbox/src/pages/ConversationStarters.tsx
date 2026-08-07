@@ -80,6 +80,7 @@ export default function ConversationStarters({ onNext, onPrev }: Props) {
               <input
                 value={starter}
                 onChange={e => update(idx, e.target.value)}
+                autoComplete="off"
                 placeholder={STARTER_EXAMPLES_GOOD[idx] || "Write a specific task the user can launch..."}
                 style={{ fontSize: "0.88rem" }}
               />
