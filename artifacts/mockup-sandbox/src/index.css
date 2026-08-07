@@ -49,6 +49,19 @@ html, body, #root {
 ::-webkit-scrollbar-thumb { background: var(--color-forge-muted); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-forge-accent); }
 
+/* Forge grid — subtle dot pattern on content areas */
+.forge-grid {
+  background-image: radial-gradient(circle, rgba(42, 58, 74, 0.65) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: local;
+}
+
+/* Sidebar nav item hover */
+.sidebar-item:hover {
+  background: rgba(196, 106, 44, 0.06) !important;
+  color: var(--color-forge-fg) !important;
+}
+
 /* Typography */
 h1, h2, h3 { font-family: var(--font-heading); letter-spacing: 0.01em; }
 code, pre, .mono { font-family: var(--font-mono); }
