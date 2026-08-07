@@ -1,6 +1,63 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { BUILD_STEPS, NAV_EXTRAS } from "./data/knowledge";
 
+/* ── Theme ────────────────────────────────────────────────── */
+
+type ThemePreference = "light" | "dark" | "system";
+
+function useTheme() {
+  const [preference, setPreference] = useState<ThemePreference>(() => {
+    try { return (localStorage.getItem("forge-theme") as ThemePreference) || "system"; }
+    catch { return "system"; }
+  });
+
+  useEffect(() => {
+    const apply = (pref: ThemePreference) => {
+      const dark = pref === "dark" ||
+        (pref === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    };
+    apply(preference);
+    try { localStorage.setItem("forge-theme", preference); } catch { /* ignore */ }
+
+    if (preference === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => apply("system");
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    }
+  }, [preference]);
+
+  return { preference, setPreference };
+}
+
+function ThemeToggle({ preference, setPreference }: {
+  preference: ThemePreference;
+  setPreference: (t: ThemePreference) => void;
+}) {
+  const options: { id: ThemePreference; icon: string; label: string }[] = [
+    { id: "light",  icon: "☀",  label: "Light mode"  },
+    { id: "system", icon: "⊙",  label: "System mode" },
+    { id: "dark",   icon: "☾",  label: "Dark mode"   },
+  ];
+  return (
+    <div className="theme-toggle" role="group" aria-label="Color theme">
+      {options.map(opt => (
+        <button
+          key={opt.id}
+          className={`theme-toggle-btn${preference === opt.id ? " active" : ""}`}
+          onClick={() => setPreference(opt.id)}
+          aria-label={opt.label}
+          aria-pressed={preference === opt.id}
+          title={opt.label}
+        >
+          {opt.icon}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // Skill 7 (vercel-react-best-practices): lazy-load all page chunks so the
 // initial bundle only ships the shell; pages load on first navigation.
 const BuildBrief           = lazy(() => import("./pages/BuildBrief"));
@@ -98,6 +155,7 @@ export default function App() {
   const [page, setPage] = useState<PageId>(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { stepsDone, markDone } = useAppState();
+  const { preference: themePref, setPreference: setThemePref } = useTheme();
 
   useEffect(() => {
     if (window.innerWidth < 768) setSidebarOpen(false);
@@ -277,7 +335,7 @@ export default function App() {
               style={{
                 display: "flex", alignItems: "center", gap: "0.6rem",
                 width: "100%", padding: "0.38rem 1rem",
-                background: isActive ? "rgba(28,58,52,0.6)" : "transparent",
+                background: isActive ? "var(--color-forge-teal-active)" : "transparent",
                 borderWidth: "0 0 0 3px", borderStyle: "solid",
                 borderColor: isActive ? "var(--color-forge-teal-hi)" : "transparent",
                 color: isActive ? "var(--color-forge-fg)" : "var(--color-forge-muted-fg)",
@@ -373,8 +431,9 @@ export default function App() {
         {stepLabel}
       </span>
 
-      {/* Right — Export */}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      {/* Right — theme toggle + export */}
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.6rem" }}>
+        <ThemeToggle preference={themePref} setPreference={setThemePref} />
         <button
           onClick={() => navigate("export")}
           style={{
