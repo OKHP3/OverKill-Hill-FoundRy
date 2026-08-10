@@ -70,6 +70,22 @@ PRESERVE_NAMES: frozenset[str] = frozenset({
     "SECURITY.md",
     "SUPPORT.md",
     "AGENTS.md",
+    # Agent/runtime conventions. These names are consumed by tools and are
+    # intentionally not normalized to lowercase-kebab-case.
+    "CLAUDE.md",
+    "SKILL.md",
+    # Repository configuration and published artifact names.
+    "PORTFOLIO-BRAND-CATALOG-2026-07-20.md",
+    "CORPUS-LEDGER.md",
+    "CUSTOM-GPT-OPERATING-METHOD.md",
+    "DATA-LEDGER-DISTILLATION.md",
+    "EVIDENCE-REGISTER.md",
+    "PROMPT-CHAIN-DISTILLATION.md",
+    "arcsyntrixo-instructions-v1.0.md",
+    "aurifexo-r-instructions-v1.0.md",
+    "refoldec.manifest.json",
+    "refoldec-artifact.schema.json",
+    "tsconfig.base.json",
     "NOTICE",
     "NOTICE.md",
     "PATENT",
