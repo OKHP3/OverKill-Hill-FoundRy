@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/okh-identity/"
+title = "OKH Identity Card"
+description = "The OKH Found·Ry brand identity card — a compact horizontal data-plate card showing the forge hammer mark, brand hierarchy, tech stack, and OKH palette. Standalone artifact built from the ForgeIdentityCard canvas design."
+version = "1.0.0"
+id = "artifacts/okh-identity-card"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/okh-identity/" ]
+localPort = 24910
+
+[services.development]
+run = "pnpm --filter @workspace/okh-identity-card run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/okh-identity-card", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/okh-identity-card/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24910"
+BASE_PATH = "/okh-identity/"
