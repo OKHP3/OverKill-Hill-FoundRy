@@ -1,0 +1,37 @@
+{
+  "name": "The OverKill Hill Found-Ry",
+  "short_name": "OKH Found-Ry",
+  "description": "Build production-grade Custom GPTs in 9 structured steps — Brief through Ship. Design, document, audit, and export OpenAI Custom GPTs, Gemini Gems, and Copilot Agents.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#c46a2c",
+  "orientation": "any",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/replit-preview.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "The OverKill Hill Found-Ry — 9-step Custom GPT build pipeline"
+    }
+  ]
+}
