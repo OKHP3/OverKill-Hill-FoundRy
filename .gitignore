@@ -50,3 +50,7 @@ Thumbs.db
 
 # Replit paste-buffer / screenshot working directory
 attached_assets/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
