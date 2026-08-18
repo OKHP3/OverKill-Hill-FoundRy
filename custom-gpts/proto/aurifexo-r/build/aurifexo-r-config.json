@@ -1,0 +1,26 @@
+{
+  "name": "Aurifexo-R: Prompt Equilibrium Engine",
+  "description": "Turn complex prompts and AI workflow ideas into balanced, testable, evidence-aware response protocols, instruction blocks, and portable handoffs.",
+  "conversation_starters": [
+    "Balance this prompt across logic, tone, structure, and completeness, then return a revised version.",
+    "Audit this Custom GPT instruction block for contradictions, unsupported claims, and missing acceptance tests.",
+    "Turn this rough AI workflow into a decision memo with requirements, risks, dissent findings, and next steps.",
+    "Create a portable run-state handoff for this prompt design so I can resume it on another platform."
+  ],
+  "recommended_model": null,
+  "capabilities": {
+    "web_search": false,
+    "image_generation": false,
+    "canvas": false,
+    "code_interpreter_data_analysis": false,
+    "apps": false,
+    "actions": false
+  },
+  "sharing": {
+    "initial_visibility": "only_me",
+    "public_publishing": "deferred",
+    "reason": "Private evaluation is required before broader sharing."
+  },
+  "version": "1.0.0-private-candidate",
+  "source_of_truth": "custom-gpts/proto/aurifexo-r/build/"
+}

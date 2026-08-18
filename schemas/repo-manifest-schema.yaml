@@ -1,0 +1,70 @@
+schema_version: "1.0"
+title: OKHP3 Repository Manifest Schema
+description: Canonical manifest contract for FoundRy relay and child capability repositories.
+required_fields:
+  - schema_version
+  - repo.name
+  - repo.display_name
+  - repo.type
+  - repo.lifecycle_status
+  - repo.visibility
+  - brand_domain
+  - author
+allowed_values:
+  repo.type:
+    - site
+    - foundry-relay
+    - web-app
+    - skill
+    - agent
+    - research
+    - writing
+    - archive
+    - experiment
+    - template
+    - index
+    - capability
+  repo.lifecycle_status:
+    - spark
+    - research
+    - concept
+    - prototype
+    - capability
+    - productizing
+    - product
+    - active
+    - archived
+    - deprecated
+  repo.visibility:
+    - private
+    - private-review
+    - graduating
+    - public
+    - public-retired
+  brand_domain:
+    - overkillhill
+    - askjamie
+    - gleefully
+    - shared
+    - bfs-isolated
+recommended_fields:
+  - governance.parent_foundry
+  - governance.agents_version
+  - governance.naming_pattern
+  - lineage.parent_capability
+  - lineage.parent_skill
+  - lineage.suite_id
+  - lineage.branch_id
+  - lineage.tool_id
+  - visibility_control.visibility_lock
+  - visibility_control.public_graduation_allowed
+  - visibility_control.requires_public_source_audit
+  - visibility_control.client_org
+  - visibility_control.bfs_firewall
+visibility_rules:
+  - if: visibility_control.client_org is set
+    then: visibility_control.public_graduation_allowed must be false unless explicitly overridden
+  - if: visibility_control.bfs_firewall is true
+    then: visibility_control.visibility_lock should be permanent-private
+  - if: visibility_control.visibility_lock is permanent-private
+    then: repo.visibility must not be public

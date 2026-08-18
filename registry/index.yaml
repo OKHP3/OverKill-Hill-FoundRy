@@ -1,0 +1,20 @@
+schema_version: "1.0"
+foundry: OverKill-Hill-FoundRy
+brand_domain: overkillhill
+last_reviewed: TBD
+repositories:
+  - name: OverKill-Hill
+    type: site
+    lifecycle_status: active
+  - name: mermaid-theme-builder
+    type: web-app
+    lifecycle_status: active
+  - name: mermaid-diagram-bpmn
+    type: web-app
+    lifecycle_status: active
+  - name: mac-studio-local-ai-workbench
+    type: research
+    lifecycle_status: active
+  - name: infusing-a-soul
+    type: capability
+    lifecycle_status: prototype

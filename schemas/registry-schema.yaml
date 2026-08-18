@@ -1,0 +1,33 @@
+schema_version: "1.0"
+title: FoundRy Registry Schema
+required_fields:
+  - name
+  - type
+  - lifecycle_status
+allowed_values:
+  type:
+    - site
+    - foundry-relay
+    - web-app
+    - skill
+    - agent
+    - capability
+    - research
+    - writing
+    - archive
+  lifecycle_status:
+    - spark
+    - research
+    - concept
+    - prototype
+    - capability
+    - productizing
+    - product
+    - active
+    - archived
+    - deprecated
+recommended_fields:
+  - parent_foundry
+  - visibility
+  - tags
+  - last_reviewed

@@ -1,0 +1,23 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "muqQzyd0xQwXiqegPamwT"
+uri = "file://artifacts/mockup-sandbox/public/assets/github-social-preview.jpg"
+type = "image"
+title = "GitHub Social Preview (1280×640)"
+description = "Repository social card shown when the repo link is shared on Twitter/X, Slack, LinkedIn, etc. Upload in GitHub → Settings → Social preview."
+
+[[outputs]]
+id = "0oD_6f51Q8t8yT34YuSrg"
+uri = "file://artifacts/mockup-sandbox/public/assets/replit-preview.jpg"
+type = "image"
+title = "Replit Cover — set this in Settings → General → Cover image"
+description = "Wide forge scene for the project card. In Replit: click the project name top-left → Settings → General → Cover image → upload this file."
+
+[[outputs]]
+id = "bV0L0IvcgTQUKJ8avdPVd"
+uri = "file://artifacts/mockup-sandbox/public/assets/replit-icon.png"
+type = "image"
+title = "Replit Icon — set this in Settings → General → Icon"
+description = "Square forge hammer icon. In Replit: click the project name top-left → Settings → General → Icon → upload this file."

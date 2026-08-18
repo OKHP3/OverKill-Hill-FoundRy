@@ -1,0 +1,39 @@
+{
+  "name": "ReFolDec",
+  "expanded_name": "Recursively Folding Codec",
+  "tagline": "Fold raw thought into artifacts; unfold mature artifacts into reusable primitives.",
+  "version": "0.1.0",
+  "status": "early-public-scaffold",
+  "canonical_definition": "ReFolDec is a bidirectional process-capture and transformation framework for folding raw thought into structured artifacts, then unfolding mature artifacts back into their source primitives, patterns, and reusable instructions.",
+  "core_operations": [
+    "fold",
+    "unfold",
+    "refold"
+  ],
+  "maturity_ladder": [
+    "signal",
+    "thought",
+    "note",
+    "concept",
+    "outline",
+    "process",
+    "artifact",
+    "system",
+    "canon"
+  ],
+  "persistence_planes": {
+    "private_capture": "Notion",
+    "public_canonical": "GitHub"
+  },
+  "related_concepts": [
+    "xME",
+    "xIE",
+    "xMIE",
+    "Process FoundRy",
+    "xPMN",
+    "BPMN for Mermaid",
+    "Agent Skills",
+    "Magnus Progenitor Saga",
+    "Biases as Constants"
+  ]
+}

@@ -1,0 +1,272 @@
+# Custom GPT Creator SPA — FoundRy Transfer Document
+
+**Repository:** `OKHP3/OverKill-Hill-FoundRy`
+**Receiving Replit:** `https://replit.com/t/overkill-hill/repls/OverKill-Hill-FoundRy`
+**Transfer date:** 2026-08-06
+**Status:** Active SPA, GitHub Pages workflow present, receiving Replit is go-forward authority.
+
+---
+
+## 1. Project goal
+
+Build and maintain an interactive, browser-only Single-Page Application (SPA) that operationalizes the `okhp3-custom-gpt-builder` Agent Skill. The app walks a builder through every step required to design, document, audit, and export a production-grade OpenAI Custom GPT — and secondarily a Gemini Gem or Microsoft Copilot Declarative Agent.
+
+The app lives entirely in `artifacts/mockup-sandbox/` inside this repository. It has no backend, no database, and no authentication. All state is localStorage only.
+
+---
+
+## 2. Tech stack — locked decisions
+
+| Layer | Choice | Notes |
+|---|---|---|
+| Bundler | Vite 7 | `pnpm --filter @workspace/mockup-sandbox run build` |
+| Framework | React 19 | Pinned at `19.1.0` in pnpm-workspace catalog |
+| Styling | Tailwind CSS v4 (`@tailwindcss/vite`) | v4 `@theme` block in `src/index.css`; no `tailwind.config.js` |
+| Language | TypeScript | `tsconfig.json` extends `../../tsconfig.base.json` |
+| Component library | shadcn/Radix UI | 20 components in `src/components/ui/` |
+| Icons | lucide-react | From catalog |
+| Animation | framer-motion | From catalog |
+| Package manager | pnpm (workspace) | `npm install` is blocked by a preinstall guard |
+| Navigation | `useState` in App.tsx | No react-router; no hash routing needed |
+| State persistence | localStorage | Keys `cgpt-step-0` through `cgpt-step-8` + `cgpt-creator-state` |
+
+**Do not** add react-router, a backend server, a database, or any OAuth flow. The SPA is intentionally client-only.
+
+---
+
+## 3. Visual identity — OverKill Hill P3 forge theme
+
+The brand tokens are declared as Tailwind v4 `@theme` custom properties in `artifacts/mockup-sandbox/src/index.css`. Do not override or re-declare them.
+
+| Token role | Value |
+|---|---|
+| Background (deep) | `#111827` |
+| Background (surface) | `#181f26` |
+| Primary accent (orange) | `#c46a2c` |
+| Secondary highlight (amber) | `#e6a03c` |
+| Display font | Alfa Slab One (Google Fonts) |
+| Body font | DM Sans (Google Fonts) |
+| Mono font | JetBrains Mono (Google Fonts) |
+
+Fonts are loaded via `<link>` tags in `artifacts/mockup-sandbox/index.html`. The `<title>` is "Custom GPT Creator | OverKill Hill P3".
+
+---
+
+## 4. SPA architecture
+
+### Entry points
+
+| File | Role |
+|---|---|
+| `artifacts/mockup-sandbox/index.html` | HTML shell, Google Fonts, OKH favicon |
+| `artifacts/mockup-sandbox/src/main.tsx` | React root mount |
+| `artifacts/mockup-sandbox/src/App.tsx` | All navigation, layout, page routing |
+| `artifacts/mockup-sandbox/src/index.css` | Global styles + Tailwind v4 `@theme` tokens |
+
+### Navigation model
+
+`App.tsx` holds two state values: `currentPage` (number 0-8 for build steps, or string `"audit"` / `"compare"` / `"export"`) and `completedSteps` (a `Set<number>` hydrated from localStorage key `cgpt-creator-state`). There is no URL-based routing. `goNext()` marks the current step complete and advances. `goPrev()` goes back without marking complete. A collapsible sidebar lists steps and extra pages. A top progress bar shows step completion percentage.
+
+### Page registry
+
+| Page ID | Component | Step | Purpose |
+|---|---|---|---|
+| 0 | `BuildBrief.tsx` | Step 0 | 9-field build brief with completeness meter |
+| 1 | `ConversationContract.tsx` | Step 1 | Inputs, outputs, top tasks, catastrophic mistakes |
+| 2 | `InstructionStack.tsx` | Step 2 | 8-layer instruction editor, 8k char limit, copy button |
+| 3 | `KnowledgeFiles.tsx` | Step 3 | File manifest builder, auto-generates Layer 5 routing snippet |
+| 4 | `Capabilities.tsx` | Step 4 | Capability toggles with rationale fields |
+| 5 | `ActionsApps.tsx` | Step 5 | Actions/Apps config, mutual exclusion, OpenAPI template loader |
+| 6 | `ConversationStarters.tsx` | Step 6 | Good/bad starter examples, quality checklist |
+| 7 | `TestMatrix.tsx` | Step 7 | 6-category tracker, red-team prompts, pass/fail scoring |
+| 8 | `ShipGovern.tsx` | Step 8 | Visibility, versioning, governance, ship-gate checker |
+| "audit" | `AuditMode.tsx` | Bonus | 10-item rubric, 0-5 scoring, avg >= 4.0 + safety >= 4 gate |
+| "compare" | `PlatformCompare.tsx` | Bonus | Decision tree, feature matrix, taxonomy, evolution timeline |
+| "export" | `ExportPackage.tsx` | Bonus | Full Markdown spec or instructions-only export; copy or download |
+
+### Data layer
+
+All reference constants live in `artifacts/mockup-sandbox/src/data/knowledge.ts`. This single file contains:
+
+`BUILD_STEPS`, `NAV_EXTRAS`, `CAPABILITIES`, `QUALITY_TIERS`, `INSTRUCTION_LAYERS`, `INSTRUCTION_CHAR_LIMIT`, `INSTRUCTION_RECOMMENDED_MAX_WORDS`, `VISIBILITY_OPTIONS`, `VERSION_SCHEME`, `AUDIT_ITEMS`, `SHIP_GATE_AVG`, `SHIP_GATE_SAFETY_MIN`, `SAFETY_AUDIT_ID`, `PLATFORMS`, `STARTER_EXAMPLES_BAD`, `STARTER_EXAMPLES_GOOD`, `TEST_CATEGORIES`, `RED_TEAM_PROMPTS`, `ACTIONS_LIMITS`, `ACTION_AUTH_OPTIONS`, `ACTION_FAILURES`, `OPENAPI_TEMPLATE`, `TAXONOMY`, `GPT_EXAMPLES`, `EVOLUTION_TIMELINE`.
+
+When adding new reference data, extend `knowledge.ts`. Do not scatter constants into individual page components.
+
+### Utility layer
+
+- `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
+- `src/hooks/use-toast.ts` — shadcn toast hook.
+- `src/.generated/mockup-components.ts` — auto-generated by `mockupPreviewPlugin` at build time; do not edit manually.
+
+---
+
+## 5. Build and dev workflow
+
+### Workspace install
+
+```bash
+# From repo root — resolves catalog: references in pnpm-workspace.yaml
+pnpm install --frozen-lockfile
+```
+
+**Never run `npm install`** — a preinstall guard in the root `package.json` blocks it.
+
+### Dev server (Replit only)
+
+```bash
+PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev
+```
+
+The Replit workflow named **"Custom GPT Creator SPA"** runs this command. Port 5000 is the webview port.
+
+`PORT` is only required when running the dev or preview server. `BASE_PATH` defaults to `/` if not set. Both Replit-only dev plugins (`runtimeErrorOverlay`, `cartographer`) are gated on `REPL_ID` being present and are skipped automatically in CI.
+
+### Production build
+
+```bash
+BASE_PATH=<see section 6> NODE_ENV=production pnpm --filter @workspace/mockup-sandbox run build
+```
+
+Output: `artifacts/mockup-sandbox/dist/` — `index.html` + hashed JS/CSS bundles.
+
+### TypeScript check
+
+```bash
+pnpm --filter @workspace/mockup-sandbox run typecheck
+```
+
+**Known failures** — as of 2026-08-06 `tsc --noEmit` exits with three classes of error. The production build and dev server are unaffected (Vite uses esbuild which skips type-checking). Fix before adding CI type-gating:
+
+1. **Missing shadcn modules** (`src/components/ui/sidebar.tsx`): `@/hooks/use-mobile` and `@/components/ui/skeleton` are imported but the source files were never generated. Add the missing shadcn components or remove the imports from `sidebar.tsx`.
+
+2. **Narrowing error in `Capabilities.tsx`** (lines 74-75): The `risk` field on `CAPABILITIES` is typed as `"low" | "medium"` (the union of values in `knowledge.ts`), but the code compares it against `"high"`. Either add a `"high"` risk entry to `CAPABILITIES` in `knowledge.ts`, or change the comparison.
+
+3. **Type narrowing error in `PlatformCompare.tsx`** (line 136): A `PLATFORMS` array element typed as the full union is passed to a function expecting only the first member's literal type. Widen the parameter type or use a type assertion.
+
+---
+
+## 6. GitHub Pages deployment
+
+**Workflow:** `.github/workflows/pages.yml`
+**Trigger:** Push to `main` or manual dispatch.
+**Default deployed URL:** `https://okhp3.github.io/OverKill-Hill-FoundRy/`
+
+### Base path
+
+`OKHP3/OverKill-Hill-FoundRy` is a project repository. Without a custom domain, GitHub Pages serves it at the subpath `/OverKill-Hill-FoundRy/`. All asset URLs in the built `dist/index.html` must carry that prefix or they will resolve to the wrong path and the SPA will not load.
+
+The committed workflow uses `BASE_PATH=/OverKill-Hill-FoundRy/`, which is correct for the default project site URL. If a custom domain is later configured at the repository level, change `BASE_PATH` in the workflow's build step to `/` and trigger a new deployment.
+
+**Required one-time GitHub configuration:** In `OKHP3/OverKill-Hill-FoundRy` repository Settings > Pages > Source, set to **GitHub Actions** (not a branch/folder). Once done, the first push to `main` deploys automatically.
+
+**No SPA 404 fallback is needed** because the app uses `useState` navigation, not URL-based routing. All page transitions happen in JS without changing the browser URL.
+
+The workflow:
+
+1. Checks out the repo.
+2. Sets up pnpm 9 and Node 22 with pnpm cache.
+3. Runs `pnpm install --frozen-lockfile` at the repo root.
+4. Builds from `artifacts/mockup-sandbox/` with `BASE_PATH=/OverKill-Hill-FoundRy/ NODE_ENV=production`.
+5. Uploads `artifacts/mockup-sandbox/dist` as the Pages artifact.
+6. Deploys using the standard `actions/deploy-pages@v4` with built-in `GITHUB_TOKEN` — no PAT required.
+
+---
+
+## 7. Vite config constraints
+
+`artifacts/mockup-sandbox/vite.config.ts` has these intentional behaviors:
+
+- `base` is set from `process.env.BASE_PATH`, defaulting to `/`.
+- `PORT` is optional; defaults to 5000 if not set, validated if provided.
+- `mockupPreviewPlugin()` runs at build start to generate `src/.generated/mockup-components.ts` — this is the auto-discovery mechanism for the mockup sandbox system and must not be removed.
+- `@replit/vite-plugin-cartographer` and `runtimeErrorOverlay` are skipped when `REPL_ID` is not set (prevents CI failures).
+- `build.outDir` is explicitly set to `artifacts/mockup-sandbox/dist` (absolute path).
+
+---
+
+## 8. pnpm workspace constraints
+
+`pnpm-workspace.yaml` at repo root:
+
+- Declares catalog versions for all shared dependencies including React, Vite, Tailwind, TypeScript types, and Radix/Lucide/Framer.
+- Contains a `minimumReleaseAge: 1440` setting (Replit-specific supply-chain defense). Standard pnpm on GitHub Actions ignores this unknown key — this is expected and safe.
+- Excludes all non-linux-x64 esbuild platform binaries. GitHub Actions ubuntu runners are linux-x64, so CI builds work correctly.
+- `packages:` lists `artifacts/*`, `lib/*`, `lib/integrations/*`, `scripts`.
+
+`tsconfig.base.json` at repo root is required. It must exist for the sandbox tsconfig (`artifacts/mockup-sandbox/tsconfig.json`) to resolve. If it is ever lost, recover it from git history — it contains strict compiler options with `"types": []`.
+
+---
+
+## 9. Agent Skill relationship
+
+The SPA operationalizes the `okhp3-custom-gpt-builder` Agent Skill located at `.agents/skills/okhp3-custom-gpt-builder/SKILL.md` (386 lines, v1.0.0). The skill defines the canonical methodology; the SPA provides a UI wrapper for that methodology. They should stay in conceptual sync. When the skill's build phases, audit criteria, or platform comparison data change, update `src/data/knowledge.ts` accordingly.
+
+Do not confuse the skill file with the SPA. The skill runs in agent environments. The SPA runs in a browser.
+
+---
+
+## 10. Confirmed open work (backlog)
+
+These items were discussed and are not yet implemented:
+
+### A. TypeScript build fix (low urgency)
+
+See section 5 for the three known failure classes. The production build is unaffected. Fix before adding `typecheck` to CI gates.
+
+### B. Push to Forge from Export page (medium)
+
+Add a "Push to Forge" button on `ExportPackage.tsx` that commits the generated Markdown spec to `custom-gpts/proto/<gpt-name>/spec.md` in this repo.
+
+**Safe architecture required.** Do not put a GitHub PAT in the SPA bundle — Vite embeds all `VITE_`-prefixed env vars into the client-side JavaScript, which is publicly readable. A write credential exposed this way would give anyone with the deployed URL full write access to the repository.
+
+Viable approaches:
+- A small server-side proxy (e.g., a Cloudflare Worker or Replit-hosted Express endpoint) that holds the PAT and accepts an authenticated request from the SPA.
+- A GitHub App with narrow installation permissions (write to `custom-gpts/proto/` only) and short-lived tokens issued server-side.
+- Skip the push and generate a downloadable file that the user commits manually.
+
+### C. Named project slots (medium)
+
+Replace the single-project localStorage model with named slots so a builder can maintain multiple in-progress GPTs without losing work. Each slot would be a JSON object under a key like `cgpt-project-<slug>`. A project switcher UI would live in the sidebar or as a modal.
+
+**Constraint:** All state must remain in localStorage (no backend). The export must work per-slot.
+
+### D. Live Markdown preview in Export page (low)
+
+Add a toggleable rendered Markdown preview alongside the raw text in `ExportPackage.tsx`. A lightweight renderer (e.g., `marked` or `react-markdown`) would display the exported spec formatted.
+
+---
+
+## 11. Repository context
+
+This SPA exists within a FoundRy relay repository (`OKHP3/OverKill-Hill-FoundRy`) whose primary published concept is **ReFolDec** (Recursively Folding Codec). The SPA is an additive artifact surface, not the repository's core purpose.
+
+Key governance rules from `AGENTS.md` that apply to SPA work:
+
+- Generated content must not use em dashes.
+- Keep private workshop context out of public files. Do not add private Notion URLs.
+- Do not add secrets, credentials, or client-specific material to source files or the client bundle.
+- Use small, named commits. No force-push or destructive git operations.
+- `manifest.yaml` declares `visibility: private` but `README.md` describes a public scaffold. This conflict is unresolved. Treat all SPA output as public-artifact-hygiene level.
+
+The `artifacts/api-server/` directory contains a separate Express backend artifact. It is unrelated to the SPA and was not touched during SPA development. Do not modify it during SPA work.
+
+---
+
+## 12. Cold-start checklist for the receiving Replit
+
+When picking up this SPA in the FoundRy Replit for the first time:
+
+1. Pull `main` — the workflow and all SPA source are committed.
+2. Run `pnpm install` from the repo root (not from inside `artifacts/mockup-sandbox/`).
+3. Confirm `tsconfig.base.json` exists at the repo root. If missing, recover from git.
+4. Configure the **"Custom GPT Creator SPA"** workflow: `PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev`.
+5. Open port 5000 in the webview.
+6. Confirm the GitHub Pages base path (section 6) before the first deployment. Update `BASE_PATH` in `.github/workflows/pages.yml` if no custom domain is configured.
+7. In GitHub repository Settings > Pages, set Source to **GitHub Actions** if not already done.
+8. Push any commit to `main` to trigger the first Pages deployment and verify asset URLs load correctly at the deployed URL.
+
+The dev server and Pages deployment are independent. The dev server runs locally in Replit; Pages deployment runs in GitHub Actions on every `main` push.
+
+---
+
+*End of transfer document.*

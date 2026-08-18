@@ -1,0 +1,25 @@
+name: Technology audit
+
+on:
+  schedule:
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+  push:
+    paths:
+      - "docs/technology-inventory.json"
+      - "scripts/technology-audit.py"
+      - ".replit"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Check technology releases
+        run: python scripts/technology-audit.py

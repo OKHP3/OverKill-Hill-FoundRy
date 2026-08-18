@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/OKHP3/refoldec/schemas/refoldec-artifact.schema.json",
+  "title": "ReFolDec Artifact",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "artifact_type",
+    "maturity_state"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable artifact identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable artifact title."
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": [
+        "signal",
+        "thought",
+        "note",
+        "concept",
+        "outline",
+        "process",
+        "artifact",
+        "system",
+        "canon"
+      ]
+    },
+    "maturity_state": {
+      "type": "string",
+      "enum": [
+        "raw",
+        "captured",
+        "structured",
+        "modeled",
+        "validated",
+        "published",
+        "canonical"
+      ]
+    },
+    "source_context": {
+      "type": "string"
+    },
+    "folded_outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unfolded_primitives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reuse_targets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "public_links": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "private_source_note": {
+      "type": "string",
+      "description": "Optional private-source reminder. Do not rely on this for public artifact comprehension."
+    }
+  },
+  "additionalProperties": true
+}

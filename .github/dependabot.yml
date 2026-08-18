@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # Keep GitHub Actions up to date
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Keep npm/pnpm workspace dependencies up to date
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    # Group all patch updates into one PR and all minor updates into another.
+    # Major version bumps are left ungrouped so they get individual PRs and
+    # require manual review.
+    groups:
+      npm-patch:
+        update-types:
+          - patch
+      npm-minor:
+        update-types:
+          - minor
+    # Label every Dependabot npm PR so the auto-merge workflow can target it.
+    labels:
+      - dependencies
+    # Ignore major-version bumps — let those surface as individual PRs for
+    # manual review rather than silently upgrading potentially breaking changes.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
