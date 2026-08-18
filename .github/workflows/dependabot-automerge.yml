@@ -1,0 +1,37 @@
+name: Dependabot auto-merge
+
+# pull_request_target runs in the context of the base branch, so the
+# GITHUB_TOKEN has write access even for Dependabot PRs.  This is safe here
+# because the job never checks out or executes code from the pull request.
+on:
+  pull_request_target:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Enable auto-merge for Dependabot PRs
+    runs-on: ubuntu-latest
+    # Guard: only Dependabot PRs reach the merge step.
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Enable GitHub's native auto-merge so the PR lands automatically once
+      # all required status checks pass.  We use squash merge to keep the
+      # commit graph clean.  Major-version bumps are intentionally excluded —
+      # those surface as individual PRs for manual review.
+      - name: Enable auto-merge for patch and minor bumps
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
