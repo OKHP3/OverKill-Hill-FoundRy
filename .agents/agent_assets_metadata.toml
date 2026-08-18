@@ -12,12 +12,12 @@ description = "Repository social card shown when the repo link is shared on Twit
 id = "0oD_6f51Q8t8yT34YuSrg"
 uri = "file://artifacts/mockup-sandbox/public/assets/replit-preview.jpg"
 type = "image"
-title = "Replit Project Cover"
-description = "Project cover image for the Replit workspace card. Set in Replit → Settings → General → Cover image."
+title = "Replit Cover — set this in Settings → General → Cover image"
+description = "Wide forge scene for the project card. In Replit: click the project name top-left → Settings → General → Cover image → upload this file."
 
 [[outputs]]
 id = "bV0L0IvcgTQUKJ8avdPVd"
 uri = "file://artifacts/mockup-sandbox/public/assets/replit-icon.png"
 type = "image"
-title = "Replit Project Icon (square)"
-description = "Project icon for the Replit workspace. Set in Replit → Settings → General → Icon."
+title = "Replit Icon — set this in Settings → General → Icon"
+description = "Square forge hammer icon. In Replit: click the project name top-left → Settings → General → Icon → upload this file."
