@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/okh-capabilities/"
+title = "Forge Capabilities"
+description = "An interactive OverKill Hill FoundRy build-protocol board that guides makers through twelve stages across three phases, tracks stage completion locally, and keeps the forge workshop visual language from the selected canvas design."
+version = "1.0.0"
+id = "artifacts/okh-capabilities"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/okh-capabilities/" ]
+localPort = 20633
+
+[services.development]
+run = "pnpm --filter @workspace/okh-capabilities run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/okh-capabilities", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/okh-capabilities/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20633"
+BASE_PATH = "/okh-capabilities/"

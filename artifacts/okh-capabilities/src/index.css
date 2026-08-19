@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-okh-teal: hsl(var(--okh-teal));
+  --color-okh-olive: hsl(var(--okh-olive));
+  --color-okh-ochre: hsl(var(--okh-ochre));
+  --color-okh-rust: hsl(var(--okh-rust));
+  --color-okh-espresso: hsl(var(--okh-espresso));
+  --color-okh-orange: hsl(var(--okh-orange));
+  --color-okh-amber: hsl(var(--okh-amber));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root {
+  /* Enforce Dark Mode Colors universally */
+  --background: 221 39% 11%; /* #111827 */
+  --foreground: 220 14% 91%; /* #e5e7eb */
+  
+  --card: 210 22% 12%; /* #181f26 */
+  --card-foreground: 220 14% 91%;
+  --card-border: 210 27% 23%; /* #2a3a4a */
+  
+  --popover: 210 22% 12%;
+  --popover-foreground: 220 14% 91%;
+  --popover-border: 210 27% 23%;
+  
+  --border: 210 27% 23%;
+  --input: 210 27% 23%;
+  --ring: 24 65% 47%; /* #c46a2c (orange) */
+  
+  --primary: 24 65% 47%; 
+  --primary-foreground: 210 40% 98%;
+  
+  --secondary: 214 20% 21%;
+  --secondary-foreground: 220 14% 91%;
+  
+  --muted: 214 20% 21%;
+  --muted-foreground: 215 16% 65%;
+  
+  --accent: 35 77% 57%; /* #e6a03c (amber) */
+  --accent-foreground: 210 40% 98%;
+  
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  
+  /* Brand Specific */
+  --okh-teal: 168 35% 16%;
+  --okh-olive: 62 41% 29%;
+  --okh-ochre: 35 60% 39%;
+  --okh-rust: 22 40% 25%;
+  --okh-espresso: 18 13% 15%;
+  --okh-orange: 24 65% 47%;
+  --okh-amber: 35 77% 57%;
+
+  --app-font-sans: 'DM Sans', sans-serif;
+  --app-font-serif: 'Alfa Slab One', serif;
+  --app-font-mono: 'JetBrains Mono', monospace;
+  
+  --radius: 0.25rem;
+}
+
+.dark {
+  /* Same as root since we enforce dark mode */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(42,58,74,0.6) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.glow-orange { background: radial-gradient(circle, rgba(196,106,44,0.12) 0%, transparent 70%); }
+.glow-amber { background: radial-gradient(circle, rgba(230,160,60,0.09) 0%, transparent 70%); }
+.glow-olive { background: radial-gradient(circle, rgba(103,106,44,0.1) 0%, transparent 70%); }
+
+.brand-nowrap {
+  white-space: nowrap;
+}
