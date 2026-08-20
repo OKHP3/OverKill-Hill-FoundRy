@@ -218,85 +218,6 @@ export const SHIP_GATE_SAFETY_MIN = 4;
 export const SAFETY_AUDIT_ID = 6;
 
 // ── Platform comparison ─────────────────────────────────────
-export const PLATFORMS = [
-  {
-    id: "gpt",
-    name: "Custom GPT",
-    logo: "🤖",
-    vendor: "OpenAI / ChatGPT",
-    bestFor: "Prosumers, indie builders, API-integrated workflows",
-    weakAt: "Enterprise governance, org-wide knowledge access",
-    knowledge: "Upload-and-retrieve (up to 20 files × 512 MB, RAG-based)",
-    tools: "Actions (OpenAPI) OR Apps (MCP) — not both",
-    customization: "High — instructions + knowledge + actions + capabilities",
-    barrier: "Low barrier, high ceiling",
-    cost: "Plus $20/mo minimum to build",
-    portability: "Locked to ChatGPT",
-    instructionLimit: "~8,000 characters (builder field limit)",
-    knowledgeLimit: "20 files, 512 MB each",
-    actionsNote: "Actions + Apps mutually exclusive. Actions not available in Pro mode.",
-    governance: "OpenAI-managed; version history with one-click restore",
-    models: "GPT-5.3 Instant (default), GPT-5.4 Thinking, GPT-5.5 family (mid-2026)",
-    when: [
-      "Audience lives in ChatGPT",
-      "No-code requirement",
-      "Text-in/text-out workflow",
-      "GPT Store distribution",
-      "Managed RAG over documents",
-    ],
-  },
-  {
-    id: "gem",
-    name: "Gemini Gem",
-    logo: "💎",
-    vendor: "Google / Gemini",
-    bestFor: "Google Workspace users, budget-conscious teams, large-context tasks",
-    weakAt: "API integration, deep customization",
-    knowledge: "Upload + live Google Drive sync; up to 1M token context window",
-    tools: "Single 'Default Tool' selector (None / Create Image / Canvas / Deep Research / Create Music)",
-    customization: "Medium — instructions + knowledge + single tool",
-    barrier: "Lowest barrier, medium ceiling",
-    cost: "Free on basic Gemini; Advanced $19.99/mo for full features",
-    portability: "Locked to Gemini / Google Workspace",
-    instructionLimit: "No hard limit published; rewrite assist built in",
-    knowledgeLimit: "Files + live Drive sync; 1M token context window",
-    actionsNote: "No custom API Actions; relies on Google ecosystem integrations",
-    governance: "Google-managed; Workspace admin controls",
-    models: "Gemini 2.x family",
-    when: [
-      "Google Workspace native environment",
-      "Budget-conscious team",
-      "Large-context tasks requiring 1M token window",
-      "Need live Drive document sync",
-    ],
-  },
-  {
-    id: "copilot",
-    name: "Copilot Declarative Agent",
-    logo: "🪟",
-    vendor: "Microsoft / M365 Copilot",
-    bestFor: "Enterprise M365 shops, org-knowledge grounding, governed deployments",
-    weakAt: "Individual prototyping speed, consumer accessibility",
-    knowledge: "Microsoft Graph (Teams, Outlook, SharePoint, OneDrive, M365 Copilot Connectors, uploaded files)",
-    tools: "Actions/plugins, Power Automate, multiple plugins simultaneously, A2A protocol",
-    customization: "High — instructions + Graph + plugins + Power Automate + A2A",
-    barrier: "Medium barrier, highest ceiling",
-    cost: "M365 Copilot license (enterprise, ~$30/user/mo)",
-    portability: "Within Microsoft 365 ecosystem",
-    instructionLimit: "Conversational builder or free-text; auto-generates config",
-    knowledgeLimit: "Org-wide Microsoft Graph search; no upload limit per se",
-    actionsNote: "Multiple plugins simultaneously; Power Automate flows; A2A composition; emerging computer use",
-    governance: "Admin-governed via Integrated Apps; tenant-level RBAC, allow/deny lists",
-    models: "Microsoft models; GPT-4o backbone (where applicable)",
-    when: [
-      "Enterprise M365 environment",
-      "Org-wide knowledge grounding via Microsoft Graph",
-      "Need multi-agent composition (A2A)",
-      "IT-governed deployment required",
-    ],
-  },
-] as const;
-
 export type PlatformComparisonField =
   | "bestFor"
   | "weakAt"
@@ -311,6 +232,161 @@ export type PlatformComparisonField =
   | "customization"
   | "barrier"
   | "models";
+
+export type PlatformFactSource = {
+  readonly label: string;
+  readonly url: string;
+};
+
+export type PlatformFact = {
+  readonly value: string;
+  readonly sources: readonly PlatformFactSource[];
+  readonly lastReviewed: string;
+  readonly reviewBy: string;
+};
+
+export const PLATFORM_FACT_LAST_REVIEWED = "2026-08-20";
+export const PLATFORM_FACT_REVIEW_BY = "2026-11-18";
+
+const PLATFORM_SOURCE_CATALOG = {
+  openaiGpts: {
+    label: "OpenAI — Creating and editing GPTs",
+    url: "https://help.openai.com/en/articles/8554397",
+  },
+  openaiGptOverview: {
+    label: "OpenAI — GPTs in ChatGPT",
+    url: "https://help.openai.com/en/articles/8554407-gpts",
+  },
+  openaiActions: {
+    label: "OpenAI — GPT Actions",
+    url: "https://developers.openai.com/api/docs/actions/introduction",
+  },
+  openaiPricing: {
+    label: "OpenAI — ChatGPT pricing",
+    url: "https://openai.com/chatgpt/pricing/",
+  },
+  googleGems: {
+    label: "Google — Tips for creating custom Gems",
+    url: "https://support.google.com/gemini/answer/15235603",
+  },
+  googleGemOverview: {
+    label: "Google — Get started with Gems in Gemini Apps",
+    url: "https://support.google.com/gemini/answer/15236321",
+  },
+  googleWorkspacePlans: {
+    label: "Google — Workspace with Gemini plan and feature access",
+    url: "https://support.google.com/docs/answer/13952129",
+  },
+  googleWorkspaceControls: {
+    label: "Google — Manage access to Gemini features in Workspace",
+    url: "https://support.google.com/a/answer/15698295",
+  },
+  microsoftDeclarativeAgents: {
+    label: "Microsoft — Overview of declarative agents",
+    url: "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-declarative-agent",
+  },
+  microsoftKnowledge: {
+    label: "Microsoft — Add knowledge sources to an agent",
+    url: "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/agent-builder-add-knowledge",
+  },
+  microsoftControls: {
+    label: "Microsoft — Copilot Control System management controls",
+    url: "https://learn.microsoft.com/en-us/microsoft-365/copilot/copilot-control-system/management-controls",
+  },
+  microsoftCosts: {
+    label: "Microsoft — Licensing and cost considerations",
+    url: "https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/cost-considerations",
+  },
+} as const satisfies Record<string, PlatformFactSource>;
+
+const platformFact = (
+  value: string,
+  ...sourceKeys: readonly (keyof typeof PLATFORM_SOURCE_CATALOG)[]
+): PlatformFact => ({
+  value,
+  sources: sourceKeys.map((key) => PLATFORM_SOURCE_CATALOG[key]),
+  lastReviewed: PLATFORM_FACT_LAST_REVIEWED,
+  reviewBy: PLATFORM_FACT_REVIEW_BY,
+});
+
+/**
+ * This ledger is the source of truth for matrix cells. Maintainers update facts,
+ * citations, and review dates here without changing the comparison component.
+ */
+export const PLATFORM_FACTS: Record<
+  "gpt" | "gem" | "copilot",
+  Record<PlatformComparisonField, PlatformFact>
+> = {
+  gpt: {
+    bestFor: platformFact("ChatGPT-native distribution and focused conversational workflows.", "openaiGptOverview"),
+    weakAt: platformFact("Cross-platform portability and organization-wide source systems.", "openaiGptOverview"),
+    knowledge: platformFact("GPTs can use uploaded knowledge files; confirm active workspace limits before release.", "openaiGpts"),
+    tools: platformFact("Actions connect a GPT to REST APIs; availability is workspace and configuration dependent.", "openaiActions"),
+    cost: platformFact("Creation, editing, and publishing availability depends on the current plan and workspace permissions.", "openaiGpts", "openaiPricing"),
+    instructionLimit: platformFact("Use the editor's current configuration guidance; no fixed limit is asserted here.", "openaiGpts"),
+    knowledgeLimit: platformFact("Check the active plan and workspace limits before shipping a document-heavy GPT.", "openaiGpts"),
+    actionsNote: platformFact("Actions use an OpenAPI schema to connect a GPT to external APIs.", "openaiActions"),
+    governance: platformFact("Workspace access and GPT management depend on plan and administrator permissions.", "openaiGptOverview"),
+    portability: platformFact("Runs in ChatGPT; use an external package when the capability must travel across hosts.", "openaiGptOverview"),
+    customization: platformFact("Instructions, knowledge, capabilities, and Actions can shape a GPT.", "openaiGpts", "openaiActions"),
+    barrier: platformFact("Builder access is plan and permission dependent; verify the target workspace before committing.", "openaiGpts"),
+    models: platformFact("Model availability changes; verify the current editor options immediately before release.", "openaiGpts"),
+  },
+  gem: {
+    bestFor: platformFact("Gemini-native repeatable instruction shortcuts and Google-centered workflows.", "googleGemOverview"),
+    weakAt: platformFact("Custom API integration and multi-tool orchestration may require a different deployment surface.", "googleGems"),
+    knowledge: platformFact("Custom Gems can include uploaded files to provide additional context.", "googleGems"),
+    tools: platformFact("Gem capability and tool availability are plan-dependent; confirm the selected Gemini surface.", "googleGems", "googleWorkspacePlans"),
+    cost: platformFact("Gem access and usage limits depend on the Google account or Workspace plan.", "googleWorkspacePlans"),
+    instructionLimit: platformFact("Custom Gems are configured with a name and instructions in the Gemini web app.", "googleGems"),
+    knowledgeLimit: platformFact("Confirm current file and context allowances at build time.", "googleGems"),
+    actionsNote: platformFact("Review the current Gemini extension and tool policy before making an integration promise.", "googleGems"),
+    governance: platformFact("Workspace administrators can manage access to Gemini features in supported services.", "googleWorkspaceControls"),
+    portability: platformFact("Runs in Gemini and Google Workspace surfaces; use an external package for cross-host reuse.", "googleGemOverview"),
+    customization: platformFact("Custom Gems use instructions and optional uploaded context.", "googleGems"),
+    barrier: platformFact("Gem availability depends on the account, age, edition, and organization policy.", "googleGemOverview", "googleWorkspacePlans"),
+    models: platformFact("Gemini model availability and usage limits are plan-dependent.", "googleWorkspacePlans"),
+  },
+  copilot: {
+    bestFor: platformFact("Microsoft 365 deployments that need governed agent experiences and Microsoft knowledge sources.", "microsoftDeclarativeAgents", "microsoftControls"),
+    weakAt: platformFact("Consumer distribution and independent no-code prototyping outside the Microsoft 365 estate.", "microsoftDeclarativeAgents"),
+    knowledge: platformFact("Agent knowledge sources depend on the selected agent type and administrator configuration.", "microsoftKnowledge"),
+    tools: platformFact("Supported extensibility depends on the chosen Microsoft 365 Copilot agent type and configuration.", "microsoftDeclarativeAgents"),
+    cost: platformFact("Licensing and cost vary by Microsoft 365 Copilot extensibility option.", "microsoftCosts"),
+    instructionLimit: platformFact("Use the current declarative-agent configuration guidance; no fixed limit is asserted here.", "microsoftDeclarativeAgents"),
+    knowledgeLimit: platformFact("Confirm the agent type's current source and upload allowances with the tenant administrator.", "microsoftKnowledge"),
+    actionsNote: platformFact("Confirm supported actions and extensibility for the selected agent type before committing.", "microsoftDeclarativeAgents"),
+    governance: platformFact("The Copilot Control System provides lifecycle and management controls for agents.", "microsoftControls"),
+    portability: platformFact("Designed for Microsoft 365 Copilot surfaces; use an external package for cross-host reuse.", "microsoftDeclarativeAgents"),
+    customization: platformFact("Declarative agents are configured through Microsoft 365 Copilot extensibility tooling.", "microsoftDeclarativeAgents"),
+    barrier: platformFact("Tenant prerequisites, licensing, and administrator policy can affect availability.", "microsoftCosts", "microsoftControls"),
+    models: platformFact("Underlying model availability is service-managed; verify the deployed Microsoft 365 Copilot configuration.", "microsoftDeclarativeAgents"),
+  },
+};
+
+export const PLATFORMS = [
+  {
+    id: "gpt",
+    name: "Custom GPT",
+    logo: "🤖",
+    vendor: "OpenAI / ChatGPT",
+    facts: PLATFORM_FACTS.gpt,
+  },
+  {
+    id: "gem",
+    name: "Gemini Gem",
+    logo: "💎",
+    vendor: "Google / Gemini",
+    facts: PLATFORM_FACTS.gem,
+  },
+  {
+    id: "copilot",
+    name: "Copilot Declarative Agent",
+    logo: "🪟",
+    vendor: "Microsoft / M365 Copilot",
+    facts: PLATFORM_FACTS.copilot,
+  },
+] as const;
 
 export type PlatformComparisonRow = {
   readonly label: string;
@@ -404,13 +480,118 @@ export function getPlatformComparisonValue(
   platform: unknown,
   field: unknown,
 ): string {
+  return getPlatformComparisonText(
+    getPlatformComparisonFact(platform, field)?.value,
+  );
+}
+
+export function getPlatformComparisonFact(
+  platform: unknown,
+  field: unknown,
+): PlatformFact | undefined {
   if (!platform || typeof platform !== "object" || typeof field !== "string") {
-    return PLATFORM_COMPARISON_VALUE_FALLBACK;
+    return undefined;
   }
 
-  return getPlatformComparisonText(
-    (platform as Record<string, unknown>)[field],
+  const facts = (platform as Record<string, unknown>).facts;
+  const fact = facts && typeof facts === "object"
+    ? (facts as Record<string, unknown>)[field]
+    : undefined;
+
+  return isPlatformFact(fact) ? fact : undefined;
+}
+
+export type PlatformFactReviewStatus = "current" | "dueSoon" | "overdue" | "invalid";
+
+const parseIsoDate = (value: unknown): Date | undefined => {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return undefined;
+  }
+
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  return Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value
+    ? undefined
+    : parsed;
+};
+
+const isIsoDate = (value: unknown): value is string => parseIsoDate(value) !== undefined;
+
+const isSecureSource = (source: unknown): source is PlatformFactSource => {
+  if (!source || typeof source !== "object") return false;
+  const record = source as Record<string, unknown>;
+  if (!isNonEmptyText(record.label) || !isNonEmptyText(record.url)) return false;
+
+  try {
+    return new URL(record.url).protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+export function getPlatformFactSources(
+  fact: PlatformFact | undefined,
+): readonly PlatformFactSource[] {
+  return fact?.sources.filter(isSecureSource) ?? [];
+}
+
+export function getPlatformFactReviewStatus(
+  fact: PlatformFact | undefined,
+  referenceDate?: string,
+): PlatformFactReviewStatus {
+  const lastReviewed = parseIsoDate(fact?.lastReviewed);
+  const reviewBy = parseIsoDate(fact?.reviewBy);
+  const reference = parseIsoDate(
+    referenceDate ?? new Date().toISOString().slice(0, 10),
   );
+
+  if (
+    !fact ||
+    !lastReviewed ||
+    !reviewBy ||
+    !reference ||
+    lastReviewed > reviewBy ||
+    lastReviewed > reference ||
+    fact.sources.length === 0 ||
+    fact.sources.some((source) => !isSecureSource(source))
+  ) {
+    return "invalid";
+  }
+
+  if (reference > reviewBy) return "overdue";
+
+  return reviewBy.getTime() - reference.getTime() <= 30 * 86_400_000
+    ? "dueSoon"
+    : "current";
+}
+
+export function getPlatformComparisonReviewSummary(
+  platforms: readonly unknown[],
+  rows: readonly unknown[],
+  referenceDate?: string,
+) {
+  const statuses: PlatformFactReviewStatus[] = [];
+
+  rows.forEach((row) => {
+    const field = row && typeof row === "object"
+      ? (row as Record<string, unknown>).field
+      : undefined;
+    platforms.forEach((platform) => {
+      statuses.push(
+        getPlatformFactReviewStatus(
+          getPlatformComparisonFact(platform, field),
+          referenceDate,
+        ),
+      );
+    });
+  });
+
+  return {
+    total: statuses.length,
+    current: statuses.filter((status) => status === "current").length,
+    dueSoon: statuses.filter((status) => status === "dueSoon").length,
+    overdue: statuses.filter((status) => status === "overdue").length,
+    invalid: statuses.filter((status) => status === "invalid").length,
+  };
 }
 
 export function validatePlatformComparison(
@@ -440,6 +621,9 @@ export function validatePlatformComparison(
     if (!isNonEmptyText(platformRecord.name)) {
       issues.push(`Platform ${platformIndex + 1} is missing a name.`);
     }
+    if (!platformRecord.facts || typeof platformRecord.facts !== "object") {
+      issues.push(`Platform ${platformIndex + 1} is missing a fact ledger.`);
+    }
   });
 
   rows.forEach((row, rowIndex) => {
@@ -466,20 +650,43 @@ export function validatePlatformComparison(
 
     if (isNonEmptyText(field)) {
       platforms.forEach((platform, platformIndex) => {
-        const value =
-          platform && typeof platform === "object"
-            ? (platform as Record<string, unknown>)[field]
-            : undefined;
-        if (!isNonEmptyText(value)) {
+        const fact = getPlatformComparisonFact(platform, field);
+        if (!fact) {
           issues.push(
-            `${rowLabel} is missing a value for platform ${platformIndex + 1}.`,
+            `${rowLabel} is missing a sourced fact for platform ${platformIndex + 1}.`,
           );
+          return;
+        }
+        if (!isNonEmptyText(fact.value)) {
+          issues.push(`${rowLabel} is missing a value for platform ${platformIndex + 1}.`);
+        }
+        if (!isIsoDate(fact.lastReviewed) || !isIsoDate(fact.reviewBy)) {
+          issues.push(`${rowLabel} has an invalid review date for platform ${platformIndex + 1}.`);
+        }
+        if (fact.lastReviewed > fact.reviewBy) {
+          issues.push(`${rowLabel} has a review date before its last review for platform ${platformIndex + 1}.`);
+        }
+        if (!Array.isArray(fact.sources) || fact.sources.length === 0) {
+          issues.push(`${rowLabel} is missing a source for platform ${platformIndex + 1}.`);
+        } else {
+          fact.sources.forEach((source, sourceIndex) => {
+            if (!isSecureSource(source)) {
+              issues.push(`${rowLabel} has an invalid HTTPS source ${sourceIndex + 1} for platform ${platformIndex + 1}.`);
+            }
+          });
         }
       });
     }
   });
 
   return issues;
+}
+
+function isPlatformFact(value: unknown): value is PlatformFact {
+  if (!value || typeof value !== "object") return false;
+  const fact = value as Record<string, unknown>;
+  return isNonEmptyText(fact.value) &&
+    Array.isArray(fact.sources);
 }
 
 // ── Starter examples ────────────────────────────────────────

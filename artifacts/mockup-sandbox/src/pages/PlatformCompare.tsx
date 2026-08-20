@@ -2,9 +2,13 @@ import { useState } from "react";
 import {
   EVOLUTION_TIMELINE,
   getPlatformComparisonText,
-  getPlatformComparisonValue,
+  getPlatformComparisonFact,
+  getPlatformComparisonReviewSummary,
+  getPlatformFactReviewStatus,
+  getPlatformFactSources,
   PLATFORM_COMPARISON_LABEL_FALLBACK,
   PLATFORM_COMPARISON_ROWS,
+  PLATFORM_COMPARISON_VALUE_FALLBACK,
   PLATFORM_COMPARISON_VERDICT_FALLBACK,
   PLATFORMS,
   TAXONOMY,
@@ -22,6 +26,10 @@ export default function PlatformCompare() {
     PLATFORMS,
     PLATFORM_COMPARISON_ROWS,
   );
+  const reviewSummary = getPlatformComparisonReviewSummary(
+    PLATFORMS,
+    PLATFORM_COMPARISON_ROWS,
+  );
 
   // Decision logic
   const recommendation = (() => {
@@ -36,7 +44,7 @@ export default function PlatformCompare() {
 
   const recText: Record<string, { label: string; color: string; why: string }> = {
     gpt: { label: "Custom GPT", color: "var(--color-forge-accent)", why: "Your audience is in ChatGPT, no-code is preferred, and managed RAG over documents is the primary need." },
-    gem: { label: "Gemini Gem", color: "#4285f4", why: "Google Workspace native environment, budget-conscious, or large-context tasks needing 1M token window." },
+    gem: { label: "Gemini Gem", color: "#4285f4", why: "Google-native work, repeatable instructions, or a Gemini-centered audience; confirm current plan limits before committing." },
     copilot: { label: "Copilot Declarative Agent", color: "#00a4ef", why: "Enterprise M365 deployment with org-wide knowledge grounding via Microsoft Graph and IT governance requirements." },
     skill: { label: "Agent Skill (SKILL.md)", color: "var(--color-forge-success)", why: "Cross-platform portability needed, version-controlled capability, rigorous evaluation, or coding/agentic environments." },
     "gpt+skill": { label: "Custom GPT + Agent Skill", color: "var(--color-forge-accent-hi)", why: "Author canonical workflow as a Skill (portable, tested), wrap a thin Custom GPT for ChatGPT distribution." },
@@ -49,7 +57,7 @@ export default function PlatformCompare() {
           ⚖️ Platform Comparison
         </h1>
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
-          Custom GPT vs. Gemini Gem vs. Copilot Declarative Agent — mid-2026 reference.
+          Custom GPT vs. Gemini Gem vs. Copilot Declarative Agent — source-backed reference with review dates per fact.
         </p>
       </div>
 
@@ -80,7 +88,7 @@ export default function PlatformCompare() {
               { id: "portability", q: "Do you need this capability to run across multiple AI tools (Claude, Copilot, Codex, Cursor, etc.)?", opts: [["yes", "Yes — portability is important"], ["no", "No — one platform is fine"]] },
               { id: "codeExecution", q: "Does this capability involve code execution or scripting?", opts: [["yes", "Yes"], ["no", "No"]] },
               { id: "enterprise", q: "Do you have enterprise M365 Copilot licensing and need org-wide knowledge grounding (SharePoint, Teams, Outlook)?", opts: [["yes", "Yes"], ["no", "No"]] },
-              { id: "budget", q: "What's the build budget?", opts: [["free", "Free / minimal spend"], ["paid", "ChatGPT Plus ($20/mo) is fine"], ["enterprise", "Enterprise pricing OK"]] },
+              { id: "budget", q: "What's the build budget?", opts: [["free", "Free / minimal spend"], ["paid", "A paid ChatGPT plan is fine"], ["enterprise", "Enterprise pricing OK"]] },
             ].map(q => (
               <div key={q.id}>
                 <div style={{ fontSize: "0.88rem", fontWeight: 600, marginBottom: "0.5rem" }}>{q.q}</div>
@@ -117,6 +125,23 @@ export default function PlatformCompare() {
       {/* Feature matrix */}
       {view === "compare" && (
         <div>
+          <div
+            style={{
+              marginBottom: "1rem",
+              padding: "0.75rem 1rem",
+              border: "1px solid var(--color-forge-border)",
+              borderRadius: "var(--radius-md)",
+              background: "var(--color-forge-surface)",
+              color: "var(--color-forge-muted-fg)",
+              fontSize: "0.78rem",
+              lineHeight: 1.5,
+            }}
+          >
+            <strong style={{ color: "var(--color-forge-fg)" }}>Source ledger:</strong>{" "}
+            {reviewSummary.total} fact cells carry an official source, last-reviewed date, and review-by date.
+            {" "}{reviewSummary.current} current · {reviewSummary.dueSoon} due soon · {reviewSummary.overdue} overdue · {reviewSummary.invalid} invalid.
+            Review dates are embedded in the comparison data, not this view.
+          </div>
           {comparisonIssues.length > 0 && (
             <div
               role="alert"
@@ -131,6 +156,22 @@ export default function PlatformCompare() {
               }}
             >
               Comparison data needs attention: {comparisonIssues.join(" ")}
+            </div>
+          )}
+          {(reviewSummary.overdue > 0 || reviewSummary.invalid > 0) && (
+            <div
+              role="alert"
+              style={{
+                marginBottom: "1rem",
+                padding: "0.75rem 1rem",
+                color: "var(--color-forge-warn)",
+                background: "rgba(196, 106, 44, 0.1)",
+                border: "1px solid var(--color-forge-warn)",
+                borderRadius: "var(--radius-md)",
+                fontSize: "0.82rem",
+              }}
+            >
+              Review required before relying on this matrix: {reviewSummary.overdue} overdue and {reviewSummary.invalid} invalid fact entries.
             </div>
           )}
           <div style={{ overflowX: "auto" }}>
@@ -151,7 +192,9 @@ export default function PlatformCompare() {
                 <tr key={`${getPlatformComparisonText(row.label, PLATFORM_COMPARISON_LABEL_FALLBACK)}-${rowIndex}`} style={{ background: rowIndex % 2 === 0 ? "transparent" : "var(--color-forge-surface)" }}>
                   <td style={{ ...tdStyle, fontFamily: "var(--font-mono)", fontSize: "0.72rem", color: "var(--color-forge-muted-fg)", whiteSpace: "nowrap" }}>{getPlatformComparisonText(row.label, PLATFORM_COMPARISON_LABEL_FALLBACK)}</td>
                   {PLATFORMS.map((p, platformIndex) => (
-                    <td key={`${getPlatformComparisonText(p.id, `platform-${platformIndex + 1}`)}-${platformIndex}`} style={tdStyle}>{getPlatformComparisonValue(p, row.field)}</td>
+                    <td key={`${getPlatformComparisonText(p.id, `platform-${platformIndex + 1}`)}-${platformIndex}`} style={{ ...tdStyle, minWidth: 190 }}>
+                      <PlatformFactCell platform={p} field={row.field} />
+                    </td>
                   ))}
                   <td style={{ ...tdStyle, color: "var(--color-forge-muted-fg)" }}>{getPlatformComparisonText(row.verdict, PLATFORM_COMPARISON_VERDICT_FALLBACK)}</td>
                 </tr>
@@ -218,6 +261,50 @@ export default function PlatformCompare() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function PlatformFactCell({ platform, field }: { platform: unknown; field: unknown }) {
+  const fact = getPlatformComparisonFact(platform, field);
+  const reviewStatus = getPlatformFactReviewStatus(fact);
+  const sources = getPlatformFactSources(fact);
+  const isAttentionNeeded = reviewStatus === "overdue" || reviewStatus === "invalid";
+  const reviewLabel = reviewStatus === "overdue"
+    ? "REVIEW OVERDUE"
+    : reviewStatus === "dueSoon"
+      ? "REVIEW DUE SOON"
+      : reviewStatus === "invalid"
+        ? "REVIEW METADATA INVALID"
+        : `REVIEW BY ${fact?.reviewBy ?? "—"}`;
+
+  if (!fact) {
+    return <span>{PLATFORM_COMPARISON_VALUE_FALLBACK}</span>;
+  }
+
+  return (
+    <div>
+      <div>{fact.value}</div>
+      <div style={{ marginTop: "0.45rem", fontFamily: "var(--font-mono)", fontSize: "0.62rem", lineHeight: 1.45 }}>
+        <span style={{ color: isAttentionNeeded ? "var(--color-forge-warn)" : "var(--color-forge-muted-fg)" }}>
+          {reviewLabel} · REVIEWED {fact.lastReviewed}
+        </span>
+        <span style={{ display: "block", marginTop: "0.2rem" }}>
+          {sources.length === 0
+            ? <span style={{ color: "var(--color-forge-warn)" }}>SOURCE INVALID</span>
+            : sources.map((source, index) => (
+            <a
+              key={source.url}
+              href={source.url}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "var(--color-forge-accent)", textDecoration: "underline", textUnderlineOffset: 2 }}
+            >
+              {index > 0 ? " · " : ""}{source.label}
+            </a>
+          ))}
+        </span>
+      </div>
     </div>
   );
 }
