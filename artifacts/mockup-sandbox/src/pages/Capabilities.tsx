@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CAPABILITIES } from "../data/knowledge";
 
 const STORAGE_KEY = "cgpt-step-4";
+type CapabilityRisk = "low" | "medium" | "high";
 
 function load(): Record<string, boolean> {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -47,6 +48,7 @@ export default function Capabilities({ onNext, onPrev }: Props) {
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
         {CAPABILITIES.map(cap => {
           const enabled = caps[cap.id] ?? cap.default;
+          const risk = cap.risk as CapabilityRisk;
           return (
             <div key={cap.id} style={{
               padding: "1rem 1.25rem",
@@ -71,10 +73,10 @@ export default function Capabilities({ onNext, onPrev }: Props) {
                     <span style={{
                       fontFamily: "var(--font-mono)", fontSize: "0.65rem", padding: "0.15rem 0.4rem",
                       borderRadius: "4px",
-                      background: cap.risk === "high" ? "rgba(239,68,68,0.15)" : cap.risk === "medium" ? "rgba(245,158,11,0.15)" : "rgba(34,197,94,0.1)",
-                      color: cap.risk === "high" ? "var(--color-forge-danger)" : cap.risk === "medium" ? "var(--color-forge-warn)" : "var(--color-forge-success)",
+                      background: risk === "high" ? "rgba(239,68,68,0.15)" : risk === "medium" ? "rgba(245,158,11,0.15)" : "rgba(34,197,94,0.1)",
+                      color: risk === "high" ? "var(--color-forge-danger)" : risk === "medium" ? "var(--color-forge-warn)" : "var(--color-forge-success)",
                     }}>
-                      risk: {cap.risk}
+                      risk: {risk}
                     </span>
                   </div>
                   <p style={{ fontSize: "0.82rem", color: "var(--color-forge-muted-fg)", margin: 0 }}>
