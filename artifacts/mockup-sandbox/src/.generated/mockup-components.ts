@@ -2,6 +2,7 @@
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 export const modules: ModuleMap = {
   "./components/mockups/custom-gpt-creator/ForgeProtocol.tsx": () => import("../components/mockups/custom-gpt-creator/ForgeProtocol.tsx"),
+  "./components/mockups/custom-gpt-creator/ForgeProtocolOrbit.tsx": () => import("../components/mockups/custom-gpt-creator/ForgeProtocolOrbit.tsx"),
   "./components/mockups/custom-gpt-creator/ForgeProtocolPaper.tsx": () => import("../components/mockups/custom-gpt-creator/ForgeProtocolPaper.tsx"),
   "./components/mockups/custom-gpt-creator/ForgeProtocolSpecFirst.tsx": () => import("../components/mockups/custom-gpt-creator/ForgeProtocolSpecFirst.tsx"),
   "./components/mockups/okh-brand/ForgeCapabilities.tsx": () => import("../components/mockups/okh-brand/ForgeCapabilities.tsx"),
