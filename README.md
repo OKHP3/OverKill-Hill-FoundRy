@@ -2,6 +2,8 @@
 
 The private forge of OverKill Hill P³™ — where experimental architectures, recursive ledgers, promptcraft systems, local AI workbenches, narrative frameworks, and prototype agents are cast, refined, and stress-tested before public release.
 
+> **Repository identity:** OverKill Hill FoundRy is the primary identity and purpose of this repository. It is a private governance relay, not a public product repository. **ReFolDec** (Recursively Folding Codec) is a FoundRy-hosted capability: its specifications and release materials may be developed here, but any public ReFolDec artifact must graduate to a separately approved public surface.
+
 ## Role
 
 This repository is the OverKill Hill P³ FoundRy relay. It sits between the golden governance in `OKHP3/OverKill-Hill` and the child repositories that carry OKH research, writing, apps, skills, and capability prototypes.
@@ -11,6 +13,16 @@ OKHP3/OverKill-Hill
   → OKHP3/OverKill-Hill-FoundRy
     → foundry-*, vault-*, article-*, mermaid-*, mac-studio-*, narrative-* child repos
 ```
+
+### ReFolDec relationship and publication boundary
+
+ReFolDec is a bidirectional process-capture and transformation capability maintained within the FoundRy. It folds raw material into durable artifacts, unfolds mature artifacts into reusable primitives, and refolds those primitives into stronger outputs.
+
+- **FoundRy repository:** private governance and development relay.
+- **ReFolDec within this repository:** hosted capability and release scaffold.
+- **Public ReFolDec:** a future, separately reviewed artifact surface; it must not expose private FoundRy, Notion, client, or employer material.
+
+The FoundRy’s private status does not make ReFolDec public, and ReFolDec’s future public release does not rename or change the visibility of this repository.
 
 ## Responsibilities
 

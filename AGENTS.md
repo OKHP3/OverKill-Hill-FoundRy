@@ -6,6 +6,8 @@ This repository is the OverKill Hill P³ FoundRy relay. It translates the golden
 
 This repo is not merely a content repository. It is a template-of-templates and governance relay.
 
+**Identity boundary:** FoundRy is the primary identity of this private repository. ReFolDec (Recursively Folding Codec) is a FoundRy-hosted capability and prospective public artifact, not an alternate repository identity. Work on ReFolDec may live here while private; a public ReFolDec release requires its own approved publication surface and the graduation checks in section 7.
+
 ## 1. Authority Chain
 
 ```text
@@ -123,6 +125,8 @@ Private repos may become public only after:
 - public-readiness checklist completion
 
 Repositories with sensitive client or employer context must not be graduated automatically.
+
+For a FoundRy-hosted capability such as ReFolDec, public documentation or exports must be treated as a separate graduation target. They must not imply that this FoundRy relay itself is public or that private source material is publishable.
 
 ## 8. Agent Behavior
 

@@ -1,11 +1,13 @@
 # ReFolDec Roadmap
 
-## v0.1 — Public identity scaffold
+**Relationship to this repository:** ReFolDec is a capability hosted by the private OverKill Hill FoundRy relay. This roadmap plans the capability and any future public artifact; it does not change the FoundRy repository’s identity or visibility.
 
-- Replace inherited/incorrect README content with ReFolDec-specific framing.
-- Add public documentation for the Notion/GitHub operating model.
+## v0.1 — FoundRy-hosted capability scaffold
+
+- Declare the FoundRy relay as the repository’s primary identity and ReFolDec as a hosted capability.
+- Add documentation for the private capture, private development, and future public-release boundary.
 - Add initial specification, vocabulary, example, manifest, and schema.
-- Remove dependence on private Notion URLs from public repo materials.
+- Keep public-release materials independent of private Notion URLs and private FoundRy sources.
 
 ## v0.2 — Artifact model
 
@@ -33,4 +35,4 @@
 - Complete examples.
 - Published diagrams.
 - Usable schemas.
-- Public site/project page integration.
+- Public site/project page integration on a separately approved release surface.

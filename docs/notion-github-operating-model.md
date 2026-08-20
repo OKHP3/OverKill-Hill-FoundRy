@@ -1,21 +1,22 @@
 # Notion + GitHub Operating Model
 
-ReFolDec uses two persistence planes:
+ReFolDec is developed through three distinct persistence planes:
 
 - **Notion** is the private workshop: capture, drafting, ideation, synthesis, and working memory.
-- **GitHub** is the public canonical surface: distilled Markdown, schemas, examples, specs, and release-ready artifacts.
+- **OverKill Hill FoundRy** is the private governance and development relay that hosts the ReFolDec capability scaffold.
+- **An approved public artifact surface** is the canonical release location for public ReFolDec Markdown, schemas, examples, specs, and release-ready artifacts.
 
-The rule is simple: public repositories should not require private Notion access to be understood.
+The rule is simple: a public ReFolDec artifact must not require private Notion or FoundRy access to be understood.
 
 ---
 
 ## Boundary rule
 
-If a GitHub file needs to reference an idea first drafted in Notion, do not link to the private Notion page as the only source. Instead:
+If a public ReFolDec artifact needs to reference an idea first drafted in Notion, do not link to the private Notion page as the only source. Instead:
 
 1. copy or distill the useful content into Markdown;
-2. place that Markdown in `docs/`, `examples/`, `schemas/`, or another appropriate public path;
-3. link GitHub files to that public Markdown artifact;
+2. place that Markdown in the approved public release surface;
+3. link public artifacts to that public Markdown;
 4. keep the Notion page as workshop context, not publication infrastructure.
 
 ---
@@ -26,8 +27,8 @@ If a GitHub file needs to reference an idea first drafted in Notion, do not link
 Notion capture
 → Notion synthesis
 → Markdown distillation
-→ GitHub commit
-→ public artifact
+→ private FoundRy review
+→ approved public artifact surface
 → optional site/project page
 ```
 
@@ -53,9 +54,9 @@ Notion is the writing desk.
 
 ## GitHub role
 
-GitHub should be clean, portable, and public.
+GitHub can host both the private FoundRy relay and an approved public ReFolDec release surface. The FoundRy repository remains private; only separately graduated ReFolDec artifacts may be public.
 
-Use it for:
+Use the appropriate GitHub surface for:
 
 - specs;
 - schemas;
@@ -64,18 +65,18 @@ Use it for:
 - examples;
 - diagrams;
 - release notes;
-- public documentation.
+- public documentation after graduation.
 
-GitHub is the canonical artifact shelf.
+The approved public release surface is the canonical ReFolDec artifact shelf.
 
 ---
 
 ## Publication checklist
 
-Before committing a ReFolDec artifact to GitHub:
+Before publishing a ReFolDec artifact to its approved public surface:
 
 - Does it make sense without a private Notion link?
 - Does it name the artifact type and maturity state?
 - Does it distinguish raw thought from refined concept?
 - Does it preserve useful source context without exposing private workspace details?
-- Does it point to public files, not private capture surfaces?
+- Does it point to public files, not private capture or FoundRy surfaces?

@@ -2,6 +2,12 @@ schema_version: "1.0"
 foundry: OverKill-Hill-FoundRy
 brand_domain: overkillhill
 last_reviewed: TBD
+hosted_capabilities:
+  - name: ReFolDec
+    type: capability
+    lifecycle_status: prototype
+    visibility: private
+    relationship: FoundRy-hosted capability; separate public graduation required
 repositories:
   - name: OverKill-Hill
     type: site

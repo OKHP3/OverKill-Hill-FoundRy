@@ -69,4 +69,4 @@ The private surface where rough material is collected and shaped. In the OKHP³ 
 
 ## Canonical plane
 
-The public, versioned, durable surface where cleaned artifacts are published. In the OKHP³ operating model, this is usually GitHub.
+The public, versioned, durable release surface where cleaned artifacts are published after FoundRy graduation. It may be hosted on GitHub, but it is separate from the private OverKill Hill FoundRy relay.

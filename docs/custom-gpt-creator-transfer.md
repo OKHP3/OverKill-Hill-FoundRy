@@ -239,7 +239,7 @@ Add a toggleable rendered Markdown preview alongside the raw text in `ExportPack
 
 ## 11. Repository context
 
-This SPA exists within a FoundRy relay repository (`OKHP3/OverKill-Hill-FoundRy`) whose primary published concept is **ReFolDec** (Recursively Folding Codec). The SPA is an additive artifact surface, not the repository's core purpose.
+This SPA exists within the private FoundRy relay repository (`OKHP3/OverKill-Hill-FoundRy`), whose primary purpose is governance and hosted capability development. **ReFolDec** (Recursively Folding Codec) is one FoundRy-hosted capability; the SPA is another additive artifact surface, not the repository's core purpose.
 
 Key governance rules from `AGENTS.md` that apply to SPA work:
 
@@ -247,7 +247,7 @@ Key governance rules from `AGENTS.md` that apply to SPA work:
 - Keep private workshop context out of public files. Do not add private Notion URLs.
 - Do not add secrets, credentials, or client-specific material to source files or the client bundle.
 - Use small, named commits. No force-push or destructive git operations.
-- `manifest.yaml` declares `visibility: private` but `README.md` describes a public scaffold. This conflict is unresolved. Treat all SPA output as public-artifact-hygiene level.
+- The FoundRy relay is private. Treat any public SPA deployment and any future public ReFolDec release as separate approved artifact surfaces; keep private workshop and relay material out of them.
 
 The `artifacts/api-server/` directory contains a separate Express backend artifact. It is unrelated to the SPA and was not touched during SPA development. Do not modify it during SPA work.
 

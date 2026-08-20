@@ -20,7 +20,7 @@ The projects form a recursive system:
 - BPMN/xPMN supplies process notation.
 - Agent Skills supply executable packaging.
 - Notion captures private thinking.
-- GitHub publishes canonical artifacts.
+- A separately approved public ReFolDec surface publishes canonical artifacts after FoundRy graduation.
 
 ---
 
@@ -32,9 +32,9 @@ It folds raw thought into structured artifacts and unfolds mature artifacts into
 
 ---
 
-## 4. Fold: public artifact
+## 4. Fold: release-ready artifact
 
-The concept becomes a repository with:
+The concept becomes a FoundRy-hosted release package with:
 
 - README;
 - specification;
@@ -44,6 +44,8 @@ The concept becomes a repository with:
 - examples;
 - roadmap;
 - future Agent Skill.
+
+After approval, the package can be published through a separate public ReFolDec artifact surface.
 
 ---
 

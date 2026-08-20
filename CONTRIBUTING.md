@@ -6,9 +6,9 @@ This is a human-readable complement to `AGENTS.md`, which is the canonical guide
 
 ## Before you start
 
-- Review `README.md` for an overview of ReFolDec and what this repository is for.
+- Review `README.md` for the FoundRy relay’s purpose, its private/public boundary, and the role of hosted capabilities such as ReFolDec.
 - Review `AGENTS.md` sections 3 (scope), 5 (architecture and boundaries), and 8 (change conventions) before proposing or making any change.
-- The repository preserves a boundary between private capture (Notion) and public publication (GitHub). Contributions must remain understandable without private Notion access.
+- The repository preserves a boundary between private capture, private FoundRy development, and separately approved public releases. Contributions must remain understandable without private Notion access.
 
 ---
 

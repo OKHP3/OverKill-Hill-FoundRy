@@ -1,8 +1,16 @@
 # ReFolDec Specification
 
-**Status:** v0.1 scaffold  
+**Status:** v0.1 FoundRy-hosted private scaffold; public release not yet graduated
 **Name:** ReFolDec — Recursively Folding Codec  
 **Purpose:** bidirectional process-capture and transformation framework
+
+---
+
+## Repository relationship and visibility
+
+OverKill Hill FoundRy is the primary identity of the repository that hosts this specification. It is a private governance relay. ReFolDec is a FoundRy-hosted capability and prospective public artifact, not an alternate name for the relay.
+
+ReFolDec material can be prepared here while private. A public ReFolDec release must be published through a separately approved artifact surface after the FoundRy graduation checks; it must not include private FoundRy, Notion, client, or employer material.
 
 ---
 
@@ -82,12 +90,13 @@ This turns human process knowledge into reusable non-human operating instruction
 
 ## 7. Relationship to Notion and GitHub
 
-ReFolDec treats Notion and GitHub as separate persistence planes:
+ReFolDec uses separate persistence planes:
 
 - **Notion:** private capture and synthesis plane.
-- **GitHub:** public, versioned artifact plane.
+- **FoundRy:** private governance and development relay.
+- **Approved public artifact surface:** public, versioned ReFolDec publication plane after graduation.
 
-Public GitHub files should not depend on private Notion pages.
+Public ReFolDec artifacts should not depend on private Notion pages or private FoundRy sources.
 
 ---
 

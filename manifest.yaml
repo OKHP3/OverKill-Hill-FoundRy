@@ -5,5 +5,10 @@ repo:
   type: foundry-relay
   lifecycle_status: active
   visibility: private
+  purpose: Private OverKill Hill governance relay for child-repository scaffolds, registries, and hosted capability development.
 brand_domain: overkillhill
 author: Jamie Hill
+hosted_capabilities:
+  - name: ReFolDec
+    relationship: FoundRy-hosted process-capture capability and prospective public artifact
+    publication_status: private scaffold; separate public graduation required
