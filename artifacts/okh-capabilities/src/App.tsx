@@ -4,8 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { ProtocolProvider } from '@/hooks/use-protocol-store';
-import ProtocolBoard from '@/pages/ProtocolBoard';
+import ForgeProtocol from '@/pages/ForgeProtocol';
 import {
   Route,
   Switch,
@@ -19,7 +18,7 @@ function Router() {
   return (
     <RoutedErrorBoundary>
       <Switch>
-        <Route path="/" component={ProtocolBoard} />
+        <Route path="/" component={ForgeProtocol} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>
@@ -39,14 +38,12 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ProtocolProvider>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </ProtocolProvider>
+      <TooltipProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

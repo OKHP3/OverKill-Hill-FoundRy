@@ -1,7 +1,7 @@
 kind = "web"
 previewPath = "/okh-capabilities/"
 title = "Forge Capabilities"
-description = "An interactive OverKill Hill FoundRy build-protocol board that guides makers through twelve stages across three phases, tracks stage completion locally, and keeps the forge workshop visual language from the selected canvas design."
+description = "A conversation-first OverKill Hill FoundRy workspace that turns a maker's intent into an emerging GPT specification, with live assembly progress, traceable decisions, phase navigation, persistence, preview, and export."
 version = "1.0.0"
 id = "artifacts/okh-capabilities"
 router = "path"

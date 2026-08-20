@@ -1,7 +1,7 @@
 kind = "web"
 previewPath = "/"
 title = "OKH Found·Ry"
-description = "The OKH Found·Ry brand landing page — a full-screen forge-aesthetic hero for OverKill Hill P³. Precision dark industrial design with ember glows, schematic corner marks, blueprint grid, and animated entry. Serves as the go-forward home for the OKH Found·Ry product suite."
+description = "The OKH Found·Ry Paper Forge — a warm editorial conversation workspace for shaping Custom GPT specifications through dialogue, an emerging brief, phase navigation, preview, and export."
 version = "1.0.0"
 id = "artifacts/okh-foundry-landing"
 router = "path"
