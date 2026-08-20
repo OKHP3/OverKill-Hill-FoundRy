@@ -19,38 +19,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run filename compliance check (dry-run)
+      - name: Run filename compliance check
         run: |
           python3 scripts/normalize_filenames.py . \
             --recursive \
             --ascii-only \
             --include-dirs \
-            --exclude-path .git \
-            --exclude-path .agents \
-            --exclude-path .cache \
-            --exclude-path .config \
-            --exclude-path .github \
-            --exclude-path .local \
-            --exclude-path .replit
+            --check
         shell: bash
-
-      - name: Fail if renames are planned
-        run: |
-          OUTPUT=$(python3 scripts/normalize_filenames.py . \
-            --recursive \
-            --ascii-only \
-            --include-dirs \
-            --exclude-path .git \
-            --exclude-path .agents \
-            --exclude-path .cache \
-            --exclude-path .config \
-            --exclude-path .github \
-            --exclude-path .local \
-            --exclude-path .replit 2>&1)
-          echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -q "rename(s) planned"; then
-            echo ""
-            echo "❌ Non-compliant filenames detected. Run scripts/normalize_filenames.py locally with --apply to fix."
-            exit 1
-          fi
-          echo "✅ All filenames are compliant."

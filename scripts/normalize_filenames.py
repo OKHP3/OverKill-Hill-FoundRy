@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import subprocess
 import sys
 import unicodedata
 from dataclasses import dataclass
@@ -114,6 +115,10 @@ DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset({
     "lib",
     "artifacts",
 })
+
+# An npm scope directory is tool-owned syntax, not a filename that should be
+# normalized. Examples: @types, @babel, and @radix-ui.
+SCOPED_PACKAGE_DIR_RE = re.compile(r"^@[a-z0-9][a-z0-9._-]*$")
 
 # Temp-file marker; uses a leading dot so hidden-exclusion covers it automatically.
 _TMP_SUFFIX = ".__norm_tmp__"
@@ -221,6 +226,74 @@ class RenamePlan:
     is_dir: bool = False
 
 
+def _absolute_path(path: Path) -> Path:
+    """Return an absolute logical path without resolving symlinks."""
+    return Path(os.path.abspath(path))
+
+
+@dataclass(frozen=True)
+class GitIgnoreMatcher:
+    """Match paths against the active repository's .gitignore rules."""
+
+    repository_root: Path
+
+    @classmethod
+    def from_directory(cls, directory: Path) -> GitIgnoreMatcher | None:
+        """Return the enclosing Git repository matcher, if one exists."""
+        try:
+            result = subprocess.run(
+                ["git", "-C", str(directory), "rev-parse", "--show-toplevel"],
+                capture_output=True,
+                check=False,
+                text=True,
+            )
+        except FileNotFoundError:
+            return None
+
+        if result.returncode != 0:
+            return None
+
+        return cls(repository_root=Path(result.stdout.strip()))
+
+    def ignored_paths(self, paths: list[Path]) -> set[Path]:
+        """Return paths matching Git's ignore rules in one batched call."""
+        relative_paths: list[str] = []
+        for path in paths:
+            try:
+                relative_paths.append(
+                    _absolute_path(path).relative_to(self.repository_root).as_posix()
+                )
+            except ValueError:
+                continue
+
+        if not relative_paths:
+            return set()
+
+        result = subprocess.run(
+            ["git", "check-ignore", "--no-index", "--stdin", "-z"],
+            cwd=self.repository_root,
+            capture_output=True,
+            check=False,
+            input=b"\0".join(os.fsencode(path) for path in relative_paths) + b"\0",
+        )
+        if result.returncode not in (0, 1):
+            raise RuntimeError(
+                "Unable to evaluate .gitignore rules: "
+                f"{result.stderr.decode(errors='replace').strip()}"
+            )
+
+        return {
+            _absolute_path(self.repository_root / os.fsdecode(path))
+            for path in result.stdout.split(b"\0")
+            if path
+        }
+
+
+def _is_scoped_package_directory(name: str) -> bool:
+    """Return whether *name* is a valid npm scope directory."""
+    return bool(SCOPED_PACKAGE_DIR_RE.fullmatch(name))
+
+
 def _should_exclude(
     path: Path,
     root: Path,
@@ -245,6 +318,37 @@ def _should_exclude(
     return False
 
 
+def _filter_audited_paths(
+    paths: list[Path],
+    *,
+    root: Path,
+    exclude_paths: set[Path] | None,
+    exclude_hidden: bool,
+    include_default_dirs: bool,
+    gitignore_matcher: GitIgnoreMatcher | None,
+) -> list[Path]:
+    """Exclude explicit, conventional, and Git-ignored paths from an audit."""
+    included_paths = [
+        path
+        for path in paths
+        if not _should_exclude(
+            path,
+            root,
+            exclude_paths,
+            exclude_hidden,
+            include_default_dirs,
+        )
+    ]
+
+    if gitignore_matcher is None:
+        return included_paths
+
+    ignored_paths = gitignore_matcher.ignored_paths(included_paths)
+    return [
+        path for path in included_paths if _absolute_path(path) not in ignored_paths
+    ]
+
+
 def build_dir_plan(
     directory: Path,
     *,
@@ -253,13 +357,21 @@ def build_dir_plan(
     exclude_paths: set[Path] | None = None,
     exclude_hidden: bool = True,
     include_default_dirs: bool = False,
+    respect_gitignore: bool = True,
+    gitignore_matcher: GitIgnoreMatcher | None = None,
 ) -> list[RenamePlan]:
     all_paths = list(directory.rglob("*")) if recursive else list(directory.iterdir())
 
-    all_paths = [
-        p for p in all_paths
-        if not _should_exclude(p, directory, exclude_paths, exclude_hidden, include_default_dirs)
-    ]
+    if respect_gitignore and gitignore_matcher is None:
+        gitignore_matcher = GitIgnoreMatcher.from_directory(directory)
+    all_paths = _filter_audited_paths(
+        all_paths,
+        root=directory,
+        exclude_paths=exclude_paths,
+        exclude_hidden=exclude_hidden,
+        include_default_dirs=include_default_dirs,
+        gitignore_matcher=gitignore_matcher,
+    )
 
     dir_paths = sorted(
         [p for p in all_paths if p.is_dir()],
@@ -269,6 +381,8 @@ def build_dir_plan(
 
     plans: list[RenamePlan] = []
     for src in dir_paths:
+        if _is_scoped_package_directory(src.name):
+            continue
         new_name = clean_filename(src.name, keep_unicode=keep_unicode, is_dir=True)
         dst = src.with_name(new_name)
         if src.name == dst.name:
@@ -289,13 +403,21 @@ def build_file_plan(
     exclude_paths: set[Path] | None = None,
     exclude_hidden: bool = True,
     include_default_dirs: bool = False,
+    respect_gitignore: bool = True,
+    gitignore_matcher: GitIgnoreMatcher | None = None,
 ) -> list[RenamePlan]:
     all_paths = list(directory.rglob("*")) if recursive else list(directory.iterdir())
 
-    all_paths = [
-        p for p in all_paths
-        if not _should_exclude(p, directory, exclude_paths, exclude_hidden, include_default_dirs)
-    ]
+    if respect_gitignore and gitignore_matcher is None:
+        gitignore_matcher = GitIgnoreMatcher.from_directory(directory)
+    all_paths = _filter_audited_paths(
+        all_paths,
+        root=directory,
+        exclude_paths=exclude_paths,
+        exclude_hidden=exclude_hidden,
+        include_default_dirs=include_default_dirs,
+        gitignore_matcher=gitignore_matcher,
+    )
 
     plans: list[RenamePlan] = []
     for src in sorted([p for p in all_paths if p.is_file()]):
@@ -328,9 +450,13 @@ def build_plan(
     exclude_paths: set[Path] | None = None,
     exclude_hidden: bool = True,
     include_default_dirs: bool = False,
+    respect_gitignore: bool = True,
 ) -> list[RenamePlan]:
     """Build combined rename plan for dry-run display."""
     plans: list[RenamePlan] = []
+    gitignore_matcher = (
+        GitIgnoreMatcher.from_directory(directory) if respect_gitignore else None
+    )
     if include_dirs:
         plans.extend(build_dir_plan(
             directory,
@@ -339,6 +465,8 @@ def build_plan(
             exclude_paths=exclude_paths,
             exclude_hidden=exclude_hidden,
             include_default_dirs=include_default_dirs,
+            respect_gitignore=respect_gitignore,
+            gitignore_matcher=gitignore_matcher,
         ))
     plans.extend(build_file_plan(
         directory,
@@ -349,6 +477,8 @@ def build_plan(
         exclude_paths=exclude_paths,
         exclude_hidden=exclude_hidden,
         include_default_dirs=include_default_dirs,
+        respect_gitignore=respect_gitignore,
+        gitignore_matcher=gitignore_matcher,
     ))
     return plans
 
@@ -381,6 +511,11 @@ def main(argv: list[str]) -> int:
     )
     parser.add_argument("--apply", action="store_true", help="Actually rename files")
     parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero when a dry-run finds filenames to normalize",
+    )
+    parser.add_argument(
         "--recursive", action="store_true",
         help="Process subfolders too",
     )
@@ -399,6 +534,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument(
         "--include-default-dirs", action="store_true",
         help=f"Include default-excluded dirs: {sorted(DEFAULT_EXCLUDE_DIRS)}",
+    )
+    parser.add_argument(
+        "--include-ignored",
+        action="store_true",
+        help="Include paths matching .gitignore rules (excluded by default)",
     )
     parser.add_argument(
         "--exclude-path",
@@ -424,11 +564,14 @@ def main(argv: list[str]) -> int:
     )
 
     args = parser.parse_args(argv)
+    if args.apply and args.check:
+        parser.error("--apply and --check cannot be used together")
 
     directory = Path(args.directory).expanduser().resolve()
     keep_unicode = not args.ascii_only
     exclude_hidden = not args.include_hidden
     include_default_dirs = args.include_default_dirs
+    respect_gitignore = not args.include_ignored
 
     include_extensions = None
     if args.include_ext:
@@ -458,6 +601,7 @@ def main(argv: list[str]) -> int:
         exclude_paths=exclude_paths,
         exclude_hidden=exclude_hidden,
         include_default_dirs=include_default_dirs,
+        respect_gitignore=respect_gitignore,
     )
 
     if not plans:
@@ -469,7 +613,7 @@ def main(argv: list[str]) -> int:
 
     if not args.apply:
         print(f"\nDry-run: {len(plans)} rename(s) planned. Re-run with --apply to execute.")
-        return 0
+        return 1 if args.check else 0
 
     if args.include_dirs:
         dir_plans = build_dir_plan(
@@ -479,6 +623,7 @@ def main(argv: list[str]) -> int:
             exclude_paths=exclude_paths,
             exclude_hidden=exclude_hidden,
             include_default_dirs=include_default_dirs,
+            respect_gitignore=respect_gitignore,
         )
         if dir_plans:
             apply_plan(dir_plans)
@@ -493,6 +638,7 @@ def main(argv: list[str]) -> int:
             exclude_paths=exclude_paths,
             exclude_hidden=exclude_hidden,
             include_default_dirs=include_default_dirs,
+            respect_gitignore=respect_gitignore,
         )
         if file_plans:
             apply_plan(file_plans)
