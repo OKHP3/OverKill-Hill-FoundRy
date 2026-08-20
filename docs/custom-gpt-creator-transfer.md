@@ -3,7 +3,7 @@
 **Repository:** `OKHP3/OverKill-Hill-FoundRy`
 **Receiving Replit:** `https://replit.com/t/overkill-hill/repls/OverKill-Hill-FoundRy`
 **Transfer date:** 2026-08-06
-**Status:** Active SPA, GitHub Pages workflow present, receiving Replit is go-forward authority.
+**Status:** Active browser-only SPA, dedicated Replit web artifact and GitHub Pages workflow present, receiving Replit is go-forward authority.
 
 ---
 
@@ -11,7 +11,7 @@
 
 Build and maintain an interactive, browser-only Single-Page Application (SPA) that operationalizes the `okhp3-custom-gpt-builder` Agent Skill. The app walks a builder through every step required to design, document, audit, and export a production-grade OpenAI Custom GPT — and secondarily a Gemini Gem or Microsoft Copilot Declarative Agent.
 
-The app lives entirely in `artifacts/mockup-sandbox/` inside this repository. It has no backend, no database, and no authentication. All state is localStorage only.
+The runnable app is served by the dedicated `artifacts/custom-gpt-creator/` web artifact at `/custom-gpt-creator/`. Its thin entrypoint reuses the canonical creator pages and data from `artifacts/mockup-sandbox/`, where the separate Canvas artifact continues to provide isolated forge component previews at `/__mockup/`. It has no backend, no database, and no authentication. All state is localStorage only.
 
 ---
 
@@ -19,7 +19,7 @@ The app lives entirely in `artifacts/mockup-sandbox/` inside this repository. It
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Bundler | Vite 7 | `pnpm --filter @workspace/mockup-sandbox run build` |
+| Bundler | Vite 7 | `pnpm --filter @workspace/custom-gpt-creator run build` |
 | Framework | React 19 | Pinned at `19.1.0` in pnpm-workspace catalog |
 | Styling | Tailwind CSS v4 (`@tailwindcss/vite`) | v4 `@theme` block in `src/index.css`; no `tailwind.config.js` |
 | Language | TypeScript | `tsconfig.json` extends `../../tsconfig.base.json` |
@@ -27,7 +27,7 @@ The app lives entirely in `artifacts/mockup-sandbox/` inside this repository. It
 | Icons | lucide-react | From catalog |
 | Animation | framer-motion | From catalog |
 | Package manager | pnpm (workspace) | `npm install` is blocked by a preinstall guard |
-| Navigation | `useState` in App.tsx | No react-router; no hash routing needed |
+| Navigation | `useState` in the canonical creator App.tsx | No react-router; no hash routing needed |
 | State persistence | localStorage | Keys `cgpt-step-0` through `cgpt-step-8` + `cgpt-creator-state` |
 
 **Do not** add react-router, a backend server, a database, or any OAuth flow. The SPA is intentionally client-only.
@@ -48,7 +48,7 @@ The brand tokens are declared as Tailwind v4 `@theme` custom properties in `arti
 | Body font | DM Sans (Google Fonts) |
 | Mono font | JetBrains Mono (Google Fonts) |
 
-Fonts are loaded via `<link>` tags in `artifacts/mockup-sandbox/index.html`. The `<title>` is "Custom GPT Creator | OverKill Hill P3".
+Fonts are loaded via `<link>` tags in `artifacts/custom-gpt-creator/index.html`. The `<title>` is "Custom GPT Creator | OverKill Hill P3".
 
 ---
 
@@ -58,9 +58,10 @@ Fonts are loaded via `<link>` tags in `artifacts/mockup-sandbox/index.html`. The
 
 | File | Role |
 |---|---|
-| `artifacts/mockup-sandbox/index.html` | HTML shell, Google Fonts, OKH favicon |
-| `artifacts/mockup-sandbox/src/main.tsx` | React root mount |
-| `artifacts/mockup-sandbox/src/App.tsx` | All navigation, layout, page routing |
+| `artifacts/custom-gpt-creator/index.html` | Runnable app HTML shell, metadata, and Google Fonts |
+| `artifacts/custom-gpt-creator/src/main.tsx` | Dedicated web artifact React root; imports shared forge styles |
+| `artifacts/custom-gpt-creator/src/App.tsx` | Thin bridge to the canonical creator implementation |
+| `artifacts/mockup-sandbox/src/App.tsx` | Canonical creator navigation, layout, and page routing; preserves `/__mockup/preview/*` rendering |
 | `artifacts/mockup-sandbox/src/index.css` | Global styles + Tailwind v4 `@theme` tokens |
 
 ### Navigation model
@@ -114,34 +115,32 @@ pnpm install --frozen-lockfile
 ### Dev server (Replit only)
 
 ```bash
-PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev
+pnpm --filter @workspace/custom-gpt-creator run dev
 ```
 
-The Replit workflow named **"Custom GPT Creator SPA"** runs this command. Port 5000 is the webview port.
+The managed Replit workflow named **`artifacts/custom-gpt-creator: web`** runs this command. The artifact service injects its assigned `PORT` and `BASE_PATH=/custom-gpt-creator/`; do not replace it with a manually configured workflow.
 
-`PORT` is only required when running the dev or preview server. `BASE_PATH` defaults to `/` if not set. Both Replit-only dev plugins (`runtimeErrorOverlay`, `cartographer`) are gated on `REPL_ID` being present and are skipped automatically in CI.
+`PORT` and `BASE_PATH` are required by the Vite configuration and supplied by the artifact service in Replit. The runtime error overlay is always configured; the Cartographer plugin is gated on `REPL_ID` and skipped automatically in CI.
 
 ### Production build
 
 ```bash
-BASE_PATH=<see section 6> NODE_ENV=production pnpm --filter @workspace/mockup-sandbox run build
+PORT=5000 BASE_PATH=<see section 6> NODE_ENV=production pnpm --filter @workspace/custom-gpt-creator run build
 ```
 
-Output: `artifacts/mockup-sandbox/dist/` — `index.html` + hashed JS/CSS bundles.
+Output: `artifacts/custom-gpt-creator/dist/public/` — `index.html` + hashed JS/CSS bundles.
 
 ### TypeScript check
 
 ```bash
-pnpm --filter @workspace/mockup-sandbox run typecheck
+pnpm --filter @workspace/custom-gpt-creator run typecheck
 ```
 
-**Known failures** — as of 2026-08-06 `tsc --noEmit` exits with three classes of error. The production build and dev server are unaffected (Vite uses esbuild which skips type-checking). Fix before adding CI type-gating:
+**Known failures in the canonical page source** — strict TypeScript currently reports two source issues. They do not prevent the dedicated artifact from building because Vite transpiles without type-checking. Fix the canonical source before adding workspace-wide CI type-gating:
 
-1. **Missing shadcn modules** (`src/components/ui/sidebar.tsx`): `@/hooks/use-mobile` and `@/components/ui/skeleton` are imported but the source files were never generated. Add the missing shadcn components or remove the imports from `sidebar.tsx`.
+1. **Narrowing error in `Capabilities.tsx`** (lines 74-75): The `risk` field on `CAPABILITIES` is typed as `"low" | "medium"` (the union of values in `knowledge.ts`), but the code compares it against `"high"`. Either add a `"high"` risk entry to `CAPABILITIES` in `knowledge.ts`, or change the comparison.
 
-2. **Narrowing error in `Capabilities.tsx`** (lines 74-75): The `risk` field on `CAPABILITIES` is typed as `"low" | "medium"` (the union of values in `knowledge.ts`), but the code compares it against `"high"`. Either add a `"high"` risk entry to `CAPABILITIES` in `knowledge.ts`, or change the comparison.
-
-3. **Type narrowing error in `PlatformCompare.tsx`** (line 136): A `PLATFORMS` array element typed as the full union is passed to a function expecting only the first member's literal type. Widen the parameter type or use a type assertion.
+2. **Type narrowing error in `PlatformCompare.tsx`** (line 136): A `PLATFORMS` array element typed as the full union is passed to a function expecting only the first member's literal type. Widen the parameter type or use a type assertion.
 
 ---
 
@@ -166,21 +165,23 @@ The workflow:
 1. Checks out the repo.
 2. Sets up pnpm 9 and Node 22 with pnpm cache.
 3. Runs `pnpm install --frozen-lockfile` at the repo root.
-4. Builds from `artifacts/mockup-sandbox/` with `BASE_PATH=/OverKill-Hill-FoundRy/ NODE_ENV=production`.
-5. Uploads `artifacts/mockup-sandbox/dist` as the Pages artifact.
+4. Builds `artifacts/custom-gpt-creator/` with `BASE_PATH=/OverKill-Hill-FoundRy/ NODE_ENV=production`.
+5. Uploads `artifacts/custom-gpt-creator/dist/public` as the Pages artifact.
 6. Deploys using the standard `actions/deploy-pages@v4` with built-in `GITHUB_TOKEN` — no PAT required.
 
 ---
 
 ## 7. Vite config constraints
 
-`artifacts/mockup-sandbox/vite.config.ts` has these intentional behaviors:
+`artifacts/custom-gpt-creator/vite.config.ts` has these intentional behaviors:
 
-- `base` is set from `process.env.BASE_PATH`, defaulting to `/`.
-- `PORT` is optional; defaults to 5000 if not set, validated if provided.
-- `mockupPreviewPlugin()` runs at build start to generate `src/.generated/mockup-components.ts` — this is the auto-discovery mechanism for the mockup sandbox system and must not be removed.
-- `@replit/vite-plugin-cartographer` and `runtimeErrorOverlay` are skipped when `REPL_ID` is not set (prevents CI failures).
-- `build.outDir` is explicitly set to `artifacts/mockup-sandbox/dist` (absolute path).
+- `base` is set from the required `process.env.BASE_PATH` value.
+- `PORT` is required and validated before Vite starts.
+- It allows the sibling `artifacts/mockup-sandbox/` source directory so the dedicated artifact can render the canonical creator pages without duplicating them.
+- `runtimeErrorOverlay` is always configured. `@replit/vite-plugin-cartographer` is skipped when `REPL_ID` is not set, preventing CI-only plugin loading.
+- `build.outDir` is explicitly set to `artifacts/custom-gpt-creator/dist/public` (absolute path).
+
+`artifacts/mockup-sandbox/vite.config.ts` remains the Canvas preview configuration. Its `mockupPreviewPlugin()` generates `src/.generated/mockup-components.ts` for `/__mockup/preview/*` and must not be removed.
 
 ---
 
@@ -259,8 +260,8 @@ When picking up this SPA in the FoundRy Replit for the first time:
 1. Pull `main` — the workflow and all SPA source are committed.
 2. Run `pnpm install` from the repo root (not from inside `artifacts/mockup-sandbox/`).
 3. Confirm `tsconfig.base.json` exists at the repo root. If missing, recover from git.
-4. Configure the **"Custom GPT Creator SPA"** workflow: `PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev`.
-5. Open port 5000 in the webview.
+4. Start the managed **`artifacts/custom-gpt-creator: web`** workflow; it serves the creator at `/custom-gpt-creator/`.
+5. Use the separate managed **`artifacts/mockup-sandbox: Component Preview Server`** workflow for forge preview routes at `/__mockup/`.
 6. Confirm the GitHub Pages base path (section 6) before the first deployment. Update `BASE_PATH` in `.github/workflows/pages.yml` if no custom domain is configured.
 7. In GitHub repository Settings > Pages, set Source to **GitHub Actions** if not already done.
 8. Push any commit to `main` to trigger the first Pages deployment and verify asset URLs load correctly at the deployed URL.

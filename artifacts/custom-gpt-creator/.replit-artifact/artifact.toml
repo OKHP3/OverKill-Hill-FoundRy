@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/custom-gpt-creator/"
+title = "Custom GPT Creator"
+description = "A browser-only forge workflow for designing, auditing, comparing, and exporting production-grade Custom GPT specifications with localStorage persistence."
+version = "1.0.0"
+id = "artifacts/custom-gpt-creator"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/custom-gpt-creator/" ]
+localPort = 20017
+
+[services.development]
+run = "pnpm --filter @workspace/custom-gpt-creator run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/custom-gpt-creator", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/custom-gpt-creator/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20017"
+BASE_PATH = "/custom-gpt-creator/"

@@ -4,18 +4,16 @@ description: Build record and runtime facts for the Custom GPT Creator SPA in ar
 ---
 
 ## Rule
-The Custom GPT Creator SPA lives at `artifacts/mockup-sandbox/`. Its dev workflow is "Custom GPT Creator SPA" running `PORT=5000 BASE_PATH=/ pnpm --filter @workspace/mockup-sandbox run dev` on port 5000 (webview).
+The dedicated `custom-gpt-creator` web artifact serves the runnable SPA, while `mockup-sandbox` remains the Canvas artifact for isolated component previews. The creator bridge imports the canonical page and data source from the sandbox rather than maintaining a copy.
 
-**Why:** The artifact.toml was originally configured for port 8081 / BASE_PATH=`/__mockup` for the mockup-sandbox canvas system. We override both at the workflow level to serve the main app on port 5000.
+**Why:** The product needs a deployable browser application without breaking the existing canvas preview surface. Sharing the canonical source keeps the two surfaces from drifting.
 
-**How to apply:** Any time the SPA workflow is reconfigured, keep `PORT=5000 BASE_PATH=/` in the run command.
+**How to apply:** Keep the creator artifact’s managed workflow and artifact metadata as the runtime authority. Preserve the sandbox’s `/__mockup` service and its generated preview registry when changing shared creator source.
 
-## Key source layout
-- `src/App.tsx` — main shell; sidebar nav, page routing via useState (no react-router)
-- `src/data/knowledge.ts` — all reference constants (INSTRUCTION_LAYERS, CAPABILITIES, AUDIT_ITEMS, PLATFORMS, TAXONOMY, etc.)
-- `src/pages/` — one file per step (BuildBrief, ConversationContract, InstructionStack, KnowledgeFiles, Capabilities, ActionsApps, ConversationStarters, TestMatrix, ShipGovern) + AuditMode, PlatformCompare, ExportPackage
-- `src/index.css` — OKH forge tokens as Tailwind v4 `@theme` custom properties
-- All state persisted to localStorage per step key (`cgpt-step-0` … `cgpt-step-8`)
+## Key runtime behavior
+- The canonical creator shell and all page modules remain in the sandbox source; the dedicated web artifact is the deployable entrypoint.
+- The creator uses `useState` navigation rather than browser URL routing.
+- All state persists to localStorage per step key (`cgpt-step-0` through `cgpt-step-8`) and the creator-navigation key.
 
 ## OKH brand tokens applied
 - Background: `#111827` | Surface: `#181f26` | Panel: `#1e2936`

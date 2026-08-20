@@ -37,10 +37,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        working-directory: artifacts/mockup-sandbox
+      - name: Build Custom GPT Creator
+        working-directory: artifacts/custom-gpt-creator
         env:
           NODE_ENV: production
+          PORT: 5000
           # Project site URL is https://okhp3.github.io/OverKill-Hill-FoundRy/
           # If a custom domain is configured at the repository level, change to /
           BASE_PATH: /OverKill-Hill-FoundRy/
@@ -52,7 +53,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: artifacts/mockup-sandbox/dist
+          path: artifacts/custom-gpt-creator/dist/public
 
   deploy:
     needs: build
