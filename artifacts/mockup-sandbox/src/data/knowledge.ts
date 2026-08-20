@@ -297,6 +297,191 @@ export const PLATFORMS = [
   },
 ] as const;
 
+export type PlatformComparisonField =
+  | "bestFor"
+  | "weakAt"
+  | "knowledge"
+  | "tools"
+  | "cost"
+  | "instructionLimit"
+  | "knowledgeLimit"
+  | "actionsNote"
+  | "governance"
+  | "portability"
+  | "customization"
+  | "barrier"
+  | "models";
+
+export type PlatformComparisonRow = {
+  readonly label: string;
+  readonly field: PlatformComparisonField;
+  readonly verdict: string;
+};
+
+export const PLATFORM_COMPARISON_ROWS = [
+  {
+    label: "Best for",
+    field: "bestFor",
+    verdict: "Choose the platform that matches where your audience already works.",
+  },
+  {
+    label: "Weakest at",
+    field: "weakAt",
+    verdict: "Treat the weakest area as a deliberate tradeoff, not an afterthought.",
+  },
+  {
+    label: "Knowledge",
+    field: "knowledge",
+    verdict: "Match the source of truth to where your team's knowledge already lives.",
+  },
+  {
+    label: "Tools",
+    field: "tools",
+    verdict: "Prefer the smallest tool surface that can complete the workflow.",
+  },
+  {
+    label: "Cost",
+    field: "cost",
+    verdict: "Start with the platform already covered by your team's plan.",
+  },
+  {
+    label: "Instruction limit",
+    field: "instructionLimit",
+    verdict: "Short, structured instructions reduce drift on every platform.",
+  },
+  {
+    label: "Knowledge limit",
+    field: "knowledgeLimit",
+    verdict: "Context size and source access determine fit for document-heavy work.",
+  },
+  {
+    label: "Actions note",
+    field: "actionsNote",
+    verdict: "Confirm integration constraints before committing to a platform.",
+  },
+  {
+    label: "Governance",
+    field: "governance",
+    verdict: "Use the platform whose controls match the deployment risk.",
+  },
+  {
+    label: "Portability",
+    field: "portability",
+    verdict: "Choose a portable Skill or external layer when reuse matters.",
+  },
+  {
+    label: "Customization",
+    field: "customization",
+    verdict: "More customization brings more setup and maintenance responsibility.",
+  },
+  {
+    label: "Builder access",
+    field: "barrier",
+    verdict: "Optimize for the team's ability to iterate, not only the ceiling.",
+  },
+  {
+    label: "Models (mid-2026)",
+    field: "models",
+    verdict: "Treat model availability as a moving dependency and re-check before shipping.",
+  },
+] as const satisfies readonly PlatformComparisonRow[];
+
+export const PLATFORM_COMPARISON_VALUE_FALLBACK = "Not available";
+export const PLATFORM_COMPARISON_LABEL_FALLBACK = "Unnamed comparison row";
+export const PLATFORM_COMPARISON_VERDICT_FALLBACK = "No verdict available";
+
+const isNonEmptyText = (value: unknown): value is string =>
+  typeof value === "string" && value.trim().length > 0;
+
+export function getPlatformComparisonText(
+  value: unknown,
+  fallback = PLATFORM_COMPARISON_VALUE_FALLBACK,
+): string {
+  return isNonEmptyText(value) ? value : fallback;
+}
+
+export function getPlatformComparisonValue(
+  platform: unknown,
+  field: unknown,
+): string {
+  if (!platform || typeof platform !== "object" || typeof field !== "string") {
+    return PLATFORM_COMPARISON_VALUE_FALLBACK;
+  }
+
+  return getPlatformComparisonText(
+    (platform as Record<string, unknown>)[field],
+  );
+}
+
+export function validatePlatformComparison(
+  platforms: readonly unknown[],
+  rows: readonly unknown[],
+): string[] {
+  const issues: string[] = [];
+
+  if (!Array.isArray(platforms) || platforms.length === 0) {
+    issues.push("No comparison platforms are configured.");
+  }
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+    issues.push("No comparison rows are configured.");
+  }
+
+  platforms.forEach((platform, platformIndex) => {
+    if (!platform || typeof platform !== "object") {
+      issues.push(`Platform ${platformIndex + 1} is not an object.`);
+      return;
+    }
+
+    const platformRecord = platform as Record<string, unknown>;
+    if (!isNonEmptyText(platformRecord.id)) {
+      issues.push(`Platform ${platformIndex + 1} is missing an id.`);
+    }
+    if (!isNonEmptyText(platformRecord.name)) {
+      issues.push(`Platform ${platformIndex + 1} is missing a name.`);
+    }
+  });
+
+  rows.forEach((row, rowIndex) => {
+    if (!row || typeof row !== "object") {
+      issues.push(`Comparison row ${rowIndex + 1} is not an object.`);
+      return;
+    }
+
+    const rowRecord = row as Record<string, unknown>;
+    const rowLabel = isNonEmptyText(rowRecord.label)
+      ? rowRecord.label
+      : `Comparison row ${rowIndex + 1}`;
+    const field = rowRecord.field;
+
+    if (!isNonEmptyText(rowRecord.label)) {
+      issues.push(`${rowLabel} is missing a label.`);
+    }
+    if (!isNonEmptyText(field)) {
+      issues.push(`${rowLabel} is missing a comparison field.`);
+    }
+    if (!isNonEmptyText(rowRecord.verdict)) {
+      issues.push(`${rowLabel} is missing a verdict.`);
+    }
+
+    if (isNonEmptyText(field)) {
+      platforms.forEach((platform, platformIndex) => {
+        const value =
+          platform && typeof platform === "object"
+            ? (platform as Record<string, unknown>)[field]
+            : undefined;
+        if (!isNonEmptyText(value)) {
+          issues.push(
+            `${rowLabel} is missing a value for platform ${platformIndex + 1}.`,
+          );
+        }
+      });
+    }
+  });
+
+  return issues;
+}
+
 // ── Starter examples ────────────────────────────────────────
 export const STARTER_EXAMPLES_BAD = [
   "Ask me anything about marketing.",

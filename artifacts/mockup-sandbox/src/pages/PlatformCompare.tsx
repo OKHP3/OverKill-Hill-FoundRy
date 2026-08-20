@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { PLATFORMS, TAXONOMY, EVOLUTION_TIMELINE } from "../data/knowledge";
+import {
+  EVOLUTION_TIMELINE,
+  getPlatformComparisonText,
+  getPlatformComparisonValue,
+  PLATFORM_COMPARISON_LABEL_FALLBACK,
+  PLATFORM_COMPARISON_ROWS,
+  PLATFORM_COMPARISON_VERDICT_FALLBACK,
+  PLATFORMS,
+  TAXONOMY,
+  validatePlatformComparison,
+} from "../data/knowledge";
 
 type View = "decision" | "compare" | "taxonomy" | "timeline";
 
@@ -8,6 +18,10 @@ export default function PlatformCompare() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const setAnswer = (q: string, a: string) => setAnswers(prev => ({ ...prev, [q]: a }));
+  const comparisonIssues = validatePlatformComparison(
+    PLATFORMS,
+    PLATFORM_COMPARISON_ROWS,
+  );
 
   // Decision logic
   const recommendation = (() => {
@@ -102,43 +116,49 @@ export default function PlatformCompare() {
 
       {/* Feature matrix */}
       {view === "compare" && (
-        <div style={{ overflowX: "auto" }}>
+        <div>
+          {comparisonIssues.length > 0 && (
+            <div
+              role="alert"
+              style={{
+                marginBottom: "1rem",
+                padding: "0.75rem 1rem",
+                color: "var(--color-forge-warn)",
+                background: "rgba(196, 106, 44, 0.1)",
+                border: "1px solid var(--color-forge-warn)",
+                borderRadius: "var(--radius-md)",
+                fontSize: "0.82rem",
+              }}
+            >
+              Comparison data needs attention: {comparisonIssues.join(" ")}
+            </div>
+          )}
+          <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem" }}>
             <thead>
               <tr style={{ background: "var(--color-forge-panel)" }}>
                 <th style={thStyle}>Dimension</th>
-                {PLATFORMS.map(p => (
-                  <th key={p.id} style={{ ...thStyle, color: "var(--color-forge-fg)" }}>
-                    {p.logo} {p.name}
+                {PLATFORMS.map((p, platformIndex) => (
+                  <th key={getPlatformComparisonText(p.id, `platform-${platformIndex + 1}`)} style={{ ...thStyle, color: "var(--color-forge-fg)" }}>
+                    {getPlatformComparisonText(p.logo)} {getPlatformComparisonText(p.name)}
                   </th>
                 ))}
+                <th style={thStyle}>Verdict</th>
               </tr>
             </thead>
             <tbody>
-              {[
-                ["Best for", (p: typeof PLATFORMS[0]) => p.bestFor],
-                ["Weakest at", (p: typeof PLATFORMS[0]) => p.weakAt],
-                ["Knowledge", (p: typeof PLATFORMS[0]) => p.knowledge],
-                ["Tools", (p: typeof PLATFORMS[0]) => p.tools],
-                ["Cost", (p: typeof PLATFORMS[0]) => p.cost],
-                ["Instruction limit", (p: typeof PLATFORMS[0]) => p.instructionLimit],
-                ["Knowledge limit", (p: typeof PLATFORMS[0]) => p.knowledgeLimit],
-                ["Actions note", (p: typeof PLATFORMS[0]) => p.actionsNote],
-                ["Governance", (p: typeof PLATFORMS[0]) => p.governance],
-                ["Portability", (p: typeof PLATFORMS[0]) => p.portability],
-                ["Customization", (p: typeof PLATFORMS[0]) => p.customization],
-                ["Builder access", (p: typeof PLATFORMS[0]) => p.barrier],
-                ["Models (mid-2026)", (p: typeof PLATFORMS[0]) => p.models],
-              ].map(([label, accessor], i) => (
-                <tr key={label as string} style={{ background: i % 2 === 0 ? "transparent" : "var(--color-forge-surface)" }}>
-                  <td style={{ ...tdStyle, fontFamily: "var(--font-mono)", fontSize: "0.72rem", color: "var(--color-forge-muted-fg)", whiteSpace: "nowrap" }}>{label as string}</td>
-                  {PLATFORMS.map(p => (
-                    <td key={p.id} style={tdStyle}>{(accessor as (p: typeof PLATFORMS[0]) => string)(p)}</td>
+              {PLATFORM_COMPARISON_ROWS.map((row, rowIndex) => (
+                <tr key={`${getPlatformComparisonText(row.label, PLATFORM_COMPARISON_LABEL_FALLBACK)}-${rowIndex}`} style={{ background: rowIndex % 2 === 0 ? "transparent" : "var(--color-forge-surface)" }}>
+                  <td style={{ ...tdStyle, fontFamily: "var(--font-mono)", fontSize: "0.72rem", color: "var(--color-forge-muted-fg)", whiteSpace: "nowrap" }}>{getPlatformComparisonText(row.label, PLATFORM_COMPARISON_LABEL_FALLBACK)}</td>
+                  {PLATFORMS.map((p, platformIndex) => (
+                    <td key={`${getPlatformComparisonText(p.id, `platform-${platformIndex + 1}`)}-${platformIndex}`} style={tdStyle}>{getPlatformComparisonValue(p, row.field)}</td>
                   ))}
+                  <td style={{ ...tdStyle, color: "var(--color-forge-muted-fg)" }}>{getPlatformComparisonText(row.verdict, PLATFORM_COMPARISON_VERDICT_FALLBACK)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
