@@ -205,6 +205,19 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+html[data-theme="light"] {
+  --color-forge-bg: #eff2f5;
+  --color-forge-surface: #f6f2ee;
+  --color-forge-panel: #f0ebe5;
+  --color-forge-espresso: #e8e3dc;
+  --color-forge-fg: #0f172a;
+  --color-forge-muted-fg: #4b5563;
+  --color-forge-border: rgba(15, 23, 42, 0.18);
+  --color-forge-muted: rgba(15, 23, 42, 0.08);
+  --color-forge-paper: #fff8ed;
+  color-scheme: light;
+}
+
 html,
 body,
 #root {
@@ -491,6 +504,12 @@ textarea:focus {
   backdrop-filter: blur(12px);
 }
 
+.creator-topbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
 .creator-breadcrumb,
 .creator-topbar-status {
   display: flex;
@@ -498,6 +517,39 @@ textarea:focus {
   gap: 0.65rem;
   color: var(--color-forge-muted-fg);
   font-size: 0.75rem;
+}
+
+.creator-theme-toggle {
+  display: inline-flex;
+  padding: 0.2rem;
+  background: var(--color-forge-panel);
+  border: 1px solid var(--color-forge-border);
+  border-radius: 0.45rem;
+}
+
+.creator-theme-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 1.7rem;
+  padding: 0.15rem 0.42rem;
+  color: var(--color-forge-muted-fg);
+  background: transparent;
+  border: 0;
+  border-radius: 0.28rem;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.creator-theme-option:hover,
+.creator-theme-option.is-active {
+  color: var(--color-forge-fg);
+  background: var(--color-forge-muted);
+}
+
+.creator-theme-option.is-active {
+  box-shadow: inset 0 0 0 1px var(--color-forge-border);
 }
 
 .creator-kicker {
@@ -612,6 +664,16 @@ textarea:focus {
 
   .creator-topbar-status {
     display: none;
+  }
+
+  .creator-theme-option span:last-child {
+    display: none;
+  }
+
+  .creator-theme-option {
+    min-width: 1.7rem;
+    justify-content: center;
+    padding: 0.15rem 0.25rem;
   }
 
   .creator-page {

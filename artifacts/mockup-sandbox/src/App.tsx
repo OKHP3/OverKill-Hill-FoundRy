@@ -16,6 +16,87 @@ import ShipGovern from "./pages/ShipGovern";
 import TestMatrix from "./pages/TestMatrix";
 
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
+type ThemePreference = "light" | "dark" | "system";
+
+const THEME_STORAGE_KEY = "forge-theme";
+
+function readThemePreference(): ThemePreference {
+  try {
+    const preference = localStorage.getItem(THEME_STORAGE_KEY);
+    return preference === "light" || preference === "dark" || preference === "system"
+      ? preference
+      : "system";
+  } catch {
+    return "system";
+  }
+}
+
+function applyThemePreference(preference: ThemePreference): void {
+  const theme = preference === "system"
+    ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : preference;
+
+  document.documentElement.setAttribute("data-theme", theme);
+  document.documentElement.classList.toggle("dark", theme === "dark");
+}
+
+function useTheme() {
+  const [preference, setPreference] = useState<ThemePreference>(readThemePreference);
+
+  useEffect(() => {
+    applyThemePreference(preference);
+
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, preference);
+    } catch {
+      // Theme selection remains available when storage is unavailable.
+    }
+
+    if (preference !== "system") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => applyThemePreference("system");
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [preference]);
+
+  return { preference, setPreference };
+}
+
+function ThemeToggle({
+  preference,
+  setPreference,
+}: {
+  preference: ThemePreference;
+  setPreference: (preference: ThemePreference) => void;
+}) {
+  const options: Array<{ id: ThemePreference; label: string; icon: string }> = [
+    { id: "light", label: "Light", icon: "☀" },
+    { id: "system", label: "System", icon: "◐" },
+    { id: "dark", label: "Dark", icon: "☾" },
+  ];
+
+  return (
+    <div className="creator-theme-toggle" role="group" aria-label="Color theme">
+      {options.map((option) => (
+        <button
+          type="button"
+          key={option.id}
+          className={`creator-theme-option ${preference === option.id ? "is-active" : ""}`}
+          onClick={() => setPreference(option.id)}
+          aria-pressed={preference === option.id}
+          title={`${option.label} mode`}
+        >
+          <span aria-hidden="true">{option.icon}</span>
+          <span>{option.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function _resolveComponent(
   mod: Record<string, unknown>,
@@ -184,6 +265,7 @@ function CreatorShell() {
     () => new Set(initialState.completedSteps),
   );
   const [sidebarOpen, setSidebarOpen] = useState(initialState.sidebarOpen);
+  const { preference: themePreference, setPreference: setThemePreference } = useTheme();
 
   useEffect(() => {
     localStorage.setItem(
@@ -318,9 +400,12 @@ function CreatorShell() {
             <span className="creator-divider">/</span>
             <span>{currentLabel}</span>
           </div>
-          <div className="creator-topbar-status">
-            <span className="creator-status-dot" />
-            Autosaved locally
+          <div className="creator-topbar-controls">
+            <ThemeToggle preference={themePreference} setPreference={setThemePreference} />
+            <div className="creator-topbar-status">
+              <span className="creator-status-dot" />
+              Autosaved locally
+            </div>
           </div>
         </header>
         <div className="creator-page">
