@@ -1,0 +1,221 @@
+name: Cleanup merged and stale branches
+
+on:
+  schedule:
+    # Run weekly on Sunday at 03:17 UTC.
+    - cron: "17 3 * * 0"
+  workflow_dispatch:
+    inputs:
+      stale_days:
+        description: "Delete branches whose latest commit is older than this many days"
+        required: false
+        default: "30"
+        type: number
+      dry_run:
+        description: "Report candidates without deleting branches"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: branch-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Delete merged or stale branches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find and remove eligible branches
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const defaultStaleDays = 30;
+            const staleDays = context.eventName === "workflow_dispatch"
+              ? Number(core.getInput("stale_days") || defaultStaleDays)
+              : defaultStaleDays;
+            const dryRun = context.eventName === "workflow_dispatch"
+              ? core.getBooleanInput("dry_run")
+              : false;
+
+            if (!Number.isInteger(staleDays) || staleDays < 1) {
+              core.setFailed("stale_days must be a positive whole number.");
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const repository = (
+              await github.rest.repos.get({ owner, repo })
+            ).data;
+            const branches = await github.paginate(
+              github.rest.repos.listBranches,
+              { owner, repo, per_page: 100 }
+            );
+            const openPullRequests = await github.paginate(
+              github.rest.pulls.list,
+              { owner, repo, state: "open", per_page: 100 }
+            );
+            const localOpenBranches = new Set(
+              openPullRequests
+                .filter((pullRequest) =>
+                  pullRequest.head.repo?.full_name === `${owner}/${repo}`
+                )
+                .map((pullRequest) => pullRequest.head.ref)
+            );
+            const cutoff = Date.now() - staleDays * 24 * 60 * 60 * 1000;
+            const candidates = [];
+
+            for (const branch of branches) {
+              if (
+                branch.name === repository.default_branch ||
+                branch.protected ||
+                localOpenBranches.has(branch.name)
+              ) {
+                continue;
+              }
+
+              const currentSha = branch.commit?.sha;
+              if (!currentSha) {
+                core.warning(
+                  `Skipping ${branch.name}: GitHub returned no branch SHA.`
+                );
+                continue;
+              }
+
+              const latestCommit = (
+                await github.rest.repos.getCommit({
+                  owner,
+                  repo,
+                  ref: branch.name,
+                })
+              ).data;
+              const lastCommitDate =
+                latestCommit.commit.committer?.date ||
+                latestCommit.commit.author?.date;
+              if (!lastCommitDate) {
+                core.warning(
+                  `Skipping ${branch.name}: GitHub returned no commit date.`
+                );
+                continue;
+              }
+
+              const closedPullRequests = await github.paginate(
+                github.rest.pulls.list,
+                {
+                  owner,
+                  repo,
+                  state: "closed",
+                  head: `${owner}:${branch.name}`,
+                  per_page: 100,
+                }
+              );
+              const merged = closedPullRequests.some(
+                (pullRequest) =>
+                  pullRequest.merged_at !== null &&
+                  pullRequest.head.sha === currentSha
+              );
+              const stale = new Date(lastCommitDate).getTime() < cutoff;
+
+              if (merged || stale) {
+                candidates.push({
+                  name: branch.name,
+                  sha: currentSha,
+                  reason: merged && stale
+                    ? "merged and stale"
+                    : merged
+                      ? "merged"
+                      : "stale",
+                  lastCommitDate,
+                });
+              }
+            }
+
+            if (candidates.length === 0) {
+              core.info("No merged or stale branches matched the cleanup policy.");
+              return;
+            }
+
+            for (const candidate of candidates) {
+              let currentRepository;
+              let currentBranch;
+              try {
+                currentRepository = (
+                  await github.rest.repos.get({ owner, repo })
+                ).data;
+                currentBranch = (
+                  await github.rest.repos.getBranch({
+                    owner,
+                    repo,
+                    branch: candidate.name,
+                  })
+                ).data;
+              } catch (error) {
+                if (error.status === 404) {
+                  core.warning(
+                    `Skipping ${candidate.name}: branch no longer exists.`
+                  );
+                  continue;
+                }
+                throw error;
+              }
+
+              if (currentBranch.name === currentRepository.default_branch) {
+                core.warning(
+                  `Skipping ${candidate.name}: it is now the default branch.`
+                );
+                continue;
+              }
+              if (currentBranch.protected) {
+                core.warning(
+                  `Skipping ${candidate.name}: it is now protected.`
+                );
+                continue;
+              }
+              if (currentBranch.commit.sha !== candidate.sha) {
+                core.warning(
+                  `Skipping ${candidate.name}: its tip changed during cleanup.`
+                );
+                continue;
+              }
+
+              const currentOpenPullRequests = await github.paginate(
+                github.rest.pulls.list,
+                {
+                  owner,
+                  repo,
+                  state: "open",
+                  head: `${owner}:${candidate.name}`,
+                  per_page: 100,
+                }
+              );
+              const hasOpenPullRequest = currentOpenPullRequests.some(
+                (pullRequest) =>
+                  pullRequest.head.repo?.full_name === `${owner}/${repo}` &&
+                  pullRequest.head.ref === candidate.name
+              );
+              if (hasOpenPullRequest) {
+                core.warning(
+                  `Skipping ${candidate.name}: it now has an open pull request.`
+                );
+                continue;
+              }
+
+              const message =
+                `${dryRun ? "[dry run] " : ""}Would delete ${candidate.name} ` +
+                `(${candidate.reason}; latest commit ${candidate.lastCommitDate}).`;
+              if (dryRun) {
+                core.info(message);
+                continue;
+              }
+
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `heads/${candidate.name}`,
+              });
+              core.info(message.replace("Would delete", "Deleted"));
+            }

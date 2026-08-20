@@ -27,7 +27,7 @@ Contributions that do not belong here:
 
 - Private Notion links as required references.
 - Client-specific material, credentials, or personal information.
-- Application build systems, servers, or deployment configuration for the root repository (the only current CI workflow is the technology-release audit).
+- Application build systems, servers, or deployment configuration for the root repository. Repository-maintenance workflows, such as the scheduled branch cleanup, are allowed.
 - Changes to generated artifacts or dependencies without explicit discussion.
 
 ---
@@ -39,6 +39,15 @@ Contributions that do not belong here:
 3. Write a clear PR description that states what changed and why. Reference relevant sections of `AGENTS.md` or `docs/` if applicable.
 4. Do not use destructive version-control commands (`git reset --hard`, `git checkout --`) on shared branches.
 5. No repository-specific branch protection rules are currently documented. Until a policy is established, treat `main` as the integration branch and request review before merging.
+
+### Automatic branch cleanup
+
+The `Cleanup merged and stale branches` workflow runs weekly on Sunday. It deletes branches that have either:
+
+- A merged pull request whose final head commit is still the branch's current tip, or
+- No open pull request and no commit in the last 30 days.
+
+The workflow never deletes the repository's default branch, protected branches, or branches with an open pull request. Before each deletion, it rechecks those conditions and confirms the branch still has the evaluated tip. New commits pushed after a pull request merges do not qualify under the merged-branch rule and remain until they are stale. A maintainer can start it manually with a different age threshold and a dry run before allowing deletion.
 
 ---
 

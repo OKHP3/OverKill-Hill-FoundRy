@@ -2,3 +2,4 @@
 - [Workspace pnpm setup](pnpm-setup.md) — `pnpm install --filter @workspace/mockup-sandbox` required before Vite runs; `tsconfig.base.json` must exist at repo root.
 - [Git remote credentials](git-remote-credentials.md) — keep GitHub tokens out of `.git/config`; use a rotated credential helper or SSH remote for shell pushes.
 - [SPA runtime contract](spa-runtime-contract.md) — the documented Custom GPT Creator SPA pages are not wired into the current mockup-only App entrypoint.
+- [Scheduled cleanup safety](branch-cleanup-safety.md) — unattended branch deletion must revalidate the live ref and PR state immediately before removal.
