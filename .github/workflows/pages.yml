@@ -84,6 +84,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ hashFiles('artifacts/custom-gpt-creator/package.json') }}
+          restore-keys: playwright-
 
       - name: Install Playwright browsers
         working-directory: artifacts/custom-gpt-creator
