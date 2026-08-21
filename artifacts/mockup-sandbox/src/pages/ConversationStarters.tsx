@@ -8,15 +8,19 @@ function load(): string[] {
   catch { return []; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function ConversationStarters({ onNext, onPrev }: Props) {
+export default function ConversationStarters({ onNext, onPrev, onComplete }: Props) {
   const [starters, setStarters] = useState<string[]>(() => {
     const s = load();
     return s.length ? s : ["", "", "", ""];
   });
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(starters)); }, [starters]);
+
+  // Step is complete once at least one starter has content.
+  const isComplete = starters.some(s => s.trim().length > 0);
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   const update = (idx: number, val: string) =>
     setStarters(prev => prev.map((s, i) => i === idx ? val : s));

@@ -16,11 +16,15 @@ function load(): ContractData {
   catch { return DEFAULT; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function ConversationContract({ onNext, onPrev }: Props) {
+export default function ConversationContract({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<ContractData>(load);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+
+  // Step is complete once at least one field has content.
+  const isComplete = Object.values(data).some(v => v.trim().length > 0);
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
   const set = (k: keyof ContractData) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setData(prev => ({ ...prev, [k]: e.target.value }));
 

@@ -17,9 +17,9 @@ function buildFull(layers: LayerData): string {
     .join("\n\n");
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function InstructionStack({ onNext, onPrev }: Props) {
+export default function InstructionStack({ onNext, onPrev, onComplete }: Props) {
   const [layers, setLayers] = useState<LayerData>(load);
   const [activeLayer, setActiveLayer] = useState<number>(1);
   const [copied, setCopied] = useState(false);
@@ -44,6 +44,10 @@ export default function InstructionStack({ onNext, onPrev }: Props) {
   }, [full]);
 
   const layersFilled = INSTRUCTION_LAYERS.filter(l => (layers[l.id] || "").trim()).length;
+
+  // Step is complete once the user has written content in at least one layer.
+  const isComplete = layersFilled > 0;
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   // Check for contradictions (simple heuristic)
   const hasConcise = full.toLowerCase().includes("concise");

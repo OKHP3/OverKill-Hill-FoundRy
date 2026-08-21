@@ -9,9 +9,9 @@ function load(): Record<string, boolean> {
   catch { return {}; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function Capabilities({ onNext, onPrev }: Props) {
+export default function Capabilities({ onNext, onPrev, onComplete }: Props) {
   const [caps, setCaps] = useState<Record<string, boolean>>(() => {
     const saved = load();
     const initial: Record<string, boolean> = {};
@@ -27,6 +27,10 @@ export default function Capabilities({ onNext, onPrev }: Props) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(caps));
     localStorage.setItem(STORAGE_KEY + "-rationale", JSON.stringify(rationale));
   }, [caps, rationale]);
+
+  // Step is complete once the user has reviewed the capabilities page (caps are initialized on mount).
+  const isComplete = Object.keys(caps).length > 0;
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   const enabledCount = Object.values(caps).filter(Boolean).length;
 

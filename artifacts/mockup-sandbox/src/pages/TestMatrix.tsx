@@ -18,11 +18,15 @@ function load(): TestData {
   catch { return { cases: [] }; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function TestMatrix({ onNext, onPrev }: Props) {
+export default function TestMatrix({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<TestData>(load);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+
+  // Step is complete once the user has added at least one test case.
+  const isComplete = data.cases.length > 0;
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   const addCase = (category = "happy") => {
     const tc: TestCase = { id: Date.now().toString(), category, prompt: "", expectedBehavior: "", result: "" };

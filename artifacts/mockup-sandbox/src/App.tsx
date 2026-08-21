@@ -285,15 +285,26 @@ function CreatorShell() {
 
   const goNext = useCallback(() => {
     if (typeof currentPage !== "number") return;
-    setCompletedSteps((previous) => {
-      const next = new Set(previous);
-      next.add(currentPage);
-      return next;
-    });
     if (currentPage < BUILD_STEPS.length - 1) {
       goTo(currentPage + 1);
     }
   }, [currentPage, goTo]);
+
+  // Stable per-step callbacks so pages can report their own completion status.
+  // setCompletedSteps is guaranteed stable by React, so [] deps is safe.
+  const stepCompleteCallbacks = useMemo(
+    () =>
+      BUILD_STEPS.map((step) => (complete: boolean) => {
+        setCompletedSteps((prev) => {
+          const next = new Set(prev);
+          if (complete) next.add(step.id);
+          else next.delete(step.id);
+          return next;
+        });
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const goPrev = useCallback(() => {
     if (typeof currentPage === "number" && currentPage > 0) {
@@ -309,17 +320,23 @@ function CreatorShell() {
   const progress = Math.round((completedCount / BUILD_STEPS.length) * 100);
 
   const renderPage = (): ReactNode => {
-    const stepProps = { onNext: goNext, onPrev: goPrev, page: typeof currentPage === "number" ? currentPage : 0 };
+    const page = typeof currentPage === "number" ? currentPage : 0;
+    const stepProps = (id: number) => ({
+      onNext: goNext,
+      onPrev: goPrev,
+      page,
+      onComplete: stepCompleteCallbacks[id],
+    });
     switch (currentPage) {
-      case 0: return <BuildBrief {...stepProps} />;
-      case 1: return <ConversationContract {...stepProps} />;
-      case 2: return <InstructionStack {...stepProps} />;
-      case 3: return <KnowledgeFiles {...stepProps} />;
-      case 4: return <Capabilities {...stepProps} />;
-      case 5: return <ActionsApps {...stepProps} />;
-      case 6: return <ConversationStarters {...stepProps} />;
-      case 7: return <TestMatrix {...stepProps} />;
-      case 8: return <ShipGovern {...stepProps} />;
+      case 0: return <BuildBrief {...stepProps(0)} />;
+      case 1: return <ConversationContract {...stepProps(1)} />;
+      case 2: return <InstructionStack {...stepProps(2)} />;
+      case 3: return <KnowledgeFiles {...stepProps(3)} />;
+      case 4: return <Capabilities {...stepProps(4)} />;
+      case 5: return <ActionsApps {...stepProps(5)} />;
+      case 6: return <ConversationStarters {...stepProps(6)} />;
+      case 7: return <TestMatrix {...stepProps(7)} />;
+      case 8: return <ShipGovern {...stepProps(8)} />;
       case "audit": return <AuditMode />;
       case "compare": return <PlatformCompare />;
       case "export": return <ExportPackage />;

@@ -23,11 +23,15 @@ function load(): ShipData {
   catch { return DEFAULT; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function ShipGovern({ onPrev }: Props) {
+export default function ShipGovern({ onPrev, onComplete }: Props) {
   const [data, setData] = useState<ShipData>(load);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+
+  // Step is complete once the owner name is filled in.
+  const isComplete = data.ownerName.trim().length > 0;
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
   const set = (k: keyof ShipData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setData(prev => ({ ...prev, [k]: e.target.value }));
 

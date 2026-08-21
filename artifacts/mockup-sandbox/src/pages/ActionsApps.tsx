@@ -22,12 +22,16 @@ function load(): ActionsData {
   catch { return DEFAULT; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function ActionsApps({ onNext, onPrev }: Props) {
+export default function ActionsApps({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<ActionsData>(load);
   const [copied, setCopied] = useState(false);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+
+  // Step is complete once the user deliberately picks a choice (not the default "none").
+  const isComplete = data.choice !== "none" || data.openApiSchema.trim().length > 0 || data.appsNotes.trim().length > 0;
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
   const set = (k: keyof ActionsData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setData(prev => ({ ...prev, [k]: e.target.value }));
 

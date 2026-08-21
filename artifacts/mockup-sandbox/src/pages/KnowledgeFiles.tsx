@@ -13,11 +13,15 @@ function load(): KnowledgeData {
   catch { return DEFAULT; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function KnowledgeFiles({ onNext, onPrev }: Props) {
+export default function KnowledgeFiles({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<KnowledgeData>(load);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+
+  // Step is complete when the retrieval manifest is filled or at least one file entry has a name.
+  const isComplete = data.manifest.trim().length > 0 || data.files.some(f => f.filename.trim().length > 0);
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   const addFile = () => {
     const entry: KnowledgeEntry = { id: Date.now().toString(), filename: "", topic: "", type: "Reference", notes: "" };

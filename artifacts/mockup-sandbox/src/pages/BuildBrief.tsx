@@ -25,14 +25,18 @@ function load(): BriefData {
   catch { return DEFAULT; }
 }
 
-interface Props { onNext: () => void; onPrev: () => void; page: number; }
+interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
-export default function BuildBrief({ onNext }: Props) {
+export default function BuildBrief({ onNext, onComplete }: Props) {
   const [data, setData] = useState<BriefData>(load);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
+
+  // Step is complete once the user has named their GPT.
+  const isComplete = data.gptName.trim().length > 0;
+  useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   const set = (k: keyof BriefData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setData(prev => ({ ...prev, [k]: e.target.value }));
