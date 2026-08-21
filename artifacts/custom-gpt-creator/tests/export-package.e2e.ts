@@ -57,6 +57,40 @@ async function expectExportActionsToProduceMarkdown(page: Page) {
   await expect(readFile(downloadPath!, "utf8")).resolves.toBe(exportContent);
 }
 
+test("copies and downloads the Instructions Only export", async ({ page }) => {
+  await openExportPackage(page);
+
+  const instructions = {
+    1: "You are a careful research assistant.",
+    2: "Prefer accurate, concise answers.",
+  };
+  await page.evaluate((savedInstructions) => {
+    localStorage.setItem("cgpt-step-2", JSON.stringify(savedInstructions));
+  }, instructions);
+  await page.reload();
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  const exportContent = await page.locator("pre").innerText();
+  expect(exportContent).toBe(
+    "## Identity & Scope\nYou are a careful research assistant.\n\n## Operating Principles\nPrefer accurate, concise answers.",
+  );
+
+  const copyButton = page.getByRole("button", { name: /Copy/ });
+  await copyButton.click();
+  await expect
+    .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
+    .toBe(exportContent);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "⬇ Download .md" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("custom-gpt-spec.md");
+
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  await expect(readFile(downloadPath!, "utf8")).resolves.toBe(exportContent);
+});
+
 test("keeps incomplete export warnings and controls in sync", async ({ page }) => {
   await openExportPackage(page);
 
