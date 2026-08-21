@@ -1,5 +1,25 @@
 import { useState, useCallback } from "react";
-import { INSTRUCTION_LAYERS } from "../data/knowledge";
+import { BUILD_STEPS, INSTRUCTION_LAYERS } from "../data/knowledge";
+
+const CREATOR_STATE_KEY = "cgpt-creator-state";
+
+function loadCompletedSteps(): Set<number> {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CREATOR_STATE_KEY) || "{}") as {
+      completedSteps?: unknown;
+    };
+    return new Set(
+      Array.isArray(saved.completedSteps)
+        ? saved.completedSteps.filter(
+            (step): step is number =>
+              typeof step === "number" && Number.isInteger(step) && step >= 0 && step < BUILD_STEPS.length,
+          )
+        : [],
+    );
+  } catch {
+    return new Set();
+  }
+}
 
 function loadStep(key: string) {
   try { return JSON.parse(localStorage.getItem(key) || "{}"); }
@@ -141,9 +161,12 @@ ${ship.maintenanceCadence || "(not defined)"}
 `;
 }
 
-export default function ExportPackage() {
+export default function ExportPackage({ completedSteps: liveCompletedSteps }: { completedSteps?: Set<number> }) {
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "instructions">("markdown");
+  const [storedCompletedSteps] = useState(loadCompletedSteps);
+  const completedSteps = liveCompletedSteps ?? storedCompletedSteps;
+  const incompleteSteps = BUILD_STEPS.filter(({ id }) => !completedSteps.has(id));
 
   const fullMarkdown = buildMarkdown();
 
@@ -182,6 +205,32 @@ export default function ExportPackage() {
           Copy or download your complete GPT specification package. This is your source-of-truth artifact.
         </p>
       </div>
+
+      {incompleteSteps.length > 0 && (
+        <div
+          role="alert"
+          style={{
+            marginBottom: "1rem",
+            padding: "1rem 1.1rem",
+            background: "color-mix(in srgb, var(--color-forge-accent) 10%, var(--color-forge-panel))",
+            border: "1px solid var(--color-forge-accent)",
+            borderRadius: "var(--radius-md)",
+            color: "var(--color-forge-fg)",
+          }}
+        >
+          <strong style={{ display: "block", color: "var(--color-forge-accent)", marginBottom: "0.35rem" }}>
+            ⚠️ This package is not complete yet
+          </strong>
+          <span style={{ display: "block", color: "var(--color-forge-muted-fg)", fontSize: "0.85rem", marginBottom: "0.65rem" }}>
+            You can still export, but these required build steps are incomplete:
+          </span>
+          <ul style={{ display: "grid", gap: "0.3rem", margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem" }}>
+            {incompleteSteps.map(({ id, label }) => (
+              <li key={id}>{label}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>

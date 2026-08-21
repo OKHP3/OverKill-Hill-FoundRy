@@ -339,7 +339,7 @@ function CreatorShell() {
       case 8: return <ShipGovern {...stepProps(8)} />;
       case "audit": return <AuditMode />;
       case "compare": return <PlatformCompare />;
-      case "export": return <ExportPackage />;
+      case "export": return <ExportPackage completedSteps={completedSteps} />;
       default: return null;
     }
   };
