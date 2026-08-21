@@ -34,7 +34,8 @@ function buildMarkdown(): string {
   const caps = loadStep("cgpt-step-4");
   const capsRationale = loadStep("cgpt-step-4-rationale");
   const actions = loadStep("cgpt-step-5");
-  const starters: string[] = loadStep("cgpt-step-6") || [];
+  const savedStarters = loadStep("cgpt-step-6");
+  const starters: string[] = Array.isArray(savedStarters) ? savedStarters : [];
   const tests = loadStep("cgpt-step-7");
   const ship = loadStep("cgpt-step-8");
 
