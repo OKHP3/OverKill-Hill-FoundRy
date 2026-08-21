@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 const creatorStateKey = "cgpt-creator-state";
 
@@ -15,6 +16,17 @@ const buildStepLabels = [
 ] as const;
 
 async function openExportPackage(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: (text: string) => {
+          (window as Window & { __copiedExport?: string }).__copiedExport = text;
+          return Promise.resolve();
+        },
+      },
+    });
+  });
   await page.goto("./");
   await page.evaluate((key) => {
     localStorage.clear();
@@ -23,6 +35,26 @@ async function openExportPackage(page: Page) {
   await page.reload();
   await page.getByRole("button", { name: "Export Package" }).click();
   await expect(page.locator("h1")).toContainText("Export Package");
+}
+
+async function expectExportActionsToProduceMarkdown(page: Page) {
+  const exportContent = await page.locator("pre").innerText();
+  const copyButton = page.getByRole("button", { name: /Copy/ });
+  const downloadButton = page.getByRole("button", { name: "⬇ Download .md" });
+
+  await copyButton.click();
+  await expect
+    .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
+    .toBe(exportContent);
+
+  const downloadPromise = page.waitForEvent("download");
+  await downloadButton.click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("custom-gpt-spec.md");
+
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  await expect(readFile(downloadPath!, "utf8")).resolves.toBe(exportContent);
 }
 
 test("keeps incomplete export warnings and controls in sync", async ({ page }) => {
@@ -45,6 +77,8 @@ test("keeps incomplete export warnings and controls in sync", async ({ page }) =
   });
   expect(warningEndsBeforeControls).toBe(true);
 
+  await expectExportActionsToProduceMarkdown(page);
+
   await page.evaluate((key) => {
     localStorage.setItem(
       key,
@@ -57,4 +91,5 @@ test("keeps incomplete export warnings and controls in sync", async ({ page }) =
   await expect(page.getByRole("alert")).toHaveCount(0);
   await expect(copyButton).toBeEnabled();
   await expect(downloadButton).toBeEnabled();
+  await expectExportActionsToProduceMarkdown(page);
 });
