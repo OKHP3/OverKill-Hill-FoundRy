@@ -479,6 +479,22 @@ textarea:focus {
   text-decoration: underline;
 }
 
+.creator-reset-button {
+  align-self: flex-start;
+  padding: 0;
+  color: var(--color-forge-muted-fg);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-align: left;
+}
+
+.creator-reset-button:hover {
+  color: var(--color-forge-danger, #f87171);
+}
+
 .creator-main {
   min-width: 0;
   width: 100%;

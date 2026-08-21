@@ -283,6 +283,29 @@ function CreatorShell() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  const resetWorkspace = useCallback(() => {
+    if (!window.confirm("Start over? This will erase all saved GPT builder progress from this browser.")) {
+      return;
+    }
+
+    try {
+      const keysToRemove: string[] = [];
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (key?.startsWith("cgpt-step-")) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+      localStorage.removeItem(CREATOR_STATE_KEY);
+    } catch {
+      // The in-memory shell state still resets when browser storage is unavailable.
+    }
+
+    setCurrentPage(0);
+    setCompletedSteps(new Set());
+  }, []);
+
   const goNext = useCallback(() => {
     if (typeof currentPage !== "number") return;
     if (currentPage < BUILD_STEPS.length - 1) {
@@ -403,6 +426,9 @@ function CreatorShell() {
 
         <div className="creator-sidebar-footer">
           <a href="/__mockup/" className="creator-preview-link">↗ Open forge mockups</a>
+          <button type="button" className="creator-reset-button" onClick={resetWorkspace}>
+            ↻ Start over
+          </button>
           <span className="creator-storage-note">Local-only workspace · autosaves in your browser</span>
         </div>
       </aside>
