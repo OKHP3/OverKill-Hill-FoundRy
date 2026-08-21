@@ -58,8 +58,36 @@ jobs:
         with:
           path: artifacts/custom-gpt-creator/dist/public
 
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        working-directory: artifacts/custom-gpt-creator
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run e2e tests
+        working-directory: artifacts/custom-gpt-creator
+        run: pnpm run test:e2e
+
   deploy:
-    needs: build
+    needs: [build, e2e]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
