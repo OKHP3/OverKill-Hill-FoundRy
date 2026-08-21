@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Typecheck
+        run: pnpm run typecheck
+
       - name: Build Custom GPT Creator
         working-directory: artifacts/custom-gpt-creator
         env:
