@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 
 import { modules as discoveredModules } from "./.generated/mockup-components";
 import { BUILD_STEPS, NAV_EXTRAS } from "./data/knowledge";
@@ -260,6 +260,7 @@ function loadCreatorState(): CreatorState {
 
 function CreatorShell() {
   const initialState = useMemo(loadCreatorState, []);
+  const skipNextPersistRef = useRef(false);
   const [currentPage, setCurrentPage] = useState<PageId>(initialState.currentPage);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     () => new Set(initialState.completedSteps),
@@ -268,6 +269,10 @@ function CreatorShell() {
   const { preference: themePreference, setPreference: setThemePreference } = useTheme();
 
   useEffect(() => {
+    if (skipNextPersistRef.current) {
+      return;
+    }
+
     localStorage.setItem(
       CREATOR_STATE_KEY,
       JSON.stringify({
@@ -288,22 +293,34 @@ function CreatorShell() {
       return;
     }
 
-    try {
+    const clearSavedWorkspace = () => {
       const keysToRemove: string[] = [];
       for (let index = 0; index < localStorage.length; index += 1) {
         const key = localStorage.key(index);
-        if (key?.startsWith("cgpt-step-")) {
+        if (key?.startsWith("cgpt-")) {
           keysToRemove.push(key);
         }
       }
       keysToRemove.forEach((key) => localStorage.removeItem(key));
-      localStorage.removeItem(CREATOR_STATE_KEY);
+    };
+
+    try {
+      clearSavedWorkspace();
     } catch {
       // The in-memory shell state still resets when browser storage is unavailable.
     }
 
+    skipNextPersistRef.current = true;
     setCurrentPage(0);
     setCompletedSteps(new Set());
+    window.setTimeout(() => {
+      try {
+        clearSavedWorkspace();
+      } catch {
+        // Storage may remain unavailable, but the in-memory shell is already reset.
+      }
+      skipNextPersistRef.current = false;
+    }, 50);
   }, []);
 
   const goNext = useCallback(() => {
