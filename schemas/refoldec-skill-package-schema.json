@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/OKHP3/refoldec/schemas/refoldec-skill-package.schema.json",
+  "title": "ReFolDec Agent Skill Package Profile",
+  "type": "object",
+  "required": [
+    "skill_name",
+    "version",
+    "description",
+    "trigger",
+    "boundary",
+    "portability",
+    "output_contract",
+    "permissions",
+    "unsafe_input_policy",
+    "license",
+    "attribution",
+    "source_lineage",
+    "release"
+  ],
+  "properties": {
+    "skill_name": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "description": {"type": "string", "minLength": 1},
+    "trigger": {"type": "object", "required": ["when_to_use", "when_not_to_use"], "additionalProperties": false},
+    "boundary": {"type": "object", "required": ["in_scope", "out_of_scope"], "additionalProperties": false},
+    "portability": {"type": "object", "required": ["core", "optional_adapters", "fallback"], "additionalProperties": false},
+    "output_contract": {"type": "object", "required": ["format", "required_sections", "failure_result"], "additionalProperties": false},
+    "permissions": {"type": "object", "required": ["allowed", "approval_required", "forbidden"], "additionalProperties": false},
+    "unsafe_input_policy": {"type": "object", "required": ["untrusted_content", "injection", "missing_evidence"], "additionalProperties": false},
+    "license": {"type": "string", "minLength": 1},
+    "attribution": {"type": "string", "minLength": 1},
+    "source_lineage": {"type": "object", "required": ["capture_id", "process_id", "source_ids", "artifact_hash", "source_access"], "additionalProperties": false},
+    "release": {"type": "object", "required": ["status", "review_id", "decision", "reviewed_at", "maintenance", "rollback_or_deprecation"], "additionalProperties": false}
+  },
+  "additionalProperties": false
+}

@@ -339,6 +339,18 @@ Before handoff:
 - `references/equilibrium-review-protocol.md` -- conditional dissent, evidence negotiation, and release decisions.
 - `assets/skill-template.md` -- compact starter package for a new OKHP3 skill.
 
+## ReFolDec packaging
+
+When a validated ReFolDec process is being promoted into a portable skill, use
+docs/refoldec-skill-packaging.md and
+scripts/refoldec-skill-package.py. The packager must preserve capture and
+source IDs, hash the exact source, require human confirmation, and reject an
+approved public release when the source is private, mixed, unknown, stale, or
+ambiguous. It emits `SKILL.md`, references, scripts, assets, tests, a
+machine-readable provenance record, a review record, and license information.
+The generated evaluation design includes normal use, activation boundaries,
+unsafe instructions, missing evidence, and an unseen protected holdout.
+
 ---
 
 ## About

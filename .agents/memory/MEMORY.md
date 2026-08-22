@@ -5,3 +5,4 @@
 - [Scheduled cleanup safety](branch-cleanup-safety.md) — unattended branch deletion must revalidate the live ref and PR state immediately before removal.
 - [Creator browser tests](creator-browser-tests.md) — Playwright must match the workspace browser revision and Chromium needs the Nix runtime libraries enabled in the Repl.
 - [ReFolDec capture contract](refoldec-capture-contract.md) — process transformations retain stable IDs, evidence states, rejected material, recovery, and human confirmation.
+- [Skill package release gate](skill-package-release-gate.md) — ReFolDec skill packages require validated confirmed public lineage, explicit safety contracts, and an unseen holdout.
