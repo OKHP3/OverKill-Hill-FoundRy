@@ -3,7 +3,7 @@
 Deployment is a separate, explicit action. Do not run a Pages or repository
 visibility change as part of this checklist.
 
-- [ ] Owner explicitly approves `OKHP3/refoldec` (or records an approved successor).
+- [x] Owner explicitly approves `OKHP3/refoldec` (or records an approved successor).
 - [ ] Owner, scope, and allowed dependencies are recorded in
   `release-manifest.json`.
 - [x] Public README, specification, schema, examples, validator, skill,

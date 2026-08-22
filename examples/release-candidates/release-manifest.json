@@ -6,8 +6,18 @@
     "name": "OKHP3/refoldec",
     "kind": "separate-public-repository",
     "owner": "repository-owner",
-    "approval_status": "pending-owner-approval",
-    "scope": "Public ReFolDec specification, schema, validator, examples, skill package, provenance, and review records."
+    "approval_status": "approved",
+    "scope": "Public ReFolDec specification, schema, validator, examples, skill package, provenance, and review records.",
+    "approval": {
+      "approved_by": "repository-owner",
+      "approved_at": "2026-08-22",
+      "approved_scope": "Public ReFolDec specification, schema, validator, examples, skill package, provenance, and review records.",
+      "allowed_dependencies": [
+        "public standards",
+        "synthetic examples",
+        "publicly licensed package content"
+      ]
+    }
   },
   "source_boundary": {
     "allowed": ["public standards", "synthetic examples", "publicly licensed package content"],

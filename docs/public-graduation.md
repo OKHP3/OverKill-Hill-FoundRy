@@ -8,10 +8,12 @@ publish this repository, change visibility, or authorize a deployment.
 **Named target:** a separately owned public repository
 `OKHP3/refoldec` (or an owner-approved successor with the same boundary).
 
-**Current approval:** pending explicit owner approval. The prepared package is
-kept in `examples/release-candidates/` only as a reviewable candidate; that
-directory is not the public product and the FoundRy relay remains the private
-host.
+**Current approval:** `OKHP3/refoldec` is explicitly approved by the repository
+owner as the target surface, with the scope and dependency boundary recorded in
+`examples/release-candidates/release-manifest.json`. The prepared package is
+still kept in `examples/release-candidates/` only as a reviewable candidate;
+that directory is not the public product and the FoundRy relay remains the
+private host.
 
 The target may contain only the ReFolDec specification, schemas, validator,
 public examples, portable Agent Skill package, attribution, provenance,
@@ -22,8 +24,8 @@ capture pages, client material, or employer material.
 ## Gate decision
 
 **Decision: NO-GO for deployment.** The package is structurally prepared and
-its source audit is designed to be repeatable, but owner approval of the named
-target and a human release sign-off are still required. ReFolDec is not being
+its source audit is designed to be repeatable, but human release sign-off and
+the protected holdout review are still required. ReFolDec is not being
 declared canonical, stable, or production-ready.
 
 ## Review evidence
@@ -39,7 +41,7 @@ declared canonical, stable, or production-ready.
 
 | Decision | Owner | Date | Status |
 | --- | --- | --- | --- |
-| Approve `OKHP3/refoldec` as the public artifact surface | Repository owner | — | Pending |
+| Approve `OKHP3/refoldec` as the public artifact surface | Repository owner | 2026-08-22 | Approved |
 
-An owner must update this record and the release manifest before any separate
-deployment action.
+This approval names the target surface only; it does not authorize deployment.
+The remaining review gates and the separate deployment action must still pass.
