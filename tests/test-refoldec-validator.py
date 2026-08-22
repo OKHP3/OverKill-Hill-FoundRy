@@ -6,6 +6,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "scripts" / "refoldec-validate.py"
+CAPTURE_VALIDATOR = ROOT / "scripts" / "refoldec-capture-validate.py"
 
 
 def run(path: Path) -> subprocess.CompletedProcess[str]:
@@ -17,9 +18,23 @@ def main() -> int:
     if valid.returncode != 0:
         print(valid.stdout, valid.stderr)
         return 1
-    release = run(ROOT / "examples" / "release-candidates")
-    if release.returncode != 0:
-        print(release.stdout, release.stderr)
+    release_root = ROOT / "examples" / "release-candidates"
+    release_paths = [
+        release_root / "examples" / "public-process.json",
+        release_root / "refoldec-demo.json",
+    ]
+    for release_path in release_paths:
+        release = run(release_path)
+        if release.returncode != 0:
+            print(release.stdout, release.stderr)
+            return 1
+    capture = subprocess.run(
+        [sys.executable, str(CAPTURE_VALIDATOR),
+         str(release_root / "examples" / "public-process-capture.json")],
+        cwd=ROOT, text=True, capture_output=True,
+    )
+    if capture.returncode != 0:
+        print(capture.stdout, capture.stderr)
         return 1
     invalid_dir = ROOT / "examples" / "refoldec-fixtures" / "invalid"
     for fixture in sorted(invalid_dir.iterdir()):
