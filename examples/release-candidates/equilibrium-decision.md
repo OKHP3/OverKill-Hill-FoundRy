@@ -21,5 +21,17 @@ review remains blocking.
 ## Limits
 
 No benchmark, user study, legal opinion, or live model evaluation is claimed.
-The holdout in `skill/tests/evals.json` has not been executed. A future
-approval must record the evaluator, date, exact version, and observed failures.
+The protected holdout in `skill/tests/evals.json` was reviewed on
+2026-08-22 by a separate evaluator against package version `0.1.0`. The result
+was **inconclusive**: the package contains portable instructions but no
+executable evaluator or runtime output. Each declared expectation therefore
+remains unverified; no failures were observed because no behavior was executed.
+The exact record is `holdout-evaluation.md`.
+
+The public-graduation audit and source example validator pass, but the package
+validator currently fails because the candidate skill directory does not contain
+the generated package support files and required safety phrases. This reinforces
+rather than removes the structural-versus-behavioral limitation.
+
+The release decision remains `defer-for-evidence`. No behavioral, reliability,
+outcome, or production-readiness claim is justified by this run.

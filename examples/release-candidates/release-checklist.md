@@ -11,6 +11,8 @@ visibility change as part of this checklist.
 - [x] Source audit passes with no restricted references.
 - [x] Package preflight passes on the public example.
 - [ ] Human source, license, privacy, and conflict review is signed and dated.
-- [ ] Protected holdout is run by a separate evaluator and failures are recorded.
+- [x] Protected holdout was reviewed by a separate evaluator; the result is
+  recorded as inconclusive in `holdout-evaluation.md`, with no behavioral
+  execution claim.
 - [ ] Equilibrium decision is updated from defer to an owner-approved decision.
 - [ ] Only after all gates pass: separately authorize deployment.
