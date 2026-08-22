@@ -11,7 +11,25 @@
     "source_audit": "scripts/public-graduation-audit.py",
     "equilibrium_review": "equilibrium-decision.md",
     "status": "structural-review-complete",
-    "owner_approval": "pending"
+    "owner_approval": "pending",
+    "human_signoff": {
+      "owner": "Jamie OverKill Hill",
+      "signed_at": "2026-08-21",
+      "source_review": "approved",
+      "license_review": "approved",
+      "privacy_review": "approved",
+      "conflict_review": "approved",
+      "scope": "Synthetic public example and original candidate material only.",
+      "excluded_material": [
+        "restricted workspace services",
+        "unpublished repository material",
+        "client material",
+        "employer material",
+        "personal or confidential material"
+      ],
+      "third_party_terms": "Third-party standards are referenced by URL and are not bundled; downstream additions require separate review.",
+      "release_effect": "Human review gate approved; owner publication approval, equilibrium sign-off, and deployment authorization remain separate gates."
+    }
   },
   "claims": {
     "canonical": false,

@@ -10,7 +10,8 @@ visibility change as part of this checklist.
   evaluations, provenance, attribution, changelog, and version are present.
 - [x] Source audit passes with no restricted references.
 - [x] Package preflight passes on the public example.
-- [ ] Human source, license, privacy, and conflict review is signed and dated.
+- [x] Human source, license, privacy, and conflict review is signed and dated
+  in `provenance.json` by Jamie OverKill Hill on 2026-08-21.
 - [x] Protected holdout was reviewed by a separate evaluator; the result is
   recorded as inconclusive in `holdout-evaluation.md`, with no behavioral
   execution claim.
