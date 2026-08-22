@@ -2,10 +2,9 @@
 
 Version: 0.1.0
 
-Review after a process, schema, host, or source change. Re-run development
-cases and have a separate evaluator run the protected holdout before making
-behavioral claims.
+Review after process, source, schema, model, or host changes; rerun development
+cases and a fresh protected holdout.
 
-Rollback: withdraw the affected version, retain its provenance, and route to
-the last approved version or a blocked result. Do not silently substitute a
-new version for an old one.
+Rollback/deprecation: Withdraw this version, retain its provenance and
+evaluation records, and route users to the last approved version or a blocked
+result. Do not silently substitute a new version for an old one.

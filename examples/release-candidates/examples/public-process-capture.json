@@ -1,0 +1,165 @@
+{
+  "capture_id": "public-example-001",
+  "process_id": "evidence-linked-review",
+  "title": "Synthetic evidence-linked review",
+  "capture_status": "confirmed",
+  "source_context": {
+    "source_kind": "synthetic-public-example",
+    "description": "Synthetic public fixture demonstrating a bounded evidence review.",
+    "captured_at": "2026-08-21",
+    "boundary": "From supplied artifact intake to a documented review result.",
+    "source_ids": ["public-example-source-001"],
+    "access": "public"
+  },
+  "actors": [
+    {"id": "actor-initiator", "name": "Artifact owner", "role": "initiator"},
+    {"id": "actor-reviewer", "name": "Reviewer", "role": "performer"}
+  ],
+  "trigger": {
+    "event_type": "manual",
+    "description": "A supplied artifact needs an evidence-linked review.",
+    "entry_criteria": "The artifact and its source context are available."
+  },
+  "inputs": [
+    {
+      "id": "input-artifact",
+      "name": "Supplied artifact",
+      "source_or_consumer": "Reviewer",
+      "format": "document",
+      "confidence": "high",
+      "evidence_refs": ["evidence-public-example"]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "output-review",
+      "name": "Evidence-linked review",
+      "source_or_consumer": "Artifact owner",
+      "format": "Markdown",
+      "confidence": "high",
+      "evidence_refs": ["evidence-public-example"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "act-001",
+      "kind": "activity",
+      "action": "Capture the supplied artifact and preserve its source identifiers.",
+      "actor_id": "actor-reviewer",
+      "entry_criteria": "The artifact is supplied.",
+      "exit_criteria": "The artifact has a stable identity and evidence references.",
+      "confidence": "high",
+      "evidence_refs": ["evidence-public-example"]
+    },
+    {
+      "id": "gw-001",
+      "kind": "gateway",
+      "action": "Determine whether the evidence supports the requested review.",
+      "actor_id": "actor-reviewer",
+      "entry_criteria": "The artifact and evidence references are captured.",
+      "exit_criteria": "The review is either documented or blocked with a recovery route.",
+      "confidence": "medium",
+      "evidence_refs": ["evidence-public-example"]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "gw-001",
+      "question": "Is the required evidence available and permitted for this review?",
+      "actor_id": "actor-reviewer",
+      "outcomes": ["review", "blocked"],
+      "rule": "Review only supported material; otherwise return blocked and identify the missing evidence.",
+      "confidence": "high",
+      "evidence_refs": ["evidence-public-example"]
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "exception-missing-evidence",
+      "condition": "Required evidence or permission is missing.",
+      "response": "Return blocked, record the unresolved item, and request clarification or source review.",
+      "owner_id": "actor-initiator",
+      "confidence": "high",
+      "evidence_refs": ["evidence-public-example"]
+    }
+  ],
+  "controls": [
+    {
+      "id": "control-provenance",
+      "name": "Preserve source identifiers and evidence status",
+      "source_or_consumer": "Reviewer",
+      "format": "review record",
+      "confidence": "high",
+      "evidence_refs": ["evidence-public-example"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evidence-public-example",
+      "kind": "synthetic-fixture",
+      "claim": "A bounded evidence-linked review can preserve identifiers and stop when support is missing.",
+      "locator": "public synthetic fixture",
+      "status": "accepted",
+      "confidence": "high"
+    }
+  ],
+  "ambiguities": [],
+  "rejected_material": [],
+  "transformations": {
+    "fold": {
+      "status": "complete",
+      "input_ids": ["input-artifact"],
+      "output_ids": ["output-review"],
+      "preserved_provenance": true,
+      "notes": "Synthetic fixture folded into a bounded review record."
+    },
+    "unfold": {
+      "status": "complete",
+      "input_ids": ["output-review"],
+      "output_ids": ["output-review"],
+      "preserved_provenance": true,
+      "notes": "The review contract remains traceable to the source artifact."
+    },
+    "refold": {
+      "status": "complete",
+      "input_ids": ["output-review"],
+      "output_ids": ["derived-review"],
+      "preserved_provenance": true,
+      "notes": "Reusable review guidance is refolded without promoting unsupported claims."
+    },
+    "derived_outputs": [
+      {
+        "id": "derived-review",
+        "kind": "reusable-output",
+        "title": "Evidence-linked review guidance",
+        "source_ids": ["public-example-001", "evidence-public-example"],
+        "status": "confirmed",
+        "location": "examples/release-candidates/skill/"
+      }
+    ]
+  },
+  "confirmation_gate": {
+    "required": true,
+    "status": "confirmed",
+    "scope": "Confirm that this synthetic public fixture represents only the stated bounded review contract.",
+    "confirmed_by": "Jamie OverKill Hill",
+    "confirmed_at": "2026-08-21"
+  },
+  "publication": {
+    "visibility": "public",
+    "source_access": "public",
+    "approved_surface": true,
+    "manifest_complete": true,
+    "readme_externalized": true,
+    "reviews": {
+      "pii_review": true,
+      "source_review": true,
+      "license_review": true
+    }
+  },
+  "recovery": {
+    "route": "clarify",
+    "owner": "Artifact owner",
+    "next_action": "Supply the missing evidence or permission before continuing."
+  }
+}

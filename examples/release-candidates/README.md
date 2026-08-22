@@ -23,6 +23,7 @@ candidate.
 - `schema.json` — machine-readable artifact shape
 - `validator/` — dependency-free release preflight
 - `examples/` — synthetic public example
+- `examples/public-process-capture.json` — confirmed public capture used for the skill package lineage
 - `skill/` — portable Agent Skill and evaluation package
 - `provenance.json` — source lineage and review evidence
 - `equilibrium-decision.md` — independent review and limitations

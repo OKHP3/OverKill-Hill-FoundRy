@@ -1,23 +1,26 @@
-# ReFolDec process map
+# Process map: Synthetic evidence-linked review
 
-## Fold
+Source capture: `public-example-001`
 
-Capture the input, assign a stable identifier, describe its current maturity,
-extract evidence references, and produce a structured artifact. Preserve the
-source context and mark unsupported claims as unknown.
+Trigger: A supplied artifact needs an evidence-linked review.
 
-## Unfold
+## Steps
+1. **act-001** (activity, actor-reviewer): Capture the supplied artifact and preserve its source identifiers.
+   - Entry: The artifact is supplied.
+   - Exit: The artifact has a stable identity and evidence references.
+   - Evidence: evidence-public-example
+1. **gw-001** (gateway, actor-reviewer): Determine whether the evidence supports the requested review.
+   - Entry: The artifact and evidence references are captured.
+   - Exit: The review is either documented or blocked with a recovery route.
+   - Evidence: evidence-public-example
 
-Inspect the mature artifact for primitives, patterns, assumptions, dependencies,
-and reusable instructions. Each extracted item retains its source identifier.
+## Decisions
+- **gw-001** Is the required evidence available and permitted for this review? Outcomes: review, blocked. Rule: Review only supported material; otherwise return blocked and identify the missing evidence.
 
-## Refold
+## Exceptions
+- When **Required evidence or permission is missing**, return blocked, record the unresolved item, and request clarification or source review (owner: actor-initiator).
 
-Select only supported primitives, state the transformation, and produce the
-requested output. Record rejected material and unresolved questions rather than
-turning them into rules.
+## Evidence boundary
+Do not promote unresolved or rejected evidence to a confirmed rule.
 
-## Failure and recovery
-
-Return `blocked` when permission, confirmation, or required evidence is absent.
-The recovery route is clarification, re-capture, source review, or stop.
+- `evidence-public-example` (accepted): A bounded evidence-linked review can preserve identifiers and stop when support is missing.
