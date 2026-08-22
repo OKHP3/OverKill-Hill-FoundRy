@@ -1,0 +1,45 @@
+{
+  "capture_id": "mature-artifact-unfold-capture",
+  "process_id": "purchase-approval",
+  "title": "Unfold mature approval documentation into primitives",
+  "capture_status": "reviewed",
+  "source_context": {
+    "source_kind": "artifact-review",
+    "description": "Review of a mature process document and its linked approval log.",
+    "captured_at": "2026-08-22",
+    "boundary": "From mature document review through extracted primitives; no redesign.",
+    "source_ids": ["doc-purchase-approval", "approval-log-sample"],
+    "access": "private"
+  },
+  "actors": [
+    {"id": "actor-requester", "name": "Requester", "role": "initiator"},
+    {"id": "actor-reviewer", "name": "Process reviewer", "role": "reviewer"},
+    {"id": "actor-approver", "name": "Approver", "role": "approver"}
+  ],
+  "trigger": {"event_type": "manual", "description": "A mature artifact is selected for reuse analysis.", "entry_criteria": "The artifact and its source links are available."},
+  "inputs": [{"id": "input-mature-doc", "name": "Mature process document", "source_or_consumer": "Process reviewer", "format": "document", "confidence": "high", "evidence_refs": ["evidence-document"]}],
+  "outputs": [{"id": "output-primitives", "name": "Lineage-bearing primitives", "source_or_consumer": "Refold author", "format": "primitive list", "confidence": "medium", "evidence_refs": ["evidence-document"]}],
+  "steps": [
+    {"id": "act-001", "kind": "activity", "action": "Read the mature process document and source links", "actor_id": "actor-reviewer", "entry_criteria": "The mature artifact is available.", "exit_criteria": "Claims and dependencies are listed.", "systems": [], "confidence": "high", "evidence_refs": ["evidence-document"]},
+    {"id": "act-002", "kind": "activity", "action": "Separate reusable primitives from unsupported claims", "actor_id": "actor-reviewer", "entry_criteria": "Claims are listed.", "exit_criteria": "Accepted, unresolved, and rejected material are classified.", "systems": [], "confidence": "high", "evidence_refs": ["evidence-document", "evidence-threshold"]},
+    {"id": "gw-001", "kind": "gateway", "action": "Determine whether the primitive has sufficient evidence", "actor_id": "actor-approver", "entry_criteria": "A primitive has been classified.", "exit_criteria": "The primitive is accepted for refold or routed to recovery.", "systems": [], "confidence": "medium", "evidence_refs": ["evidence-threshold"]}
+  ],
+  "decisions": [{"id": "gw-001", "question": "Can this primitive be reused without the unresolved threshold?", "actor_id": "actor-approver", "outcomes": ["accept", "hold", "reject"], "rule": "Do not promote unknown evidence to confirmed.", "confidence": "high", "evidence_refs": ["evidence-threshold"]}],
+  "exceptions": [{"id": "exception-lost-lineage", "condition": "A claim cannot be traced to a source.", "response": "Restore the prior capture and stop the refold.", "owner_id": "actor-reviewer", "confidence": "high", "evidence_refs": ["evidence-document"]}],
+  "controls": [{"id": "control-lineage", "name": "Require source IDs on every extracted primitive", "source_or_consumer": "Refold author", "format": "lineage check", "confidence": "high", "evidence_refs": ["evidence-document"]}],
+  "evidence": [
+    {"id": "evidence-document", "kind": "document", "claim": "The mature document contains a repeatable approval sequence.", "locator": "process document §steps", "status": "accepted", "confidence": "high"},
+    {"id": "evidence-threshold", "kind": "document", "claim": "The threshold policy is linked but unavailable in this boundary.", "locator": "approval policy link", "status": "unresolved", "confidence": "unknown"},
+    {"id": "evidence-invented-threshold", "kind": "statement", "claim": "The threshold is 5000 units.", "locator": "unsourced note", "status": "rejected", "confidence": "low", "notes": "Rejected because no source was provided."}
+  ],
+  "ambiguities": [{"id": "ambiguity-policy", "description": "The threshold policy is unavailable to this capture.", "status": "open", "next_action": "Review the policy before using threshold-dependent primitives.", "evidence_refs": ["evidence-threshold"]}],
+  "rejected_material": [{"id": "rejected-invented-threshold", "description": "Unsourced numeric threshold.", "status": "out-of-scope", "next_action": "Do not reuse until policy evidence is supplied.", "evidence_refs": ["evidence-invented-threshold"]}],
+  "transformations": {
+    "fold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": "This record starts from a mature artifact."},
+    "unfold": {"status": "complete", "input_ids": ["input-mature-doc"], "output_ids": ["output-primitives"], "preserved_provenance": true, "notes": "Accepted and rejected material remain linked to source evidence."},
+    "refold": {"status": "blocked", "input_ids": ["output-primitives"], "output_ids": [], "preserved_provenance": true, "notes": "Blocked by the unresolved policy threshold."},
+    "derived_outputs": [{"id": "output-primitives", "kind": "primitive", "title": "Approval primitives with evidence states", "source_ids": ["mature-artifact-unfold-capture"], "status": "reviewed", "location": "capture record"}]
+  },
+  "confirmation_gate": {"required": true, "status": "pending", "scope": "Approver confirms extracted primitives and rejected material handling."},
+  "recovery": {"route": "restore-prior-capture", "owner": "Process reviewer", "next_action": "Restore the prior capture if any primitive loses its source link.", "blocked_by": ["ambiguity-policy"]}
+}

@@ -55,6 +55,11 @@ The current degree of structure, validation, publication, and reuse-readiness of
 
 The act of capturing the steps, context, actors, decisions, tools, constraints, and reuse path of a repeatable activity.
 
+The canonical ReFolDec process capture record also retains evidence status,
+confidence, unresolved ambiguities, rejected material, transformation lineage,
+and a human confirmation gate. Missing information is recorded as unknown or
+open rather than inferred.
+
 ## Process of process-capture
 
 The recursive act of capturing how process-capture itself works so that it can be improved, reused, taught, automated, or delegated.

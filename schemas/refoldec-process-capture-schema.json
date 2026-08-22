@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/OKHP3/refoldec/schemas/refoldec-process-capture.schema.json",
+  "title": "ReFolDec Process Capture Record",
+  "description": "Canonical structured record for Fold, Unfold, and Refold process capture. The executable checks live in scripts/refoldec-capture-validate.py.",
+  "type": "object",
+  "required": [
+    "capture_id",
+    "process_id",
+    "title",
+    "capture_status",
+    "source_context",
+    "actors",
+    "trigger",
+    "inputs",
+    "outputs",
+    "steps",
+    "decisions",
+    "exceptions",
+    "controls",
+    "evidence",
+    "ambiguities",
+    "rejected_material",
+    "transformations",
+    "confirmation_gate",
+    "recovery"
+  ],
+  "properties": {
+    "capture_id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "process_id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "capture_status": { "enum": ["draft", "structured", "reviewed", "confirmed", "rejected"] },
+    "source_context": {
+      "type": "object",
+      "required": ["source_kind", "description", "captured_at", "boundary", "source_ids"],
+      "properties": {
+        "source_kind": { "enum": ["raw-idea", "interview", "workshop", "observation", "document-review", "artifact-review", "mixed"] },
+        "description": { "type": "string", "minLength": 1 },
+        "captured_at": { "type": "string", "minLength": 1 },
+        "boundary": { "type": "string", "minLength": 1 },
+        "source_ids": { "type": "array", "items": { "type": "string" } },
+        "access": { "enum": ["private", "public", "mixed", "unknown"] }
+      },
+      "additionalProperties": false
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "role"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "enum": ["initiator", "performer", "approver", "reviewer", "notified", "system"] },
+          "responsibility": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "required": ["event_type", "description"],
+      "properties": {
+        "event_type": { "enum": ["manual", "scheduled", "message", "system", "unknown"] },
+        "description": { "type": "string" },
+        "entry_criteria": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "inputs": { "$ref": "#/$defs/record" },
+    "outputs": { "$ref": "#/$defs/record" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "action", "actor_id", "entry_criteria", "exit_criteria", "confidence", "evidence_refs"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^(act|gw|evt)-[0-9]{3}$" },
+          "kind": { "enum": ["activity", "gateway", "event"] },
+          "action": { "type": "string", "minLength": 1 },
+          "actor_id": { "type": "string" },
+          "entry_criteria": { "type": "string" },
+          "exit_criteria": { "type": "string" },
+          "systems": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "$ref": "#/$defs/confidence" },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "decisions": { "$ref": "#/$defs/decision" },
+    "exceptions": { "$ref": "#/$defs/exception" },
+    "controls": { "$ref": "#/$defs/record" },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "claim", "status", "confidence"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "enum": ["observation", "statement", "document", "decision", "test", "link", "artifact"] },
+          "claim": { "type": "string" },
+          "locator": { "type": "string" },
+          "status": { "enum": ["accepted", "rejected", "unresolved"] },
+          "confidence": { "$ref": "#/$defs/confidence" },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "ambiguities": { "$ref": "#/$defs/issue" },
+    "rejected_material": { "$ref": "#/$defs/issue" },
+    "transformations": {
+      "type": "object",
+      "required": ["fold", "unfold", "refold", "derived_outputs"],
+      "properties": {
+        "fold": { "$ref": "#/$defs/transformation" },
+        "unfold": { "$ref": "#/$defs/transformation" },
+        "refold": { "$ref": "#/$defs/transformation" },
+        "derived_outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "title", "source_ids", "status"],
+            "properties": {
+              "id": { "type": "string" },
+              "kind": { "enum": ["documentation", "model-ready", "primitive", "reusable-output"] },
+              "title": { "type": "string" },
+              "source_ids": { "type": "array", "items": { "type": "string" } },
+              "status": { "enum": ["draft", "reviewed", "confirmed", "rejected"] },
+              "location": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "confirmation_gate": {
+      "type": "object",
+      "required": ["required", "status", "scope"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "status": { "enum": ["pending", "confirmed", "declined", "not-applicable"] },
+        "scope": { "type": "string", "minLength": 1 },
+        "confirmed_by": { "type": "string" },
+        "confirmed_at": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "recovery": {
+      "type": "object",
+      "required": ["route", "owner", "next_action"],
+      "properties": {
+        "route": { "enum": ["clarify", "re-capture", "review-source", "restore-prior-capture", "stop"] },
+        "owner": { "type": "string" },
+        "next_action": { "type": "string", "minLength": 1 },
+        "blocked_by": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "confidence": { "enum": ["high", "medium", "low", "unknown"] },
+    "record": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "confidence", "evidence_refs"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "source_or_consumer": { "type": "string" },
+          "format": { "type": "string" },
+          "confidence": { "$ref": "#/$defs/confidence" },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "decision": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "outcomes", "confidence", "evidence_refs"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^gw-[0-9]{3}$" },
+          "question": { "type": "string" },
+          "actor_id": { "type": "string" },
+          "outcomes": { "type": "array", "items": { "type": "string" } },
+          "rule": { "type": "string" },
+          "confidence": { "$ref": "#/$defs/confidence" },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "exception": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "condition", "response", "confidence", "evidence_refs"],
+        "properties": {
+          "id": { "type": "string" },
+          "condition": { "type": "string" },
+          "response": { "type": "string" },
+          "owner_id": { "type": "string" },
+          "confidence": { "$ref": "#/$defs/confidence" },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "issue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "status", "next_action"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "enum": ["open", "resolved", "accepted-risk", "out-of-scope"] },
+          "next_action": { "type": "string" },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "transformation": {
+      "type": "object",
+      "required": ["status", "input_ids", "output_ids", "preserved_provenance", "notes"],
+      "properties": {
+        "status": { "enum": ["not-started", "in-progress", "complete", "blocked"] },
+        "input_ids": { "type": "array", "items": { "type": "string" } },
+        "output_ids": { "type": "array", "items": { "type": "string" } },
+        "preserved_provenance": { "type": "boolean" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

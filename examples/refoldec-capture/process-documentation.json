@@ -1,0 +1,44 @@
+{
+  "capture_id": "process-documentation-capture",
+  "process_id": "purchase-approval",
+  "title": "As-is purchase approval documentation",
+  "capture_status": "reviewed",
+  "source_context": {
+    "source_kind": "workshop",
+    "description": "Current-state workshop with requester and approver.",
+    "captured_at": "2026-08-22",
+    "boundary": "From purchase request submission to approval or rejection handoff.",
+    "source_ids": ["purchase-workshop-001"],
+    "access": "private"
+  },
+  "actors": [
+    {"id": "actor-requester", "name": "Requester", "role": "initiator"},
+    {"id": "actor-approver", "name": "Approver", "role": "approver"},
+    {"id": "actor-system", "name": "Approval system", "role": "system"}
+  ],
+  "trigger": {"event_type": "message", "description": "A purchase request is submitted.", "entry_criteria": "Requester has a request and cost center."},
+  "inputs": [{"id": "input-request", "name": "Purchase request", "source_or_consumer": "Requester", "format": "form", "confidence": "high", "evidence_refs": ["evidence-workshop"]}],
+  "outputs": [{"id": "output-decision", "name": "Approval decision", "source_or_consumer": "Requester and finance", "format": "system record", "confidence": "high", "evidence_refs": ["evidence-workshop"]}],
+  "steps": [
+    {"id": "act-001", "kind": "activity", "action": "Submit the purchase request", "actor_id": "actor-requester", "entry_criteria": "Request details are available.", "exit_criteria": "The system records the request.", "systems": ["approval-system"], "confidence": "high", "evidence_refs": ["evidence-workshop"]},
+    {"id": "gw-001", "kind": "gateway", "action": "Determine whether approval is required", "actor_id": "actor-system", "entry_criteria": "The request is recorded.", "exit_criteria": "The request has a routed outcome.", "systems": ["approval-system"], "confidence": "medium", "evidence_refs": ["evidence-workshop"]},
+    {"id": "act-002", "kind": "activity", "action": "Record and notify the approval decision", "actor_id": "actor-approver", "entry_criteria": "The request is routed for approval.", "exit_criteria": "The decision is recorded and requester notified.", "systems": ["approval-system"], "confidence": "high", "evidence_refs": ["evidence-workshop"]}
+  ],
+  "decisions": [{"id": "gw-001", "question": "Does the request exceed the approval threshold?", "actor_id": "actor-approver", "outcomes": ["approve", "reject", "request-more-information"], "rule": "Approval threshold policy; exact threshold needs confirmation.", "confidence": "medium", "evidence_refs": ["evidence-workshop"]}],
+  "exceptions": [{"id": "exception-incomplete", "condition": "Required request fields are missing.", "response": "Return the request to the requester for completion.", "owner_id": "actor-requester", "confidence": "high", "evidence_refs": ["evidence-workshop"]}],
+  "controls": [{"id": "control-approval-log", "name": "Retain the approval decision in the system", "source_or_consumer": "Finance", "format": "audit log", "confidence": "high", "evidence_refs": ["evidence-workshop"]}],
+  "evidence": [
+    {"id": "evidence-workshop", "kind": "statement", "claim": "The workshop participants described the current approval sequence.", "locator": "workshop notes", "status": "accepted", "confidence": "high"},
+    {"id": "evidence-threshold", "kind": "document", "claim": "The exact approval threshold is available in policy.", "locator": "not supplied", "status": "unresolved", "confidence": "unknown", "notes": "Do not treat the threshold as confirmed."}
+  ],
+  "ambiguities": [{"id": "ambiguity-threshold", "description": "The current approval threshold was not supplied.", "status": "open", "next_action": "Review the current policy before modeling the gateway.", "evidence_refs": ["evidence-threshold"]}],
+  "rejected_material": [],
+  "transformations": {
+    "fold": {"status": "complete", "input_ids": ["input-request"], "output_ids": ["output-decision"], "preserved_provenance": true, "notes": "Workshop notes folded into an as-is record."},
+    "unfold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": "Unfold after confirmation."},
+    "refold": {"status": "in-progress", "input_ids": ["output-decision"], "output_ids": ["doc-purchase-approval"], "preserved_provenance": true, "notes": "Documentation view is drafted; threshold remains visible."},
+    "derived_outputs": [{"id": "doc-purchase-approval", "kind": "documentation", "title": "Purchase approval as-is documentation", "source_ids": ["process-documentation-capture"], "status": "reviewed", "location": "examples/refoldec-capture/process-documentation.json"}]
+  },
+  "confirmation_gate": {"required": true, "status": "pending", "scope": "Approver confirms the current sequence and exception behavior."},
+  "recovery": {"route": "review-source", "owner": "Process analyst", "next_action": "Review the approval policy to resolve the threshold ambiguity.", "blocked_by": ["ambiguity-threshold"]}
+}

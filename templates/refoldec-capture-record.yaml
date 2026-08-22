@@ -1,0 +1,81 @@
+# ReFolDec canonical capture record. Keep unknowns and rejected material.
+capture_id: example-process-capture
+process_id: example-process
+title: Name the captured process
+capture_status: draft
+source_context:
+  source_kind: interview
+  description: Who or what supplied this capture, and under which boundary?
+  captured_at: YYYY-MM-DD
+  boundary: What is included, excluded, and where does the handoff occur?
+  source_ids: []
+  access: unknown
+actors:
+  - id: actor-initiator
+    name: Role or system name
+    role: initiator
+    responsibility: Starts or requests the process
+trigger:
+  event_type: unknown
+  description: What causes the process to start?
+  entry_criteria: What must be true before it starts?
+inputs:
+  - id: input-001
+    name: Input name
+    source_or_consumer: Source role or system
+    format: Format
+    confidence: unknown
+    evidence_refs: []
+outputs:
+  - id: output-001
+    name: Output name
+    source_or_consumer: Consumer role or system
+    format: Format
+    confidence: unknown
+    evidence_refs: []
+steps:
+  - id: act-001
+    kind: activity
+    action: Use one imperative action statement
+    actor_id: actor-initiator
+    entry_criteria: What starts this step?
+    exit_criteria: What proves it is complete?
+    systems: []
+    confidence: unknown
+    evidence_refs: []
+    notes: ""
+decisions: []
+exceptions: []
+controls: []
+evidence: []
+ambiguities: []
+rejected_material: []
+transformations:
+  fold:
+    status: not-started
+    input_ids: []
+    output_ids: []
+    preserved_provenance: false
+    notes: ""
+  unfold:
+    status: not-started
+    input_ids: []
+    output_ids: []
+    preserved_provenance: false
+    notes: ""
+  refold:
+    status: not-started
+    input_ids: []
+    output_ids: []
+    preserved_provenance: false
+    notes: ""
+  derived_outputs: []
+confirmation_gate:
+  required: true
+  status: pending
+  scope: Confirm current-state facts, exceptions, and reuse boundaries before publication or reuse.
+recovery:
+  route: clarify
+  owner: Named capture owner
+  next_action: Resolve open ambiguity or return to the source capture.
+  blocked_by: []

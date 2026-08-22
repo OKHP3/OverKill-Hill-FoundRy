@@ -1,0 +1,14 @@
+{
+  "capture_id": "invalid-capture",
+  "process_id": "invalid-process",
+  "title": "Invalid capture",
+  "capture_status": "confirmed",
+  "source_context": {"source_kind": "interview", "description": "Missing boundary", "captured_at": "2026-08-22", "boundary": "", "source_ids": [], "access": "unknown"},
+  "actors": [{"id": "actor-one", "name": "One", "role": "initiator"}],
+  "trigger": {"event_type": "manual", "description": "Starts."},
+  "inputs": [], "outputs": [], "steps": [{"id": "step-1", "kind": "activity", "action": "Do it", "actor_id": "actor-one", "entry_criteria": "Start", "exit_criteria": "Done", "confidence": "unknown", "evidence_refs": ["missing"]}],
+  "decisions": [], "exceptions": [], "controls": [], "evidence": [], "ambiguities": [], "rejected_material": [],
+  "transformations": {"fold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": ""}, "unfold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": ""}, "refold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": ""}, "derived_outputs": []},
+  "confirmation_gate": {"required": true, "status": "confirmed", "scope": "Confirm."},
+  "recovery": {"route": "clarify", "owner": "Owner", "next_action": "Fix it."}
+}

@@ -1,0 +1,45 @@
+{
+  "capture_id": "refolded-reusable-output-capture",
+  "process_id": "purchase-approval",
+  "title": "Refold confirmed primitives into a reusable capture checklist",
+  "capture_status": "confirmed",
+  "source_context": {
+    "source_kind": "mixed",
+    "description": "Confirmed as-is record plus approved unfolded primitives.",
+    "captured_at": "2026-08-22",
+    "boundary": "From confirmed process primitives to a reusable capture checklist; publication still requires a separate review.",
+    "source_ids": ["process-documentation-capture", "mature-artifact-unfold-capture"],
+    "access": "private"
+  },
+  "actors": [
+    {"id": "actor-requester", "name": "Future capture requester", "role": "initiator"},
+    {"id": "actor-owner", "name": "Process owner", "role": "approver", "responsibility": "Confirms current-state facts"},
+    {"id": "actor-author", "name": "Documentation author", "role": "performer", "responsibility": "Maintains the reusable checklist"}
+  ],
+  "trigger": {"event_type": "manual", "description": "A new process capture begins using the reusable checklist.", "entry_criteria": "The capture source boundary is known."},
+  "inputs": [{"id": "input-confirmed-primitives", "name": "Confirmed capture primitives", "source_or_consumer": "Documentation author", "format": "structured record", "confidence": "high", "evidence_refs": ["evidence-confirmation"]}],
+  "outputs": [{"id": "output-checklist", "name": "Reusable process-capture checklist", "source_or_consumer": "Future capture owner", "format": "template", "confidence": "high", "evidence_refs": ["evidence-confirmation"]}],
+  "steps": [
+    {"id": "act-001", "kind": "activity", "action": "Copy the capture boundary and source context", "actor_id": "actor-author", "entry_criteria": "A new capture starts.", "exit_criteria": "The source boundary is recorded.", "systems": [], "confidence": "high", "evidence_refs": ["evidence-confirmation"]},
+    {"id": "act-002", "kind": "activity", "action": "Record steps, evidence, exceptions, and recovery routes", "actor_id": "actor-author", "entry_criteria": "The boundary is recorded.", "exit_criteria": "The capture has a traceable draft.", "systems": [], "confidence": "high", "evidence_refs": ["evidence-confirmation"]},
+    {"id": "gw-001", "kind": "gateway", "action": "Request subject-matter confirmation before reuse", "actor_id": "actor-owner", "entry_criteria": "The capture is structured.", "exit_criteria": "Reuse is confirmed or returned for clarification.", "systems": [], "confidence": "high", "evidence_refs": ["evidence-confirmation"]}
+  ],
+  "decisions": [{"id": "gw-001", "question": "Has the subject-matter owner confirmed the record?", "actor_id": "actor-owner", "outcomes": ["confirm", "clarify"], "rule": "No reusable output without human confirmation.", "confidence": "high", "evidence_refs": ["evidence-confirmation"]}],
+  "exceptions": [{"id": "exception-boundary", "condition": "The source contains material outside the approved boundary.", "response": "Stop and route to boundary review.", "owner_id": "actor-owner", "confidence": "high", "evidence_refs": ["evidence-confirmation"]}],
+  "controls": [{"id": "control-human-gate", "name": "Require subject-matter confirmation", "source_or_consumer": "Process owner", "format": "approval record", "confidence": "high", "evidence_refs": ["evidence-confirmation"]}],
+  "evidence": [{"id": "evidence-confirmation", "kind": "decision", "claim": "The process owner confirmed the checklist and its reuse boundary.", "locator": "confirmation record", "status": "accepted", "confidence": "high"}],
+  "ambiguities": [],
+  "rejected_material": [],
+  "transformations": {
+    "fold": {"status": "complete", "input_ids": ["input-confirmed-primitives"], "output_ids": ["output-checklist"], "preserved_provenance": true, "notes": "Confirmed primitives folded into a reusable checklist."},
+    "unfold": {"status": "complete", "input_ids": ["input-confirmed-primitives"], "output_ids": ["input-confirmed-primitives"], "preserved_provenance": true, "notes": "Primitive provenance remains available."},
+    "refold": {"status": "complete", "input_ids": ["input-confirmed-primitives"], "output_ids": ["output-checklist"], "preserved_provenance": true, "notes": "Reusable output retains both source capture IDs."},
+    "derived_outputs": [
+      {"id": "output-checklist", "kind": "reusable-output", "title": "Reusable process-capture checklist", "source_ids": ["refolded-reusable-output-capture", "process-documentation-capture", "mature-artifact-unfold-capture"], "status": "confirmed", "location": "templates/refoldec-capture-record.yaml"},
+      {"id": "output-model", "kind": "model-ready", "title": "Model-ready process representation", "source_ids": ["refolded-reusable-output-capture", "process-documentation-capture"], "status": "confirmed", "location": "capture record steps and decisions"},
+      {"id": "output-primitives", "kind": "primitive", "title": "Reusable process primitives", "source_ids": ["refolded-reusable-output-capture", "mature-artifact-unfold-capture"], "status": "confirmed", "location": "capture record evidence and controls"}
+    ]
+  },
+  "confirmation_gate": {"required": true, "status": "confirmed", "scope": "Confirm the checklist, source lineage, and reuse boundary.", "confirmed_by": "Process owner", "confirmed_at": "2026-08-22", "notes": "Confirmation applies to reuse within the private capture plane."},
+  "recovery": {"route": "clarify", "owner": "Documentation author", "next_action": "Return to the source capture if a future user finds an ambiguous step.", "blocked_by": []}
+}

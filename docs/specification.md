@@ -87,6 +87,14 @@ engine. The validator checks structural metadata and declared relationships,
 not whether a claim is true, whether a source is legally publishable, or
 whether a privacy/security review is adequate. Those reviews remain required.
 
+For process work, `schemas/refoldec-process-capture-schema.json` and
+`templates/refoldec-capture-record.yaml` define the canonical capture record.
+Its executable checks preserve source references, stable `act-NNN`/`gw-NNN`/
+`evt-NNN` step identifiers, confidence, unresolved ambiguity, rejected
+material, and the human confirmation gate. See
+`docs/refoldec-capture-pipeline.md` for Fold, Unfold, Refold, and recovery
+instructions.
+
 ---
 
 ## 4. Relationship to xME/xIE

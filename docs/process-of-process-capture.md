@@ -90,3 +90,12 @@ ReFolDec treats diagrams as views over captured process knowledge, not as standa
 An Agent Skill is a process fossil made executable.
 
 It captures what a human knows how to do, what tools the agent should use, what constraints apply, and how the task should be completed. ReFolDec provides a way to fold process knowledge into skills and unfold existing skills back into their assumptions and reusable primitives.
+
+## Executable capture handoff
+
+The repeatable capture workflow is defined in
+`docs/refoldec-capture-pipeline.md`, with its record contract in
+`schemas/refoldec-process-capture-schema.json` and a starter template in
+`templates/refoldec-capture-record.yaml`. The record is not reusable or
+publication-ready until the subject-matter confirmation gate is complete.
+Unknown, ambiguous, and rejected material remains visible for recovery.

@@ -1,0 +1,39 @@
+{
+  "capture_id": "raw-idea-capture",
+  "process_id": "process-capture",
+  "title": "Raw idea: capture the process of process-capture",
+  "capture_status": "structured",
+  "source_context": {
+    "source_kind": "raw-idea",
+    "description": "A workshop observation that process notes lose their source and recovery path.",
+    "captured_at": "2026-08-22",
+    "boundary": "From noticing a repeatable activity through a confirmed capture; publication is out of scope.",
+    "source_ids": ["workshop-observation-001"],
+    "access": "private"
+  },
+  "actors": [
+    {"id": "actor-observer", "name": "Observer", "role": "initiator", "responsibility": "Notices a repeatable activity"},
+    {"id": "actor-capture-owner", "name": "Capture owner", "role": "performer", "responsibility": "Records and clarifies the process"}
+  ],
+  "trigger": {"event_type": "manual", "description": "A repeatable activity is noticed.", "entry_criteria": "The observer can name the activity and its source."},
+  "inputs": [{"id": "input-idea", "name": "Raw idea", "source_or_consumer": "Observer", "format": "workshop note", "confidence": "high", "evidence_refs": ["evidence-observation"]}],
+  "outputs": [{"id": "output-draft", "name": "Structured capture draft", "source_or_consumer": "Capture owner", "format": "process capture record", "confidence": "medium", "evidence_refs": ["evidence-observation"]}],
+  "steps": [
+    {"id": "act-001", "kind": "activity", "action": "Record the raw idea and source boundary", "actor_id": "actor-observer", "entry_criteria": "The repeatable activity is noticed.", "exit_criteria": "The raw idea has a source ID and access classification.", "systems": [], "confidence": "high", "evidence_refs": ["evidence-observation"]},
+    {"id": "act-002", "kind": "activity", "action": "Describe the current activity without improving it", "actor_id": "actor-capture-owner", "entry_criteria": "A raw idea is recorded.", "exit_criteria": "A draft sequence and open questions exist.", "systems": [], "confidence": "medium", "evidence_refs": ["evidence-observation"], "notes": "Do not fill gaps from memory."}
+  ],
+  "decisions": [],
+  "exceptions": [{"id": "exception-missing-source", "condition": "The source cannot be located.", "response": "Stop at draft and use the clarify recovery route.", "owner_id": "actor-capture-owner", "confidence": "high", "evidence_refs": ["evidence-observation"]}],
+  "controls": [{"id": "control-boundary", "name": "Record source access before transformation", "source_or_consumer": "Capture owner", "format": "capture check", "confidence": "high", "evidence_refs": ["evidence-observation"]}],
+  "evidence": [{"id": "evidence-observation", "kind": "observation", "claim": "The activity recurs and its source can be identified.", "locator": "workshop observation", "status": "accepted", "confidence": "high"}],
+  "ambiguities": [{"id": "ambiguity-owner", "description": "The eventual subject-matter confirmer is not yet known.", "status": "open", "next_action": "Name a confirmer before review."}],
+  "rejected_material": [],
+  "transformations": {
+    "fold": {"status": "in-progress", "input_ids": ["input-idea"], "output_ids": ["output-draft"], "preserved_provenance": true, "notes": "Raw idea is only structured, not confirmed."},
+    "unfold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": "No mature artifact yet."},
+    "refold": {"status": "not-started", "input_ids": [], "output_ids": [], "preserved_provenance": false, "notes": "Wait for confirmation."},
+    "derived_outputs": [{"id": "output-draft", "kind": "documentation", "title": "Structured capture draft", "source_ids": ["raw-idea-capture"], "status": "draft", "location": "capture record"}]
+  },
+  "confirmation_gate": {"required": true, "status": "pending", "scope": "Confirm source, boundary, and sequence with a subject-matter owner."},
+  "recovery": {"route": "clarify", "owner": "Capture owner", "next_action": "Identify the subject-matter confirmer.", "blocked_by": ["ambiguity-owner"]}
+}
