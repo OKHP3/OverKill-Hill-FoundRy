@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { STARTER_EXAMPLES_GOOD, STARTER_EXAMPLES_BAD } from "../data/knowledge";
 import { PhaseGate } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-6";
+const STORAGE_KEY = "step-6";
 
 function load(): string[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  try { return (readProjectValue(STORAGE_KEY) as string[] | undefined) ?? []; }
   catch { return []; }
 }
 
@@ -17,7 +18,7 @@ export default function ConversationStarters({ onNext, onPrev, onComplete }: Pro
     return s.length ? s : ["", "", "", ""];
   });
 
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(starters)); }, [starters]);
+  useEffect(() => { writeProjectValue(STORAGE_KEY, starters); }, [starters]);
 
   // Step is complete once at least one starter has content.
   const isComplete = starters.some(s => s.trim().length > 0);

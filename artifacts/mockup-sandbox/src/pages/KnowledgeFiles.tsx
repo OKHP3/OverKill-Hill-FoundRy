@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord, EvidenceSelect, type EvidenceStatus } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-3";
+const STORAGE_KEY = "step-3";
 
 interface KnowledgeEntry { id: string; filename: string; topic: string; type: string; notes: string; }
 interface KnowledgeData { files: KnowledgeEntry[]; manifest: string; retrievalNotes: string; conflictHandling: string; injectionBoundary: string; evidenceStatus: EvidenceStatus; }
@@ -10,7 +11,7 @@ const DEFAULT: KnowledgeData = { files: [], manifest: "", retrievalNotes: "", co
 const FILE_TYPES = ["Policy", "Reference", "Examples", "Playbook", "Glossary", "Price Sheet", "Template", "Index/Manifest", "Other"];
 
 function load(): KnowledgeData {
-  try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  try { return { ...DEFAULT, ...(readProjectValue(STORAGE_KEY) as Partial<KnowledgeData> | undefined) }; }
   catch { return DEFAULT; }
 }
 
@@ -18,9 +19,9 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 
 export default function KnowledgeFiles({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<KnowledgeData>(load);
-  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; } });
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change)); }, [change]);
+  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...(readProjectValue(STORAGE_KEY + "-change") as Partial<ChangeRecord> | undefined) }; } catch { return EMPTY_CHANGE_RECORD; } });
+  useEffect(() => { writeProjectValue(STORAGE_KEY, data); }, [data]);
+  useEffect(() => { writeProjectValue(STORAGE_KEY + "-change", change); }, [change]);
 
   // Step is complete when the retrieval manifest is filled or at least one file entry has a name.
   const isComplete = data.manifest.trim().length > 0 || data.files.some(f => f.filename.trim().length > 0);

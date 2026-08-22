@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { ACTION_AUTH_OPTIONS, ACTION_FAILURES, ACTIONS_LIMITS, OPENAPI_TEMPLATE } from "../data/knowledge";
 import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-5";
+const STORAGE_KEY = "step-5";
 
 interface ActionsData {
   choice: "none" | "actions" | "apps";
@@ -19,7 +20,7 @@ const DEFAULT: ActionsData = {
 };
 
 function load(): ActionsData {
-  try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  try { return { ...DEFAULT, ...(readProjectValue(STORAGE_KEY) as Partial<ActionsData> | undefined) }; }
   catch { return DEFAULT; }
 }
 
@@ -28,8 +29,8 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 export default function ActionsApps({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<ActionsData>(load);
   const [copied, setCopied] = useState(false);
-  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; } });
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change)); }, [data, change]);
+  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...(readProjectValue(STORAGE_KEY + "-change") as Partial<ChangeRecord> | undefined) }; } catch { return EMPTY_CHANGE_RECORD; } });
+  useEffect(() => { writeProjectValue(STORAGE_KEY, data); writeProjectValue(STORAGE_KEY + "-change", change); }, [data, change]);
 
   // Step is complete once the user deliberately picks a choice (not the default "none").
   const isComplete = data.choice !== "none" || data.openApiSchema.trim().length > 0 || data.appsNotes.trim().length > 0;

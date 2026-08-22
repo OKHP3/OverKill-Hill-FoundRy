@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 
 import { modules as discoveredModules } from "./.generated/mockup-components";
 import { BUILD_STEPS, NAV_EXTRAS } from "./data/knowledge";
@@ -14,6 +14,17 @@ import KnowledgeFiles from "./pages/KnowledgeFiles";
 import PlatformCompare from "./pages/PlatformCompare";
 import ShipGovern from "./pages/ShipGovern";
 import TestMatrix from "./pages/TestMatrix";
+import {
+  activeProject,
+  exportWorkspace,
+  getStorageHealth,
+  importWorkspace,
+  loadWorkspace,
+  MAX_PROJECTS,
+  persistWorkspace,
+  updateActiveProject,
+  type CreatorWorkspace,
+} from "./lib/creatorStorage";
 
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 type ThemePreference = "light" | "dark" | "system";
@@ -220,20 +231,6 @@ function getPreviewPath(): string | null {
 type ExtraPage = (typeof NAV_EXTRAS)[number]["id"];
 type PageId = number | ExtraPage;
 
-const CREATOR_STATE_KEY = "cgpt-creator-state";
-
-interface CreatorState {
-  currentPage: PageId;
-  completedSteps: number[];
-  sidebarOpen: boolean;
-}
-
-const DEFAULT_CREATOR_STATE: CreatorState = {
-  currentPage: 0,
-  completedSteps: [],
-  sidebarOpen: true,
-};
-
 function isPageId(value: unknown): value is PageId {
   return (
     (typeof value === "number" && value >= 0 && value <= BUILD_STEPS.length - 1) ||
@@ -243,45 +240,103 @@ function isPageId(value: unknown): value is PageId {
   );
 }
 
-function loadCreatorState(): CreatorState {
-  try {
-    const saved = JSON.parse(localStorage.getItem(CREATOR_STATE_KEY) || "{}") as Partial<CreatorState>;
-    return {
-      currentPage: isPageId(saved.currentPage) ? saved.currentPage : DEFAULT_CREATOR_STATE.currentPage,
-      completedSteps: Array.isArray(saved.completedSteps)
-        ? saved.completedSteps.filter((step): step is number => typeof step === "number" && step >= 0 && step < BUILD_STEPS.length)
-        : DEFAULT_CREATOR_STATE.completedSteps,
-      sidebarOpen: typeof saved.sidebarOpen === "boolean" ? saved.sidebarOpen : DEFAULT_CREATOR_STATE.sidebarOpen,
-    };
-  } catch {
-    return DEFAULT_CREATOR_STATE;
-  }
-}
-
 function CreatorShell() {
-  const initialState = useMemo(loadCreatorState, []);
-  const skipNextPersistRef = useRef(false);
-  const [currentPage, setCurrentPage] = useState<PageId>(initialState.currentPage);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(
-    () => new Set(initialState.completedSteps),
-  );
-  const [sidebarOpen, setSidebarOpen] = useState(initialState.sidebarOpen);
+  const initialWorkspace = useMemo(loadWorkspace, []);
+  const [workspace, setWorkspace] = useState<CreatorWorkspace>(initialWorkspace);
+  const project = activeProject(workspace);
+  const [currentPage, setCurrentPage] = useState<PageId>(isPageId(project.currentPage) ? project.currentPage : 0);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(() => new Set(project.completedSteps));
+  const [sidebarOpen, setSidebarOpen] = useState(project.sidebarOpen);
+  const [projectMenuOpen, setProjectMenuOpen] = useState(false);
+  const [viewRevision, setViewRevision] = useState(0);
+  const [storageMessage, setStorageMessage] = useState(getStorageHealth());
   const { preference: themePreference, setPreference: setThemePreference } = useTheme();
 
   useEffect(() => {
-    if (skipNextPersistRef.current) {
+    const next = updateActiveProject(loadWorkspace(), {
+      currentPage,
+      completedSteps: Array.from(completedSteps),
+      sidebarOpen,
+    });
+    if (persistWorkspace(next)) setWorkspace(next);
+  }, [completedSteps, currentPage, sidebarOpen]);
+
+  const switchProject = useCallback((id: string) => {
+    const next = persistWorkspace({ ...workspace, activeProjectId: id }) ? { ...workspace, activeProjectId: id } : workspace;
+    setWorkspace(next);
+    const selected = activeProject(next);
+    setCurrentPage(isPageId(selected.currentPage) ? selected.currentPage : 0);
+    setCompletedSteps(new Set(selected.completedSteps));
+    setSidebarOpen(selected.sidebarOpen);
+    setViewRevision((revision) => revision + 1);
+    setProjectMenuOpen(false);
+  }, [workspace]);
+
+  const createProject = useCallback(() => {
+    if (workspace.projects.length >= MAX_PROJECTS) {
+      window.alert(`You can keep up to ${MAX_PROJECTS} projects in this browser.`);
       return;
     }
+    const name = window.prompt("Name this GPT project:", "Untitled GPT")?.trim();
+    if (!name) return;
+    const id = `project-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const timestamp = new Date().toISOString();
+    const nextProject = { id, name: name.slice(0, 100), createdAt: timestamp, updatedAt: timestamp, archived: false, data: {}, completedSteps: [], currentPage: 0, sidebarOpen: true };
+    const next = { ...workspace, activeProjectId: id, projects: [...workspace.projects, nextProject] };
+    persistWorkspace(next);
+    setWorkspace(next);
+    setCurrentPage(0); setCompletedSteps(new Set()); setSidebarOpen(true); setProjectMenuOpen(false);
+  }, [workspace]);
 
-    localStorage.setItem(
-      CREATOR_STATE_KEY,
-      JSON.stringify({
-        currentPage,
-        completedSteps: Array.from(completedSteps),
-        sidebarOpen,
-      } satisfies CreatorState),
-    );
-  }, [completedSteps, currentPage, sidebarOpen]);
+  const renameProject = useCallback(() => {
+    const name = window.prompt("Rename this GPT project:", project.name)?.trim();
+    if (!name) return;
+    const next = { ...workspace, projects: workspace.projects.map((item) => item.id === project.id ? { ...item, name: name.slice(0, 100) } : item) };
+    persistWorkspace(next); setWorkspace(next);
+  }, [project.id, project.name, workspace]);
+
+  const duplicateProject = useCallback(() => {
+    if (workspace.projects.length >= MAX_PROJECTS) { window.alert(`You can keep up to ${MAX_PROJECTS} projects in this browser.`); return; }
+    const copy = { ...project, id: `project-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, name: `${project.name} (copy)`, createdAt: new Date().toISOString(), data: JSON.parse(JSON.stringify(project.data)) };
+    const next = { ...workspace, activeProjectId: copy.id, projects: [...workspace.projects, copy] };
+    persistWorkspace(next); setWorkspace(next); setCurrentPage(isPageId(copy.currentPage) ? copy.currentPage : 0); setCompletedSteps(new Set(copy.completedSteps)); setProjectMenuOpen(false); setViewRevision((revision) => revision + 1);
+  }, [project, workspace]);
+
+  const deleteProject = useCallback(() => {
+    if (workspace.projects.length === 1) { window.alert("Keep at least one project. Create another project before deleting this one."); return; }
+    if (!window.confirm(`Delete “${project.name}”? This permanently removes this project from this browser.`)) return;
+    const remaining = workspace.projects.filter((item) => item.id !== project.id);
+    const next = { ...workspace, activeProjectId: remaining[0].id, projects: remaining };
+    persistWorkspace(next); setWorkspace(next);
+    const selected = remaining[0]; setCurrentPage(isPageId(selected.currentPage) ? selected.currentPage : 0); setCompletedSteps(new Set(selected.completedSteps)); setProjectMenuOpen(false); setViewRevision((revision) => revision + 1);
+  }, [project.name, project.id, workspace]);
+
+  const archiveProject = useCallback(() => {
+    const next = { ...workspace, projects: workspace.projects.map((item) => item.id === project.id ? { ...item, archived: !item.archived } : item) };
+    persistWorkspace(next); setWorkspace(next);
+  }, [project.id, workspace]);
+
+  const backup = useCallback(() => {
+    const blob = new Blob([exportWorkspace(workspace)], { type: "application/json" });
+    const url = URL.createObjectURL(blob); const anchor = document.createElement("a");
+    anchor.href = url; anchor.download = "custom-gpt-workspace.json"; anchor.click(); URL.revokeObjectURL(url);
+  }, [workspace]);
+
+  const restore = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]; event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = importWorkspace(String(reader.result), workspace);
+      if (result.error) { window.alert(result.error); return; }
+      if (result.workspace && window.confirm(`Import ${result.workspace.projects.length - workspace.projects.length} project(s)? Existing projects will remain unchanged.`)) {
+        persistWorkspace(result.workspace); setWorkspace(result.workspace);
+        const selected = activeProject(result.workspace); setCurrentPage(isPageId(selected.currentPage) ? selected.currentPage : 0); setCompletedSteps(new Set(selected.completedSteps)); setSidebarOpen(selected.sidebarOpen);
+        setViewRevision((revision) => revision + 1);
+      }
+    };
+    reader.readAsText(file);
+  }, [workspace]);
 
   const goTo = useCallback((page: PageId) => {
     setCurrentPage(page);
@@ -293,35 +348,12 @@ function CreatorShell() {
       return;
     }
 
-    const clearSavedWorkspace = () => {
-      const keysToRemove: string[] = [];
-      for (let index = 0; index < localStorage.length; index += 1) {
-        const key = localStorage.key(index);
-        if (key?.startsWith("cgpt-")) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach((key) => localStorage.removeItem(key));
-    };
-
-    try {
-      clearSavedWorkspace();
-    } catch {
-      // The in-memory shell state still resets when browser storage is unavailable.
-    }
-
-    skipNextPersistRef.current = true;
+    const nextProject = { ...project, data: {}, completedSteps: [], currentPage: 0, updatedAt: new Date().toISOString() };
+    const next = { ...workspace, projects: workspace.projects.map((item) => item.id === project.id ? nextProject : item) };
+    persistWorkspace(next); setWorkspace(next); setViewRevision((revision) => revision + 1);
     setCurrentPage(0);
     setCompletedSteps(new Set());
-    window.setTimeout(() => {
-      try {
-        clearSavedWorkspace();
-      } catch {
-        // Storage may remain unavailable, but the in-memory shell is already reset.
-      }
-      skipNextPersistRef.current = false;
-    }, 50);
-  }, []);
+  }, [project, workspace]);
 
   const goNext = useCallback(() => {
     if (typeof currentPage !== "number") return;
@@ -386,7 +418,7 @@ function CreatorShell() {
 
   return (
     <div className={`creator-app ${sidebarOpen ? "" : "creator-app--collapsed"}`}>
-      <aside className="creator-sidebar">
+       <aside className="creator-sidebar">
         <div className="creator-brand">
           <div className="creator-brand-mark">OKH</div>
           <div>
@@ -404,6 +436,23 @@ function CreatorShell() {
             <div className="creator-progress-value" style={{ width: `${progress}%` }} />
           </div>
           <div className="creator-progress-meta">{completedCount} of {BUILD_STEPS.length} steps complete</div>
+        </div>
+        <div style={{ padding: "0 1rem 1rem" }}>
+          <button type="button" onClick={() => setProjectMenuOpen((open) => !open)} aria-expanded={projectMenuOpen}
+            style={{ width: "100%", textAlign: "left", padding: "0.7rem", background: "var(--color-forge-panel)", color: "var(--color-forge-fg)", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", cursor: "pointer" }}>
+            <span style={{ display: "block", fontSize: "0.68rem", color: "var(--color-forge-muted-fg)", textTransform: "uppercase" }}>Current project</span>
+            <strong>{project.name}</strong> <span aria-hidden="true">⌄</span>
+          </button>
+          {projectMenuOpen && <div role="region" aria-label="Project manager" style={{ marginTop: "0.5rem", padding: "0.65rem", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", background: "var(--color-forge-panel)" }}>
+            <button type="button" onClick={createProject} style={managerBtn}>＋ New project</button>
+            {workspace.projects.map((item) => <button type="button" key={item.id} onClick={() => switchProject(item.id)} style={{ ...managerBtn, fontWeight: item.id === project.id ? 700 : 400, opacity: item.archived ? 0.6 : 1 }}>{item.name}{item.archived ? " · archived" : ""}</button>)}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.35rem", marginTop: "0.4rem" }}>
+              <button type="button" onClick={renameProject} style={managerBtn}>Rename</button><button type="button" onClick={duplicateProject} style={managerBtn}>Duplicate</button>
+              <button type="button" onClick={archiveProject} style={managerBtn}>{project.archived ? "Unarchive" : "Archive"}</button><button type="button" onClick={deleteProject} style={managerBtn}>Delete</button>
+            </div>
+            <button type="button" onClick={backup} style={managerBtn}>Export workspace backup</button>
+            <label style={{ ...managerBtn, display: "block", cursor: "pointer" }}>Import backup<input type="file" accept="application/json,.json" onChange={restore} style={{ display: "none" }} /></label>
+          </div>}
         </div>
 
         <nav className="creator-nav" aria-label="Creator workflow">
@@ -472,12 +521,17 @@ function CreatorShell() {
           <div className="creator-page-marker">
             {typeof currentPage === "number" ? `0${currentPage} / 0${BUILD_STEPS.length - 1}` : "BONUS"}
           </div>
-          {renderPage()}
+          {storageMessage !== "persisted" && <div role="alert" style={{ marginBottom: "1rem", padding: "0.75rem 1rem", border: "1px solid var(--color-forge-warn)", color: "var(--color-forge-fg)", borderRadius: "var(--radius-md)" }}>
+            {storageMessage === "unavailable" ? "Browser storage is unavailable. Your changes are only in memory and will be lost on refresh. Download a workspace backup now." : "Saved workspace data was malformed. A new recoverable project is open; import a backup if you have one."}
+          </div>}
+          <div key={`${project.id}-${viewRevision}`}>{renderPage()}</div>
         </div>
       </main>
     </div>
   );
 }
+
+const managerBtn: React.CSSProperties = { width: "100%", textAlign: "left", padding: "0.38rem", background: "transparent", color: "var(--color-forge-fg)", border: "0", borderRadius: "var(--radius-sm)", cursor: "pointer", fontSize: "0.75rem" };
 
 function App() {
   const previewPath = getPreviewPath();

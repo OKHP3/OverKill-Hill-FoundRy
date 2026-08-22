@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
-const creatorStateKey = "cgpt-creator-state";
+const workspaceKey = "cgpt-workspace";
 
 const buildStepLabels = [
   "Build Brief",
@@ -30,8 +30,12 @@ async function openExportPackage(page: Page) {
   await page.goto("./");
   await page.evaluate((key) => {
     localStorage.clear();
-    localStorage.setItem(key, "");
-  }, creatorStateKey);
+    const id = "project-test";
+    localStorage.setItem(key, JSON.stringify({ version: 1, activeProjectId: id, projects: [{
+      id, name: "Test GPT", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      archived: false, data: {}, completedSteps: [], currentPage: 0, sidebarOpen: true,
+    }] }));
+  }, workspaceKey);
   await page.reload();
   await page.getByRole("button", { name: "Export Package" }).click();
   await expect(page.locator("h1")).toContainText("Export Package");
@@ -65,7 +69,9 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
     2: "Prefer accurate, concise answers.",
   };
   await page.evaluate((savedInstructions) => {
-    localStorage.setItem("cgpt-step-2", JSON.stringify(savedInstructions));
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    workspace.projects[0].data["step-2"] = savedInstructions;
+    localStorage.setItem("cgpt-workspace", JSON.stringify(workspace));
   }, instructions);
   await page.reload();
 
@@ -116,9 +122,12 @@ test("keeps incomplete export warnings and controls in sync", async ({ page }) =
   await page.evaluate((key) => {
     localStorage.setItem(
       key,
-      JSON.stringify({ currentPage: "export", completedSteps: Array.from({ length: 9 }, (_, index) => index), sidebarOpen: true }),
+      JSON.stringify({ version: 1, activeProjectId: "project-test", projects: [{
+        id: "project-test", name: "Test GPT", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+        archived: false, data: {}, completedSteps: Array.from({ length: 9 }, (_, index) => index), currentPage: "export", sidebarOpen: true,
+      }] }),
     );
-  }, creatorStateKey);
+  }, workspaceKey);
   await page.reload();
 
   await expect(page.locator("h1")).toContainText("Export Package");

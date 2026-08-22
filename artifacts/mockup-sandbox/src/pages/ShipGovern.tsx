@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { VISIBILITY_OPTIONS, VERSION_SCHEME } from "../data/knowledge";
 import { EvidenceSelect, PhaseGate, type EvidenceStatus } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-8";
+const STORAGE_KEY = "step-8";
 
 interface ShipData {
   visibility: string;
@@ -24,7 +25,7 @@ const DEFAULT: ShipData = {
 };
 
 function load(): ShipData {
-  try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  try { return { ...DEFAULT, ...(readProjectValue(STORAGE_KEY) as Partial<ShipData> | undefined) }; }
   catch { return DEFAULT; }
 }
 
@@ -32,7 +33,7 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 
 export default function ShipGovern({ onPrev, onComplete }: Props) {
   const [data, setData] = useState<ShipData>(load);
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  useEffect(() => { writeProjectValue(STORAGE_KEY, data); }, [data]);
 
   // Step is complete once the owner name is filled in.
   const isComplete = data.ownerName.trim().length > 0 && data.releaseDecision !== "draft" && data.releaseEvidence.trim().length > 0 && data.evidenceStatus !== "unknown";

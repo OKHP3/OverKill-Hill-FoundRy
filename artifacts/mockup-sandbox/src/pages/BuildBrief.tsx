@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { EvidenceSelect, PhaseGate, type EvidenceStatus } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-0";
+const STORAGE_KEY = "step-0";
 
 interface BriefData {
   gptName: string;
@@ -25,7 +26,7 @@ const DEFAULT: BriefData = {
 };
 
 function load(): BriefData {
-  try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  try { return { ...DEFAULT, ...(readProjectValue(STORAGE_KEY) as Partial<BriefData> | undefined) }; }
   catch { return DEFAULT; }
 }
 
@@ -35,7 +36,7 @@ export default function BuildBrief({ onNext, onComplete }: Props) {
   const [data, setData] = useState<BriefData>(load);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    writeProjectValue(STORAGE_KEY, data);
   }, [data]);
 
   // Step is complete once the user has named their GPT.

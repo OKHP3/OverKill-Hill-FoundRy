@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { TEST_CATEGORIES, RED_TEAM_PROMPTS } from "../data/knowledge";
 import { EvidenceSelect, PhaseGate, type EvidenceStatus } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-7";
+const STORAGE_KEY = "step-7";
 
 interface TestCase {
   id: string;
@@ -15,7 +16,7 @@ interface TestCase {
 interface TestData { cases: TestCase[]; evidenceStatus: EvidenceStatus; retrievalVerification: string; toolFailureTest: string; ownerReview: string; }
 
 function load(): TestData {
-  try { return { cases: [], evidenceStatus: "unknown", retrievalVerification: "", toolFailureTest: "", ownerReview: "", ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  try { return { cases: [], evidenceStatus: "unknown", retrievalVerification: "", toolFailureTest: "", ownerReview: "", ...(readProjectValue(STORAGE_KEY) as Partial<TestData> | undefined) }; }
   catch { return { cases: [], evidenceStatus: "unknown", retrievalVerification: "", toolFailureTest: "", ownerReview: "" }; }
 }
 
@@ -23,7 +24,7 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 
 export default function TestMatrix({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<TestData>(load);
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  useEffect(() => { writeProjectValue(STORAGE_KEY, data); }, [data]);
 
   // Step is complete once the user has added at least one test case.
   const isComplete = data.cases.length >= 10 && !data.cases.some(c => c.result === "fail") && data.evidenceStatus !== "unknown" && data.ownerReview.trim().length > 0;

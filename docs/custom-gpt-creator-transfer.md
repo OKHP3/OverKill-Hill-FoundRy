@@ -28,7 +28,7 @@ The runnable app is served by the dedicated `artifacts/custom-gpt-creator/` web 
 | Animation | framer-motion | From catalog |
 | Package manager | pnpm (workspace) | `npm install` is blocked by a preinstall guard |
 | Navigation | `useState` in the canonical creator App.tsx | No react-router; no hash routing needed |
-| State persistence | localStorage | Keys `cgpt-step-0` through `cgpt-step-8` + `cgpt-creator-state` |
+| State persistence | localStorage | Versioned `cgpt-workspace` containing bounded named projects; legacy step keys are migrated on first load |
 
 **Do not** add react-router, a backend server, a database, or any OAuth flow. The SPA is intentionally client-only.
 
@@ -66,7 +66,7 @@ Fonts are loaded via `<link>` tags in `artifacts/custom-gpt-creator/index.html`.
 
 ### Navigation model
 
-`App.tsx` holds two state values: `currentPage` (number 0-8 for build steps, or string `"audit"` / `"compare"` / `"export"`) and `completedSteps` (a `Set<number>` hydrated from localStorage key `cgpt-creator-state`). There is no URL-based routing. `goNext()` marks the current step complete and advances. `goPrev()` goes back without marking complete. A collapsible sidebar lists steps and extra pages. A top progress bar shows step completion percentage.
+`App.tsx` holds the active project and `currentPage` (number 0-8 for build steps, or string `"audit"` / `"compare"` / `"export"`). Completion is hydrated from the active project. There is no URL-based routing. `goNext()` marks the current step complete and advances. `goPrev()` goes back without marking complete. A collapsible sidebar lists steps, extras, and named project lifecycle actions. A top progress bar shows step completion percentage.
 
 ### Page registry
 

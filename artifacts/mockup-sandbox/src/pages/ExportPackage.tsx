@@ -1,13 +1,10 @@
 import { useState, useCallback } from "react";
 import { BUILD_STEPS, INSTRUCTION_LAYERS } from "../data/knowledge";
-
-const CREATOR_STATE_KEY = "cgpt-creator-state";
+import { readProjectValue } from "../lib/creatorStorage";
 
 function loadCompletedSteps(): Set<number> {
   try {
-    const saved = JSON.parse(localStorage.getItem(CREATOR_STATE_KEY) || "{}") as {
-      completedSteps?: unknown;
-    };
+    const saved = (readProjectValue("creator-state") as { completedSteps?: unknown } | undefined) ?? {};
     return new Set(
       Array.isArray(saved.completedSteps)
         ? saved.completedSteps.filter(
@@ -21,23 +18,22 @@ function loadCompletedSteps(): Set<number> {
   }
 }
 
-function loadStep(key: string) {
-  try { return JSON.parse(localStorage.getItem(key) || "{}"); }
-  catch { return {}; }
+function loadStep(key: string): any {
+  try { return readProjectValue(key) ?? {}; } catch { return {}; }
 }
 
 function buildMarkdown(): string {
-  const brief = loadStep("cgpt-step-0");
-  const contract = loadStep("cgpt-step-1");
-  const layerData = loadStep("cgpt-step-2");
-  const knowledge = loadStep("cgpt-step-3");
-  const caps = loadStep("cgpt-step-4");
-  const capsRationale = loadStep("cgpt-step-4-rationale");
-  const actions = loadStep("cgpt-step-5");
-  const savedStarters = loadStep("cgpt-step-6");
+  const brief = loadStep("step-0");
+  const contract = loadStep("step-1");
+  const layerData = loadStep("step-2");
+  const knowledge = loadStep("step-3");
+  const caps = loadStep("step-4");
+  const capsRationale = loadStep("step-4-rationale");
+  const actions = loadStep("step-5");
+  const savedStarters = loadStep("step-6");
   const starters: string[] = Array.isArray(savedStarters) ? savedStarters : [];
-  const tests = loadStep("cgpt-step-7");
-  const ship = loadStep("cgpt-step-8");
+  const tests = loadStep("step-7");
+  const ship = loadStep("step-8");
   const evidenceSections = [
     ["Build Brief evidence", brief.evidenceStatus, brief.evidenceRegister],
     ["Knowledge evidence", knowledge.evidenceStatus, [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n")],
@@ -173,7 +169,7 @@ ${ship.maintenanceCadence || "(not defined)"}
 ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${status || "unknown"}\n${notes || "(unknown - verification needed)"}`).join("\n\n")}
 
 ### Change Ledger
-${["cgpt-step-2-change", "cgpt-step-3-change", "cgpt-step-4-change", "cgpt-step-5-change"].map((key) => {
+  ${["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map((key) => {
     const change = loadStep(key);
     return `- **${key}:** ${change.reason || "(no change reason recorded)"} | Expected: ${change.expectedEffect || "unknown"} | Tests: ${change.affectedTests || "unknown"} | Observed: ${change.observedResult || "unknown"} | Rollback: ${change.rollbackDecision || "unknown"}`;
   }).join("\n")}
@@ -195,7 +191,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const fullMarkdown = buildMarkdown();
 
   const instructionsOnly = (() => {
-    const layerData = loadStep("cgpt-step-2");
+    const layerData = loadStep("step-2");
     return INSTRUCTION_LAYERS
       .map(l => layerData[l.id] ? `## ${l.label}\n${layerData[l.id]}` : "")
       .filter(Boolean)
@@ -203,8 +199,8 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   })();
 
   const content = format === "markdown" ? fullMarkdown : instructionsOnly;
-  const ship = loadStep("cgpt-step-8");
-  const tests = loadStep("cgpt-step-7");
+  const ship = loadStep("step-8");
+  const tests = loadStep("step-7");
   const maturity = ship.releaseDecision === "release-ready" && ship.releaseEvidence && tests.evidenceStatus !== "unknown"
     ? "Release-ready (owner-declared)"
     : tests.evidenceStatus !== "unknown" ? "Validated evidence recorded" : "Draft / evidence incomplete";
@@ -215,7 +211,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   }, [content]);
 
   const download = () => {
-    const brief = loadStep("cgpt-step-0");
+    const brief = loadStep("step-0");
     const name = (brief.gptName || "custom-gpt").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { CAPABILITIES } from "../data/knowledge";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord } from "../components/PhaseGate";
 
-const STORAGE_KEY = "cgpt-step-4";
+const STORAGE_KEY = "step-4";
 type CapabilityRisk = "low" | "medium" | "high";
 
 function load(): Record<string, boolean> {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+  try { return (readProjectValue(STORAGE_KEY) as Record<string, boolean> | undefined) ?? {}; }
   catch { return {}; }
 }
 
@@ -20,15 +21,15 @@ export default function Capabilities({ onNext, onPrev, onComplete }: Props) {
     return initial;
   });
   const [rationale, setRationale] = useState<Record<string, string>>(() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY + "-rationale") || "{}"); }
+    try { return (readProjectValue(STORAGE_KEY + "-rationale") as Record<string, string> | undefined) ?? {}; }
     catch { return {}; }
   });
-  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; } });
+  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...(readProjectValue(STORAGE_KEY + "-change") as Partial<ChangeRecord> | undefined) }; } catch { return EMPTY_CHANGE_RECORD; } });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(caps));
-    localStorage.setItem(STORAGE_KEY + "-rationale", JSON.stringify(rationale));
-    localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change));
+    writeProjectValue(STORAGE_KEY, caps);
+    writeProjectValue(STORAGE_KEY + "-rationale", rationale);
+    writeProjectValue(STORAGE_KEY + "-change", change);
   }, [caps, rationale, change]);
 
   // Step is complete once the user has reviewed the capabilities page (caps are initialized on mount).

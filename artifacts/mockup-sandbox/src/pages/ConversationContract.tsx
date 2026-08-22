@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { PhaseGate } from "../components/PhaseGate";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
-const STORAGE_KEY = "cgpt-step-1";
+const STORAGE_KEY = "step-1";
 
 interface ContractData {
   inputs: string;
@@ -13,7 +14,7 @@ interface ContractData {
 const DEFAULT: ContractData = { inputs: "", outputs: "", topTasks: "", catastrophicMistakes: "" };
 
 function load(): ContractData {
-  try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  try { return { ...DEFAULT, ...(readProjectValue(STORAGE_KEY) as Partial<ContractData> | undefined) }; }
   catch { return DEFAULT; }
 }
 
@@ -21,7 +22,7 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 
 export default function ConversationContract({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<ContractData>(load);
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  useEffect(() => { writeProjectValue(STORAGE_KEY, data); }, [data]);
 
   // Step is complete once at least one field has content.
   const isComplete = Object.values(data).some(v => v.trim().length > 0);
