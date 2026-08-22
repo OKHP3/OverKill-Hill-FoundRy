@@ -1,0 +1,112 @@
+{
+  "record_id": "maturity-baseline-v0.1",
+  "schema_version": "1.0",
+  "review_protocol": "equilibrium-v1",
+  "review_mode": "five-way",
+  "evaluation_status": "analytical",
+  "review_date": "2026-08-22",
+  "artifact": {
+    "repository": "OKHP3/OverKill-Hill-FoundRy",
+    "revision": "6d3588a7adff89b72418ef6034127aa99f4aa17a",
+    "scope": [
+      "FoundRy relay governance",
+      "ReFolDec capability scaffold",
+      "private Custom GPT Creator workflow",
+      "builder and equilibrium review skill contracts",
+      "public publication boundary"
+    ]
+  },
+  "decision_question": "What maturity and release decision is justified by the current repository evidence without treating documentation, smoke tests, or reviewer agreement as proof of user outcome?",
+  "acceptance_criteria": [
+    "Identity and scope are unambiguous",
+    "Material claims distinguish evidence classes and unknowns",
+    "The private creator is usable with explicit limits",
+    "ReFolDec executable capability and public readiness are evidenced before graduation",
+    "Public boundary and platform-fact maintenance are reviewable",
+    "Release decisions disclose correlated context and missing holdout evidence"
+  ],
+  "validation": [
+    {"command": "pnpm run typecheck", "status": "pass"},
+    {"command": "pnpm --filter @workspace/mockup-sandbox run test:platform-comparison", "status": "pass", "tests": 6}
+  ],
+  "claim_ledger": [
+    {"claim_id": "CLM-01", "claim": "FoundRy is the private governance relay and ReFolDec is a hosted capability.", "claim_type": "fact", "evidence_ids": ["AGENTS.md", "README.md", "manifest.yaml"], "evidence_class": "confirmed", "status": "supported", "consequence": "Identity or visibility may be misrepresented.", "next_test": "Review a generated package for identity leakage."},
+    {"claim_id": "CLM-02", "claim": "FoundRy documents relay hierarchy, child responsibilities, naming rules, and required files.", "claim_type": "fact", "evidence_ids": ["AGENTS.md", "docs/governance-model.md"], "evidence_class": "confirmed", "status": "supported", "consequence": "Child repositories may drift.", "next_test": "Audit representative child repositories."},
+    {"claim_id": "CLM-03", "claim": "ReFolDec defines fold, unfold, refold, and a maturity vocabulary.", "claim_type": "design_choice", "evidence_ids": ["docs/specification.md", "docs/roadmap.md"], "evidence_class": "confirmed", "status": "supported", "consequence": "Incompatible meanings may spread.", "next_test": "Process one fixture through each operation."},
+    {"claim_id": "CLM-04", "claim": "The ReFolDec schema constrains a minimum artifact envelope.", "claim_type": "fact", "evidence_ids": ["schemas/refoldec-artifact-schema.json"], "evidence_class": "confirmed", "status": "provisional", "consequence": "Invalid artifacts may appear mature.", "next_test": "Add required-field, provenance, and boundary fixtures."},
+    {"claim_id": "CLM-05", "claim": "ReFolDec has an executable capture, validation, and transformation pipeline.", "claim_type": "hypothesis", "evidence_ids": ["docs/roadmap.md"], "evidence_class": "unknown", "status": "blocked", "consequence": "Public graduation could ship a concept rather than a capability.", "next_test": "Run a raw-to-validated-refolded fixture."},
+    {"claim_id": "CLM-06", "claim": "The creator is browser-only, localStorage-backed, and supports manual Markdown export.", "claim_type": "fact", "evidence_ids": ["docs/custom-gpt-creator-transfer.md", "artifacts/custom-gpt-creator/src/App.tsx", "artifacts/mockup-sandbox/src/pages/ExportPackage.tsx"], "evidence_class": "confirmed", "status": "supported", "consequence": "Users may expect durable or collaborative storage.", "next_test": "Complete a fresh-browser export walkthrough."},
+    {"claim_id": "CLM-07", "claim": "The private creator is usable for one project with explicit browser-local limits.", "claim_type": "hypothesis", "evidence_ids": ["artifacts/mockup-sandbox/src/App.tsx", "artifacts/mockup-sandbox/src/pages/ExportPackage.tsx"], "evidence_class": "inferred", "status": "provisional", "consequence": "Users may lose work or misunderstand completion.", "next_test": "Run an unseen representative builder task."},
+    {"claim_id": "CLM-08", "claim": "The dedicated creator reuses canonical pages, but proxy route behavior is not fully proven.", "claim_type": "implementation_claim", "evidence_ids": ["artifacts/custom-gpt-creator/src/App.tsx", "docs/custom-gpt-creator-transfer.md"], "evidence_class": "confirmed", "status": "provisional", "consequence": "Documented routes may fail or diverge in preview.", "next_test": "Exercise every documented route through the proxy."},
+    {"claim_id": "CLM-09", "claim": "Governance controls define a private/public boundary and prohibit automatic sensitive-material graduation.", "claim_type": "policy", "evidence_ids": ["AGENTS.md", "docs/publication-boundary.md"], "evidence_class": "confirmed", "status": "supported", "consequence": "Private sources could leak.", "next_test": "Run an adversarial public-readiness fixture."},
+    {"claim_id": "CLM-10", "claim": "Platform-comparison checks detect stale, malformed, undated, or unsafe fact entries.", "claim_type": "fact", "evidence_ids": ["artifacts/mockup-sandbox/scripts/platform-comparison.smoke.test.ts"], "evidence_class": "confirmed", "status": "supported", "consequence": "Stale guidance may go unnoticed.", "next_test": "Verify one current official source end-to-end."},
+    {"claim_id": "CLM-11", "claim": "Current OpenAI Builder limits and publication requirements are verified for this baseline.", "claim_type": "platform_fact", "evidence_ids": [".agents/skills/okhp3-custom-gpt-builder/SKILL.md"], "evidence_class": "unknown", "status": "blocked", "consequence": "Creator guidance may be obsolete.", "next_test": "Capture dated official citations for volatile claims."},
+    {"claim_id": "CLM-12", "claim": "Repository checks and reviewer agreement demonstrate reliable user outcomes.", "claim_type": "outcome_claim", "evidence_ids": ["validation", "independence"], "evidence_class": "unknown", "status": "disputed", "consequence": "Implementation confidence may be mistaken for maturity.", "next_test": "Run a protected unseen behavioral holdout."}
+  ],
+  "independence": {
+    "reviewer_contexts_separated": false,
+    "shared_model_or_source_limits": [
+      "All five passes are analytical role simulations over one repository context and frozen source set.",
+      "No external agent execution, specialist reviewer, production telemetry, or unseen behavioral holdout was used.",
+      "Agreement is correlated evidence and is not treated as independent proof."
+    ]
+  },
+  "initial_reviews": [
+    {"role": "evidence", "status": "analytical", "judgment": "confirmed documented boundaries and local implementation evidence; blocked unsupported capability and platform claims"},
+    {"role": "outcome", "status": "analytical", "judgment": "creator usable with limits; ReFolDec user outcome unproven"},
+    {"role": "safety-portability", "status": "analytical", "judgment": "private boundary is explicit; portability, leakage, and local-state risks remain"},
+    {"role": "disruptor", "status": "analytical", "judgment": "five falsifiable counterexamples remain untested"},
+    {"role": "negotiator", "status": "analytical", "judgment": "approve private relay, approve creator with limits, defer public ReFolDec"}
+  ],
+  "concordance": "material-concordance-with-correlated-context",
+  "disruptor": {
+    "triggered": true,
+    "authority": "exploratory-analytical",
+    "falsification_hypotheses": [
+      "fresh-browser or project-context changes can cause loss or ambiguity",
+      "export can appear complete while required phases are incomplete",
+      "private-source material can leak into a public package",
+      "platform facts can drift while remaining syntactically valid",
+      "schema-valid ReFolDec objects can be mistaken for validated transformations"
+    ],
+    "test_results": [
+      {"hypothesis": "all five", "result": "not-run-live; surviving objections"}
+    ]
+  },
+  "negotiator": {
+    "triggered": true,
+    "decision": "approve-with-limits",
+    "decisive_evidence": [
+      "FoundRy identity and boundary are explicitly documented",
+      "creator typecheck and selected smoke tests pass",
+      "ReFolDec pipeline, holdout, and current platform source evidence are missing"
+    ],
+    "unresolved_items": [
+      "machine-checkable maturity and provenance",
+      "executable ReFolDec capture and transformation",
+      "evidence-bearing creator phase gates",
+      "governance enforcement at public artifact boundaries",
+      "fresh-browser and multi-project safety",
+      "dated official platform-fact verification",
+      "unseen behavioral holdout"
+    ]
+  },
+  "release_decisions": {
+    "foundry_relay": "approve",
+    "custom_gpt_creator_private": "approve-with-limits",
+    "refoldec_public_graduation": "defer-for-evidence"
+  },
+  "limitations": [
+    "No live agent execution or unseen holdout has been recorded.",
+    "No current official OpenAI Builder documentation was retrieved for this baseline.",
+    "Local validation does not prove user outcomes, security, accessibility, or public readiness."
+  ],
+  "follow_up": [
+    {"gap": "machine-checkable maturity and provenance", "owner_role": "schema/validation maintainer", "priority": "P0", "decisive_test": "Validate positive, invalid, stale, private-source, and public-safe fixtures.", "dependency": "Baseline claim ledger", "release_consequence": "ReFolDec cannot claim validated or canonical maturity; public graduation blocked."},
+    {"gap": "executable ReFolDec capture and transformation", "owner_role": "ReFolDec capability maintainer", "priority": "P0", "decisive_test": "Run one raw-to-structured-to-refolded fixture with expected outputs and failures.", "dependency": "Machine-checkable artifact model", "release_consequence": "Public ReFolDec graduation blocked."},
+    {"gap": "evidence-driven creator phase gates", "owner_role": "creator workflow maintainer", "priority": "P1", "decisive_test": "Verify deterministic outcomes for incomplete and complete fixtures.", "dependency": "Creator acceptance criteria and artifact validation", "release_consequence": "Creator remains private and limited."},
+    {"gap": "FoundRy governance enforcement", "owner_role": "governance steward", "priority": "P1", "decisive_test": "Audit identity, visibility, provenance, and public-boundary violations.", "dependency": "Machine-checkable maturity and publication fixtures", "release_consequence": "Manual public review remains required."},
+    {"gap": "unseen behavioral holdout", "owner_role": "evaluation owner", "priority": "P0", "decisive_test": "Run a protected task set not used to design the workflow.", "dependency": "Stable acceptance criteria and fixtures", "release_consequence": "No outcome, reliability, or uplift claim."}
+  ],
+  "refresh_trigger": "Refresh on material mitigation, platform change, public artifact proposal, or by 2026-11-22."
+}
