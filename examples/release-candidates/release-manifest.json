@@ -1,0 +1,25 @@
+{
+  "name": "refoldec",
+  "version": "0.1.0",
+  "status": "release-candidate",
+  "target_public_surface": {
+    "name": "OKHP3/refoldec",
+    "kind": "separate-public-repository",
+    "owner": "repository-owner",
+    "approval_status": "pending-owner-approval",
+    "scope": "Public ReFolDec specification, schema, validator, examples, skill package, provenance, and review records."
+  },
+  "source_boundary": {
+    "allowed": ["public standards", "synthetic examples", "publicly licensed package content"],
+    "excluded": ["restricted workspace services", "unpublished repository material", "client material", "employer material"]
+  },
+  "deployment": {
+    "automatic": false,
+    "required_after": ["owner approval", "source audit pass", "license review", "equilibrium sign-off"]
+  },
+  "claims": {
+    "canonical": false,
+    "stable": false,
+    "production_ready": false
+  }
+}

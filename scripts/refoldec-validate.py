@@ -24,6 +24,16 @@ REQUIRED = ("id", "title", "artifact_type", "maturity_state", "source_context",
             "publication", "freshness", "evidence")
 ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 EVIDENCE_STATES = ("confirmed", "inferred", "unknown")
+# Release shelves also contain support documents (provenance, evaluation
+# records, and licenses) that are not ReFolDec artifact documents. Keep the
+# validator strict for artifact-shaped files while allowing mixed packages.
+PACKAGE_SUPPORT_FILES = {
+    "README.md", "LICENSE", "ATTRIBUTION.md", "CHANGELOG.md",
+    "equilibrium-decision.md", "release-checklist.md", "rollback-plan.md",
+    "specification.md", "schema.json", "release-manifest.json",
+    "provenance.json", "evals.json", "maintenance.md", "process-map.md",
+    "SKILL.md",
+}
 
 
 class ArtifactError(ValueError):
@@ -262,7 +272,11 @@ def main() -> int:
     for raw in args.paths:
         path = pathlib.Path(raw)
         if path.is_dir():
-            paths.extend(sorted(p for p in path.rglob("*") if p.suffix.lower() in {".json", ".yaml", ".yml", ".md"}))
+            paths.extend(sorted(
+                p for p in path.rglob("*")
+                if p.suffix.lower() in {".json", ".yaml", ".yml", ".md"}
+                and p.name not in PACKAGE_SUPPORT_FILES
+            ))
         elif path.is_file():
             paths.append(path)
         else:

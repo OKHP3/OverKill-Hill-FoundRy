@@ -7,3 +7,4 @@
 - [ReFolDec capture contract](refoldec-capture-contract.md) — process transformations retain stable IDs, evidence states, rejected material, recovery, and human confirmation.
 - [Skill package release gate](skill-package-release-gate.md) — ReFolDec skill packages require validated confirmed public lineage, explicit safety contracts, and an unseen holdout.
 - [Governance audit contract](governance-audit-contract.md) — FoundRy checks stay dependency-free, schema-aware, actionable, and read-only.
+- [Public graduation package](public-graduation-package.md) — ReFolDec candidates are mixed release shelves with explicit owner approval and deployment gates.

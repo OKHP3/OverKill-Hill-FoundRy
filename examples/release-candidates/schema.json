@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReFolDec public artifact",
+  "type": "object",
+  "required": ["id", "title", "artifact_type", "maturity_state", "source_context", "lineage", "publication", "freshness", "evidence"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1},
+    "artifact_type": {"enum": ["signal", "thought", "note", "concept", "outline", "process", "artifact", "system", "canon"]},
+    "maturity_state": {"enum": ["raw", "captured", "structured", "modeled", "validated", "published", "canonical"]},
+    "source_context": {"type": "string", "minLength": 1},
+    "folded_outputs": {"type": "array", "items": {"type": "string"}},
+    "unfolded_primitives": {"type": "array", "items": {"type": "string"}},
+    "reuse_targets": {"type": "array", "items": {"type": "string"}},
+    "lineage": {"type": "object", "required": ["source_ids", "folded_output_ids", "unfolded_primitive_ids"]},
+    "publication": {"type": "object", "required": ["visibility", "source_access", "approved_surface"]},
+    "freshness": {"enum": ["current", "stale", "unknown"]},
+    "evidence": {"type": "object", "required": ["confirmed", "inferred", "unknown"]}
+  },
+  "additionalProperties": true
+}

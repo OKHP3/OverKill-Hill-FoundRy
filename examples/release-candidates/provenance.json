@@ -1,0 +1,21 @@
+{
+  "package": "refoldec",
+  "version": "0.1.0",
+  "source": {
+    "kind": "synthetic-public-example",
+    "ids": ["public-example-001"],
+    "access": "public",
+    "private_dependency": false
+  },
+  "reviews": {
+    "source_audit": "scripts/public-graduation-audit.py",
+    "equilibrium_review": "equilibrium-decision.md",
+    "status": "structural-review-complete",
+    "owner_approval": "pending"
+  },
+  "claims": {
+    "canonical": false,
+    "stable": false,
+    "production_ready": false
+  }
+}

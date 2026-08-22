@@ -1,0 +1,21 @@
+{
+  "id": "public-process-example",
+  "title": "A small evidence-linked review",
+  "artifact_type": "process",
+  "maturity_state": "validated",
+  "source_context": "Synthetic public example created to demonstrate the contract.",
+  "folded_outputs": [],
+  "unfolded_primitives": [],
+  "reuse_targets": ["documentation", "agent-skill"],
+  "lineage": {"source_ids": [], "folded_output_ids": [], "unfolded_primitive_ids": []},
+  "publication": {
+    "visibility": "public",
+    "source_access": "public",
+    "approved_surface": true,
+    "manifest_complete": true,
+    "readme_externalized": true,
+    "reviews": {"pii_review": true, "source_review": true, "license_review": true}
+  },
+  "freshness": "current",
+  "evidence": {"confirmed": ["structure"], "inferred": ["reuse_targets"], "unknown": ["external_performance"]}
+}
