@@ -38,9 +38,22 @@ The ladder is not strictly linear. Artifacts can jump levels, loop backward, for
 
 ---
 
-## 3. Minimum artifact fields
+## 3. Executable artifact contract
 
-A ReFolDec-compatible artifact should identify:
+The executable minimum contract is implemented by
+`scripts/refoldec-validate.py` and described by
+`schemas/refoldec-artifact-schema.json`. Run it against one or more files or
+directories:
+
+```bash
+python3 scripts/refoldec-validate.py examples/refoldec-fixtures/valid
+```
+
+The validator accepts JSON, YAML, and Markdown with YAML front matter. It
+fails with actionable `FAIL <path>: <reason>` messages; it never modifies
+source material or invents missing provenance.
+
+Every artifact must identify:
 
 - `id` — stable artifact identifier;
 - `title` — human-readable name;
@@ -50,6 +63,29 @@ A ReFolDec-compatible artifact should identify:
 - `folded_outputs` — artifacts produced from this artifact;
 - `unfolded_primitives` — primitives extracted from this artifact;
 - `reuse_targets` — ways this artifact can be reused.
+- `lineage` — `source_ids`, `folded_output_ids`, and
+  `unfolded_primitive_ids`; the latter two must mirror the corresponding
+  top-level arrays;
+- `publication` — `visibility`, `source_access`, and `approved_surface`;
+- `freshness` — `current`, `stale`, or `unknown`;
+- `evidence` — arrays of field names classified as `confirmed`, `inferred`,
+  or `unknown`.
+
+IDs are lowercase kebab-case and must be unique within a validation run.
+Lineage references must resolve to artifacts in that run. Folded outputs and
+unfolded primitives must point back to their source through
+`lineage.source_ids`, proving that both directions remain connected.
+
+An artifact marked `published` or `canonical` must be public. Public artifacts
+must declare `source_access: public` and `approved_surface: true`; a private
+or mixed source is therefore a hard failure, even if a public link is present.
+Stale artifacts fail validation. Unknown evidence is reported as unknown and
+is not silently promoted to confirmed.
+
+The contract is deliberately not a general-purpose YAML parser or workflow
+engine. The validator checks structural metadata and declared relationships,
+not whether a claim is true, whether a source is legally publishable, or
+whether a privacy/security review is adequate. Those reviews remain required.
 
 ---
 

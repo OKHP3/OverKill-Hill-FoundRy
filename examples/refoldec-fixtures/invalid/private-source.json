@@ -1,0 +1,15 @@
+{
+  "id": "private-source",
+  "title": "Private source presented as public",
+  "artifact_type": "artifact",
+  "maturity_state": "published",
+  "source_context": "Private Notion page",
+  "folded_outputs": [],
+  "unfolded_primitives": [],
+  "reuse_targets": [],
+  "lineage": {"source_ids": [], "folded_output_ids": [], "unfolded_primitive_ids": []},
+  "publication": {"visibility": "public", "source_access": "private", "approved_surface": true},
+  "freshness": "current",
+  "evidence": {"confirmed": ["id", "title", "artifact_type", "maturity_state", "folded_outputs", "unfolded_primitives", "reuse_targets", "lineage", "publication", "freshness", "evidence"], "inferred": [], "unknown": ["source_context"]},
+  "contradictions": []
+}

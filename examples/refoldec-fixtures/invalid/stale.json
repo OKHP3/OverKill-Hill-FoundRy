@@ -1,0 +1,15 @@
+{
+  "id": "stale",
+  "title": "Stale artifact",
+  "artifact_type": "note",
+  "maturity_state": "captured",
+  "source_context": "Unreviewed capture",
+  "folded_outputs": [],
+  "unfolded_primitives": [],
+  "reuse_targets": [],
+  "lineage": {"source_ids": [], "folded_output_ids": [], "unfolded_primitive_ids": []},
+  "publication": {"visibility": "private", "source_access": "private", "approved_surface": false},
+  "freshness": "stale",
+  "evidence": {"confirmed": ["id", "title", "artifact_type", "maturity_state", "source_context", "folded_outputs", "unfolded_primitives", "reuse_targets", "lineage", "publication", "evidence"], "inferred": [], "unknown":["freshness"]},
+  "contradictions": []
+}

@@ -16,12 +16,23 @@
 - Add example transformations for fiction, nonfiction, process documentation, and Agent Skills.
 - Add diagrams for fold/unfold/refold loops.
 
+## v0.2.1 — Machine-checkable contract
+
+- Validate JSON, YAML, and Markdown front matter against the minimum fields.
+- Enforce stable IDs, resolvable bidirectional lineage, freshness, and
+  public/private publication boundaries.
+- Report confirmed, inferred, and unknown evidence without filling gaps.
+- Run valid examples, release candidates, and expected-failure fixtures in CI.
+- Document that structural validation does not replace legal, privacy, or
+  security review.
+
 ## v0.3 — Process-capture pipeline
 
 - Add templates for process-capture sessions.
 - Add examples showing raw meeting notes folded into process documentation.
 - Add xPMN/BPMN-for-Mermaid integration notes.
-- Add validator script for artifact front matter.
+- Add process-capture templates and examples; use the machine-checkable
+  validator from the v0.2.1 contract for their front matter.
 
 ## v0.4 — Agent Skill packaging
 

@@ -30,3 +30,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm run typecheck
+
+      - name: Validate ReFolDec examples
+        run: python3 scripts/refoldec-validate.py examples/refoldec-fixtures/valid examples/raw-thought-to-artifact.md examples/release-candidates
+
+      - name: Test ReFolDec failure fixtures
+        run: python3 tests/test-refoldec-validator.py

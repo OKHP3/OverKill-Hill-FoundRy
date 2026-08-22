@@ -1,0 +1,27 @@
+{
+  "id": "folded-note",
+  "title": "Captured note",
+  "artifact_type": "note",
+  "maturity_state": "captured",
+  "source_context": "Workshop capture, 2026-08-22",
+  "folded_outputs": ["refoldec-concept"],
+  "unfolded_primitives": [],
+  "reuse_targets": ["concept-seed"],
+  "lineage": {
+    "source_ids": [],
+    "folded_output_ids": ["refoldec-concept"],
+    "unfolded_primitive_ids": []
+  },
+  "publication": {
+    "visibility": "private",
+    "source_access": "private",
+    "approved_surface": false
+  },
+  "freshness": "current",
+  "evidence": {
+    "confirmed": ["id", "title", "artifact_type", "maturity_state", "source_context", "folded_outputs", "unfolded_primitives", "reuse_targets", "lineage", "publication", "freshness", "evidence"],
+    "inferred": [],
+    "unknown": []
+  },
+  "contradictions": []
+}

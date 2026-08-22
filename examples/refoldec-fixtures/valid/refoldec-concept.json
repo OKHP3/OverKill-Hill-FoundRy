@@ -1,0 +1,27 @@
+{
+  "id": "refoldec-concept",
+  "title": "ReFolDec concept",
+  "artifact_type": "concept",
+  "maturity_state": "validated",
+  "source_context": "Folded from captured workshop note",
+  "folded_outputs": [],
+    "unfolded_primitives": [],
+  "reuse_targets": ["specification", "agent-skill"],
+  "lineage": {
+    "source_ids": ["folded-note"],
+    "folded_output_ids": [],
+    "unfolded_primitive_ids": []
+  },
+  "publication": {
+    "visibility": "private",
+    "source_access": "private",
+    "approved_surface": false
+  },
+  "freshness": "current",
+  "evidence": {
+    "confirmed": ["id", "title", "artifact_type", "maturity_state", "source_context", "folded_outputs", "unfolded_primitives", "lineage", "publication", "freshness", "evidence"],
+    "inferred": ["reuse_targets"],
+    "unknown": []
+  },
+  "contradictions": []
+}

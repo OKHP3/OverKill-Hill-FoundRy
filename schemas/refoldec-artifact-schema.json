@@ -3,15 +3,12 @@
   "$id": "https://github.com/OKHP3/refoldec/schemas/refoldec-artifact.schema.json",
   "title": "ReFolDec Artifact",
   "type": "object",
-  "required": [
-    "id",
-    "title",
-    "artifact_type",
-    "maturity_state"
-  ],
+  "description": "Executable minimum contract is enforced by scripts/refoldec-validate.py; JSON Schema describes the document shape.",
+  "required": ["id", "title", "artifact_type", "maturity_state", "source_context", "folded_outputs", "unfolded_primitives", "reuse_targets", "lineage", "publication", "freshness", "evidence"],
   "properties": {
     "id": {
       "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
       "description": "Stable artifact identifier."
     },
     "title": {
@@ -44,9 +41,7 @@
         "canonical"
       ]
     },
-    "source_context": {
-      "type": "string"
-    },
+    "source_context": { "type": "string", "minLength": 1 },
     "folded_outputs": {
       "type": "array",
       "items": {
@@ -65,6 +60,38 @@
         "type": "string"
       }
     },
+    "lineage": {
+      "type": "object",
+      "required": ["source_ids", "folded_output_ids", "unfolded_primitive_ids"],
+      "properties": {
+        "source_ids": { "type": "array", "items": { "type": "string" } },
+        "folded_output_ids": { "type": "array", "items": { "type": "string" } },
+        "unfolded_primitive_ids": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "publication": {
+      "type": "object",
+      "required": ["visibility", "source_access", "approved_surface"],
+      "properties": {
+        "visibility": { "enum": ["private", "public"] },
+        "source_access": { "enum": ["public", "mixed", "private", "unknown"] },
+        "approved_surface": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "freshness": { "enum": ["current", "stale", "unknown"] },
+    "evidence": {
+      "type": "object",
+      "required": ["confirmed", "inferred", "unknown"],
+      "properties": {
+        "confirmed": { "type": "array", "items": { "type": "string" } },
+        "inferred": { "type": "array", "items": { "type": "string" } },
+        "unknown": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "contradictions": { "type": "array", "items": { "type": "string" } },
     "public_links": {
       "type": "array",
       "items": {

@@ -1,0 +1,19 @@
+{
+  "id": "refoldec-demo",
+  "title": "ReFolDec public contract demo",
+  "artifact_type": "artifact",
+  "maturity_state": "published",
+  "source_context": "Publicly reviewed example",
+  "folded_outputs": [],
+  "unfolded_primitives": [],
+  "reuse_targets": ["documentation"],
+  "lineage": {"source_ids": [], "folded_output_ids": [], "unfolded_primitive_ids": []},
+  "publication": {"visibility": "public", "source_access": "public", "approved_surface": true},
+  "freshness": "current",
+  "evidence": {
+    "confirmed": ["id", "title", "artifact_type", "maturity_state", "source_context", "folded_outputs", "unfolded_primitives", "reuse_targets", "lineage", "publication", "freshness", "evidence"],
+    "inferred": [],
+    "unknown": []
+  },
+  "contradictions": []
+}
