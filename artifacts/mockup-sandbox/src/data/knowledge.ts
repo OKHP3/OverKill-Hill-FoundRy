@@ -17,6 +17,18 @@ export const BUILD_STEPS = [
   { id: 8, label: "Ship & Govern",         icon: "🚀", short: "Ship"         },
 ] as const;
 
+export const PHASE_GATES = [
+  { input: "A named job, audience, boundaries, and acceptance checks.", output: "A scoped Build Brief.", exitGate: "Primary user, job, boundary, and measurable checks are confirmed.", recovery: "Return to the brief; mark assumptions unknown instead of filling gaps.", evidence: "Owner confirmation and source register for platform or policy claims." },
+  { input: "Build Brief decisions and constraints.", output: "Conversation input/output contract.", exitGate: "Priorities and catastrophic mistakes are explicit; contradictions are resolved.", recovery: "Return to the brief or record the unresolved contradiction.", evidence: "Confirmed contract decisions and rationale for tradeoffs." },
+  { input: "Contract and boundary decisions.", output: "Layered instruction stack.", exitGate: "All required rules have an observable test and no unresolved contradiction.", recovery: "Reopen the affected layer and record a rollback decision.", evidence: "Change record plus contradiction review." },
+  { input: "Allowed sources and knowledge policy.", output: "Scoped file manifest and routing policy.", exitGate: "Retrieval, conflicts, stale data, and injection boundaries have checks.", recovery: "Quarantine or defer the file; keep rejected material and reason.", evidence: "Retrieval observations, conflict decision, and source provenance." },
+  { input: "Job requirements and contract.", output: "Smallest justified capability set.", exitGate: "Every enabled tool has purpose, boundary, fallback, and owner.", recovery: "Disable the capability and return to tool policy.", evidence: "Capability rationale and failure test reference." },
+  { input: "Capability plan and integration need.", output: "Actions or Apps plan, never an unverified promise.", exitGate: "Failure behavior, fallback owner, auth boundary, and verification plan are recorded.", recovery: "Use no integration or defer until the owner verifies the dependency.", evidence: "Schema or app notes, failure test, and owner confirmation." },
+  { input: "Conversation contract and top tasks.", output: "Concrete workflow starters.", exitGate: "At least three distinct, task-shaped starters pass the quality checks.", recovery: "Replace generic starters using the contract's ranked tasks.", evidence: "Owner review against the task list." },
+  { input: "Acceptance criteria and configured behavior.", output: "Protected evaluation matrix.", exitGate: "Coverage includes retrieval, adversarial, failure, and out-of-scope tests; failures are resolved or explicitly accepted.", recovery: "Return to the smallest failing phase and keep the failed result.", evidence: "Observed test results, not checklist completion." },
+  { input: "Validated evidence from all prior phases.", output: "A release decision and maintenance record.", exitGate: "Owner confirms draft, validated, or release-ready without claiming model quality.", recovery: "Stay draft or validated; schedule the missing evidence.", evidence: "Release decision, provenance, owner, and review date." },
+] as const;
+
 export const NAV_EXTRAS = [
   { id: "audit",   label: "Audit Mode",          icon: "🔍" },
   { id: "compare", label: "Platform Comparison",  icon: "⚖️"  },

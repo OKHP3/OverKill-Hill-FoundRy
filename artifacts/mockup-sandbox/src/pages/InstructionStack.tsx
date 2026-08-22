@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { INSTRUCTION_LAYERS, INSTRUCTION_CHAR_LIMIT } from "../data/knowledge";
+import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-2";
 
@@ -23,8 +24,12 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
   const [layers, setLayers] = useState<LayerData>(load);
   const [activeLayer, setActiveLayer] = useState<number>(1);
   const [copied, setCopied] = useState(false);
+  const [change, setChange] = useState<ChangeRecord>(() => {
+    try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; }
+  });
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(layers)); }, [layers]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change)); }, [change]);
 
   const setLayer = (id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setLayers(prev => ({ ...prev, [id]: e.target.value }));
@@ -63,6 +68,7 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           8-layer architecture. Keep under {INSTRUCTION_CHAR_LIMIT.toLocaleString()} characters (~2,000 words). Move bulk reference to knowledge files.
         </p>
+        <PhaseGate input="Contract and boundary decisions." output="Layered instruction stack." exitGate="All required rules have an observable test and no unresolved contradiction." recovery="Reopen the affected layer and record a rollback decision." evidence="Change record plus contradiction review." />
       </div>
 
       <div className="forge-instruction-layout">
@@ -117,6 +123,7 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
               ⚠️ <strong>No-Contradictions Rule:</strong> You have both "concise" and "comprehensive/thorough" in your instructions. These create a fault line. Pick a priority order and encode it explicitly — e.g. "Be concise by default; expand only when the user asks for detail."
             </div>
           )}
+          <ChangeLedger value={change} onChange={setChange} />
 
           {/* Layer nav buttons */}
           <div style={{ display: "flex", gap: "0.5rem" }}>

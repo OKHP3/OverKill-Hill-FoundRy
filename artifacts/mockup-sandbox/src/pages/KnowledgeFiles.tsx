@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord, EvidenceSelect, type EvidenceStatus } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-3";
 
 interface KnowledgeEntry { id: string; filename: string; topic: string; type: string; notes: string; }
-interface KnowledgeData { files: KnowledgeEntry[]; manifest: string; retrievalNotes: string; }
+interface KnowledgeData { files: KnowledgeEntry[]; manifest: string; retrievalNotes: string; conflictHandling: string; injectionBoundary: string; evidenceStatus: EvidenceStatus; }
 
-const DEFAULT: KnowledgeData = { files: [], manifest: "", retrievalNotes: "" };
+const DEFAULT: KnowledgeData = { files: [], manifest: "", retrievalNotes: "", conflictHandling: "", injectionBoundary: "", evidenceStatus: "unknown" };
 const FILE_TYPES = ["Policy", "Reference", "Examples", "Playbook", "Glossary", "Price Sheet", "Template", "Index/Manifest", "Other"];
 
 function load(): KnowledgeData {
@@ -17,7 +18,9 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 
 export default function KnowledgeFiles({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<KnowledgeData>(load);
+  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; } });
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change)); }, [change]);
 
   // Step is complete when the retrieval manifest is filled or at least one file entry has a name.
   const isComplete = data.manifest.trim().length > 0 || data.files.some(f => f.filename.trim().length > 0);
@@ -40,6 +43,7 @@ export default function KnowledgeFiles({ onNext, onPrev, onComplete }: Props) {
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Mid-2026 limits: up to 20 files per GPT, each up to 512 MB. Retrieval is RAG-based (semantic chunking) — not deterministic.
         </p>
+        <PhaseGate input="Allowed sources and knowledge policy." output="Scoped file manifest and routing policy." exitGate="Retrieval, conflicts, stale data, and injection boundaries have checks." recovery="Quarantine or defer the file; keep rejected material and reason." evidence="Retrieval observations, conflict decision, and source provenance." />
       </div>
 
       {/* Constraints banner */}
@@ -136,6 +140,12 @@ If the answer is not in the knowledge files, say so explicitly.`}
         <textarea value={data.retrievalNotes} onChange={e => setData(prev => ({ ...prev, retrievalNotes: e.target.value }))} autoComplete="off" rows={3}
           placeholder="After uploading, ask questions that require info from specific files. If the GPT ignores them, add explicit routing instructions. Note any retrieval failures here." />
       </div>
+      <div className="forge-cols-2" style={{ gap: "1rem", marginTop: "1rem" }}>
+        <label style={labelStyle}>Source conflict handling<textarea value={data.conflictHandling} onChange={e => setData(prev => ({ ...prev, conflictHandling: e.target.value }))} rows={3} placeholder="Which source wins, how stale sources are flagged, and who resolves conflicts" /></label>
+        <label style={labelStyle}>Prompt-injection boundary<textarea value={data.injectionBoundary} onChange={e => setData(prev => ({ ...prev, injectionBoundary: e.target.value }))} rows={3} placeholder="Knowledge is reference material, never trusted instructions; describe refusal and escalation" /></label>
+      </div>
+      <div style={{ marginTop: "0.75rem" }}><label style={labelStyle}>Evidence status <EvidenceSelect value={data.evidenceStatus} onChange={evidenceStatus => setData(prev => ({ ...prev, evidenceStatus }))} /></label></div>
+      <ChangeLedger value={change} onChange={setChange} />
 
       <NavButtons onNext={onNext} onPrev={onPrev} showPrev nextLabel="Step 4: Capabilities →" />
     </div>
@@ -161,4 +171,8 @@ const secondaryBtn: React.CSSProperties = {
   background: "var(--color-forge-panel)", color: "var(--color-forge-fg)",
   border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", padding: "0.6rem 1.25rem",
   fontFamily: "var(--font-body)", fontSize: "0.9rem", cursor: "pointer",
+};
+const labelStyle: React.CSSProperties = {
+  display: "block", fontFamily: "var(--font-mono)", fontSize: "0.78rem",
+  color: "var(--color-forge-accent)",
 };

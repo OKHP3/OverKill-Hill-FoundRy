@@ -38,6 +38,11 @@ function buildMarkdown(): string {
   const starters: string[] = Array.isArray(savedStarters) ? savedStarters : [];
   const tests = loadStep("cgpt-step-7");
   const ship = loadStep("cgpt-step-8");
+  const evidenceSections = [
+    ["Build Brief evidence", brief.evidenceStatus, brief.evidenceRegister],
+    ["Knowledge evidence", knowledge.evidenceStatus, [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n")],
+    ["Evaluation evidence", tests.evidenceStatus, [tests.retrievalVerification, tests.toolFailureTest, tests.ownerReview].filter(Boolean).join("\n")],
+  ];
 
   const instructionBlock = INSTRUCTION_LAYERS
     .map(l => layerData[l.id] ? `### Layer ${l.id}: ${l.label}\n${layerData[l.id]}` : "")
@@ -73,6 +78,10 @@ ${brief.doneCriteria || "(not defined)"}
 ### Tooling & Compliance
 - **Tooling:** ${brief.toolingAllowed || "(not set)"}
 - **Compliance:** ${brief.compliance || "(not set)"}
+
+### Evidence Register
+- **Status:** ${brief.evidenceStatus || "unknown"}
+${brief.evidenceRegister || "(unknown - verification needed)"}
 
 ---
 
@@ -148,12 +157,26 @@ ${tests.cases && tests.cases.length > 0
 **Version:** ${ship.currentVersion || "(not set)"}
 **Owner:** ${ship.ownerName || "(not set)"}
 **Scheduled review:** ${ship.scheduledReview || "(not set)"}
+**Release decision:** ${ship.releaseDecision || "draft"}
+**Release evidence status:** ${ship.evidenceStatus || "unknown"}
+${ship.releaseEvidence || "(no release decision recorded)"}
 
 ### Change Log
 ${ship.changeLog || "(no changelog entry)"}
 
 ### Maintenance Cadence
 ${ship.maintenanceCadence || "(not defined)"}
+
+---
+
+## Evidence and Provenance Record
+${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${status || "unknown"}\n${notes || "(unknown - verification needed)"}`).join("\n\n")}
+
+### Change Ledger
+${["cgpt-step-2-change", "cgpt-step-3-change", "cgpt-step-4-change", "cgpt-step-5-change"].map((key) => {
+    const change = loadStep(key);
+    return `- **${key}:** ${change.reason || "(no change reason recorded)"} | Expected: ${change.expectedEffect || "unknown"} | Tests: ${change.affectedTests || "unknown"} | Observed: ${change.observedResult || "unknown"} | Rollback: ${change.rollbackDecision || "unknown"}`;
+  }).join("\n")}
 
 ---
 
@@ -180,6 +203,11 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   })();
 
   const content = format === "markdown" ? fullMarkdown : instructionsOnly;
+  const ship = loadStep("cgpt-step-8");
+  const tests = loadStep("cgpt-step-7");
+  const maturity = ship.releaseDecision === "release-ready" && ship.releaseEvidence && tests.evidenceStatus !== "unknown"
+    ? "Release-ready (owner-declared)"
+    : tests.evidenceStatus !== "unknown" ? "Validated evidence recorded" : "Draft / evidence incomplete";
 
   const copy = useCallback(async () => {
     await navigator.clipboard.writeText(content);
@@ -205,6 +233,10 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Copy or download your complete GPT specification package. This is your source-of-truth artifact.
         </p>
+        <div role="status" style={{ marginBottom: "1rem", padding: "0.85rem 1rem", background: "var(--color-forge-panel)", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", fontSize: "0.82rem" }}>
+          <strong>Package maturity: {maturity}</strong><br />
+          <span style={{ color: "var(--color-forge-muted-fg)" }}>This summarizes recorded evidence and owner decisions. It does not validate runtime model behavior.</span>
+        </div>
       </div>
 
       {incompleteSteps.length > 0 && (

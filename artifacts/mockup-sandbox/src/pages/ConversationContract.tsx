@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PhaseGate } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-1";
 
@@ -37,6 +38,7 @@ export default function ConversationContract({ onNext, onPrev, onComplete }: Pro
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Define what goes in, what comes out, and what a catastrophic failure looks like — before you write a single instruction.
         </p>
+        <PhaseGate input="Build Brief decisions and constraints." output="Conversation input/output contract." exitGate="Priorities and catastrophic mistakes are explicit; contradictions are resolved." recovery="Return to the brief or record the unresolved contradiction." evidence="Confirmed contract decisions and rationale for tradeoffs." />
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>

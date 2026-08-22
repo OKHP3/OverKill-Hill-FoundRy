@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { EvidenceSelect, PhaseGate, type EvidenceStatus } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-0";
 
@@ -12,12 +13,15 @@ interface BriefData {
   disallowedSources: string;
   toolingAllowed: string;
   compliance: string;
+  evidenceStatus: EvidenceStatus;
+  evidenceRegister: string;
 }
 
 const DEFAULT: BriefData = {
   gptName: "", primaryUsers: "", outcomes: "", nonGoals: "",
   doneCriteria: "", allowedSources: "", disallowedSources: "",
   toolingAllowed: "", compliance: "",
+  evidenceStatus: "unknown", evidenceRegister: "",
 };
 
 function load(): BriefData {
@@ -53,9 +57,10 @@ export default function BuildBrief({ onNext, onComplete }: Props) {
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Fill this before writing a single instruction line. A GPT for "everyone" becomes generic sludge — define the job tightly.
         </p>
-        <div className="callout" style={{ marginTop: "0.75rem" }}>
+         <div className="callout" style={{ marginTop: "0.75rem" }}>
           <strong>Core principle:</strong> If a Custom GPT cannot outperform a well-written one-off prompt, it does not deserve to exist as a GPT.
         </div>
+        <PhaseGate input="A named job, audience, boundaries, and acceptance checks." output="A scoped Build Brief." exitGate="Primary user, job, boundary, and measurable checks are confirmed." recovery="Return to the brief; mark assumptions unknown instead of filling gaps." evidence="Owner confirmation and source register for platform or policy claims." />
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -102,6 +107,14 @@ export default function BuildBrief({ onNext, onComplete }: Props) {
           <textarea value={data.compliance} onChange={set("compliance")} autoComplete="off" rows={3}
             placeholder={"Never output PII beyond what the user provides\nNo financial/legal advice — route to human\nNo confidential pricing outside this GPT"} />
         </Field>
+        <div className="forge-cols-2" style={{ gap: "1rem" }}>
+          <Field label="Evidence status" hint="Do not treat an assumption as a confirmed fact">
+            <EvidenceSelect value={data.evidenceStatus} onChange={(evidenceStatus) => setData(prev => ({ ...prev, evidenceStatus }))} />
+          </Field>
+          <Field label="Evidence and verification register" hint="What is confirmed, inferred, theoretical, preference, or unknown?">
+            <textarea value={data.evidenceRegister} onChange={set("evidenceRegister")} rows={3} placeholder="Requirement: source or owner; status; verification needed" />
+          </Field>
+        </div>
       </div>
 
       {/* Progress indicator */}

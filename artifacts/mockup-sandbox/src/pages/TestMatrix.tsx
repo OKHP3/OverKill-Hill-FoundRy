@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { TEST_CATEGORIES, RED_TEAM_PROMPTS } from "../data/knowledge";
+import { EvidenceSelect, PhaseGate, type EvidenceStatus } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-7";
 
@@ -11,11 +12,11 @@ interface TestCase {
   result: "" | "pass" | "fail" | "pending";
 }
 
-interface TestData { cases: TestCase[]; }
+interface TestData { cases: TestCase[]; evidenceStatus: EvidenceStatus; retrievalVerification: string; toolFailureTest: string; ownerReview: string; }
 
 function load(): TestData {
-  try { return { cases: [], ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
-  catch { return { cases: [] }; }
+  try { return { cases: [], evidenceStatus: "unknown", retrievalVerification: "", toolFailureTest: "", ownerReview: "", ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+  catch { return { cases: [], evidenceStatus: "unknown", retrievalVerification: "", toolFailureTest: "", ownerReview: "" }; }
 }
 
 interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
@@ -25,7 +26,7 @@ export default function TestMatrix({ onNext, onPrev, onComplete }: Props) {
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
 
   // Step is complete once the user has added at least one test case.
-  const isComplete = data.cases.length > 0;
+  const isComplete = data.cases.length >= 10 && !data.cases.some(c => c.result === "fail") && data.evidenceStatus !== "unknown" && data.ownerReview.trim().length > 0;
   useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
 
   const addCase = (category = "happy") => {
@@ -67,6 +68,7 @@ export default function TestMatrix({ onNext, onPrev, onComplete }: Props) {
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Write 10–15 test prompts covering all 6 categories. OpenAI recommends: write the prompts, write expected answers, run them, and refine instructions.
         </p>
+        <PhaseGate input="Acceptance criteria and configured behavior." output="Protected evaluation matrix." exitGate="Coverage includes retrieval, adversarial, failure, and out-of-scope tests; failures are resolved or explicitly accepted." recovery="Return to the smallest failing phase and keep the failed result." evidence="Observed test results, not checklist completion." />
       </div>
 
       {/* Coverage overview */}
@@ -189,6 +191,12 @@ export default function TestMatrix({ onNext, onPrev, onComplete }: Props) {
           </div>
         </div>
       )}
+      <div className="forge-panel" style={{ marginTop: "1rem", display: "grid", gap: "0.65rem" }}>
+        <label style={labelStyle}>Evaluation evidence status <EvidenceSelect value={data.evidenceStatus} onChange={evidenceStatus => setData(prev => ({ ...prev, evidenceStatus }))} /></label>
+        <label style={labelStyle}>Retrieval verification<textarea value={data.retrievalVerification} onChange={e => setData(prev => ({ ...prev, retrievalVerification: e.target.value }))} rows={2} placeholder="Query, expected source, observed result, conflict or stale-source outcome" /></label>
+        <label style={labelStyle}>Tool failure test<textarea value={data.toolFailureTest} onChange={e => setData(prev => ({ ...prev, toolFailureTest: e.target.value }))} rows={2} placeholder="Timeout/error scenario, expected fallback, observed result, fallback owner" /></label>
+        <label style={labelStyle}>Owner review / protected behavior confirmation<textarea value={data.ownerReview} onChange={e => setData(prev => ({ ...prev, ownerReview: e.target.value }))} rows={2} placeholder="Who reviewed the observed results and what remains unknown?" /></label>
+      </div>
 
       <NavButtons onNext={onNext} onPrev={onPrev} showPrev nextLabel="Step 8: Ship & Govern →" />
     </div>
@@ -214,4 +222,8 @@ const secondaryBtn: React.CSSProperties = {
   background: "var(--color-forge-panel)", color: "var(--color-forge-fg)",
   border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", padding: "0.6rem 1.25rem",
   fontFamily: "var(--font-body)", fontSize: "0.9rem", cursor: "pointer",
+};
+const labelStyle: React.CSSProperties = {
+  display: "block", fontFamily: "var(--font-mono)", fontSize: "0.78rem",
+  color: "var(--color-forge-accent)",
 };

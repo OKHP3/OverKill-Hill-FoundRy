@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { VISIBILITY_OPTIONS, VERSION_SCHEME } from "../data/knowledge";
+import { EvidenceSelect, PhaseGate, type EvidenceStatus } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-8";
 
@@ -11,11 +12,15 @@ interface ShipData {
   ownerName: string;
   builderProfileVerified: boolean;
   scheduledReview: string;
+  releaseDecision: "draft" | "validated" | "release-ready";
+  releaseEvidence: string;
+  evidenceStatus: EvidenceStatus;
 }
 
 const DEFAULT: ShipData = {
   visibility: "private", currentVersion: "v0.1",
   changeLog: "", maintenanceCadence: "", ownerName: "", builderProfileVerified: false, scheduledReview: "",
+  releaseDecision: "draft", releaseEvidence: "", evidenceStatus: "unknown",
 };
 
 function load(): ShipData {
@@ -30,7 +35,7 @@ export default function ShipGovern({ onPrev, onComplete }: Props) {
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
 
   // Step is complete once the owner name is filled in.
-  const isComplete = data.ownerName.trim().length > 0;
+  const isComplete = data.ownerName.trim().length > 0 && data.releaseDecision !== "draft" && data.releaseEvidence.trim().length > 0 && data.evidenceStatus !== "unknown";
   useEffect(() => { onComplete(isComplete); }, [isComplete, onComplete]);
   const set = (k: keyof ShipData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setData(prev => ({ ...prev, [k]: e.target.value }));
@@ -50,6 +55,7 @@ export default function ShipGovern({ onPrev, onComplete }: Props) {
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           GPTs are not set-and-forget. This step sets your visibility, version, and maintenance commitment.
         </p>
+        <PhaseGate input="Validated evidence from all prior phases." output="A release decision and maintenance record." exitGate="Owner confirms draft, validated, or release-ready without claiming model quality." recovery="Stay draft or validated; schedule the missing evidence." evidence="Release decision, provenance, owner, and review date." />
       </div>
 
       {/* Visibility */}
@@ -124,6 +130,17 @@ export default function ShipGovern({ onPrev, onComplete }: Props) {
             style={{ maxWidth: "200px" }} />
         </div>
       </div>
+      <div className="forge-panel" style={{ marginBottom: "1.5rem", display: "grid", gap: "0.75rem" }}>
+        <label style={labelStyle}>Release decision
+          <select value={data.releaseDecision} onChange={e => setData(prev => ({ ...prev, releaseDecision: e.target.value as ShipData["releaseDecision"] }))}>
+            <option value="draft">Draft - incomplete evidence</option>
+            <option value="validated">Validated - checks recorded, runtime quality remains unknown</option>
+            <option value="release-ready">Release-ready - owner approved this release scope</option>
+          </select>
+        </label>
+        <label style={labelStyle}>Release evidence and owner decision<textarea value={data.releaseEvidence} onChange={e => setData(prev => ({ ...prev, releaseEvidence: e.target.value }))} rows={3} placeholder="Summarize evidence, unresolved unknowns, and why this decision is appropriate" /></label>
+        <label style={labelStyle}>Evidence status <EvidenceSelect value={data.evidenceStatus} onChange={evidenceStatus => setData(prev => ({ ...prev, evidenceStatus }))} /></label>
+      </div>
 
       {/* Ship gate */}
       <div style={{
@@ -133,7 +150,7 @@ export default function ShipGovern({ onPrev, onComplete }: Props) {
         borderRadius: "var(--radius-md)",
       }}>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", color: shipReady ? "var(--color-forge-success)" : "var(--color-forge-warn)", marginBottom: "0.75rem" }}>
-          {shipReady ? "✓ Ship gate passed — ready to publish" : "⚠ Complete required fields before shipping"}
+          {shipReady ? "✓ Administrative ship gate passed" : "⚠ Release evidence is incomplete"}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
           {[
@@ -149,7 +166,7 @@ export default function ShipGovern({ onPrev, onComplete }: Props) {
           ))}
         </div>
         <div style={{ marginTop: "1rem", fontSize: "0.82rem", color: "var(--color-forge-muted-fg)" }}>
-          Start at "Only Me." Promote to link-sharing once stable. Reserve GPT Store for polished, maintained releases.
+          A checklist does not prove model quality. Start at "Only Me"; promote only when observed evidence and owner review support the decision.
         </div>
       </div>
 

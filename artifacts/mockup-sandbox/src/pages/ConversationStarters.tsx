@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { STARTER_EXAMPLES_GOOD, STARTER_EXAMPLES_BAD } from "../data/knowledge";
+import { PhaseGate } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-6";
 
@@ -42,6 +43,7 @@ export default function ConversationStarters({ onNext, onPrev, onComplete }: Pro
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Write 3–4 starters. These are <strong>workflow launch buttons</strong>, not slogans. They solve the cold-start problem and demonstrate what your GPT actually does.
         </p>
+        <PhaseGate input="Conversation contract and top tasks." output="Concrete workflow starters." exitGate="At least three distinct, task-shaped starters pass the quality checks." recovery="Replace generic starters using the contract's ranked tasks." evidence="Owner review against the task list." />
       </div>
 
       {/* Bad/Good examples */}

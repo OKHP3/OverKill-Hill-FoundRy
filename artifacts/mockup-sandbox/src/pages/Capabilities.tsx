@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { CAPABILITIES } from "../data/knowledge";
+import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-4";
 type CapabilityRisk = "low" | "medium" | "high";
@@ -22,11 +23,13 @@ export default function Capabilities({ onNext, onPrev, onComplete }: Props) {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY + "-rationale") || "{}"); }
     catch { return {}; }
   });
+  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; } });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(caps));
     localStorage.setItem(STORAGE_KEY + "-rationale", JSON.stringify(rationale));
-  }, [caps, rationale]);
+    localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change));
+  }, [caps, rationale, change]);
 
   // Step is complete once the user has reviewed the capabilities page (caps are initialized on mount).
   const isComplete = Object.keys(caps).length > 0;
@@ -43,6 +46,7 @@ export default function Capabilities({ onNext, onPrev, onComplete }: Props) {
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Enable only what the job requires. More tools = more failure paths.
         </p>
+        <PhaseGate input="Job requirements and contract." output="Smallest justified capability set." exitGate="Every enabled tool has purpose, boundary, fallback, and owner." recovery="Disable the capability and return to tool policy." evidence="Capability rationale and failure test reference." />
       </div>
 
       <div className="callout" style={{ marginBottom: "1.5rem" }}>
@@ -137,6 +141,7 @@ export default function Capabilities({ onNext, onPrev, onComplete }: Props) {
           ))}
         </div>
       </div>
+      <ChangeLedger value={change} onChange={setChange} />
 
       <NavButtons onNext={onNext} onPrev={onPrev} showPrev nextLabel="Step 5: Actions / Apps →" />
     </div>

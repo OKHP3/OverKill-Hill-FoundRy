@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ACTION_AUTH_OPTIONS, ACTION_FAILURES, ACTIONS_LIMITS, OPENAPI_TEMPLATE } from "../data/knowledge";
+import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord } from "../components/PhaseGate";
 
 const STORAGE_KEY = "cgpt-step-5";
 
@@ -27,7 +28,8 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 export default function ActionsApps({ onNext, onPrev, onComplete }: Props) {
   const [data, setData] = useState<ActionsData>(load);
   const [copied, setCopied] = useState(false);
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  const [change, setChange] = useState<ChangeRecord>(() => { try { return { ...EMPTY_CHANGE_RECORD, ...JSON.parse(localStorage.getItem(STORAGE_KEY + "-change") || "{}") }; } catch { return EMPTY_CHANGE_RECORD; } });
+  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); localStorage.setItem(STORAGE_KEY + "-change", JSON.stringify(change)); }, [data, change]);
 
   // Step is complete once the user deliberately picks a choice (not the default "none").
   const isComplete = data.choice !== "none" || data.openApiSchema.trim().length > 0 || data.appsNotes.trim().length > 0;
@@ -50,6 +52,7 @@ export default function ActionsApps({ onNext, onPrev, onComplete }: Props) {
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
           Critical constraint: a single Custom GPT can use either Actions OR Apps — not both simultaneously.
         </p>
+        <PhaseGate input="Capability plan and integration need." output="Actions or Apps plan, never an unverified promise." exitGate="Failure behavior, fallback owner, auth boundary, and verification plan are recorded." recovery="Use no integration or defer until the owner verifies the dependency." evidence="Schema or app notes, failure test, and owner confirmation." />
       </div>
 
       {/* Mutual exclusion warning */}
@@ -107,6 +110,7 @@ export default function ActionsApps({ onNext, onPrev, onComplete }: Props) {
               ))}
             </div>
           </div>
+          <label style={labelStyle}>Fallback owner and verification plan<textarea value={data.errorHandling} onChange={set("errorHandling")} rows={3} placeholder="Who owns recovery when the tool fails? What must be verified before enabling it?" /></label>
 
           <div>
             <label style={labelStyle}>Privacy Policy URL <span style={{ color: "var(--color-forge-danger)" }}>*</span></label>
@@ -166,6 +170,7 @@ export default function ActionsApps({ onNext, onPrev, onComplete }: Props) {
           </div>
         </div>
       )}
+      <ChangeLedger value={change} onChange={setChange} />
 
       {/* Apps config */}
       {data.choice === "apps" && (

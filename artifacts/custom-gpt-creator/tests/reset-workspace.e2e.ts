@@ -9,7 +9,13 @@ async function seedSavedProgress(page: Page): Promise<void> {
     for (const key of stepKeys) {
       localStorage.setItem(
         key,
-        JSON.stringify(key === "cgpt-step-8" ? { ownerName: "Saved owner" } : { saved: true }),
+        JSON.stringify(
+          key === "cgpt-step-8"
+            ? { ownerName: "Saved owner", releaseDecision: "validated", releaseEvidence: "Owner reviewed the saved build.", evidenceStatus: "confirmed" }
+            : key === "cgpt-step-7"
+              ? { cases: Array.from({ length: 10 }, (_, index) => ({ id: String(index), category: "happy", prompt: "saved", expectedBehavior: "saved", result: "pass" })), evidenceStatus: "observed", ownerReview: "Saved owner reviewed results." }
+              : { saved: true },
+        ),
       );
     }
     localStorage.setItem(
