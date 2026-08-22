@@ -10,8 +10,10 @@ author: Jamie Hill
 governance:
   parent_foundry: OKHP3/OverKill-Hill-FoundRy
   agents_version: "3.2"
-  naming_pattern: REPLACE-ME
+  naming_pattern: foundry-[code][##]-[project-slug]
 lineage:
   parent_capability: null
 visibility_control:
+  visibility_lock: review-required
   public_graduation_allowed: true
+  requires_public_source_audit: true

@@ -8,6 +8,21 @@ repo:
   purpose: Private OverKill Hill governance relay for child-repository scaffolds, registries, and hosted capability development.
 brand_domain: overkillhill
 author: Jamie Hill
+governance:
+  parent_foundry: OKHP3/OverKill-Hill-FoundRy
+  agents_version: "3.2"
+  naming_pattern: foundry-[code][##]-[project-slug]
+lineage:
+  parent_capability: null
+  parent_skill: null
+  suite_id: foundry-relay
+  branch_id: governance
+  tool_id: relay
+visibility_control:
+  visibility_lock: permanent-private
+  public_graduation_allowed: false
+  requires_public_source_audit: true
+  bfs_firewall: true
 hosted_capabilities:
   - name: ReFolDec
     relationship: FoundRy-hosted process-capture capability and prospective public artifact

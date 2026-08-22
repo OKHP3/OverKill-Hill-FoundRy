@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import pathlib
 import sys
+import subprocess
 
 REQUIRED_PATHS = [
     "AGENTS.md",
@@ -34,6 +35,7 @@ RECOMMENDED_PATHS = [
     "schemas/repo-manifest-schema.yaml",
     "docs/governance-model.md",
 ]
+CHILD_REQUIRED_FILES = ["AGENTS.md", "README.md", "CHANGELOG.md", "LICENSE.md", "manifest.yaml"]
 
 
 def exists(root: pathlib.Path, rel_path: str) -> bool:
@@ -72,6 +74,28 @@ def main() -> int:
         return 1
     if args.strict and missing_recommended:
         return 1
+    failures = []
+    for required_file in CHILD_REQUIRED_FILES:
+        if not exists(root / "_template", required_file):
+            failures.append(
+                f"GOV-SYNC-001 _template/{required_file} missing "
+                f"(remediation: restore the required child-repository scaffold file)"
+            )
+    for script in ("manifest-audit.py", "registry-audit.py"):
+        result = subprocess.run(
+            [sys.executable, str(root / "scripts" / script), str(root)],
+            capture_output=True,
+            text=True,
+            cwd=root,
+        )
+        if result.returncode:
+            failures.append(result.stdout.strip() or f"GOV-SYNC-002 {script} failed")
+        elif result.stdout:
+            print(result.stdout.strip())
+    if failures:
+        print("\n".join(f"FAIL {failure}" for failure in failures))
+        return 1
+    print("Child scaffold and governance contract checks: OK")
     return 0
 
 

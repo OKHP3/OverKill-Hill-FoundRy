@@ -1,7 +1,9 @@
 schema_version: "1.0"
 foundry: OverKill-Hill-FoundRy
 brand_domain: overkillhill
-last_reviewed: TBD
+last_reviewed: 2026-08-22
+review_owner: Jamie Hill
+review_interval_days: 180
 hosted_capabilities:
   - name: ReFolDec
     type: capability
@@ -12,15 +14,40 @@ repositories:
   - name: OverKill-Hill
     type: site
     lifecycle_status: active
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: golden governance authority
+    last_reviewed: 2026-08-22
+    external: true
   - name: mermaid-theme-builder
     type: web-app
     lifecycle_status: active
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: FoundRy child repository
+    last_reviewed: 2026-08-22
+    external: true
   - name: mermaid-diagram-bpmn
     type: web-app
     lifecycle_status: active
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: FoundRy child repository
+    last_reviewed: 2026-08-22
+    external: true
   - name: mac-studio-local-ai-workbench
     type: research
     lifecycle_status: active
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: FoundRy child repository
+    last_reviewed: 2026-08-22
+    external: true
   - name: infusing-a-soul
     type: capability
     lifecycle_status: prototype
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: FoundRy child repository
+    last_reviewed: 2026-08-22
+    external: true

@@ -68,3 +68,20 @@ visibility_rules:
     then: visibility_control.visibility_lock should be permanent-private
   - if: visibility_control.visibility_lock is permanent-private
     then: repo.visibility must not be public
+child_repository_contract:
+  required_files:
+    - AGENTS.md
+    - README.md
+    - CHANGELOG.md
+    - LICENSE.md
+  capability_directories:
+    - docs
+    - origin
+    - skill
+    - prompts
+    - research
+    - tests
+    - schemas
+    - assets
+    - exports
+    - archive

@@ -8,7 +8,14 @@
   "unfolded_primitives": [],
   "reuse_targets": ["documentation"],
   "lineage": {"source_ids": [], "folded_output_ids": [], "unfolded_primitive_ids": []},
-  "publication": {"visibility": "public", "source_access": "public", "approved_surface": true},
+  "publication": {
+    "visibility": "public",
+    "source_access": "public",
+    "approved_surface": true,
+    "manifest_complete": true,
+    "readme_externalized": true,
+    "reviews": {"pii_review": true, "source_review": true, "license_review": true}
+  },
   "freshness": "current",
   "evidence": {
     "confirmed": ["id", "title", "artifact_type", "maturity_state", "source_context", "folded_outputs", "unfolded_primitives", "reuse_targets", "lineage", "publication", "freshness", "evidence"],

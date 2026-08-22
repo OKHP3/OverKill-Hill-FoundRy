@@ -1,9 +1,8 @@
 schema_version: "1.0"
 title: FoundRy Registry Schema
 required_fields:
-  - name
-  - type
-  - lifecycle_status
+  - schema_version
+  - repositories
 allowed_values:
   type:
     - site
@@ -31,3 +30,24 @@ recommended_fields:
   - visibility
   - tags
   - last_reviewed
+required_entry_fields:
+  - name
+  - type
+  - lifecycle_status
+  - owner
+  - parent_foundry
+  - lineage
+  - last_reviewed
+  - external
+freshness:
+  default_review_interval_days: 180
+  exempt_with:
+    - freshness_exemption
+    - external
+child_repository_contract:
+  required_files:
+    - AGENTS.md
+    - README.md
+    - CHANGELOG.md
+    - LICENSE.md
+    - manifest.yaml

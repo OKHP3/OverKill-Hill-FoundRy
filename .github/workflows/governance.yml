@@ -1,0 +1,50 @@
+name: FoundRy governance
+
+on:
+  push:
+    paths:
+      - "manifest.yaml"
+      - "registry/**"
+      - "schemas/**"
+      - "_template/**"
+      - "scripts/governance.py"
+      - "scripts/manifest-audit.py"
+      - "scripts/registry-audit.py"
+      - "scripts/foundry-sync.py"
+      - "scripts/public-graduation-audit.py"
+      - "examples/release-candidates/**"
+      - "docs/publication-boundary.md"
+  pull_request:
+    paths:
+      - "manifest.yaml"
+      - "registry/**"
+      - "schemas/**"
+      - "_template/**"
+      - "scripts/governance.py"
+      - "scripts/manifest-audit.py"
+      - "scripts/registry-audit.py"
+      - "scripts/foundry-sync.py"
+      - "scripts/public-graduation-audit.py"
+      - "examples/release-candidates/**"
+      - "docs/publication-boundary.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Validate relay manifest
+        run: python3 scripts/manifest-audit.py
+      - name: Validate registry
+        run: python3 scripts/registry-audit.py
+      - name: Validate child scaffold and relay sync
+        run: python3 scripts/foundry-sync.py --strict
+      - name: Audit public release candidates (dry run)
+        run: python3 scripts/public-graduation-audit.py examples/release-candidates

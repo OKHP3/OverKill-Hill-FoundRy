@@ -6,3 +6,4 @@
 - [Creator browser tests](creator-browser-tests.md) — Playwright must match the workspace browser revision and Chromium needs the Nix runtime libraries enabled in the Repl.
 - [ReFolDec capture contract](refoldec-capture-contract.md) — process transformations retain stable IDs, evidence states, rejected material, recovery, and human confirmation.
 - [Skill package release gate](skill-package-release-gate.md) — ReFolDec skill packages require validated confirmed public lineage, explicit safety contracts, and an unseen holdout.
+- [Governance audit contract](governance-audit-contract.md) — FoundRy checks stay dependency-free, schema-aware, actionable, and read-only.
