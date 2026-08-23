@@ -1,7 +1,7 @@
 {
-  "evaluation_id": "skill-0.1.0-unseen-holdout-holdout",
+  "evaluation_id": "refoldec-review-0.1.0-unseen-holdout-holdout",
   "package": {
-    "name": "skill",
+    "name": "refoldec-review",
     "version": "0.1.0",
     "path": "/home/runner/workspace/examples/release-candidates/skill",
     "sha256": "7f8dca7d8af1c686bc156297a290c40dbd9f2b38bc805e5232695937e459b9de"
@@ -12,7 +12,7 @@
     "runtime_available": false
   },
   "executed_at": "2026-08-22T18:00:00+00:00",
-  "repository_revision": "09be78242d32b05a4f7f84d5f4241342a415b4a4",
+  "repository_revision": "4304ab08cd252bcb6f0bb19607b3f8e947307df3",
   "input": {
     "case_id": "unseen-holdout",
     "partition": "holdout",

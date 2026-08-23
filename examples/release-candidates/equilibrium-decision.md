@@ -28,10 +28,11 @@ executable evaluator or runtime output. Each declared expectation therefore
 remains unverified; no failures were observed because no behavior was executed.
 The exact record is `holdout-evaluation.md`.
 
-The public-graduation audit and source example validator pass, but the package
-validator currently fails because the candidate skill directory does not contain
-the generated package support files and required safety phrases. This reinforces
-rather than removes the structural-versus-behavioral limitation.
+The package validator, source example validator, and public-graduation audit
+pass. The separate evaluator now records the protected holdout as
+**inconclusive** because no approved executable runtime adapter is present.
+This makes the structural-versus-behavioral limitation explicit rather than
+removing it.
 
 The release decision remains `defer-for-evidence`. No behavioral, reliability,
 outcome, or production-readiness claim is justified by this run.

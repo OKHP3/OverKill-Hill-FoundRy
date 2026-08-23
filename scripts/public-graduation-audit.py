@@ -31,7 +31,14 @@ REQUIRED_FILES = (
     "skill/tests/evals.json",
     "examples/public-process.json",
 )
-PACKAGE_SUPPORT_JSON = {"release-manifest.json", "schema.json", "provenance.json", "review.json", "evals.json"}
+PACKAGE_SUPPORT_JSON = {
+    "release-manifest.json",
+    "schema.json",
+    "provenance.json",
+    "review.json",
+    "evals.json",
+    "holdout-evaluation.json",
+}
 FORBIDDEN_REFERENCE_PATTERNS = (
     r"notion(?:\.so)?/[^\s)]+",
     r"github\.com/[^/\s]+/overkill-hill-foundry",
