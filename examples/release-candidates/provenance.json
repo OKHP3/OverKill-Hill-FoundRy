@@ -10,7 +10,13 @@
   "reviews": {
     "source_audit": "scripts/public-graduation-audit.py",
     "equilibrium_review": "equilibrium-decision.md",
-    "status": "structural-review-complete",
+    "status": "structural-and-holdout-review-complete",
+    "holdout_evaluation": {
+      "record": "holdout-evaluation.json",
+      "status": "inconclusive",
+      "evaluator": "refoldec-holdout-evaluator",
+      "behavioral_claims_supported": false
+    },
     "owner_approval": {
       "status": "approved",
       "approved_by": "repository-owner",

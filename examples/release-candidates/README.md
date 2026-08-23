@@ -29,6 +29,18 @@ candidate.
 - `equilibrium-decision.md` — independent review and limitations
 - `release-checklist.md` and `rollback-plan.md` — owner gate and recovery
 
+## Release evidence index
+
+| Evidence | Status | Consequence |
+| --- | --- | --- |
+| Public capture and package preflight | Passed | Structural packaging claims are supported. |
+| Human source, license, privacy, and conflict review | Approved on 2026-08-21 | Public source boundary is attested; this is not deployment approval. |
+| Protected holdout evaluation | Inconclusive | No behavioral, reliability, outcome, or production-readiness claim is supported. |
+| Equilibrium decision | `defer-for-evidence` | Owner approval and deployment remain blocked. |
+
+The machine-readable holdout record is `holdout-evaluation.json`; the
+reader-facing explanation is `holdout-evaluation.md`.
+
 Run the source audit from the repository root:
 
 ```bash

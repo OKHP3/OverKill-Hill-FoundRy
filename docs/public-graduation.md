@@ -23,17 +23,20 @@ capture pages, client material, or employer material.
 
 ## Gate decision
 
-**Decision: NO-GO for deployment.** The package is structurally prepared and
-its source audit is designed to be repeatable, but human release sign-off and
-the protected holdout review are still required. ReFolDec is not being
-declared canonical, stable, or production-ready.
+**Decision: NO-GO for deployment.** The package is structurally prepared, human
+source review is recorded, and the protected holdout has been reviewed by a
+separate evaluator. The holdout result is inconclusive because no approved
+executable runtime adapter is available, so the equilibrium decision remains
+`defer-for-evidence`. ReFolDec is not being declared canonical, stable, or
+production-ready.
 
 ## Review evidence
 
 - `scripts/public-graduation-audit.py` checks package completeness, restricted
   references, public metadata, and deployment separation.
 - `skill/tests/evals.json` includes development cases and an unseen protected
-  holdout. No holdout performance is claimed until a separate evaluator runs it.
+  holdout. `holdout-evaluation.json` records the separate evaluator result;
+  because the package is instruction-only, no holdout performance is claimed.
 - `equilibrium-decision.md` records evidence tiers, limitations, and dissent.
 - `release-checklist.md` records the owner actions required before deployment.
 

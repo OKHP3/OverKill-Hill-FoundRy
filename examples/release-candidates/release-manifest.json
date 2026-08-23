@@ -31,5 +31,11 @@
     "canonical": false,
     "stable": false,
     "production_ready": false
+  },
+  "evaluation": {
+    "status": "inconclusive",
+    "record": "holdout-evaluation.json",
+    "behavioral_claims_supported": false,
+    "release_consequence": "Retain defer-for-evidence; do not deploy or claim behavioral reliability."
   }
 }

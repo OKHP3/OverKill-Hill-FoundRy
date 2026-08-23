@@ -6,4 +6,7 @@
 - Added a dependency-free validator and portable Agent Skill package.
 - Added provenance, attribution, evaluation, equilibrium, rollback, and owner
   approval records.
+- Added a separate offline protected-holdout evaluator; its result is
+  intentionally recorded as inconclusive because no executable runtime adapter
+  is available.
 - Kept deployment disabled pending the graduation gate.
