@@ -30,6 +30,7 @@ EVIDENCE_STATES = ("confirmed", "inferred", "unknown")
 PACKAGE_SUPPORT_FILES = {
     "README.md", "LICENSE", "ATTRIBUTION.md", "CHANGELOG.md",
     "equilibrium-decision.md", "release-checklist.md", "rollback-plan.md",
+    "holdout-evaluation.md", "review.json",
     "specification.md", "schema.json", "release-manifest.json",
     "provenance.json", "evals.json", "maintenance.md", "process-map.md",
     "SKILL.md",

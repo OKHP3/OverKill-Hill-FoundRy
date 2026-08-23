@@ -71,6 +71,7 @@ PRESERVE_NAMES: frozenset[str] = frozenset({
     "SECURITY.md",
     "SUPPORT.md",
     "AGENTS.md",
+    "ATTRIBUTION.md",
     # Agent/runtime conventions. These names are consumed by tools and are
     # intentionally not normalized to lowercase-kebab-case.
     "CLAUDE.md",
