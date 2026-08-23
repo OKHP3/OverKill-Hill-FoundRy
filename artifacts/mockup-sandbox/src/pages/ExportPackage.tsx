@@ -22,7 +22,145 @@ function loadStep(key: string): any {
   try { return readProjectValue(key) ?? {}; } catch { return {}; }
 }
 
-function buildMarkdown(): string {
+type ReadinessState = "incomplete" | "blocked" | "ready-for-review" | "confirmed";
+
+interface EvidencePackage {
+  schemaVersion: "1.0";
+  artifact: {
+    type: "custom-gpt-specification";
+    name: string;
+    version: string;
+    owner: string;
+    visibility: string;
+  };
+  readiness: {
+    state: ReadinessState;
+    completedSteps: number;
+    totalSteps: number;
+    blockers: string[];
+    unresolvedItems: string[];
+    behavioralValidation: "not-claimed";
+  };
+  evidence: Array<{ source: string; status: string; notes: string }>;
+  humanConfirmation: {
+    required: true;
+    recorded: boolean;
+    owner: string;
+    decision: string;
+    rationale: string;
+  };
+  provenance: {
+    generatedAt: string;
+    source: "browser-local-project";
+    projectName: string;
+    changeLedger: Record<string, unknown>;
+  };
+  boundaries: Record<string, string>;
+  failureBehavior: Record<string, string>;
+  assumptions: { knowledgeRetrieval: string; unresolved: string[] };
+  phases: Record<string, unknown>;
+}
+
+function buildEvidencePackage(completedSteps: Set<number>): EvidencePackage {
+  const brief = loadStep("step-0");
+  const contract = loadStep("step-1");
+  const layerData = loadStep("step-2");
+  const knowledge = loadStep("step-3");
+  const caps = loadStep("step-4");
+  const actions = loadStep("step-5");
+  const starters = loadStep("step-6");
+  const tests = loadStep("step-7");
+  const ship = loadStep("step-8");
+  const incompleteSteps = BUILD_STEPS.filter(({ id }) => !completedSteps.has(id));
+  const failingTests = Array.isArray(tests.cases) ? tests.cases.filter((test: { result?: string }) => test.result === "fail") : [];
+  const evidence = [
+    { source: "Build Brief", status: brief.evidenceStatus || "unknown", notes: brief.evidenceRegister || "" },
+    { source: "Knowledge Files", status: knowledge.evidenceStatus || "unknown", notes: [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n") },
+    { source: "Test Matrix", status: tests.evidenceStatus || "unknown", notes: [tests.retrievalVerification, tests.toolFailureTest, tests.ownerReview].filter(Boolean).join("\n") },
+    { source: "Ship & Govern", status: ship.evidenceStatus || "unknown", notes: ship.releaseEvidence || "" },
+  ];
+  const blockers = [
+    ...failingTests.map((test: { id?: string }) => `Unresolved failing test${test.id ? ` ${test.id}` : ""}`),
+    ...evidence.filter(item => item.status === "unknown").map(item => `${item.source} evidence is unknown`),
+  ];
+  const unresolvedItems = [
+    ...incompleteSteps.map(({ label }) => `${label} is incomplete`),
+    ...blockers,
+    ...(ship.ownerName?.trim() ? [] : ["Owner confirmation is missing"]),
+    ...(ship.releaseEvidence?.trim() ? [] : ["Release rationale is missing"]),
+  ];
+  const recorded = Boolean(ship.ownerName?.trim() && ship.releaseEvidence?.trim() && ship.releaseDecision !== "draft");
+  const state: ReadinessState = failingTests.length > 0
+    ? "blocked"
+    : incompleteSteps.length > 0 || evidence.some(item => item.status === "unknown")
+      ? "incomplete"
+      : recorded ? "confirmed" : "ready-for-review";
+  const changeLedger = Object.fromEntries(
+    ["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map(key => [key, loadStep(key)])
+  );
+
+  return {
+    schemaVersion: "1.0",
+    artifact: {
+      type: "custom-gpt-specification",
+      name: brief.gptName || "Untitled GPT",
+      version: ship.currentVersion || "v0.1",
+      owner: ship.ownerName || "",
+      visibility: ship.visibility || "",
+    },
+    readiness: {
+      state,
+      completedSteps: completedSteps.size,
+      totalSteps: BUILD_STEPS.length,
+      blockers,
+      unresolvedItems,
+      behavioralValidation: "not-claimed",
+    },
+    evidence,
+    humanConfirmation: {
+      required: true,
+      recorded,
+      owner: ship.ownerName || "",
+      decision: ship.releaseDecision || "draft",
+      rationale: ship.releaseEvidence || "",
+    },
+    provenance: {
+      generatedAt: new Date().toISOString(),
+      source: "browser-local-project",
+      projectName: brief.gptName || "Untitled GPT",
+      changeLedger,
+    },
+    boundaries: {
+      nonGoals: brief.nonGoals || "",
+      allowedSources: brief.allowedSources || "",
+      disallowedSources: brief.disallowedSources || "",
+      compliance: brief.compliance || "",
+      toolingAllowed: brief.toolingAllowed || "",
+    },
+    failureBehavior: {
+      catastrophicMistakes: contract.catastrophicMistakes || "",
+      toolFailureTest: tests.toolFailureTest || "",
+      recovery: "Return to the smallest failing phase; keep unknown or failed evidence unresolved until reviewed.",
+    },
+    assumptions: {
+      knowledgeRetrieval: knowledge.retrievalNotes || "",
+      unresolved: unresolvedItems,
+    },
+    phases: {
+      "step-0-build-brief": brief,
+      "step-1-conversation-contract": contract,
+      "step-2-instruction-stack": layerData,
+      "step-3-knowledge-files": knowledge,
+      "step-4-capabilities": caps,
+      "step-5-actions-apps": actions,
+      "step-6-conversation-starters": starters,
+      "step-7-test-matrix": tests,
+      "step-8-ship-govern": ship,
+    },
+  };
+}
+
+function buildMarkdown(evidencePackage: EvidencePackage): string {
   const brief = loadStep("step-0");
   const contract = loadStep("step-1");
   const layerData = loadStep("step-2");
