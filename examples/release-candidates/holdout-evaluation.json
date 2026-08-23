@@ -12,7 +12,7 @@
     "runtime_available": false
   },
   "executed_at": "2026-08-22T18:00:00+00:00",
-  "repository_revision": "4304ab08cd252bcb6f0bb19607b3f8e947307df3",
+  "repository_revision": "f99d467a4952522f632f0171d6eec8eaed469c3b",
   "input": {
     "case_id": "unseen-holdout",
     "partition": "holdout",
