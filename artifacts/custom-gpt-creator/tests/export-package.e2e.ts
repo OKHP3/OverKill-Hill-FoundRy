@@ -41,6 +41,17 @@ async function openExportPackage(page: Page) {
   await expect(page.locator("h1")).toContainText("Export Package");
 }
 
+async function replaceProjectData(page: Page, data: Record<string, unknown>, completedSteps: number[] = []) {
+  await page.evaluate(({ data, completedSteps }) => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    workspace.projects[0].data = data;
+    workspace.projects[0].completedSteps = completedSteps;
+    localStorage.setItem("cgpt-workspace", JSON.stringify(workspace));
+  }, { data, completedSteps });
+  await page.reload();
+  await expect(page.locator("h1")).toContainText("Export Package");
+}
+
 async function expectExportActionsToProduceMarkdown(page: Page) {
   const exportContent = await page.locator("pre").innerText();
   const copyButton = page.getByRole("button", { name: /Copy/ });
@@ -135,4 +146,76 @@ test("keeps incomplete export warnings and controls in sync", async ({ page }) =
   await expect(copyButton).toBeEnabled();
   await expect(downloadButton).toBeEnabled();
   await expectExportActionsToProduceMarkdown(page);
+});
+
+test("distinguishes incomplete, blocked, and ready-for-review packages", async ({ page }) => {
+  await openExportPackage(page);
+  await expect(page.getByRole("status")).toContainText("Package readiness: Incomplete");
+  await expect(page.getByRole("status")).toContainText("behavior");
+
+  const confirmedEvidence = {
+    "step-0": { gptName: "Evidence GPT", evidenceStatus: "confirmed", evidenceRegister: "Brief reviewed." },
+    "step-3": { evidenceStatus: "confirmed", retrievalNotes: "Sources checked." },
+    "step-7": {
+      evidenceStatus: "confirmed",
+      cases: [{ id: "T1", result: "fail", prompt: "Unsafe prompt", expectedBehavior: "Refuse safely" }],
+    },
+    "step-8": { evidenceStatus: "confirmed", releaseDecision: "draft" },
+  };
+  await replaceProjectData(page, confirmedEvidence, Array.from({ length: 9 }, (_, index) => index));
+  await expect(page.getByRole("status")).toContainText("Package readiness: Blocked");
+  await expect(page.getByRole("status")).toContainText("Unresolved failing test T1");
+
+  await replaceProjectData(page, {
+    ...confirmedEvidence,
+    "step-7": { ...confirmedEvidence["step-7"], cases: [{ id: "T1", result: "pass", prompt: "Safe prompt", expectedBehavior: "Answer" }] },
+    "step-8": { evidenceStatus: "confirmed", releaseDecision: "draft" },
+  }, Array.from({ length: 9 }, (_, index) => index));
+  await expect(page.getByRole("status")).toContainText("Package readiness: Ready for review");
+});
+
+test("exports structured evidence with provenance and explicit validation boundary", async ({ page }) => {
+  await openExportPackage(page);
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+
+  const jsonText = await page.locator("pre").innerText();
+  const evidence = JSON.parse(jsonText);
+  expect(evidence.schemaVersion).toBe("1.0");
+  expect(evidence.artifact.type).toBe("custom-gpt-specification");
+  expect(evidence.provenance.source).toBe("browser-local-project");
+  expect(evidence.readiness.behavioralValidation).toBe("not-claimed");
+  expect(evidence.boundaries).toHaveProperty("nonGoals");
+  expect(evidence.failureBehavior).toHaveProperty("recovery");
+  expect(evidence.phases).toHaveProperty("step-8-ship-govern");
+
+  await page.getByRole("button", { name: "Copy" }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
+    .toBe(jsonText);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "⬇ Download .json" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("custom-gpt-spec.json");
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  await expect(readFile(downloadPath!, "utf8")).resolves.toBe(jsonText);
+});
+
+test("keeps export data isolated to the active project after reload", async ({ page }) => {
+  await openExportPackage(page);
+  await page.evaluate(() => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    workspace.projects.push({
+      id: "project-two", name: "Second GPT", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      archived: false, data: { "step-0": { gptName: "Second Project Name" } }, completedSteps: [],
+      currentPage: "export", sidebarOpen: true,
+    });
+    workspace.activeProjectId = "project-two";
+    localStorage.setItem("cgpt-workspace", JSON.stringify(workspace));
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  await expect(page.locator("pre")).toContainText('"name": "Second Project Name"');
+  await expect(page.locator("pre")).not.toContainText('"name": "Test GPT"');
 });

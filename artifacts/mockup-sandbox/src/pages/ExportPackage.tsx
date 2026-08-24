@@ -61,7 +61,7 @@ interface EvidencePackage {
   phases: Record<string, unknown>;
 }
 
-function buildEvidencePackage(completedSteps: Set<number>): EvidencePackage {
+function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string): EvidencePackage {
   const brief = loadStep("step-0");
   const contract = loadStep("step-1");
   const layerData = loadStep("step-2");
@@ -125,7 +125,7 @@ function buildEvidencePackage(completedSteps: Set<number>): EvidencePackage {
       rationale: ship.releaseEvidence || "",
     },
     provenance: {
-      generatedAt: new Date().toISOString(),
+      generatedAt,
       source: "browser-local-project",
       projectName: brief.gptName || "Untitled GPT",
       changeLedger,
@@ -321,12 +321,14 @@ ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${
 
 export default function ExportPackage({ completedSteps: liveCompletedSteps }: { completedSteps?: Set<number> }) {
   const [copied, setCopied] = useState(false);
-  const [format, setFormat] = useState<"markdown" | "instructions">("markdown");
+  const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
   const [storedCompletedSteps] = useState(loadCompletedSteps);
+  const [generatedAt] = useState(() => new Date().toISOString());
   const completedSteps = liveCompletedSteps ?? storedCompletedSteps;
   const incompleteSteps = BUILD_STEPS.filter(({ id }) => !completedSteps.has(id));
-
-  const fullMarkdown = buildMarkdown();
+  const evidencePackage = buildEvidencePackage(completedSteps, generatedAt);
+  const fullMarkdown = buildMarkdown(evidencePackage);
+  const structuredJson = JSON.stringify(evidencePackage, null, 2);
 
   const instructionsOnly = (() => {
     const layerData = loadStep("step-2");
@@ -336,12 +338,16 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
       .join("\n\n");
   })();
 
-  const content = format === "markdown" ? fullMarkdown : instructionsOnly;
+  const content = format === "markdown" ? fullMarkdown : format === "json" ? structuredJson : instructionsOnly;
   const ship = loadStep("step-8");
   const tests = loadStep("step-7");
-  const maturity = ship.releaseDecision === "release-ready" && ship.releaseEvidence && tests.evidenceStatus !== "unknown"
-    ? "Release-ready (owner-declared)"
-    : tests.evidenceStatus !== "unknown" ? "Validated evidence recorded" : "Draft / evidence incomplete";
+  const maturity = evidencePackage.readiness.state === "blocked"
+    ? "Blocked"
+    : evidencePackage.readiness.state === "confirmed"
+      ? "Confirmed (owner-declared)"
+      : evidencePackage.readiness.state === "ready-for-review"
+        ? "Ready for review"
+        : "Incomplete";
 
   const copy = useCallback(async () => {
     await navigator.clipboard.writeText(content);
@@ -351,10 +357,11 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const download = () => {
     const brief = loadStep("step-0");
     const name = (brief.gptName || "custom-gpt").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const isJson = format === "json";
+    const blob = new Blob([content], { type: isJson ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `${name}-spec.md`; a.click();
+    a.href = url; a.download = `${name}-spec.${isJson ? "json" : "md"}`; a.click();
     URL.revokeObjectURL(url);
   };
 
@@ -368,8 +375,20 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
           Copy or download your complete GPT specification package. This is your source-of-truth artifact.
         </p>
         <div role="status" style={{ marginBottom: "1rem", padding: "0.85rem 1rem", background: "var(--color-forge-panel)", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", fontSize: "0.82rem" }}>
-          <strong>Package maturity: {maturity}</strong><br />
-          <span style={{ color: "var(--color-forge-muted-fg)" }}>This summarizes recorded evidence and owner decisions. It does not validate runtime model behavior.</span>
+          <strong>Package readiness: {maturity}</strong><br />
+          <span style={{ color: "var(--color-forge-muted-fg)" }}>
+            {evidencePackage.readiness.completedSteps}/{evidencePackage.readiness.totalSteps} build steps complete. This summarizes recorded evidence and owner decisions; it does not validate runtime model behavior.
+          </span>
+          {evidencePackage.readiness.unresolvedItems.length > 0 && (
+            <details style={{ marginTop: "0.55rem" }}>
+              <summary style={{ cursor: "pointer", color: "var(--color-forge-fg)" }}>
+                {evidencePackage.readiness.unresolvedItems.length} unresolved item{evidencePackage.readiness.unresolvedItems.length === 1 ? "" : "s"}
+              </summary>
+              <ul style={{ margin: "0.45rem 0 0", paddingLeft: "1.2rem", color: "var(--color-forge-muted-fg)" }}>
+                {evidencePackage.readiness.unresolvedItems.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </details>
+          )}
         </div>
       </div>
 
@@ -401,7 +420,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
 
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          {(["markdown", "instructions"] as const).map(f => (
+          {(["markdown", "instructions", "json"] as const).map(f => (
             <button key={f} onClick={() => setFormat(f)}
               style={{
                 padding: "0.4rem 0.75rem", borderRadius: "var(--radius-md)", cursor: "pointer",
@@ -409,13 +428,13 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
                 color: format === f ? "var(--color-forge-paper)" : "var(--color-forge-fg)",
                 border: "1px solid var(--color-forge-border)", fontFamily: "var(--font-body)", fontSize: "0.82rem",
               }}>
-              {f === "markdown" ? "Full Spec (Markdown)" : "Instructions Only"}
+               {f === "markdown" ? "Full Spec (Markdown)" : f === "json" ? "Evidence (JSON)" : "Instructions Only"}
             </button>
           ))}
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
           <button onClick={copy} style={primaryBtn}>{copied ? "✓ Copied!" : "📋 Copy"}</button>
-          <button onClick={download} style={secondaryBtn}>⬇ Download .md</button>
+          <button onClick={download} style={secondaryBtn}>⬇ Download .{format === "json" ? "json" : "md"}</button>
         </div>
       </div>
 
@@ -430,7 +449,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
       </pre>
 
       <div style={{ marginTop: "1rem", padding: "0.75rem 1rem", background: "var(--color-forge-panel)", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", fontSize: "0.8rem", color: "var(--color-forge-muted-fg)" }}>
-        💡 <strong>Usage:</strong> The "Full Spec" is your version-controlled source of truth — keep it in your repo alongside the GPT. The "Instructions Only" view is ready to paste directly into the ChatGPT builder's Instructions field.
+         💡 <strong>Usage:</strong> The "Full Spec" is your version-controlled source of truth. The "Evidence (JSON)" export preserves readiness, provenance, boundaries, failure behavior, and phase records for machine review. The "Instructions Only" view is ready to paste directly into the ChatGPT builder's Instructions field.
       </div>
     </div>
   );
