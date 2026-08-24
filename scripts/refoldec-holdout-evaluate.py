@@ -50,6 +50,10 @@ def package_hash(skill_path: Path) -> str:
     return digest.hexdigest()
 
 
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def evaluate(
     package_path: Path,
     root: Path,
@@ -106,9 +110,9 @@ def evaluate(
                 "Reference runtime preserved unresolved evidence as unknown.",
             ]
             results = []
-            for expectation, passed, note in zip(expectations, checks, evidence_notes):
+            for index, (expectation, passed, note) in enumerate(zip(expectations, checks, evidence_notes), start=1):
                 result = "pass" if passed else "fail"
-                results.append({"expectation": expectation, "result": result, "observed_evidence": note})
+                results.append({"expectation_index": index, "result": result, "observed_evidence": note})
                 if not passed:
                     failures.append(expectation)
             verdict = "fail" if failures else "pass"
@@ -135,8 +139,8 @@ def evaluate(
             "case_id": case["id"],
             "partition": case["partition"],
             "risk": case.get("risk"),
-            "prompt": case["prompt"],
-            "expectations": expectations,
+            "protected_case_sha256": file_hash(holdout_path),
+            "expectations_count": len(expectations),
         },
         "output": {
             "raw_output": raw_output,

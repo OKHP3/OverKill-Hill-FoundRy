@@ -25,8 +25,8 @@ capture pages, client material, or employer material.
 
 **Decision: NO-GO for deployment.** The package is structurally prepared, human
 source review is recorded, and the protected holdout has been reviewed by a
-separate evaluator. The holdout result is inconclusive because no approved
-executable runtime adapter is available, so the equilibrium decision remains
+separate evaluator against the approved deterministic reference runtime. The
+result is bounded to that local target, so the equilibrium decision remains
 `defer-for-evidence`. ReFolDec is not being declared canonical, stable, or
 production-ready.
 
@@ -34,9 +34,10 @@ production-ready.
 
 - `scripts/public-graduation-audit.py` checks package completeness, restricted
   references, public metadata, and deployment separation.
-- `skill/tests/evals.json` includes development cases and an unseen protected
-  holdout. `holdout-evaluation.json` records the separate evaluator result;
-  because the package is instruction-only, no holdout performance is claimed.
+- `skill/tests/evals.json` includes development cases and metadata for an unseen
+  protected holdout. The protected case is supplied separately by a maintainer;
+  `holdout-evaluation.json` records only non-sensitive metadata and the case
+  hash. No live-model or production performance is claimed.
 - `equilibrium-decision.md` records evidence tiers, limitations, and dissent.
 - `release-checklist.md` records the owner actions required before deployment.
 

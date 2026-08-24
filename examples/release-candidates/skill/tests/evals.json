@@ -36,6 +36,6 @@
       "risk": "high",
       "prompt": "Run with a required evidence item missing.",
       "expectations": ["Returns the documented failure result.", "Does not invent the missing rule."]
-    },
+    }
   ]
 }

@@ -54,3 +54,6 @@ attached_assets/
 # Python bytecode
 __pycache__/
 *.py[cod]
+
+# Protected ReFolDec holdout content is supplied only by maintainers.
+**/protected-holdout.json

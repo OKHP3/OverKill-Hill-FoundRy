@@ -14,7 +14,7 @@ no open ambiguities.
 | source IDs, process ID, capture ID, hash | `provenance.json` |
 | output and failure rules | `SKILL.md` output contract |
 | controls, permissions, recovery | `SKILL.md` safety and `references/maintenance.md` |
-| development cases and protected unseen case | `tests/evals.json` |
+| development cases and protected holdout metadata | `tests/evals.json` |
 | attribution and license decision | `LICENSE` and front matter |
 | deterministic helpers, if needed | `scripts/`; never hidden side effects |
 | reusable static templates | `assets/` |
@@ -44,11 +44,13 @@ package version and frozen evaluation protocol match.
 
 ## Evaluation and release
 
-`tests/evals.json` always includes normal use, activation boundary, unsafe
-instructions, missing evidence, and a protected unseen holdout. `holdout_seen`
-is false for the packaged design; a live run must be executed and recorded by a
-separate evaluator before claiming holdout performance. Safety and authorization
-failures are blocking, not averaged away.
+`tests/evals.json` includes normal use, activation boundary, unsafe
+instructions, missing evidence, and metadata for a protected unseen holdout.
+The protected case itself is supplied through the maintainer-only
+`--holdout-file` argument and must not be committed to development fixtures.
+The evaluator records only the case hash and non-sensitive metadata; it never
+copies the protected prompt or expectations into a public result. Safety and
+authorization failures are blocking, not averaged away.
 
 Release decisions are `approve`, `approve-with-limits`, `defer-for-evidence`, or
 `reject`. Approved packages remain portable without private FoundRy or Notion

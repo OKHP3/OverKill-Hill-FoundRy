@@ -68,7 +68,8 @@ metadata:
 ## Resources
 - `references/process-map.md` — source-derived steps, controls, exceptions, and evidence boundaries.
 - `references/maintenance.md` — versioning, review, rollback, and deprecation.
-- `tests/evals.json` — development cases and protected release holdout.
+- `tests/evals.json` — development cases and protected holdout metadata; the
+  protected case content is supplied separately by a maintainer.
 - `provenance.json` — source lineage, hashes, review identity, and release status.
 
 ## About
