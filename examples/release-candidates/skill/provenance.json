@@ -13,7 +13,7 @@
     "review_id": "refoldec-release-review-001",
     "reviewed_at": "2026-08-21",
     "decision": "approve-with-limits",
-    "status": "structural-integrity-with-inconclusive-holdout"
+    "status": "structural-integrity-with-reference-runtime-holdout"
   },
   "generated_at": "2026-08-22T17:23:28.520588+00:00",
   "source_capture_hash": "1b5cdd7de80f04e2f82e3368200eff17e036ee34eeefdcd4d141f1cd4256f17d"

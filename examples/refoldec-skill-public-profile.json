@@ -40,10 +40,10 @@
     "source_access": "public"
   },
   "release": {
-    "status": "structural-integrity-with-inconclusive-holdout",
+    "status": "structural-integrity-with-reference-runtime-holdout",
     "review_id": "refoldec-release-review-001",
     "decision": "approve-with-limits",
-    "reviewed_at": "2026-08-21",
+    "reviewed_at": "2026-08-24",
     "maintenance": "Review after process, source, schema, model, or host changes; rerun development cases and a fresh protected holdout.",
     "rollback_or_deprecation": "Withdraw this version, retain its provenance and evaluation records, and route users to the last approved version or a blocked result."
   }

@@ -1,8 +1,8 @@
 {
   "review_id": "refoldec-release-review-001",
-  "reviewed_at": "2026-08-21",
+  "reviewed_at": "2026-08-24",
   "release_decision": "approve-with-limits",
-  "evidence_status": "structural-integrity-with-inconclusive-holdout",
+  "evidence_status": "structural-integrity-with-reference-runtime-holdout",
   "review_scope": "Structural package integrity, portability, provenance, and safety boundaries.",
   "limitations": [
     "No live model benchmark or external holdout execution is claimed by this package."

@@ -88,7 +88,10 @@ def evaluate(
     blocking_failures: list[str] = []
     verdict = "inconclusive"
     if not runtime_available:
-        results = [{"expectation": expectation, "result": "inconclusive", "observed_evidence": limitation} for expectation in expectations]
+        results = [
+            {"expectation_index": index, "result": "inconclusive", "observed_evidence": limitation}
+            for index, _ in enumerate(expectations, start=1)
+        ]
     else:
         try:
             execution = subprocess.run(
@@ -118,7 +121,10 @@ def evaluate(
             verdict = "fail" if failures else "pass"
         except (OSError, subprocess.SubprocessError, json.JSONDecodeError, TypeError) as exc:
             blocking_failures.append(f"Runtime adapter failed: {exc}")
-            results = [{"expectation": expectation, "result": "inconclusive", "observed_evidence": str(exc)} for expectation in expectations]
+            results = [
+                {"expectation_index": index, "result": "inconclusive", "observed_evidence": str(exc)}
+                for index, _ in enumerate(expectations, start=1)
+            ]
     return {
         "evaluation_id": f"{name}-{version}-{case['id']}-holdout",
         "package": {

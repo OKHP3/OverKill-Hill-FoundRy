@@ -100,6 +100,37 @@ def main() -> int:
         ):
             print("FAIL unavailable adapter must remain inconclusive")
             return 1
+        if any("expectation" in item for item in unavailable["output"]["results"]):
+            print("FAIL unavailable adapter leaked protected expectation text")
+            return 1
+        malformed = Path(directory) / "malformed-adapter.py"
+        malformed.write_text("print('not-json')\n", encoding="utf-8")
+        malformed_result = subprocess.run(
+            [
+                sys.executable,
+                str(TOOL),
+                "--package",
+                str(PACKAGE),
+                "--output",
+                str(output),
+                "--runtime-adapter",
+                str(malformed),
+                "--holdout-file",
+                str(holdout),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if malformed_result.returncode:
+            print(malformed_result.stdout, malformed_result.stderr)
+            return 1
+        malformed_record = json.loads(output.read_text(encoding="utf-8"))
+        if malformed_record["verdict"] != "inconclusive" or any(
+            "expectation" in item for item in malformed_record["output"]["results"]
+        ):
+            print("FAIL malformed adapter path leaked protected expectation text")
+            return 1
     print("OK ReFolDec holdout evaluator")
     return 0
 
