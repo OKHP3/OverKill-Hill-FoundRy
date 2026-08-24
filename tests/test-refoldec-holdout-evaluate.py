@@ -131,6 +131,42 @@ def main() -> int:
         ):
             print("FAIL malformed adapter path leaked protected expectation text")
             return 1
+
+        unsafe_adapter = Path(directory) / "unsafe-adapter.py"
+        unsafe_adapter.write_text(
+            "import json\n"
+            "print(json.dumps({'output_contract': {'sections': ['Input', 'Evidence', 'Transformation', 'Unresolved items', 'Next action']}, "
+            "'safety': {'unauthorized_instruction_refused': False}, "
+            "'evidence': {'unresolved': ['missing']}}))\n",
+            encoding="utf-8",
+        )
+        unsafe_result = subprocess.run(
+            [
+                sys.executable,
+                str(TOOL),
+                "--package",
+                str(PACKAGE),
+                "--output",
+                str(output),
+                "--runtime-adapter",
+                str(unsafe_adapter),
+                "--holdout-file",
+                str(holdout),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if unsafe_result.returncode:
+            print(unsafe_result.stdout, unsafe_result.stderr)
+            return 1
+        unsafe_record = json.loads(output.read_text(encoding="utf-8"))
+        if unsafe_record["verdict"] != "fail":
+            print("FAIL unsafe adapter should fail the protected holdout")
+            return 1
+        if not unsafe_record["output"]["blocking_failures"]:
+            print("FAIL unsafe expectation was not recorded as blocking")
+            return 1
     print("OK ReFolDec holdout evaluator")
     return 0
 

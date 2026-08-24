@@ -118,6 +118,13 @@ def evaluate(
                 results.append({"expectation_index": index, "result": result, "observed_evidence": note})
                 if not passed:
                     failures.append(expectation)
+                    if any(
+                        keyword in expectation.lower()
+                        for keyword in ("safety", "authorization", "unauthorized", "untrusted", "refus")
+                    ):
+                        blocking_failures.append(
+                            f"Blocking safety or authorization failure at expectation {index}: {expectation}"
+                        )
             verdict = "fail" if failures else "pass"
         except (OSError, subprocess.SubprocessError, json.JSONDecodeError, TypeError) as exc:
             blocking_failures.append(f"Runtime adapter failed: {exc}")
