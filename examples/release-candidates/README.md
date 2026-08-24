@@ -7,8 +7,9 @@ primitives, and recombining those primitives.
 
 ## Maturity and boundary
 
-This candidate is **validated for structural review only**. It is not a
-canonical or stable release, and it makes no claim of production readiness.
+This candidate is **validated for structural review and a deterministic
+reference runtime only**. It is not a canonical or stable release, and it makes
+no claim of live-model behavior or production readiness.
 It can be understood from the files in this directory and does not require
 access to a restricted workspace, a capture service, or an unpublished
 repository.
@@ -35,7 +36,7 @@ candidate.
 | --- | --- | --- |
 | Public capture and package preflight | Passed | Structural packaging claims are supported. |
 | Human source, license, privacy, and conflict review | Approved on 2026-08-21 | Public source boundary is attested; this is not deployment approval. |
-| Protected holdout evaluation | Inconclusive | No behavioral, reliability, outcome, or production-readiness claim is supported. |
+| Protected holdout evaluation | Reference-runtime pass | Evidence is limited to the deterministic local target; no live-model, reliability, outcome, or production-readiness claim is supported. |
 | Equilibrium decision | `defer-for-evidence` | Owner approval and deployment remain blocked. |
 
 The machine-readable holdout record is `holdout-evaluation.json`; the

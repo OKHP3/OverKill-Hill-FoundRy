@@ -12,8 +12,8 @@ visibility change as part of this checklist.
 - [x] Package preflight passes on the public example.
 - [x] Human source, license, privacy, and conflict review is signed and dated
   in `provenance.json` by Jamie OverKill Hill on 2026-08-21.
-- [x] Protected holdout was reviewed by a separate evaluator; the result is
-  recorded as inconclusive in `holdout-evaluation.md`, with no behavioral
-  execution claim.
+- [x] Protected holdout was reviewed by a separate evaluator against the
+  deterministic reference runtime; the result is recorded as a bounded pass in
+  `holdout-evaluation.md`, with no live-model or production behavior claim.
 - [ ] Equilibrium decision is updated from defer to an owner-approved decision.
 - [ ] Only after all gates pass: separately authorize deployment.

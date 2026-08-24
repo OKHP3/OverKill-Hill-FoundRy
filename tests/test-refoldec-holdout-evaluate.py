@@ -35,17 +35,44 @@ def main() -> int:
             print(result.stdout, result.stderr)
             return 1
         record = json.loads(output.read_text(encoding="utf-8"))
-        if record["verdict"] != "inconclusive":
-            print("FAIL instruction-only package must remain inconclusive")
+        if record["verdict"] != "pass":
+            print("FAIL approved reference runtime should pass the protected holdout")
             return 1
         if record["input"]["case_id"] != "unseen-holdout":
             print("FAIL evaluator selected the wrong case")
             return 1
-        if any(item["result"] != "inconclusive" for item in record["output"]["results"]):
-            print("FAIL unexecuted expectations were treated as observed behavior")
+        if any(item["result"] != "pass" for item in record["output"]["results"]):
+            print("FAIL reference runtime did not satisfy every protected expectation")
             return 1
-        if record["output"]["blocking_failures"]:
-            print("FAIL no blocking failure should be invented for an unavailable runtime")
+        if record["output"]["failures"] or record["output"]["blocking_failures"]:
+            print("FAIL reference runtime reported an unexpected failure")
+            return 1
+        if record["evaluator"]["runtime_available"] is not True:
+            print("FAIL reference runtime was not invoked")
+            return 1
+        missing = subprocess.run(
+            [
+                sys.executable,
+                str(TOOL),
+                "--package",
+                str(PACKAGE),
+                "--output",
+                str(output),
+                "--runtime-adapter",
+                str(Path(directory) / "missing-adapter.py"),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if missing.returncode:
+            print(missing.stdout, missing.stderr)
+            return 1
+        unavailable = json.loads(output.read_text(encoding="utf-8"))
+        if unavailable["verdict"] != "inconclusive" or any(
+            item["result"] != "inconclusive" for item in unavailable["output"]["results"]
+        ):
+            print("FAIL unavailable adapter must remain inconclusive")
             return 1
     print("OK ReFolDec holdout evaluator")
     return 0

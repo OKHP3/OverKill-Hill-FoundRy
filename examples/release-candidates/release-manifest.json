@@ -33,9 +33,10 @@
     "production_ready": false
   },
   "evaluation": {
-    "status": "inconclusive",
+    "status": "reference-runtime-pass",
     "record": "holdout-evaluation.json",
     "behavioral_claims_supported": false,
-    "release_consequence": "Retain defer-for-evidence; do not deploy or claim behavioral reliability."
+    "reference_runtime_evidence": true,
+    "release_consequence": "Reference-runtime behavior is evidenced; retain defer-for-evidence for live models, reliability, outcomes, and production readiness."
   }
 }

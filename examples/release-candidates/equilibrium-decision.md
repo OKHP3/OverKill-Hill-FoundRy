@@ -8,7 +8,7 @@
   the synthetic example passes the package preflight; deployment is disabled.
 - **Inferred:** the fold/unfold/refold framing may transfer to other domains.
 - **Unknown:** usability across hosts, performance, accessibility of generated
-  outputs, legal status of future contributions, and live holdout behavior.
+  outputs, legal status of future contributions, and live-model holdout behavior.
 
 ## Independent challenge
 
@@ -22,17 +22,15 @@ review remains blocking.
 
 No benchmark, user study, legal opinion, or live model evaluation is claimed.
 The protected holdout in `skill/tests/evals.json` was reviewed on
-2026-08-22 by a separate evaluator against package version `0.1.0`. The result
-was **inconclusive**: the package contains portable instructions but no
-executable evaluator or runtime output. Each declared expectation therefore
-remains unverified; no failures were observed because no behavior was executed.
+2026-08-24 by a separate evaluator against package version `0.1.0`. The
+deterministic reference runtime passed each declared expectation. This is
+bounded evidence for the repository target only; the package still contains
+portable instructions and no live model or host integration was executed.
 The exact record is `holdout-evaluation.md`.
 
-The package validator, source example validator, and public-graduation audit
-pass. The separate evaluator now records the protected holdout as
-**inconclusive** because no approved executable runtime adapter is present.
-This makes the structural-versus-behavioral limitation explicit rather than
-removing it.
+The package validator, source example validator, public-graduation audit, and
+reference-runtime holdout pass. The structural-versus-behavioral limitation
+remains explicit because the adapter is not a live model or host integration.
 
 The release decision remains `defer-for-evidence`. No behavioral, reliability,
 outcome, or production-readiness claim is justified by this run.

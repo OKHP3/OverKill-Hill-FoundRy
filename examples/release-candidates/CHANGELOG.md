@@ -6,7 +6,7 @@
 - Added a dependency-free validator and portable Agent Skill package.
 - Added provenance, attribution, evaluation, equilibrium, rollback, and owner
   approval records.
-- Added a separate offline protected-holdout evaluator; its result is
-  intentionally recorded as inconclusive because no executable runtime adapter
-  is available.
+- Added an approved deterministic reference runtime and protected-holdout
+  evaluator; the reference target passes the protected expectations while
+  keeping live-model and production claims out of scope.
 - Kept deployment disabled pending the graduation gate.

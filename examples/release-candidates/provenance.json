@@ -13,9 +13,11 @@
     "status": "structural-and-holdout-review-complete",
     "holdout_evaluation": {
       "record": "holdout-evaluation.json",
-      "status": "inconclusive",
+      "status": "reference-runtime-pass",
       "evaluator": "refoldec-holdout-evaluator",
-      "behavioral_claims_supported": false
+      "behavioral_claims_supported": false,
+      "reference_runtime": "scripts/refoldec-reference-runtime.py",
+      "scope": "Deterministic reference target only; no live model or host claim."
     },
     "owner_approval": {
       "status": "approved",
