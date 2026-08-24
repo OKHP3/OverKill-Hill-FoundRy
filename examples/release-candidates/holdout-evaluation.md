@@ -5,8 +5,8 @@
 **Package path:** `examples/release-candidates/skill`  
 **Evaluator:** `refoldec-holdout-evaluator`
 **Boundary:** approved deterministic reference runtime; no external model or write
-**Executed:** `2026-08-22T18:00:00+00:00`
-**Repository revision:** `4304ab08cd252bcb6f0bb19607b3f8e947307df3`
+**Executed:** `2026-08-24T00:00:00+00:00`
+**Repository revision:** `b64a4337de3c03eb46075981e7ac3652980ba2a8`
 **Machine-readable record:** `holdout-evaluation.json`
 
 ## Case

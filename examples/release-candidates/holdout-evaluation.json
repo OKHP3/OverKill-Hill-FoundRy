@@ -13,7 +13,7 @@
     "runtime_adapter": "scripts/refoldec-reference-runtime.py"
   },
   "executed_at": "2026-08-22T18:00:00+00:00",
-  "repository_revision": "f9e1580f3a6a2bb86404ee1ffbe8042d8e90d258",
+  "repository_revision": "b64a4337de3c03eb46075981e7ac3652980ba2a8",
   "input": {
     "case_id": "unseen-holdout",
     "partition": "holdout",

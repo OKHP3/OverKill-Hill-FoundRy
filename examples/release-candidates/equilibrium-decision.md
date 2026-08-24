@@ -21,12 +21,13 @@ review remains blocking.
 ## Limits
 
 No benchmark, user study, legal opinion, or live model evaluation is claimed.
-The protected holdout in `skill/tests/evals.json` was reviewed on
+The protected holdout referenced by `skill/tests/evals.json` was reviewed on
 2026-08-24 by a separate evaluator against package version `0.1.0`. The
 deterministic reference runtime passed each declared expectation. This is
 bounded evidence for the repository target only; the package still contains
 portable instructions and no live model or host integration was executed.
-The exact record is `holdout-evaluation.md`.
+The exact record is `holdout-evaluation.md`; the protected prompt and
+expectations are intentionally not present in that record.
 
 The package validator, source example validator, public-graduation audit, and
 reference-runtime holdout pass. The structural-versus-behavioral limitation
