@@ -54,6 +54,27 @@ def main() -> int:
         if not (package / "review.json").is_file() or not (package / "assets" / "README.md").is_file():
             print("FAIL generated package omitted review or assets record")
             return 1
+        for required in (
+            "SKILL.md", "LICENSE", "provenance.json", "review.json",
+            "references/process-map.md", "references/maintenance.md",
+            "tests/evals.json",
+        ):
+            if not (package / required).is_file():
+                print(f"FAIL generated package omitted {required}")
+                return 1
+        skill_text = (package / "SKILL.md").read_text()
+        for phrase in ("untrusted", "prompt injection", "failure result", "approval required"):
+            if phrase not in skill_text.lower():
+                print(f"FAIL generated skill omitted safety boundary: {phrase}")
+                return 1
+
+        incomplete = root / "incomplete"
+        shutil.copytree(package, incomplete)
+        (incomplete / "review.json").unlink()
+        rejected_incomplete = run("validate", str(incomplete))
+        if rejected_incomplete.returncode == 0 or "review.json" not in rejected_incomplete.stdout:
+            print("FAIL incomplete package was accepted", rejected_incomplete.stdout, rejected_incomplete.stderr)
+            return 1
 
         private_profile = dict(profile_data)
         private_profile["source_lineage"] = dict(profile_data["source_lineage"], source_access="private")

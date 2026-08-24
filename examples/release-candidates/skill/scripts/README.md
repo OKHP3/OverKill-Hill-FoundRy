@@ -1,5 +1,5 @@
 # Scripts
 
-No executable scripts are required by this package. The empty directory is
-retained so a future deterministic helper can be added without changing the
-package map.
+No executable scripts are required by this package. The directory is retained
+as an explicit extension point for future deterministic helpers; it has no
+hidden side effects.
