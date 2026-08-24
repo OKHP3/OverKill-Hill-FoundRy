@@ -1,6 +1,7 @@
 import { useState, useCallback, type ReactNode } from "react";
 import { BUILD_STEPS, INSTRUCTION_LAYERS } from "../data/knowledge";
 import { readProjectValue } from "../lib/creatorStorage";
+import { calculateReadiness, type ReadinessState } from "../lib/readiness";
 
 function loadCompletedSteps(): Set<number> {
   try {
@@ -22,8 +23,6 @@ function loadStep(key: string): any {
   try { return readProjectValue(key) ?? {}; } catch { return {}; }
 }
 
-type ReadinessState = "incomplete" | "blocked" | "ready-for-review" | "confirmed";
-
 interface EvidencePackage {
   schemaVersion: "1.0";
   artifact: {
@@ -35,6 +34,7 @@ interface EvidencePackage {
   };
   readiness: {
     state: ReadinessState;
+    confidence: "low" | "medium" | "high";
     completedSteps: number;
     totalSteps: number;
     blockers: string[];
@@ -71,30 +71,10 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
   const starters = loadStep("step-6");
   const tests = loadStep("step-7");
   const ship = loadStep("step-8");
-  const incompleteSteps = BUILD_STEPS.filter(({ id }) => !completedSteps.has(id));
-  const failingTests = Array.isArray(tests.cases) ? tests.cases.filter((test: { result?: string }) => test.result === "fail") : [];
-  const evidence = [
-    { source: "Build Brief", status: brief.evidenceStatus || "unknown", notes: brief.evidenceRegister || "" },
-    { source: "Knowledge Files", status: knowledge.evidenceStatus || "unknown", notes: [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n") },
-    { source: "Test Matrix", status: tests.evidenceStatus || "unknown", notes: [tests.retrievalVerification, tests.toolFailureTest, tests.ownerReview].filter(Boolean).join("\n") },
-    { source: "Ship & Govern", status: ship.evidenceStatus || "unknown", notes: ship.releaseEvidence || "" },
-  ];
-  const blockers = [
-    ...failingTests.map((test: { id?: string }) => `Unresolved failing test${test.id ? ` ${test.id}` : ""}`),
-    ...evidence.filter(item => item.status === "unknown").map(item => `${item.source} evidence is unknown`),
-  ];
-  const unresolvedItems = [
-    ...incompleteSteps.map(({ label }) => `${label} is incomplete`),
-    ...blockers,
-    ...(ship.ownerName?.trim() ? [] : ["Owner confirmation is missing"]),
-    ...(ship.releaseEvidence?.trim() ? [] : ["Release rationale is missing"]),
-  ];
-  const recorded = Boolean(ship.ownerName?.trim() && ship.releaseEvidence?.trim() && ship.releaseDecision !== "draft");
-  const state: ReadinessState = failingTests.length > 0
-    ? "blocked"
-    : incompleteSteps.length > 0 || evidence.some(item => item.status === "unknown")
-      ? "incomplete"
-      : recorded ? "confirmed" : "ready-for-review";
+  const readiness = calculateReadiness({
+    "step-0": brief, "step-1": contract, "step-2": layerData, "step-3": knowledge,
+    "step-4": caps, "step-5": actions, "step-6": starters, "step-7": tests, "step-8": ship,
+  }, completedSteps);
   const changeLedger = Object.fromEntries(
     ["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map(key => [key, loadStep(key)])
   );
@@ -109,17 +89,18 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
       visibility: ship.visibility || "",
     },
     readiness: {
-      state,
-      completedSteps: completedSteps.size,
-      totalSteps: BUILD_STEPS.length,
-      blockers,
-      unresolvedItems,
-      behavioralValidation: "not-claimed",
+      state: readiness.state,
+      confidence: readiness.confidence,
+      completedSteps: readiness.completedSteps,
+      totalSteps: readiness.totalSteps,
+      blockers: readiness.blockers,
+      unresolvedItems: readiness.unresolvedItems,
+      behavioralValidation: readiness.behavioralValidation,
     },
-    evidence,
+    evidence: readiness.evidence,
     humanConfirmation: {
       required: true,
-      recorded,
+      recorded: readiness.humanConfirmation.recorded,
       owner: ship.ownerName || "",
       decision: ship.releaseDecision || "draft",
       rationale: ship.releaseEvidence || "",
@@ -144,7 +125,7 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
     },
     assumptions: {
       knowledgeRetrieval: knowledge.retrievalNotes || "",
-      unresolved: unresolvedItems,
+      unresolved: readiness.unresolvedItems,
     },
     phases: {
       "step-0-build-brief": brief,
@@ -304,6 +285,10 @@ ${ship.maintenanceCadence || "(not defined)"}
 ---
 
 ## Evidence and Provenance Record
+**Package readiness:** ${evidencePackage.readiness.state}
+**Confidence:** ${evidencePackage.readiness.confidence}
+**Behavioral validation:** not claimed by this export; a passing protected holdout is required before making a behavioral claim.
+**Human confirmation:** ${evidencePackage.humanConfirmation.recorded ? `recorded by ${evidencePackage.humanConfirmation.owner || "owner"}` : "required before release"}
 ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${status || "unknown"}\n${notes || "(unknown - verification needed)"}`).join("\n\n")}
 
 ### Change Ledger

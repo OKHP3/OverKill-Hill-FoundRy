@@ -184,6 +184,7 @@ test("exports structured evidence with provenance and explicit validation bounda
   expect(evidence.artifact.type).toBe("custom-gpt-specification");
   expect(evidence.provenance.source).toBe("browser-local-project");
   expect(evidence.readiness.behavioralValidation).toBe("not-claimed");
+  expect(evidence.readiness).toHaveProperty("confidence");
   expect(evidence.boundaries).toHaveProperty("nonGoals");
   expect(evidence.failureBehavior).toHaveProperty("recovery");
   expect(evidence.phases).toHaveProperty("step-8-ship-govern");

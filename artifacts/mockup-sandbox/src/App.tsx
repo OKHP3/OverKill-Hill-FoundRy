@@ -25,6 +25,7 @@ import {
   updateActiveProject,
   type CreatorWorkspace,
 } from "./lib/creatorStorage";
+import { calculateReadiness } from "./lib/readiness";
 
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 type ThemePreference = "light" | "dark" | "system";
@@ -390,6 +391,12 @@ function CreatorShell() {
 
   const completedCount = completedSteps.size;
   const progress = Math.round((completedCount / BUILD_STEPS.length) * 100);
+  const readiness = calculateReadiness(project.data, completedSteps);
+  const readinessLabel = readiness.state === "ready-for-review"
+    ? "Ready for review"
+    : readiness.state === "confirmed"
+      ? "Confirmed (owner-declared)"
+      : readiness.state[0].toUpperCase() + readiness.state.slice(1);
 
   const renderPage = (): ReactNode => {
     const page = typeof currentPage === "number" ? currentPage : 0;
@@ -436,6 +443,15 @@ function CreatorShell() {
             <div className="creator-progress-value" style={{ width: `${progress}%` }} />
           </div>
           <div className="creator-progress-meta">{completedCount} of {BUILD_STEPS.length} steps complete</div>
+          <div aria-label="Project evidence summary" style={{ marginTop: "0.75rem", paddingTop: "0.65rem", borderTop: "1px solid var(--color-forge-border)", fontSize: "0.76rem" }}>
+            <strong>Evidence: {readinessLabel}</strong>
+            <div style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.2rem" }}>
+              Confidence: {readiness.confidence} · {readiness.unresolvedItems.length} unresolved
+            </div>
+            <div style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.2rem" }}>
+              Human confirmation: {readiness.humanConfirmation.recorded ? "recorded" : "required"}
+            </div>
+          </div>
         </div>
         <div style={{ padding: "0 1rem 1rem" }}>
           <button type="button" onClick={() => setProjectMenuOpen((open) => !open)} aria-expanded={projectMenuOpen}
