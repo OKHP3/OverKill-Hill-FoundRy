@@ -202,6 +202,31 @@ test("exports structured evidence with provenance and explicit validation bounda
   await expect(readFile(downloadPath!, "utf8")).resolves.toBe(jsonText);
 });
 
+test("toggles a safe rendered Markdown preview and keeps it synchronized", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Preview GPT", primaryUsers: "Reviewers", outcomes: "Make the package readable." },
+    "step-2": { 1: "Be **careful** and use `known sources`." },
+  });
+
+  await page.getByRole("button", { name: "Rendered Preview" }).click();
+  const preview = page.getByTestId("markdown-preview");
+  await expect(preview).toBeVisible();
+  await expect(preview.locator("h1")).toContainText("Custom GPT Specification Package");
+  await expect(preview.getByRole("heading", { name: "Build Brief evidence", exact: true })).toBeVisible();
+  await expect(preview.locator("code")).toContainText("known sources");
+  await expect(page.locator("pre")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Raw Markdown" }).click();
+  await expect(page.locator("pre")).toContainText("# Custom GPT Specification Package");
+  await page.getByRole("button", { name: "Rendered Preview" }).click();
+  await expect(preview).toContainText("Preview GPT");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  await expect(page.locator("pre")).toContainText('"name": "Preview GPT"');
+  await expect(page.getByTestId("markdown-preview")).toHaveCount(0);
+});
+
 test("keeps export data isolated to the active project after reload", async ({ page }) => {
   await openExportPackage(page);
   await page.evaluate(() => {

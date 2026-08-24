@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import { BUILD_STEPS, INSTRUCTION_LAYERS } from "../data/knowledge";
 import { readProjectValue } from "../lib/creatorStorage";
 
@@ -319,9 +319,81 @@ ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${
 `;
 }
 
+function renderInlineMarkdown(value: string): ReactNode[] {
+  return value.split(/(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean).map((part, index) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return <code key={index} style={{ color: "var(--color-forge-highlight)", background: "var(--color-forge-panel)", padding: "0.08rem 0.25rem", borderRadius: "0.2rem" }}>{part.slice(1, -1)}</code>;
+    }
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return <em key={index}>{part.slice(1, -1)}</em>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
+function renderMarkdownPreview(markdown: string): ReactNode[] {
+  const lines = markdown.split("\n");
+  const blocks: ReactNode[] = [];
+  let paragraph: string[] = [];
+  let list: string[] = [];
+
+  const flushParagraph = () => {
+    if (paragraph.length === 0) return;
+    blocks.push(<p key={`paragraph-${blocks.length}`} style={{ margin: "0 0 0.85rem", lineHeight: 1.65 }}>{renderInlineMarkdown(paragraph.join(" "))}</p>);
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (list.length === 0) return;
+    blocks.push(
+      <ul key={`list-${blocks.length}`} style={{ margin: "0 0 0.85rem", paddingLeft: "1.35rem", lineHeight: 1.65 }}>
+        {list.map((item, index) => <li key={index}>{renderInlineMarkdown(item)}</li>)}
+      </ul>,
+    );
+    list = [];
+  };
+
+  lines.forEach((line, index) => {
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    const bullet = line.match(/^- (.+)$/);
+    if (heading) {
+      flushParagraph();
+      flushList();
+      const level = Math.min(heading[1].length, 4);
+      const Heading = ({ 1: "h1", 2: "h2", 3: "h3", 4: "h4" } as const)[level as 1 | 2 | 3 | 4];
+      blocks.push(<Heading key={`heading-${index}`} style={{ margin: "1.2rem 0 0.55rem", color: level === 1 ? "var(--color-forge-accent)" : "var(--color-forge-fg)", fontFamily: "var(--font-heading)", fontSize: level === 1 ? "1.4rem" : level === 2 ? "1.1rem" : "0.95rem" }}>{renderInlineMarkdown(heading[2])}</Heading>);
+      return;
+    }
+    if (/^---+$/.test(line.trim())) {
+      flushParagraph();
+      flushList();
+      blocks.push(<hr key={`rule-${index}`} style={{ border: 0, borderTop: "1px solid var(--color-forge-border)", margin: "1rem 0" }} />);
+      return;
+    }
+    if (bullet) {
+      flushParagraph();
+      list.push(bullet[1]);
+      return;
+    }
+    if (!line.trim()) {
+      flushParagraph();
+      flushList();
+      return;
+    }
+    paragraph.push(line.replace(/^>\s?/, ""));
+  });
+
+  flushParagraph();
+  flushList();
+  return blocks;
+}
+
 export default function ExportPackage({ completedSteps: liveCompletedSteps }: { completedSteps?: Set<number> }) {
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
+  const [markdownView, setMarkdownView] = useState<"raw" | "preview">("raw");
   const [storedCompletedSteps] = useState(loadCompletedSteps);
   const [generatedAt] = useState(() => new Date().toISOString());
   const completedSteps = liveCompletedSteps ?? storedCompletedSteps;
@@ -432,21 +504,46 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
             </button>
           ))}
         </div>
+        {format === "markdown" && (
+          <div style={{ display: "flex", gap: "0.4rem", marginLeft: "0.25rem" }} aria-label="Markdown view">
+            {(["raw", "preview"] as const).map(view => (
+              <button key={view} onClick={() => setMarkdownView(view)}
+                style={{
+                  padding: "0.35rem 0.6rem", borderRadius: "var(--radius-md)", cursor: "pointer",
+                  background: markdownView === view ? "var(--color-forge-highlight)" : "transparent",
+                  color: markdownView === view ? "var(--color-forge-espresso)" : "var(--color-forge-muted-fg)",
+                  border: "1px solid var(--color-forge-border)", fontFamily: "var(--font-body)", fontSize: "0.78rem",
+                }}>
+                {view === "raw" ? "Raw Markdown" : "Rendered Preview"}
+              </button>
+            ))}
+          </div>
+        )}
         <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
           <button onClick={copy} style={primaryBtn}>{copied ? "✓ Copied!" : "📋 Copy"}</button>
           <button onClick={download} style={secondaryBtn}>⬇ Download .{format === "json" ? "json" : "md"}</button>
         </div>
       </div>
 
-      <pre style={{
-        background: "var(--color-forge-espresso)", border: "1px solid var(--color-forge-border)",
-        borderRadius: "var(--radius-md)", padding: "1.25rem",
-        fontFamily: "var(--font-mono)", fontSize: "0.78rem", lineHeight: 1.7,
-        color: "var(--color-forge-fg)", whiteSpace: "pre-wrap",
-        maxHeight: "calc(100vh - 280px)", overflowY: "auto",
-      }}>
-        {content}
-      </pre>
+      {format === "markdown" && markdownView === "preview" ? (
+        <article data-testid="markdown-preview" aria-label="Rendered Markdown preview" style={{
+          background: "var(--color-forge-espresso)", border: "1px solid var(--color-forge-border)",
+          borderRadius: "var(--radius-md)", padding: "1.25rem",
+          color: "var(--color-forge-fg)", maxHeight: "calc(100vh - 280px)", overflowY: "auto",
+        }}>
+          {renderMarkdownPreview(content)}
+        </article>
+      ) : (
+        <pre style={{
+          background: "var(--color-forge-espresso)", border: "1px solid var(--color-forge-border)",
+          borderRadius: "var(--radius-md)", padding: "1.25rem",
+          fontFamily: "var(--font-mono)", fontSize: "0.78rem", lineHeight: 1.7,
+          color: "var(--color-forge-fg)", whiteSpace: "pre-wrap",
+          maxHeight: "calc(100vh - 280px)", overflowY: "auto",
+        }}>
+          {content}
+        </pre>
+      )}
 
       <div style={{ marginTop: "1rem", padding: "0.75rem 1rem", background: "var(--color-forge-panel)", border: "1px solid var(--color-forge-border)", borderRadius: "var(--radius-md)", fontSize: "0.8rem", color: "var(--color-forge-muted-fg)" }}>
          💡 <strong>Usage:</strong> The "Full Spec" is your version-controlled source of truth. The "Evidence (JSON)" export preserves readiness, provenance, boundaries, failure behavior, and phase records for machine review. The "Instructions Only" view is ready to paste directly into the ChatGPT builder's Instructions field.

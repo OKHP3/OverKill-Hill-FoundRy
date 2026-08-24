@@ -3,8 +3,8 @@ name: SPA runtime contract
 description: Relationship between the Custom GPT Creator source pages and the current mockup sandbox entrypoint.
 ---
 
-The Custom GPT Creator transfer document describes a runnable SPA with stateful page navigation, but the current mockup sandbox App entrypoint serves only discovered isolated components under preview routes. The page files remain in the repository without being imported by that entrypoint.
+The Custom GPT Creator is a runnable browser-only SPA in its dedicated artifact, whose thin entrypoint reuses the canonical creator pages from the mockup-sandbox source. The mockup-sandbox artifact separately serves isolated forge previews.
 
-**Why:** This is a product-surface decision, not a cosmetic discrepancy. Treating the page files as the live SPA causes misleading workflows, deployment instructions, and review results.
+**Why:** The Creator and Canvas preview surfaces intentionally share source components but have different runtime responsibilities. Confusing them produces misleading workflow and deployment conclusions.
 
-**How to apply:** Before adding features or claiming the SPA is runnable, choose one explicit direction: restore a real app entrypoint/workflow for the pages, or reclassify the pages as archived/reference source and update the transfer docs and Pages workflow accordingly.
+**How to apply:** Creator features belong in the canonical pages and must be verified through the dedicated Creator workflow. Canvas-only preview behavior belongs to the mockup-sandbox entrypoint and must not replace the Creator application shell.

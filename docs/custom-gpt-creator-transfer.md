@@ -83,7 +83,7 @@ Fonts are loaded via `<link>` tags in `artifacts/custom-gpt-creator/index.html`.
 | 8 | `ShipGovern.tsx` | Step 8 | Visibility, versioning, governance, ship-gate checker |
 | "audit" | `AuditMode.tsx` | Bonus | 10-item rubric, 0-5 scoring, avg >= 4.0 + safety >= 4 gate |
 | "compare" | `PlatformCompare.tsx` | Bonus | Decision tree, feature matrix, taxonomy, evolution timeline |
-| "export" | `ExportPackage.tsx` | Bonus | Full Markdown spec, instructions-only export, or structured evidence JSON; copy or download |
+| "export" | `ExportPackage.tsx` | Bonus | Full Markdown spec with raw/rendered views, instructions-only export, or structured evidence JSON; copy or download |
 
 ### Data layer
 
