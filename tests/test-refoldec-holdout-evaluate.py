@@ -167,6 +167,50 @@ def main() -> int:
         if not unsafe_record["output"]["blocking_failures"]:
             print("FAIL unsafe expectation was not recorded as blocking")
             return 1
+
+        scan = subprocess.run(
+            [
+                sys.executable,
+                str(TOOL),
+                "--scan-release-artifacts",
+                "--holdout-file",
+                str(holdout),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if scan.returncode:
+            print(scan.stdout, scan.stderr)
+            return 1
+
+        leaked = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
+        original = leaked.read_text(encoding="utf-8")
+        leaked.write_text(
+            original
+            + "\nProtected text: "
+            + json.loads(holdout.read_text(encoding="utf-8"))["prompt"]
+            + "\n",
+            encoding="utf-8",
+        )
+        try:
+            failed_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if failed_scan.returncode == 0 or "protected holdout content" not in failed_scan.stderr:
+                print("FAIL release scan did not detect protected content")
+                return 1
+        finally:
+            leaked.write_text(original, encoding="utf-8")
     print("OK ReFolDec holdout evaluator")
     return 0
 

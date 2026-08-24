@@ -9,6 +9,11 @@ visibility change as part of this checklist.
 - [x] Public README, specification, schema, examples, validator, skill,
   evaluations, provenance, attribution, changelog, and version are present.
 - [x] Source audit passes with no restricted references.
+- [x] Release-artifact holdout scan passes:
+  `python3 scripts/refoldec-holdout-evaluate.py --scan-release-artifacts
+  --holdout-file examples/release-candidates/skill/tests/protected-holdout.json`
+  (the maintainer fixture is temporary and untracked). A failure blocks release
+  records from shipping until protected content and placeholder hashes are removed.
 - [x] Package preflight passes on the public example.
 - [x] Human source, license, privacy, and conflict review is signed and dated
   in `provenance.json` by Jamie OverKill Hill on 2026-08-21.

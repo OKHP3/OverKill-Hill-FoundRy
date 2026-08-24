@@ -11,6 +11,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+RELEASE_ARTIFACT_ROOT = Path("examples/release-candidates")
+MAINTAINER_FIXTURE = Path("examples/release-candidates/skill/tests/protected-holdout.json")
+REGRESSION_TEST = Path("tests/test-refoldec-holdout-evaluate.py")
+PLACEHOLDER_HASHES = {
+    "0" * 64,
+    "f" * 64,
+    "deadbeef" * 8,
+    "0123456789abcdef" * 4,
+}
+
 
 def load_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
@@ -52,6 +62,47 @@ def package_hash(skill_path: Path) -> str:
 
 def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def tracked_release_artifacts(root: Path) -> list[Path]:
+    result = subprocess.run(
+        ["git", "ls-files", "-z", "--", str(RELEASE_ARTIFACT_ROOT)],
+        cwd=root,
+        text=False,
+        capture_output=True,
+        check=True,
+    )
+    return [
+        root / Path(raw)
+        for raw in result.stdout.decode("utf-8").split("\0")
+        if raw
+    ]
+
+
+def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
+    """Find protected holdout values and known placeholder hashes in tracked records."""
+    protected = load_json(holdout_path)
+    protected_values = [
+        value
+        for value in [protected.get("prompt"), *protected.get("expectations", [])]
+        if isinstance(value, str) and value
+    ]
+    errors: list[str] = []
+    for path in tracked_release_artifacts(root):
+        relative = path.relative_to(root)
+        if relative == MAINTAINER_FIXTURE or relative == REGRESSION_TEST:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        for value in protected_values:
+            if value in text:
+                errors.append(f"{relative}: protected holdout content found")
+                break
+        if any(placeholder in text.lower() for placeholder in PLACEHOLDER_HASHES):
+            errors.append(f"{relative}: placeholder SHA-256 found")
+    return errors
 
 
 def evaluate(
@@ -175,14 +226,29 @@ def evaluate(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--package", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--package", type=Path)
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--executed-at", help="UTC ISO-8601 timestamp for reproducible records")
     parser.add_argument("--runtime-adapter", type=Path, help="Approved adapter; omit to use the repository reference runtime")
     parser.add_argument("--holdout-file", type=Path, required=True, help="Maintainer-only protected case file, kept outside tracked development fixtures")
+    parser.add_argument(
+        "--scan-release-artifacts",
+        action="store_true",
+        help="Fail if tracked release records contain protected holdout content or placeholder hashes",
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     try:
+        scan_errors = scan_release_artifacts(root, args.holdout_file.resolve())
+        if scan_errors:
+            for error in scan_errors:
+                print(f"FAIL release artifact scan: {error}", file=sys.stderr)
+            return 1
+        if args.scan_release_artifacts:
+            print("OK release artifact scan")
+            return 0
+        if args.package is None or args.output is None:
+            parser.error("--package and --output are required unless --scan-release-artifacts is used")
         record = evaluate(args.package.resolve(), root, args.executed_at, args.runtime_adapter, args.holdout_file.resolve())
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
