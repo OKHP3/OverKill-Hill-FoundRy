@@ -2,6 +2,7 @@
   "name": "refoldec",
   "version": "0.1.0",
   "status": "release-candidate",
+  "release_decision": "defer-for-evidence",
   "target_public_surface": {
     "name": "OKHP3/refoldec",
     "kind": "separate-public-repository",
@@ -25,7 +26,9 @@
   },
   "deployment": {
     "automatic": false,
-    "required_after": ["owner approval", "source audit pass", "license review", "equilibrium sign-off"]
+    "mode": "manual",
+    "enabled": false,
+    "required_after": ["owner approval", "source audit pass", "license review", "equilibrium sign-off", "current-package holdout evaluation"]
   },
   "claims": {
     "canonical": false,
@@ -33,10 +36,11 @@
     "production_ready": false
   },
   "evaluation": {
-    "status": "reference-runtime-pass",
+    "status": "historical-reference-runtime-pass-current-package-rerun-required",
     "record": "holdout-evaluation.json",
     "behavioral_claims_supported": false,
     "reference_runtime_evidence": true,
-    "release_consequence": "Reference-runtime behavior is evidenced; retain defer-for-evidence for live models, reliability, outcomes, and production readiness."
+    "evaluated_package_matches_current": false,
+    "release_consequence": "The recorded pass applies only to the evaluated package snapshot; rerun the protected holdout for the current package before any approval or deployment. Do not generalize to live models, other hosts, reliability, outcomes, or production readiness."
   }
 }

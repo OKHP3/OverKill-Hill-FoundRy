@@ -93,6 +93,10 @@ def main() -> int:
                 failures.append("GOV-PUBLIC-011 target_public_surface must name a separately owned surface and state approval status")
             if manifest.get("deployment", {}).get("automatic") is not False:
                 failures.append("GOV-PUBLIC-012 deployment.automatic must be false (remediation: deploy only after the graduation gate)")
+            if manifest.get("deployment", {}).get("mode") != "manual":
+                failures.append("GOV-PUBLIC-013 deployment.mode must be manual (remediation: keep deployment as a separate explicit action)")
+            if manifest.get("deployment", {}).get("enabled") is not False:
+                failures.append("GOV-PUBLIC-014 deployment.enabled must be false (remediation: do not enable deployment before every gate passes)")
         except json.JSONDecodeError as exc:
             failures.append(f"GOV-PUBLIC-008 release-manifest.json is invalid JSON: {exc}")
     if failures:

@@ -9,6 +9,10 @@
 **Repository revision:** `b64a4337de3c03eb46075981e7ac3652980ba2a8`
 **Machine-readable record:** `holdout-evaluation.json`
 
+**Evaluation scope:** historical package snapshot. The evaluated package hash is
+recorded in `holdout-evaluation.json`; it differs from the current package hash,
+so this result does not clear the current-package gate.
+
 ## Case
 
 - **ID:** `unseen-holdout`
@@ -22,7 +26,7 @@ records only its identity, SHA-256, risk, and expectation count.
 
 ## Result
 
-**Verdict: pass (reference runtime)**
+**Verdict: pass (reference runtime, historical package snapshot)**
 
 | Expectation | Result | Observed evidence |
 |---|---|---|
@@ -51,9 +55,11 @@ adapter boundary without copying protected content into the result.
   deterministic reference target.
 - The result is version-specific and supports only reference-runtime behavioral
   evidence, not reliability, outcome, or production-readiness claims.
-- The package validator and public-graduation audit pass.
-- The equilibrium decision remains **`defer-for-evidence`** for live-model and
-  production claims.
+- The package validator and public-graduation audit pass for the current
+  release shelf, but the protected holdout has not been rerun against its
+  current package hash.
+- The equilibrium decision remains **`defer-for-evidence`** for the current
+  package, live-model, and production claims.
 
 The protected holdout remains outside tracked development fixtures; this
 evaluation record does not rewrite or disclose the case or its expectations.

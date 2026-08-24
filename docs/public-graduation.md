@@ -23,12 +23,12 @@ capture pages, client material, or employer material.
 
 ## Gate decision
 
-**Decision: NO-GO for deployment.** The package is structurally prepared, human
-source review is recorded, and the protected holdout has been reviewed by a
-separate evaluator against the approved deterministic reference runtime. The
-result is bounded to that local target, so the equilibrium decision remains
-`defer-for-evidence`. ReFolDec is not being declared canonical, stable, or
-production-ready.
+**Decision: NO-GO for deployment.** The package is structurally prepared and
+human source review is recorded. A protected holdout pass exists for a
+historical package snapshot, but the current package hash differs and requires
+a fresh evaluation before approval. The result is bounded to the local
+reference target, so the equilibrium decision remains `defer-for-evidence`.
+ReFolDec is not being declared canonical, stable, or production-ready.
 
 ## Review evidence
 
@@ -37,7 +37,8 @@ production-ready.
 - `skill/tests/evals.json` includes development cases and metadata for an unseen
   protected holdout. The protected case is supplied separately by a maintainer;
   `holdout-evaluation.json` records only non-sensitive metadata and the case
-  hash. No live-model or production performance is claimed.
+  hash. The recorded result is tied to its package hash; the current-package
+  holdout gate remains open. No live-model or production performance is claimed.
 - `equilibrium-decision.md` records evidence tiers, limitations, and dissent.
 - `release-checklist.md` records the owner actions required before deployment.
 

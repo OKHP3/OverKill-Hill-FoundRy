@@ -7,6 +7,9 @@
 - Added provenance, attribution, evaluation, equilibrium, rollback, and owner
   approval records.
 - Added an approved deterministic reference runtime and protected-holdout
-  evaluator; the reference target passes the protected expectations while
-  keeping live-model and production claims out of scope.
+  evaluator; the historical reference target passes the protected
+  expectations while keeping current-package, live-model, and production
+  claims out of scope.
+- Reconciled the release records to preserve the historical holdout pass while
+  clearly blocking approval until the current package is evaluated.
 - Kept deployment disabled pending the graduation gate.

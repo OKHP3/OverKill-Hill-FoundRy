@@ -13,11 +13,13 @@
     "status": "structural-and-holdout-review-complete",
     "holdout_evaluation": {
       "record": "holdout-evaluation.json",
-      "status": "reference-runtime-pass",
+        "status": "historical-reference-runtime-pass-current-package-rerun-required",
       "evaluator": "refoldec-holdout-evaluator",
       "behavioral_claims_supported": false,
       "reference_runtime": "scripts/refoldec-reference-runtime.py",
-      "scope": "Deterministic reference target only; no live model or host claim."
+        "scope": "Deterministic reference target only; no live model or host claim.",
+        "evaluated_package_matches_current": false,
+        "release_effect": "Historical evidence is retained; current-package holdout evaluation remains a blocking prerequisite."
     },
     "owner_approval": {
       "status": "approved",

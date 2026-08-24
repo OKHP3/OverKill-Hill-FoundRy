@@ -36,11 +36,13 @@ candidate.
 | --- | --- | --- |
 | Public capture and package preflight | Passed | Structural packaging claims are supported. |
 | Human source, license, privacy, and conflict review | Approved on 2026-08-21 | Public source boundary is attested; this is not deployment approval. |
-| Protected holdout evaluation | Reference-runtime pass | Evidence is limited to the deterministic local target; no live-model, reliability, outcome, or production-readiness claim is supported. |
-| Equilibrium decision | `defer-for-evidence` | Owner approval and deployment remain blocked. |
+| Protected holdout evaluation | Historical reference-runtime pass; current-package rerun required | The recorded pass is bound to its package hash; the current package differs, so no release approval, live-model, reliability, outcome, or production-readiness claim is supported. |
+| Equilibrium decision | `defer-for-evidence` | Current-package approval and deployment remain blocked. |
 
 The machine-readable holdout record is `holdout-evaluation.json`; the
-reader-facing explanation is `holdout-evaluation.md`.
+reader-facing explanation is `holdout-evaluation.md`. The record preserves the
+historical result and identifies the package-hash mismatch; it is not evidence
+that the current package has passed.
 
 Run the source audit from the repository root:
 

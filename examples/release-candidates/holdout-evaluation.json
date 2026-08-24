@@ -12,8 +12,9 @@
     "runtime_available": true,
     "runtime_adapter": "scripts/refoldec-reference-runtime.py"
   },
-  "executed_at": "2026-08-22T18:00:00+00:00",
-  "repository_revision": "41fcf9387fe8bab11b687250c549960a8c44b9ae",
+  "executed_at": "2026-08-24T00:00:00+00:00",
+  "repository_revision": "b64a4337de3c03eb46075981e7ac3652980ba2a8",
+  "evaluation_scope": "historical-package-snapshot",
   "input": {
     "case_id": "unseen-holdout",
     "partition": "holdout",
@@ -44,7 +45,9 @@
     "blocking_failures": []
   },
   "verdict": "pass",
-  "release_consequence": "Reference-runtime behavior is evidenced; do not generalize to live models, other hosts, reliability, outcomes, or production readiness.",
+  "evaluated_package_matches_current": false,
+  "current_package_sha256": "af079bca5079cf7473c4bfb5a5043be1fd163258947f06fa38b21dca038aa2c8",
+  "release_consequence": "Historical reference-runtime behavior is evidenced for the recorded package hash only. The current package hash differs; rerun the protected holdout before approval or deployment. Do not generalize to live models, other hosts, reliability, outcomes, or production readiness.",
   "limitations": [
     "The adapter is a deterministic reference runtime, not a live model or host integration.",
     "The portable package remains instruction-only."
