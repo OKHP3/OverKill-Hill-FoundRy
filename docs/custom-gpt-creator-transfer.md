@@ -83,7 +83,7 @@ Fonts are loaded via `<link>` tags in `artifacts/custom-gpt-creator/index.html`.
 | 8 | `ShipGovern.tsx` | Step 8 | Visibility, versioning, governance, ship-gate checker |
 | "audit" | `AuditMode.tsx` | Bonus | 10-item rubric, 0-5 scoring, avg >= 4.0 + safety >= 4 gate |
 | "compare" | `PlatformCompare.tsx` | Bonus | Decision tree, feature matrix, taxonomy, evolution timeline |
-| "export" | `ExportPackage.tsx` | Bonus | Full Markdown spec or instructions-only export; copy or download |
+| "export" | `ExportPackage.tsx` | Bonus | Full Markdown spec, instructions-only export, or structured evidence JSON; copy or download |
 
 ### Data layer
 
@@ -136,11 +136,7 @@ Output: `artifacts/custom-gpt-creator/dist/public/` — `index.html` + hashed JS
 pnpm --filter @workspace/custom-gpt-creator run typecheck
 ```
 
-**Known failures in the canonical page source** — strict TypeScript currently reports two source issues. They do not prevent the dedicated artifact from building because Vite transpiles without type-checking. Fix the canonical source before adding workspace-wide CI type-gating:
-
-1. **Narrowing error in `Capabilities.tsx`** (lines 74-75): The `risk` field on `CAPABILITIES` is typed as `"low" | "medium"` (the union of values in `knowledge.ts`), but the code compares it against `"high"`. Either add a `"high"` risk entry to `CAPABILITIES` in `knowledge.ts`, or change the comparison.
-
-2. **Type narrowing error in `PlatformCompare.tsx`** (line 136): A `PLATFORMS` array element typed as the full union is passed to a function expecting only the first member's literal type. Widen the parameter type or use a type assertion.
+Workspace-wide strict TypeScript currently passes for the canonical source and the dedicated artifact. Keep this check in the normal validation sequence before committing creator changes.
 
 ---
 
@@ -208,15 +204,11 @@ Do not confuse the skill file with the SPA. The skill runs in agent environments
 
 ## 10. Confirmed open work (backlog)
 
-These items were discussed and are not yet implemented:
+These items describe remaining or intentionally deferred work:
 
-### A. TypeScript build fix (low urgency)
+### A. Push to Forge from Export page (deferred)
 
-See section 5 for the three known failure classes. The production build is unaffected. Fix before adding `typecheck` to CI gates.
-
-### B. Push to Forge from Export page (medium)
-
-Add a "Push to Forge" button on `ExportPackage.tsx` that commits the generated Markdown spec to `custom-gpts/proto/<gpt-name>/spec.md` in this repo.
+An automatic "Push to Forge" button is intentionally deferred. The browser-only architecture must not embed a GitHub PAT or other write credential in the SPA bundle.
 
 **Safe architecture required.** Do not put a GitHub PAT in the SPA bundle — Vite embeds all `VITE_`-prefixed env vars into the client-side JavaScript, which is publicly readable. A write credential exposed this way would give anyone with the deployed URL full write access to the repository.
 
@@ -225,13 +217,11 @@ Viable approaches:
 - A GitHub App with narrow installation permissions (write to `custom-gpts/proto/` only) and short-lived tokens issued server-side.
 - Skip the push and generate a downloadable file that the user commits manually.
 
-### C. Named project slots (medium)
+### B. Named project slots (completed)
 
-Replace the single-project localStorage model with named slots so a builder can maintain multiple in-progress GPTs without losing work. Each slot would be a JSON object under a key like `cgpt-project-<slug>`. A project switcher UI would live in the sidebar or as a modal.
+The versioned `cgpt-workspace` localStorage model supports bounded named projects, project switching, reload persistence, reset, and per-project exports. Keep the browser regression coverage in `artifacts/custom-gpt-creator/tests/` aligned with this contract.
 
-**Constraint:** All state must remain in localStorage (no backend). The export must work per-slot.
-
-### D. Live Markdown preview in Export page (low)
+### C. Live Markdown preview in Export page (low)
 
 Add a toggleable rendered Markdown preview alongside the raw text in `ExportPackage.tsx`. A lightweight renderer (e.g., `marked` or `react-markdown`) would display the exported spec formatted.
 
