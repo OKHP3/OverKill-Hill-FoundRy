@@ -55,6 +55,7 @@ def evaluate(
     root: Path,
     executed_at: str | None,
     runtime_adapter: Path | None,
+    holdout_path: Path,
 ) -> dict[str, Any]:
     evals_path = package_path / "tests" / "evals.json"
     evals = load_json(evals_path)
@@ -62,10 +63,12 @@ def evaluate(
         raise ValueError("refusing to evaluate a holdout marked as seen")
     if evals.get("release_holdout", {}).get("status") != "protected":
         raise ValueError("refusing to evaluate an unprotected release holdout")
-    holdouts = [case for case in evals.get("evals", []) if case.get("partition") == "holdout"]
-    if len(holdouts) != 1:
-        raise ValueError("expected exactly one protected holdout case")
-    case = holdouts[0]
+    holdout_metadata = evals.get("release_holdout", {})
+    if any(case.get("partition") == "holdout" for case in evals.get("evals", [])):
+        raise ValueError("protected holdout content must not be stored in development evals")
+    case = load_json(holdout_path)
+    if case.get("partition") != "holdout" or case.get("id") != holdout_metadata.get("case_id"):
+        raise ValueError("protected holdout file does not match package metadata")
     expectations = case.get("expectations", [])
     if not expectations:
         raise ValueError("protected holdout must declare expectations")
@@ -159,10 +162,11 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--executed-at", help="UTC ISO-8601 timestamp for reproducible records")
     parser.add_argument("--runtime-adapter", type=Path, help="Approved adapter; omit to use the repository reference runtime")
+    parser.add_argument("--holdout-file", type=Path, required=True, help="Maintainer-only protected case file, kept outside tracked development fixtures")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     try:
-        record = evaluate(args.package.resolve(), root, args.executed_at, args.runtime_adapter)
+        record = evaluate(args.package.resolve(), root, args.executed_at, args.runtime_adapter, args.holdout_file.resolve())
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
