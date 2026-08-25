@@ -447,7 +447,7 @@ function renderMarkdownPreview(markdown: string): ReactNode[] {
   flushList();
   flushOrderedList();
   flushQuote();
-  const remainingCode = code;
+  const remainingCode = code as string[] | null;
   if (remainingCode !== null) {
     blocks.push(<pre key={`code-final-${blocks.length}`} style={{ margin: "0 0 0.85rem", padding: "0.8rem", overflowX: "auto", background: "var(--color-forge-panel)", borderRadius: "0.3rem" }}><code>{remainingCode.join("\n")}</code></pre>);
   }
