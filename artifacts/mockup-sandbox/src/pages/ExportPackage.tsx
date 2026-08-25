@@ -305,12 +305,19 @@ ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${
 }
 
 function renderInlineMarkdown(value: string): ReactNode[] {
-  return value.split(/(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean).map((part, index) => {
+  return value.split(/(`[^`]+`|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|~~[^~]+~~|\*[^*]+\*)/g).filter(Boolean).map((part, index) => {
     if (part.startsWith("`") && part.endsWith("`")) {
       return <code key={index} style={{ color: "var(--color-forge-highlight)", background: "var(--color-forge-panel)", padding: "0.08rem 0.25rem", borderRadius: "0.2rem" }}>{part.slice(1, -1)}</code>;
     }
+    const link = part.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+    if (link && /^(https?:\/\/|mailto:)/i.test(link[2])) {
+      return <a key={index} href={link[2]} target="_blank" rel="noreferrer" style={{ color: "var(--color-forge-highlight)" }}>{link[1]}</a>;
+    }
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("~~") && part.endsWith("~~")) {
+      return <del key={index}>{part.slice(2, -2)}</del>;
     }
     if (part.startsWith("*") && part.endsWith("*")) {
       return <em key={index}>{part.slice(1, -1)}</em>;
@@ -324,6 +331,9 @@ function renderMarkdownPreview(markdown: string): ReactNode[] {
   const blocks: ReactNode[] = [];
   let paragraph: string[] = [];
   let list: string[] = [];
+  let orderedList: string[] = [];
+  let quote: string[] = [];
+  let code: string[] | null = null;
 
   const flushParagraph = () => {
     if (paragraph.length === 0) return;
@@ -339,13 +349,53 @@ function renderMarkdownPreview(markdown: string): ReactNode[] {
     );
     list = [];
   };
+  const flushOrderedList = () => {
+    if (orderedList.length === 0) return;
+    blocks.push(
+      <ol key={`ordered-list-${blocks.length}`} style={{ margin: "0 0 0.85rem", paddingLeft: "1.55rem", lineHeight: 1.65 }}>
+        {orderedList.map((item, index) => <li key={index}>{renderInlineMarkdown(item)}</li>)}
+      </ol>,
+    );
+    orderedList = [];
+  };
+  const flushQuote = () => {
+    if (quote.length === 0) return;
+    blocks.push(
+      <blockquote key={`quote-${blocks.length}`} style={{ margin: "0 0 0.85rem", paddingLeft: "0.9rem", borderLeft: "3px solid var(--color-forge-highlight)", color: "var(--color-forge-muted)", lineHeight: 1.65 }}>
+        {renderInlineMarkdown(quote.join(" "))}
+      </blockquote>,
+    );
+    quote = [];
+  };
 
   lines.forEach((line, index) => {
+    const fence = line.match(/^```(\w*)\s*$/);
+    if (fence) {
+      flushParagraph();
+      flushList();
+      flushOrderedList();
+      flushQuote();
+      if (code === null) {
+        code = [];
+      } else {
+        blocks.push(<pre key={`code-${index}`} style={{ margin: "0 0 0.85rem", padding: "0.8rem", overflowX: "auto", background: "var(--color-forge-panel)", borderRadius: "0.3rem" }}><code>{code.join("\n")}</code></pre>);
+        code = null;
+      }
+      return;
+    }
+    if (code !== null) {
+      code.push(line);
+      return;
+    }
     const heading = line.match(/^(#{1,4})\s+(.+)$/);
     const bullet = line.match(/^- (.+)$/);
+    const numbered = line.match(/^\d+[.)]\s+(.+)$/);
+    const quoteLine = line.match(/^>\s?(.*)$/);
     if (heading) {
       flushParagraph();
       flushList();
+      flushOrderedList();
+      flushQuote();
       const level = Math.min(heading[1].length, 4);
       const Heading = ({ 1: "h1", 2: "h2", 3: "h3", 4: "h4" } as const)[level as 1 | 2 | 3 | 4];
       blocks.push(<Heading key={`heading-${index}`} style={{ margin: "1.2rem 0 0.55rem", color: level === 1 ? "var(--color-forge-accent)" : "var(--color-forge-fg)", fontFamily: "var(--font-heading)", fontSize: level === 1 ? "1.4rem" : level === 2 ? "1.1rem" : "0.95rem" }}>{renderInlineMarkdown(heading[2])}</Heading>);
@@ -354,24 +404,53 @@ function renderMarkdownPreview(markdown: string): ReactNode[] {
     if (/^---+$/.test(line.trim())) {
       flushParagraph();
       flushList();
+      flushOrderedList();
+      flushQuote();
       blocks.push(<hr key={`rule-${index}`} style={{ border: 0, borderTop: "1px solid var(--color-forge-border)", margin: "1rem 0" }} />);
       return;
     }
     if (bullet) {
       flushParagraph();
+      flushOrderedList();
+      flushQuote();
       list.push(bullet[1]);
+      return;
+    }
+    if (numbered) {
+      flushParagraph();
+      flushList();
+      flushQuote();
+      orderedList.push(numbered[1]);
+      return;
+    }
+    if (quoteLine) {
+      flushParagraph();
+      flushList();
+      flushOrderedList();
+      quote.push(quoteLine[1]);
       return;
     }
     if (!line.trim()) {
       flushParagraph();
       flushList();
+      flushOrderedList();
+      flushQuote();
       return;
     }
-    paragraph.push(line.replace(/^>\s?/, ""));
+    flushList();
+    flushOrderedList();
+    flushQuote();
+    paragraph.push(line);
   });
 
   flushParagraph();
   flushList();
+  flushOrderedList();
+  flushQuote();
+  const remainingCode = code;
+  if (remainingCode !== null) {
+    blocks.push(<pre key={`code-final-${blocks.length}`} style={{ margin: "0 0 0.85rem", padding: "0.8rem", overflowX: "auto", background: "var(--color-forge-panel)", borderRadius: "0.3rem" }}><code>{remainingCode.join("\n")}</code></pre>);
+  }
   return blocks;
 }
 

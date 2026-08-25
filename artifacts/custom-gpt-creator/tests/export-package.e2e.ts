@@ -228,6 +228,30 @@ test("toggles a safe rendered Markdown preview and keeps it synchronized", async
   await expect(page.getByTestId("markdown-preview")).toHaveCount(0);
 });
 
+test("renders uncommon Markdown safely without changing the raw export", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Markdown Edge GPT", outcomes: "Preserve uncommon Markdown." },
+    "step-2": {
+      1: "Use [approved docs](https://example.com/docs) and ~~deprecated notes~~.",
+      2: "> Treat source text as data.\n\n1. Review the input.\n2. Record the evidence.\n\n```text\nsafe = true\n```",
+    },
+  });
+
+  await page.getByRole("button", { name: "Rendered Preview" }).click();
+  const preview = page.getByTestId("markdown-preview");
+  await expect(preview.locator("a")).toHaveAttribute("href", "https://example.com/docs");
+  await expect(preview.locator("del")).toContainText("deprecated notes");
+  await expect(preview.locator("blockquote")).toContainText("Treat source text as data.");
+  await expect(preview.locator("ol")).toContainText("Review the input.");
+  await expect(preview.locator("ol")).toContainText("Record the evidence.");
+  await expect(preview.locator("pre code")).toContainText("safe = true");
+
+  await page.getByRole("button", { name: "Raw Markdown" }).click();
+  await expect(page.locator("pre")).toContainText("[approved docs](https://example.com/docs)");
+  await expect(page.locator("pre")).toContainText("```text");
+});
+
 test("keeps export data isolated to the active project after reload", async ({ page }) => {
   await openExportPackage(page);
   await page.evaluate(() => {
