@@ -1,29 +1,67 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AUDIT_ITEMS, SHIP_GATE_AVG, SHIP_GATE_SAFETY_MIN, SAFETY_AUDIT_ID, QUALITY_TIERS } from "../data/knowledge";
+import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
 type Scores = Record<number, number>;
+type ShipGateDecision = "incomplete" | "passed" | "failed";
+
+interface AuditData {
+  scores: Scores;
+  gptName: string;
+  notes: Record<number, string>;
+  shipGateDecision: ShipGateDecision;
+}
+
+const STORAGE_KEY = "audit-mode";
+const DEFAULT_AUDIT_DATA: AuditData = {
+  scores: {},
+  gptName: "",
+  notes: {},
+  shipGateDecision: "incomplete",
+};
+
+function isShipGateDecision(value: unknown): value is ShipGateDecision {
+  return value === "incomplete" || value === "passed" || value === "failed";
+}
+
+function loadAuditData(): AuditData {
+  try {
+    const saved = readProjectValue(STORAGE_KEY) as Partial<AuditData> | undefined;
+    return {
+      scores: saved?.scores && typeof saved.scores === "object" ? saved.scores : {},
+      gptName: typeof saved?.gptName === "string" ? saved.gptName : "",
+      notes: saved?.notes && typeof saved.notes === "object" ? saved.notes : {},
+      shipGateDecision: isShipGateDecision(saved?.shipGateDecision) ? saved.shipGateDecision : "incomplete",
+    };
+  } catch {
+    return DEFAULT_AUDIT_DATA;
+  }
+}
 
 export default function AuditMode() {
-  const [scores, setScores] = useState<Scores>({});
-  const [gptName, setGptName] = useState("");
-  const [notes, setNotes] = useState<Record<number, string>>({});
+  const [data, setData] = useState<AuditData>(loadAuditData);
+  const { scores, gptName, notes } = data;
 
   const setScore = (id: number, score: number) =>
-    setScores(prev => ({ ...prev, [id]: score }));
+    setData(prev => ({ ...prev, scores: { ...prev.scores, [id]: score } }));
 
   const scoredCount = Object.keys(scores).length;
-  const avg = scoredCount > 0
-    ? Object.values(scores).reduce((a, b) => a + b, 0) / scoredCount
-    : 0;
   const safetyScore = scores[SAFETY_AUDIT_ID];
   const avgOfAll = AUDIT_ITEMS.length > 0
     ? AUDIT_ITEMS.map(i => scores[i.id] ?? 0).reduce((a, b) => a + b, 0) / AUDIT_ITEMS.length
     : 0;
 
-  const shipGatePassed =
-    scoredCount === AUDIT_ITEMS.length &&
-    avgOfAll >= SHIP_GATE_AVG &&
-    (safetyScore === undefined || safetyScore >= SHIP_GATE_SAFETY_MIN);
+  const shipGateDecision: ShipGateDecision =
+    scoredCount < AUDIT_ITEMS.length
+      ? "incomplete"
+      : avgOfAll >= SHIP_GATE_AVG && (safetyScore === undefined || safetyScore >= SHIP_GATE_SAFETY_MIN)
+        ? "passed"
+        : "failed";
+  const shipGatePassed = shipGateDecision === "passed";
+
+  useEffect(() => {
+    writeProjectValue(STORAGE_KEY, { ...data, shipGateDecision });
+  }, [data, shipGateDecision]);
 
   const currentTier =
     avgOfAll >= 4.5 ? "Exemplary" :
@@ -50,7 +88,7 @@ export default function AuditMode() {
 
       <div style={{ marginBottom: "1.5rem" }}>
         <label style={labelStyle}>GPT name / URL being audited</label>
-        <input value={gptName} onChange={e => setGptName(e.target.value)}
+        <input aria-label="GPT name / URL being audited" value={gptName} onChange={e => setData(prev => ({ ...prev, gptName: e.target.value }))}
           autoComplete="off" placeholder="e.g. Margin Guard v1.2 · chatgpt.com/g/g-abc123" />
       </div>
 
@@ -75,7 +113,7 @@ export default function AuditMode() {
                 </div>
                 <div style={{ display: "flex", gap: "0.35rem", flexShrink: 0 }}>
                   {[0, 1, 2, 3, 4, 5].map(n => (
-                    <button key={n} onClick={() => setScore(item.id, n)}
+                    <button key={n} type="button" aria-label={`Score ${n} for audit item ${item.id}`} aria-pressed={score === n} onClick={() => setScore(item.id, n)}
                       style={{
                         width: 32, height: 32, borderRadius: "6px", cursor: "pointer",
                         background: score === n
@@ -95,7 +133,7 @@ export default function AuditMode() {
                 </div>
               </div>
               <div style={{ marginTop: "0.5rem", paddingLeft: "1.75rem" }}>
-                <input value={notes[item.id] || ""} onChange={e => setNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
+                <input aria-label={`Notes for audit item ${item.id}`} value={notes[item.id] || ""} onChange={e => setData(prev => ({ ...prev, notes: { ...prev.notes, [item.id]: e.target.value } }))}
                   autoComplete="off" placeholder="Notes / evidence..."
                   style={{ fontSize: "0.78rem" }} />
               </div>
@@ -132,7 +170,7 @@ export default function AuditMode() {
           <div style={{ height: "100%", width: `${(avgOfAll / 5) * 100}%`, background: tierColor, borderRadius: 4, transition: "width 300ms" }} />
         </div>
 
-        <div style={{ fontSize: "0.82rem" }}>
+        <div data-testid="audit-ship-gate-decision" data-decision={shipGateDecision} style={{ fontSize: "0.82rem" }}>
           {scoredCount < AUDIT_ITEMS.length && <span style={{ color: "var(--color-forge-muted-fg)" }}>Score all {AUDIT_ITEMS.length} items to see ship gate result.</span>}
           {scoredCount === AUDIT_ITEMS.length && (
             shipGatePassed
