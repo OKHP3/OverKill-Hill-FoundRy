@@ -21,8 +21,10 @@ expectations.
    ```
 
 4. Review the resulting case hash, package hash, adapter boundary, verdict,
-   and release consequence. Do not commit the protected file or paste its
-   prompt/expectations into Markdown or JSON records.
+   and release consequence. The release-artifact scan also checks normalized
+   three-word fragments across different tracked files, so splitting protected
+   text across records cannot bypass the gate. Do not commit the protected file
+   or paste its prompt/expectations into Markdown or JSON records.
 
 The root ignore rules exclude the conventional filename. Rotation is
 reviewable through the metadata/hash and evaluator output, while the protected

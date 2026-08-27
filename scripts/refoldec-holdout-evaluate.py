@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -64,6 +65,20 @@ def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def normalize_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip().casefold()
+
+
+def protected_fragments(value: str) -> list[str]:
+    words = normalize_text(value).split()
+    if len(words) < 4:
+        return []
+    return [
+        " ".join(words[index:index + 3])
+        for index in range(len(words) - 2)
+    ]
+
+
 def tracked_release_artifacts(root: Path) -> list[Path]:
     result = subprocess.run(
         ["git", "ls-files", "-z", "--", str(RELEASE_ARTIFACT_ROOT)],
@@ -88,20 +103,40 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
         if isinstance(value, str) and value
     ]
     errors: list[str] = []
+    artifact_text: dict[Path, str] = {}
     for path in tracked_release_artifacts(root):
         relative = path.relative_to(root)
         if relative == MAINTAINER_FIXTURE or relative == REGRESSION_TEST:
             continue
         try:
-            text = path.read_text(encoding="utf-8")
+            text = normalize_text(path.read_text(encoding="utf-8"))
         except UnicodeDecodeError:
             continue
+        artifact_text[path] = text
         for value in protected_values:
-            if value in text:
+            if normalize_text(value) in text:
                 errors.append(f"{relative}: protected holdout content found")
                 break
         if any(placeholder in text.lower() for placeholder in PLACEHOLDER_HASHES):
             errors.append(f"{relative}: placeholder SHA-256 found")
+    for value in protected_values:
+        normalized_value = normalize_text(value)
+        if any(normalized_value in text for text in artifact_text.values()):
+            continue
+        fragment_locations = [
+            {path for path, text in artifact_text.items() if fragment in text}
+            for fragment in protected_fragments(value)
+        ]
+        for index, locations in enumerate(fragment_locations):
+            if not locations:
+                continue
+            if any(
+                other_locations
+                and any(left != right for left in locations for right in other_locations)
+                for other_locations in fragment_locations[index + 1:]
+            ):
+                errors.append("tracked release artifacts contain split protected holdout content")
+                break
     return errors
 
 

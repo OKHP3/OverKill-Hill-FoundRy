@@ -211,6 +211,33 @@ def main() -> int:
                 return 1
         finally:
             leaked.write_text(original, encoding="utf-8")
+        first_split = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
+        second_split = ROOT / "examples" / "release-candidates" / "README.md"
+        first_original = first_split.read_text(encoding="utf-8")
+        second_original = second_split.read_text(encoding="utf-8")
+        prompt_words = json.loads(holdout.read_text(encoding="utf-8"))["prompt"].split()
+        split_point = len(prompt_words) // 2
+        first_split.write_text(first_original + "\n" + " ".join(prompt_words[:split_point]) + "\n", encoding="utf-8")
+        second_split.write_text(second_original + "\n" + " ".join(prompt_words[split_point:]) + "\n", encoding="utf-8")
+        try:
+            split_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if split_scan.returncode == 0 or "split protected holdout content" not in split_scan.stderr:
+                print("FAIL release scan did not detect split protected content")
+                return 1
+        finally:
+            first_split.write_text(first_original, encoding="utf-8")
+            second_split.write_text(second_original, encoding="utf-8")
     print("OK ReFolDec holdout evaluator")
     return 0
 
