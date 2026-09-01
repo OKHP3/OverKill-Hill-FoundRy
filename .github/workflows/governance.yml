@@ -12,6 +12,7 @@ on:
       - "scripts/registry-audit.py"
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
+      - "tests/test-public-graduation-audit.py"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   pull_request:
@@ -25,6 +26,7 @@ on:
       - "scripts/registry-audit.py"
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
+      - "tests/test-public-graduation-audit.py"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   workflow_dispatch:
@@ -48,3 +50,5 @@ jobs:
         run: python3 scripts/foundry-sync.py --strict
       - name: Audit public release candidates (dry run)
         run: python3 scripts/public-graduation-audit.py examples/release-candidates
+      - name: Test public graduation release-record consistency
+        run: python3 tests/test-public-graduation-audit.py
