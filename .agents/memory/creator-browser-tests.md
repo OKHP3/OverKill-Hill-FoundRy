@@ -24,3 +24,13 @@ External export checks should render the exact downloaded bytes with a declared 
 **Why:** An in-app preview can diverge from the file a user opens elsewhere; byte preservation and independent parsing catch that gap without changing export behavior.
 
 **How to apply:** Include headings, inline emphasis/code, lists, separators, uncommon user Markdown, and intentionally unsupported syntax in the downloaded-file fixture.
+
+When comparing multiple Markdown renderers, assert semantic anchors instead of
+requiring byte-identical HTML. Renderers can intentionally differ in escaping
+code content and raw HTML while preserving the exported Markdown's meaning.
+
+**Why:** A compatibility test should catch lost structure, not fail because one
+viewer serializes the same safe code or HTML boundary differently.
+
+**How to apply:** Keep the downloaded-byte equality assertion separate, then
+record renderer-specific differences explicitly alongside shared structure checks.
