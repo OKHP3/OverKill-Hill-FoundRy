@@ -19,8 +19,12 @@ visibility change as part of this checklist.
   Canonicalization is limited to Unicode compatibility normalization, case
   folding, and removal of separators and punctuation; split fragments must
   each contain at least 12 canonical characters and remain in protected-text
-  order. It intentionally does not claim to detect spelling changes,
-  paraphrases, reordered fragments, or semantic similarity.
+  order. For ASCII protected text, the scan also folds a deliberately small
+  list of high-confidence Greek/Cyrillic look-alikes (homographs) to catch
+  character substitution attacks. This is not transliteration or broad fuzzy
+  matching: other scripts, spelling changes, paraphrases, reordered fragments,
+  and semantic similarity remain outside the protection boundary. Unrelated
+  multilingual text is allowed.
 - [x] Package preflight passes on the public example.
 - [x] Human source, license, privacy, and conflict review is signed and dated
   in `provenance.json` by Jamie OverKill Hill on 2026-08-21.

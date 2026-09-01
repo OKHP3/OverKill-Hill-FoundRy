@@ -23,6 +23,15 @@ PLACEHOLDER_HASHES = {
     "deadbeef" * 8,
     "0123456789abcdef" * 4,
 }
+# Deliberately small, high-confidence homographs. This is not transliteration:
+# only characters commonly used to make Latin release text look unchanged are
+# folded, and only ASCII protected values use this variant.
+LOOKALIKE_TO_ASCII = str.maketrans({
+    "а": "a", "в": "b", "с": "c", "е": "e", "к": "k", "м": "m",
+    "о": "o", "р": "p", "т": "t", "х": "x", "у": "y",
+    "α": "a", "β": "b", "ε": "e", "ι": "i", "κ": "k", "ο": "o",
+    "ρ": "p", "τ": "t", "υ": "u", "χ": "x",
+})
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -93,8 +102,39 @@ def canonicalize_protected_text(value: str) -> str:
     normalized = unicodedata.normalize("NFKC", value).casefold()
     return "".join(character for character in normalized if character.isalnum())
 
+
+def is_ascii_protected_text(value: str) -> bool:
+    """Return whether every protected alphanumeric character is ASCII."""
+    normalized = unicodedata.normalize("NFKC", value).casefold()
+    return all(not character.isalnum() or character.isascii() for character in normalized)
+
+
+def canonicalize_lookalike_text(value: str) -> str:
+    """Canonicalize high-confidence Greek/Cyrillic homographs to ASCII.
+
+    This intentionally maps only a small set of characters and does not
+    transliterate scripts, score edit distance, or infer visual similarity.
+    """
+    normalized = unicodedata.normalize("NFKC", value).casefold()
+    return "".join(
+        character.translate(LOOKALIKE_TO_ASCII)
+        for character in normalized
+        if character.isalnum()
+    )
+
+
+def protected_text_variants(value: str) -> list[tuple[str, Any]]:
+    """Return the exact and, for ASCII values, homograph scan variants."""
+    variants: list[tuple[str, Any]] = [("canonical", canonicalize_protected_text)]
+    if is_ascii_protected_text(value):
+        variants.append(("look-alike", canonicalize_lookalike_text))
+    return variants
+
+
 def split_protected_match(
-    protected_value: str, artifacts: list[tuple[Path, str]]
+    protected_value: str,
+    artifacts: list[tuple[Path, str]],
+    canonicalizer=canonicalize_protected_text,
 ) -> list[Path] | None:
     """Find a protected value split into ordered fragments across release files.
 
@@ -104,11 +144,11 @@ def split_protected_match(
     treating common short words as evidence of a leak. File order is not part
     of the policy because packaging records may be emitted in any order.
     """
-    target = canonicalize_protected_text(protected_value)
+    target = canonicalizer(protected_value)
     if len(target) < MIN_SPLIT_FRAGMENT_LENGTH * 2:
         return None
     canonical_artifacts = [
-        (path, canonicalize_protected_text(text)) for path, text in artifacts
+        (path, canonicalizer(text)) for path, text in artifacts
     ]
     if any(target in text for _, text in canonical_artifacts):
         return None
@@ -141,9 +181,12 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
     The release gate checks exact values plus canonicalized values within a
     single file and across distinct tracked files. Canonicalization catches
     light transformations (Unicode compatibility forms, case, whitespace, and
-    punctuation); cross-file matching catches protected-text-order fragments
-    of at least ``MIN_SPLIT_FRAGMENT_LENGTH`` characters. It does not attempt
-    fuzzy matching, semantic similarity, spelling changes, or reordered text.
+    punctuation); an additional narrow variant catches selected Greek/Cyrillic
+    homographs substituted into ASCII protected text. Cross-file matching
+    catches protected-text-order fragments of at least
+    ``MIN_SPLIT_FRAGMENT_LENGTH`` characters. It does not attempt
+    transliteration, fuzzy matching, semantic similarity, spelling changes,
+    or reordered text.
     """
     protected = load_json(holdout_path)
     protected_values = [
@@ -164,26 +207,46 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
             continue
         artifacts.append((path, text))
         canonical_text = canonicalize_protected_text(text)
-        matched = {
+        lookalike_text = canonicalize_lookalike_text(text)
+        canonical_matches = {
             value
             for value in protected_values
             if canonicalize_protected_text(value) in canonical_text
         }
+        lookalike_matches = {
+            value
+            for value in protected_values
+            if is_ascii_protected_text(value)
+            and canonicalize_lookalike_text(value) in lookalike_text
+        }
+        matched = {
+            value
+            for value in protected_values
+            if value in canonical_matches or value in lookalike_matches
+        }
         if matched:
             single_file_matches.update(matched)
-            errors.append(f"{relative}: protected holdout content found")
+            descriptor = (
+                "look-alike protected holdout content found"
+                if lookalike_matches - canonical_matches
+                else "protected holdout content found"
+            )
+            errors.append(f"{relative}: {descriptor}")
         if any(placeholder in text.lower() for placeholder in PLACEHOLDER_HASHES):
             errors.append(f"{relative}: placeholder SHA-256 found")
     for value in protected_values:
         if value in single_file_matches:
             continue
-        matched_files = split_protected_match(value, artifacts)
-        if matched_files:
-            files = ", ".join(path.relative_to(root).as_posix() for path in matched_files)
-            errors.append(
-                "tracked release artifacts: transformed or split protected "
-                f"holdout content found across {files}"
-            )
+        for variant, canonicalizer in protected_text_variants(value):
+            matched_files = split_protected_match(value, artifacts, canonicalizer)
+            if matched_files:
+                files = ", ".join(path.relative_to(root).as_posix() for path in matched_files)
+                descriptor = "look-alike" if variant == "look-alike" else "transformed or split"
+                errors.append(
+                    "tracked release artifacts: "
+                    f"{descriptor} protected holdout content found across {files}"
+                )
+                break
     return errors
 
 

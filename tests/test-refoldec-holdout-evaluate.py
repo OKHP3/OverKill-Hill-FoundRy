@@ -267,6 +267,67 @@ def main() -> int:
         finally:
             transformed.write_text(near_miss_original, encoding="utf-8")
 
+        lookalike_original = transformed.read_text(encoding="utf-8")
+        lookalike_value = (
+            json.loads(holdout.read_text(encoding="utf-8"))["prompt"]
+            .replace("A", "А")
+            .replace("a", "а")
+            .replace("c", "с")
+            .replace("e", "е")
+            .replace("i", "ι")
+            .replace("o", "ο")
+            .replace("p", "р")
+            .replace("t", "τ")
+            .replace("u", "υ")
+        )
+        transformed.write_text(
+            lookalike_original + "\nLook-alike protected text: " + lookalike_value + "\n",
+            encoding="utf-8",
+        )
+        try:
+            lookalike_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if lookalike_scan.returncode == 0 or "look-alike protected holdout content" not in lookalike_scan.stderr:
+                print("FAIL release scan did not detect Greek/Cyrillic look-alike protected content")
+                return 1
+        finally:
+            transformed.write_text(lookalike_original, encoding="utf-8")
+
+        multilingual_original = transformed.read_text(encoding="utf-8")
+        transformed.write_text(
+            multilingual_original
+            + "\nUnrelated multilingual text: Привет мир. Καλημέρα κόσμε.\n",
+            encoding="utf-8",
+        )
+        try:
+            multilingual_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if multilingual_scan.returncode:
+                print("FAIL release scan falsely flagged unrelated multilingual text")
+                return 1
+        finally:
+            transformed.write_text(multilingual_original, encoding="utf-8")
+
         split_left = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
         split_right = ROOT / "examples" / "release-candidates" / "README.md"
         split_left_original = split_left.read_text(encoding="utf-8")
