@@ -5,16 +5,18 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import subprocess
 import sys
+import unicodedata
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 RELEASE_ARTIFACT_ROOT = Path("examples/release-candidates")
 MAINTAINER_FIXTURE = Path("examples/release-candidates/skill/tests/protected-holdout.json")
 REGRESSION_TEST = Path("tests/test-refoldec-holdout-evaluate.py")
+MIN_SPLIT_FRAGMENT_LENGTH = 12
 PLACEHOLDER_HASHES = {
     "0" * 64,
     "f" * 64,
@@ -65,20 +67,6 @@ def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def normalize_text(value: str) -> str:
-    return re.sub(r"\s+", " ", value).strip().casefold()
-
-
-def protected_fragments(value: str) -> list[str]:
-    words = normalize_text(value).split()
-    if len(words) < 4:
-        return []
-    return [
-        " ".join(words[index:index + 3])
-        for index in range(len(words) - 2)
-    ]
-
-
 def tracked_release_artifacts(root: Path) -> list[Path]:
     result = subprocess.run(
         ["git", "ls-files", "-z", "--", str(RELEASE_ARTIFACT_ROOT)],
@@ -93,9 +81,70 @@ def tracked_release_artifacts(root: Path) -> list[Path]:
         if raw
     ]
 
+def canonicalize_protected_text(value: str) -> str:
+    """Return the deterministic form used for transformed-content scanning.
+
+    NFKC handles compatibility characters, casefold handles casing, and
+    removing non-alphanumeric characters makes whitespace, punctuation, and
+    record-boundary formatting irrelevant. This is intentionally not fuzzy:
+    spelling changes, omitted characters, reordered words, and substitutions
+    remain outside the protection boundary.
+    """
+    normalized = unicodedata.normalize("NFKC", value).casefold()
+    return "".join(character for character in normalized if character.isalnum())
+
+def split_protected_match(
+    protected_value: str, artifacts: list[tuple[Path, str]]
+) -> list[Path] | None:
+    """Find a protected value split into ordered fragments across release files.
+
+    Each fragment must be at least ``MIN_SPLIT_FRAGMENT_LENGTH`` canonical
+    characters, must occur in a distinct tracked file, and must follow the
+    protected value's character order. Requiring meaningful fragments avoids
+    treating common short words as evidence of a leak. File order is not part
+    of the policy because packaging records may be emitted in any order.
+    """
+    target = canonicalize_protected_text(protected_value)
+    if len(target) < MIN_SPLIT_FRAGMENT_LENGTH * 2:
+        return None
+    canonical_artifacts = [
+        (path, canonicalize_protected_text(text)) for path, text in artifacts
+    ]
+    if any(target in text for _, text in canonical_artifacts):
+        return None
+
+    @lru_cache(maxsize=None)
+    def search(position: int, used_files: frozenset[int]) -> tuple[int, ...] | None:
+        if position == len(target):
+            return ()
+        for file_index, (_, text) in enumerate(canonical_artifacts):
+            if file_index in used_files:
+                continue
+            for end in range(position + MIN_SPLIT_FRAGMENT_LENGTH, len(target) + 1):
+                remaining = len(target) - end
+                if remaining and remaining < MIN_SPLIT_FRAGMENT_LENGTH:
+                    continue
+                if target[position:end] not in text:
+                    continue
+                tail = search(end, used_files | {file_index})
+                if tail is not None:
+                    return (file_index, *tail)
+        return None
+
+    match = search(0, frozenset())
+    return [canonical_artifacts[index][0] for index in match] if match else None
+
 
 def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
-    """Find protected holdout values and known placeholder hashes in tracked records."""
+    """Find protected content and known placeholder hashes in tracked records.
+
+    The release gate checks exact values plus canonicalized values within a
+    single file and across distinct tracked files. Canonicalization catches
+    light transformations (Unicode compatibility forms, case, whitespace, and
+    punctuation); cross-file matching catches protected-text-order fragments
+    of at least ``MIN_SPLIT_FRAGMENT_LENGTH`` characters. It does not attempt
+    fuzzy matching, semantic similarity, spelling changes, or reordered text.
+    """
     protected = load_json(holdout_path)
     protected_values = [
         value
@@ -103,40 +152,38 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
         if isinstance(value, str) and value
     ]
     errors: list[str] = []
-    artifact_text: dict[Path, str] = {}
+    artifacts: list[tuple[Path, str]] = []
+    single_file_matches: set[str] = set()
     for path in tracked_release_artifacts(root):
         relative = path.relative_to(root)
         if relative == MAINTAINER_FIXTURE or relative == REGRESSION_TEST:
             continue
         try:
-            text = normalize_text(path.read_text(encoding="utf-8"))
+            text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
-        artifact_text[path] = text
-        for value in protected_values:
-            if normalize_text(value) in text:
-                errors.append(f"{relative}: protected holdout content found")
-                break
+        artifacts.append((path, text))
+        canonical_text = canonicalize_protected_text(text)
+        matched = {
+            value
+            for value in protected_values
+            if canonicalize_protected_text(value) in canonical_text
+        }
+        if matched:
+            single_file_matches.update(matched)
+            errors.append(f"{relative}: protected holdout content found")
         if any(placeholder in text.lower() for placeholder in PLACEHOLDER_HASHES):
             errors.append(f"{relative}: placeholder SHA-256 found")
     for value in protected_values:
-        normalized_value = normalize_text(value)
-        if any(normalized_value in text for text in artifact_text.values()):
+        if value in single_file_matches:
             continue
-        fragment_locations = [
-            {path for path, text in artifact_text.items() if fragment in text}
-            for fragment in protected_fragments(value)
-        ]
-        for index, locations in enumerate(fragment_locations):
-            if not locations:
-                continue
-            if any(
-                other_locations
-                and any(left != right for left in locations for right in other_locations)
-                for other_locations in fragment_locations[index + 1:]
-            ):
-                errors.append("tracked release artifacts contain split protected holdout content")
-                break
+        matched_files = split_protected_match(value, artifacts)
+        if matched_files:
+            files = ", ".join(path.relative_to(root).as_posix() for path in matched_files)
+            errors.append(
+                "tracked release artifacts: transformed or split protected "
+                f"holdout content found across {files}"
+            )
     return errors
 
 
@@ -269,7 +316,10 @@ def main() -> int:
     parser.add_argument(
         "--scan-release-artifacts",
         action="store_true",
-        help="Fail if tracked release records contain protected holdout content or placeholder hashes",
+        help=(
+            "Fail if tracked release records contain exact, lightly transformed, "
+            "or split protected holdout content, or placeholder hashes"
+        ),
     )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]

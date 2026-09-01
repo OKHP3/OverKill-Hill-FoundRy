@@ -14,6 +14,13 @@ visibility change as part of this checklist.
   --holdout-file examples/release-candidates/skill/tests/protected-holdout.json`
   (the maintainer fixture is temporary and untracked). A failure blocks release
   records from shipping until protected content and placeholder hashes are removed.
+  The scan detects exact content and canonicalized content within one file or
+  across distinct tracked release files, regardless of file order.
+  Canonicalization is limited to Unicode compatibility normalization, case
+  folding, and removal of separators and punctuation; split fragments must
+  each contain at least 12 canonical characters and remain in protected-text
+  order. It intentionally does not claim to detect spelling changes,
+  paraphrases, reordered fragments, or semantic similarity.
 - [x] Package preflight passes on the public example.
 - [x] Human source, license, privacy, and conflict review is signed and dated
   in `provenance.json` by Jamie OverKill Hill on 2026-08-21.

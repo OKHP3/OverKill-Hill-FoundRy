@@ -211,14 +211,79 @@ def main() -> int:
                 return 1
         finally:
             leaked.write_text(original, encoding="utf-8")
-        first_split = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
-        second_split = ROOT / "examples" / "release-candidates" / "README.md"
-        first_original = first_split.read_text(encoding="utf-8")
-        second_original = second_split.read_text(encoding="utf-8")
-        prompt_words = json.loads(holdout.read_text(encoding="utf-8"))["prompt"].split()
-        split_point = len(prompt_words) // 2
-        first_split.write_text(first_original + "\n" + " ".join(prompt_words[:split_point]) + "\n", encoding="utf-8")
-        second_split.write_text(second_original + "\n" + " ".join(prompt_words[split_point:]) + "\n", encoding="utf-8")
+
+        transformed = ROOT / "examples" / "release-candidates" / "README.md"
+        transformed_original = transformed.read_text(encoding="utf-8")
+        transformed_value = " \u2022 ".join(
+            character.upper() for character in json.loads(holdout.read_text(encoding="utf-8"))["prompt"]
+        )
+        transformed.write_text(
+            transformed_original + "\nTransformed protected text: " + transformed_value + "\n",
+            encoding="utf-8",
+        )
+        try:
+            transformed_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if transformed_scan.returncode == 0 or "protected holdout content" not in transformed_scan.stderr:
+                print("FAIL release scan did not detect lightly transformed protected content")
+                return 1
+        finally:
+            transformed.write_text(transformed_original, encoding="utf-8")
+
+        near_miss_original = transformed.read_text(encoding="utf-8")
+        near_miss_value = json.loads(holdout.read_text(encoding="utf-8"))["prompt"].replace(
+            "novel", "routine"
+        )
+        transformed.write_text(
+            near_miss_original + "\nUnrelated near-miss text: " + near_miss_value + "\n",
+            encoding="utf-8",
+        )
+        try:
+            near_miss_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if near_miss_scan.returncode:
+                print("FAIL release scan reported a false positive for changed protected text")
+                return 1
+        finally:
+            transformed.write_text(near_miss_original, encoding="utf-8")
+
+        split_left = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
+        split_right = ROOT / "examples" / "release-candidates" / "README.md"
+        split_left_original = split_left.read_text(encoding="utf-8")
+        split_right_original = split_right.read_text(encoding="utf-8")
+        prompt = json.loads(holdout.read_text(encoding="utf-8"))["prompt"]
+        split_at = len(prompt) // 2
+        split_left.write_text(
+            split_left_original + "\nSplit protected prefix: " + prompt[:split_at].upper() + "\n",
+            encoding="utf-8",
+        )
+        split_right.write_text(
+            split_right_original
+            + "\nSplit protected suffix: "
+            + " \u2022 ".join(prompt[split_at:])
+            + "\n",
+            encoding="utf-8",
+        )
         try:
             split_scan = subprocess.run(
                 [
@@ -232,12 +297,15 @@ def main() -> int:
                 text=True,
                 capture_output=True,
             )
-            if split_scan.returncode == 0 or "split protected holdout content" not in split_scan.stderr:
-                print("FAIL release scan did not detect split protected content")
+            if (
+                split_scan.returncode == 0
+                or "transformed or split protected holdout content" not in split_scan.stderr
+            ):
+                print("FAIL release scan did not detect protected text split across files")
                 return 1
         finally:
-            first_split.write_text(first_original, encoding="utf-8")
-            second_split.write_text(second_original, encoding="utf-8")
+            split_left.write_text(split_left_original, encoding="utf-8")
+            split_right.write_text(split_right_original, encoding="utf-8")
     print("OK ReFolDec holdout evaluator")
     return 0
 
