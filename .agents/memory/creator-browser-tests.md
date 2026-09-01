@@ -16,3 +16,11 @@ Destructive localStorage resets must suspend shell persistence through the reset
 **Why:** React effects from the reset shell and newly mounted step can otherwise recreate `cgpt-*` keys immediately after they are removed.
 
 **How to apply:** When changing the creator reset flow, assert both UI reset state and an empty `cgpt-*` storage namespace after confirmation.
+
+## Downloaded Markdown compatibility
+
+External export checks should render the exact downloaded bytes with a declared standard Markdown parser, keeping raw HTML disabled when literal user content is the intended compatibility boundary.
+
+**Why:** An in-app preview can diverge from the file a user opens elsewhere; byte preservation and independent parsing catch that gap without changing export behavior.
+
+**How to apply:** Include headings, inline emphasis/code, lists, separators, uncommon user Markdown, and intentionally unsupported syntax in the downloaded-file fixture.

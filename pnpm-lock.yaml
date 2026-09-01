@@ -362,6 +362,9 @@ importers:
       lucide-react:
         specifier: 'catalog:'
         version: 0.577.0(react@19.2.8)
+      markdown-it:
+        specifier: ^14.3.1
+        version: 14.3.1
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
