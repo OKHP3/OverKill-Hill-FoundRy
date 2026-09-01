@@ -1,5 +1,12 @@
 import { useState, useCallback, type ReactNode } from "react";
-import { BUILD_STEPS, INSTRUCTION_LAYERS } from "../data/knowledge";
+import {
+  AUDIT_ITEMS,
+  BUILD_STEPS,
+  INSTRUCTION_LAYERS,
+  SAFETY_AUDIT_ID,
+  SHIP_GATE_AVG,
+  SHIP_GATE_SAFETY_MIN,
+} from "../data/knowledge";
 import { readProjectValue } from "../lib/creatorStorage";
 import { calculateReadiness, type ReadinessState } from "../lib/readiness";
 
@@ -42,6 +49,7 @@ interface EvidencePackage {
     behavioralValidation: "not-claimed";
   };
   evidence: Array<{ source: string; status: string; notes: string }>;
+  audit?: AuditEvidence;
   humanConfirmation: {
     required: true;
     recorded: boolean;
@@ -61,6 +69,88 @@ interface EvidencePackage {
   phases: Record<string, unknown>;
 }
 
+type ShipGateDecision = "incomplete" | "passed" | "failed";
+
+interface AuditEvidenceItem {
+  id: number;
+  question: string;
+  score: number | null;
+  notes: string;
+}
+
+interface AuditEvidence {
+  gptName: string;
+  scores: Record<string, number>;
+  notes: Record<string, string>;
+  items: AuditEvidenceItem[];
+  averageScore: number | null;
+  safetyScore: number | null;
+  shipGateDecision: ShipGateDecision;
+  shipGateDecisionExplanation: string;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isAuditScore(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 5;
+}
+
+function auditDecisionExplanation(decision: ShipGateDecision): string {
+  switch (decision) {
+    case "passed":
+      return "All audit items are scored and the average and safety thresholds are met.";
+    case "failed":
+      return "All audit items are scored, but one or more ship-gate thresholds are not met.";
+    case "incomplete":
+      return "Not all audit items have scores, so the ship gate cannot be evaluated.";
+  }
+}
+
+function normalizeAuditRecord(raw: unknown): AuditEvidence | undefined {
+  if (!isRecord(raw)) return undefined;
+
+  const rawScores = isRecord(raw.scores) ? raw.scores : {};
+  const rawNotes = isRecord(raw.notes) ? raw.notes : {};
+  const scores: Record<string, number> = {};
+  const notes: Record<string, string> = {};
+  const items = AUDIT_ITEMS.map((item): AuditEvidenceItem => {
+    const key = String(item.id);
+    const score = isAuditScore(rawScores[key]) ? rawScores[key] : null;
+    const note = typeof rawNotes[key] === "string" ? rawNotes[key] : "";
+    if (score !== null) scores[key] = score;
+    if (note) notes[key] = note;
+    return { id: item.id, question: item.question, score, notes: note };
+  });
+
+  const allItemsScored = items.every((item) => item.score !== null);
+  const averageScore = allItemsScored
+    ? items.reduce((total, item) => total + (item.score ?? 0), 0) / items.length
+    : null;
+  const safetyScore = items.find((item) => item.id === SAFETY_AUDIT_ID)?.score ?? null;
+  const shipGateDecision: ShipGateDecision =
+    !allItemsScored
+      ? "incomplete"
+      : averageScore !== null &&
+          averageScore >= SHIP_GATE_AVG &&
+          safetyScore !== null &&
+          safetyScore >= SHIP_GATE_SAFETY_MIN
+        ? "passed"
+        : "failed";
+
+  return {
+    gptName: typeof raw.gptName === "string" ? raw.gptName : "",
+    scores,
+    notes,
+    items,
+    averageScore,
+    safetyScore,
+    shipGateDecision,
+    shipGateDecisionExplanation: auditDecisionExplanation(shipGateDecision),
+  };
+}
+
 function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string): EvidencePackage {
   const brief = loadStep("step-0");
   const contract = loadStep("step-1");
@@ -78,6 +168,7 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
   const changeLedger = Object.fromEntries(
     ["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map(key => [key, loadStep(key)])
   );
+  const audit = normalizeAuditRecord(readProjectValue("audit-mode"));
 
   return {
     schemaVersion: "1.0",
@@ -98,6 +189,7 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
       behavioralValidation: readiness.behavioralValidation,
     },
     evidence: readiness.evidence,
+    ...(audit ? { audit } : {}),
     humanConfirmation: {
       required: true,
       recorded: readiness.humanConfirmation.recorded,
@@ -158,6 +250,21 @@ function buildMarkdown(evidencePackage: EvidencePackage): string {
     ["Knowledge evidence", knowledge.evidenceStatus, [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n")],
     ["Evaluation evidence", tests.evidenceStatus, [tests.retrievalVerification, tests.toolFailureTest, tests.ownerReview].filter(Boolean).join("\n")],
   ];
+  const auditSection = evidencePackage.audit ? `
+---
+
+## 9. Audit Findings
+
+**Audited GPT identity:** ${evidencePackage.audit.gptName || "(not recorded)"}
+**Ship-gate decision:** **${evidencePackage.audit.shipGateDecision.toUpperCase()}** — ${evidencePackage.audit.shipGateDecisionExplanation}
+**Average score:** ${evidencePackage.audit.averageScore === null ? "(not available)" : `${evidencePackage.audit.averageScore.toFixed(2)} / 5`}
+**Safety score (item ${SAFETY_AUDIT_ID}):** ${evidencePackage.audit.safetyScore === null ? "(not scored)" : `${evidencePackage.audit.safetyScore} / 5`}
+
+### Per-item findings
+${evidencePackage.audit.items.map((item) =>
+  `- **Item ${item.id}:** ${item.question} — **Score:** ${item.score === null ? "not scored" : `${item.score} / 5`} — **Notes:** ${item.notes || "(none recorded)"}`
+).join("\n")}
+` : "";
 
   const instructionBlock = INSTRUCTION_LAYERS
     .map(l => layerData[l.id] ? `### Layer ${l.id}: ${l.label}\n${layerData[l.id]}` : "")
@@ -297,6 +404,7 @@ ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${
     return `- **${key}:** ${change.reason || "(no change reason recorded)"} | Expected: ${change.expectedEffect || "unknown"} | Tests: ${change.affectedTests || "unknown"} | Observed: ${change.observedResult || "unknown"} | Rollback: ${change.rollbackDecision || "unknown"}`;
   }).join("\n")}
 
+${auditSection}
 ---
 
 *This spec was built using the okhp3-custom-gpt-builder Agent Skill v1.0.0 · Apache-2.0*

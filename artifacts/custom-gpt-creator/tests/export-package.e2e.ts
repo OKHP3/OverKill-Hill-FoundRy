@@ -207,6 +207,77 @@ test("exports structured evidence with provenance and explicit validation bounda
   await expect(readFile(downloadPath!, "utf8")).resolves.toBe(jsonText);
 });
 
+test("includes normalized audit findings in Markdown and JSON evidence exports", async ({ page }) => {
+  await openExportPackage(page);
+
+  const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Audited Evidence GPT" },
+    "audit-mode": {
+      gptName: "Audited GPT · v1.4",
+      scores,
+      notes: { 1: "Clear job is supported by the reviewed brief." },
+      // The exporter must derive this from the scores instead of trusting stale state.
+      shipGateDecision: "failed",
+    },
+  });
+
+  const markdown = await page.locator("pre").innerText();
+  expect(markdown).toContain("## 9. Audit Findings");
+  expect(markdown).toContain("**Audited GPT identity:** Audited GPT · v1.4");
+  expect(markdown).toContain("**Ship-gate decision:** **PASSED**");
+  expect(markdown).toContain("**Item 1:** Does it have a single, clear job?");
+  expect(markdown).toContain("Clear job is supported by the reviewed brief.");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const passedEvidence = JSON.parse(await page.locator("pre").innerText());
+  expect(passedEvidence.audit.gptName).toBe("Audited GPT · v1.4");
+  expect(passedEvidence.audit.scores).toEqual(scores);
+  expect(passedEvidence.audit.notes["1"]).toBe("Clear job is supported by the reviewed brief.");
+  expect(passedEvidence.audit.items).toHaveLength(10);
+  expect(passedEvidence.audit.shipGateDecision).toBe("passed");
+
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Audited Evidence GPT" },
+    "audit-mode": {
+      gptName: "Audited GPT · failed safety",
+      scores: { ...scores, 6: 3 },
+      notes: { 6: "Safety boundary needs revision." },
+      shipGateDecision: "passed",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const failedEvidence = JSON.parse(await page.locator("pre").innerText());
+  expect(failedEvidence.audit.shipGateDecision).toBe("failed");
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  await expect(page.locator("pre")).toContainText("**Ship-gate decision:** **FAILED**");
+
+  await replaceProjectData(page, {
+    "audit-mode": {
+      gptName: "Partially Audited GPT",
+      scores: { 1: 5 },
+      notes: { 1: "Only the first item has been reviewed." },
+      shipGateDecision: "passed",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const incompleteEvidence = JSON.parse(await page.locator("pre").innerText());
+  expect(incompleteEvidence.audit.shipGateDecision).toBe("incomplete");
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  await expect(page.locator("pre")).toContainText("**Ship-gate decision:** **INCOMPLETE**");
+});
+
+test("keeps audit fields absent for projects without an audit record", async ({ page }) => {
+  await openExportPackage(page);
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+
+  const evidence = JSON.parse(await page.locator("pre").innerText());
+  expect(evidence).not.toHaveProperty("audit");
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  await expect(page.locator("pre")).not.toContainText("Audit Findings");
+});
+
 test("renders every generated Markdown construct in the preview", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {
