@@ -59,14 +59,16 @@ async function replaceProjectData(page: Page, data: Record<string, unknown>, com
 }
 
 async function expectExportActionsToProduceMarkdown(page: Page) {
-  const exportContent = await page.locator("pre").innerText();
+  const exportContent = await page.locator("pre").textContent();
+  expect(exportContent).not.toBeNull();
+  const exactExportContent = exportContent!;
   const copyButton = page.getByRole("button", { name: /Copy/ });
   const downloadButton = page.getByRole("button", { name: "⬇ Download .md" });
 
   await copyButton.click();
   await expect
     .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
-    .toBe(exportContent);
+    .toBe(exactExportContent);
 
   const downloadPromise = page.waitForEvent("download");
   await downloadButton.click();
@@ -75,7 +77,7 @@ async function expectExportActionsToProduceMarkdown(page: Page) {
 
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
-  await expect(readFile(downloadPath!, "utf8")).resolves.toBe(exportContent);
+  await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
 }
 
 test("copies and downloads the Instructions Only export", async ({ page }) => {
@@ -329,6 +331,7 @@ test("renders every generated Markdown construct in the preview", async ({ page 
 
 test("renders uncommon Markdown safely and preserves the downloaded export", async ({ page }) => {
   await openExportPackage(page);
+  const unicodeAndNewlines = "日本語のレビュー 🌍\r\nDeuxième ligne — café\rDritte Zeile\nFourth line";
   const uncommonMarkdown = [
     "| Signal | Meaning |",
     "| --- | --- |",
@@ -343,11 +346,13 @@ test("renders uncommon Markdown safely and preserves the downloaded export", asy
     "const answer = \"safe\";",
     "```",
     "",
+    unicodeAndNewlines,
+    "",
     "<img src=x onerror=alert(1)> <strong>literal markup</strong>",
   ].join("\n");
   await replaceProjectData(page, {
     "step-0": {
-      gptName: "Uncommon Markdown GPT",
+      gptName: "Uncommon Markdown 日本語 GPT",
       outcomes: uncommonMarkdown,
       allowedSources: "Public documentation",
       disallowedSources: "Unverified claims",
@@ -356,8 +361,11 @@ test("renders uncommon Markdown safely and preserves the downloaded export", asy
     "step-6": ["Review the package."],
   });
 
-  const rawMarkdown = await page.locator("pre").innerText();
+  const rawMarkdown = await page.locator("pre").textContent();
+  expect(rawMarkdown).not.toBeNull();
+  const exactRawMarkdown = rawMarkdown!;
   expect(rawMarkdown).toContain(uncommonMarkdown);
+  expect(exactRawMarkdown).toContain(unicodeAndNewlines);
 
   await page.getByRole("button", { name: "Rendered Preview" }).click();
   const preview = page.getByTestId("markdown-preview");
@@ -372,15 +380,17 @@ test("renders uncommon Markdown safely and preserves the downloaded export", asy
   await expect(preview.locator("script")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Raw Markdown" }).click();
-  await expect(page.locator("pre")).toHaveText(rawMarkdown);
+  await expect(page.locator("pre")).toHaveText(exactRawMarkdown);
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "⬇ Download .md" }).click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
-  const downloadedMarkdown = await readFile(downloadPath!, "utf8");
-  expect(downloadedMarkdown).toBe(rawMarkdown);
+  const downloadedBytes = await readFile(downloadPath!);
+  expect(downloadedBytes).toEqual(Buffer.from(exactRawMarkdown, "utf8"));
+  const downloadedMarkdown = downloadedBytes.toString("utf8");
+  expect(downloadedMarkdown).toBe(exactRawMarkdown);
 
   // Profile 1: markdown-it is a CommonMark-oriented parser with raw HTML disabled.
   // The independent viewer therefore shows intentionally unsupported HTML as literal

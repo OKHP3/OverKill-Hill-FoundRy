@@ -602,7 +602,8 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
     const brief = loadStep("step-0");
     const name = (brief.gptName || "custom-gpt").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const isJson = format === "json";
-    const blob = new Blob([content], { type: isJson ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8" });
+    const contentBytes = new TextEncoder().encode(content);
+    const blob = new Blob([contentBytes], { type: isJson ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = `${name}-spec.${isJson ? "json" : "md"}`; a.click();

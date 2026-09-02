@@ -4,6 +4,7 @@
 - [SPA runtime contract](spa-runtime-contract.md) — the documented Custom GPT Creator SPA pages are not wired into the current mockup-only App entrypoint.
 - [Scheduled cleanup safety](branch-cleanup-safety.md) — unattended branch deletion must revalidate the live ref and PR state immediately before removal.
 - [Creator browser tests](creator-browser-tests.md) — Playwright must match the workspace browser revision and Chromium needs the Nix runtime libraries enabled in the Repl.
+- [Workspace typecheck peer variants](workspace-typecheck-peer-variants.md) — filtered installs can expose duplicate Vite peer type instances in mockup tooling even when the app and focused package checks pass.
 - [ReFolDec capture contract](refoldec-capture-contract.md) — process transformations retain stable IDs, evidence states, rejected material, recovery, and human confirmation.
 - [Skill package release gate](skill-package-release-gate.md) — ReFolDec skill packages require validated confirmed public lineage, explicit safety contracts, and an unseen holdout.
 - [Governance audit contract](governance-audit-contract.md) — FoundRy checks stay dependency-free, schema-aware, actionable, and read-only.
