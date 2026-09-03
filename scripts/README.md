@@ -6,6 +6,19 @@ Seeded from `OKHP3/OverKill-Hill/scripts` only when the script is applicable to 
 
 Site-rendering scripts, HTML page mutators, image conversion scripts, and CSS/JS publication scripts should not be copied here unless this repository begins publishing a deployable site surface.
 
+## Governance validation
+
+Run the complete governance sequence locally with the same entry point used by
+GitHub Actions:
+
+```bash
+python3 scripts/governance-check.py
+```
+
+The runner preserves each existing check's output and stops with its
+non-zero status when a check fails. It does not modify source files or release
+records.
+
 ## Filename compliance audit
 
 Run the same read-only audit used by GitHub Actions:

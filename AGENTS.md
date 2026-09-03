@@ -139,6 +139,18 @@ AI agents working in this repo must:
 - Update `registry/index.yaml` when child repo relationships are created or materially changed.
 - Keep public-facing copy clear, practical, and portfolio-grade.
 
+## 8.1 Validation entry point
+
+Run the complete governance sequence before review:
+
+```bash
+python3 scripts/governance-check.py
+```
+
+This is the same repository-local entry point used by governance CI. It runs
+the manifest, registry, scaffold sync, public graduation, and release-record
+consistency checks without changing the existing checks.
+
 ## 9. Directory Contract
 
 ```text

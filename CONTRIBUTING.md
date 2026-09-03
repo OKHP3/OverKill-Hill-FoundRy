@@ -85,12 +85,20 @@ Agent Skills live under `.agents/skills/<skill-name>/SKILL.md`. Before authoring
 
 ## Validation before submitting
 
-Run the verification commands from `AGENTS.md` section 7 before opening a pull request:
+Run the complete governance sequence before opening a pull request:
 
 ```bash
-python3 scripts/foundry-sync.py --strict
-python3 scripts/manifest-audit.py
-python3 scripts/registry-audit.py
+python3 scripts/governance-check.py
+```
+
+This repository-local entry point runs the same manifest, registry, scaffold
+sync, public graduation, and release-record consistency checks used by
+governance CI. Each check's output is streamed unchanged, and the command
+stops with that check's non-zero exit status when a check fails.
+
+For the broader contributor verification path, also run:
+
+```bash
 python3 scripts/sync-report.py
 python3 -m json.tool refoldec.manifest.json >/dev/null
 bash -n scripts/post-merge.sh
