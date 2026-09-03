@@ -25,12 +25,19 @@ PLACEHOLDER_HASHES = {
 }
 # Deliberately small, high-confidence homographs. This is not transliteration:
 # only characters commonly used to make Latin release text look unchanged are
-# folded, and only ASCII protected values use this variant.
+# folded, and only ASCII protected values use this variant. Keep uppercase-only
+# matches explicit: casefolding first would turn visually different lowercase
+# Greek/Cyrillic letters into false-positive mappings.
 LOOKALIKE_TO_ASCII = str.maketrans({
-    "а": "a", "в": "b", "с": "c", "е": "e", "к": "k", "м": "m",
-    "о": "o", "р": "p", "т": "t", "х": "x", "у": "y",
-    "α": "a", "β": "b", "ε": "e", "ι": "i", "κ": "k", "ο": "o",
-    "ρ": "p", "τ": "t", "υ": "u", "χ": "x",
+    "А": "a", "а": "a", "В": "b", "в": "b", "С": "c", "с": "c",
+    "Е": "e", "е": "e", "К": "k", "к": "k", "М": "m", "м": "m",
+    "Н": "h", "О": "o", "о": "o", "Р": "p", "р": "p", "Т": "t",
+    "т": "t", "Х": "x", "х": "x", "У": "y", "у": "y",
+    "І": "i", "і": "i", "Ј": "j", "ј": "j",
+    "Α": "a", "α": "a", "Β": "b", "β": "b", "Ε": "e", "ε": "e",
+    "Ζ": "z", "Η": "h", "Ι": "i", "ι": "i", "Κ": "k", "κ": "k",
+    "Μ": "m", "Ν": "n", "Ο": "o", "ο": "o", "Ρ": "p", "ρ": "p",
+    "Τ": "t", "τ": "t", "Υ": "y", "υ": "u", "Χ": "x", "χ": "x",
 })
 
 
@@ -115,9 +122,9 @@ def canonicalize_lookalike_text(value: str) -> str:
     This intentionally maps only a small set of characters and does not
     transliterate scripts, score edit distance, or infer visual similarity.
     """
-    normalized = unicodedata.normalize("NFKC", value).casefold()
+    normalized = unicodedata.normalize("NFKC", value)
     return "".join(
-        character.translate(LOOKALIKE_TO_ASCII)
+        character.translate(LOOKALIKE_TO_ASCII).casefold()
         for character in normalized
         if character.isalnum()
     )

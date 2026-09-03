@@ -328,6 +328,66 @@ def main() -> int:
         finally:
             transformed.write_text(multilingual_original, encoding="utf-8")
 
+        uppercase_holdout = Path(directory) / "uppercase-holdout.json"
+        uppercase_holdout.write_text(json.dumps({
+            "id": "uppercase-lookalike-holdout",
+            "partition": "holdout",
+            "risk": "high",
+            "prompt": "H Z M N Y H I J",
+            "expectations": ["The uppercase look-alike boundary is checked."],
+        }), encoding="utf-8")
+        uppercase_original = transformed.read_text(encoding="utf-8")
+        transformed.write_text(
+            uppercase_original + "\nUppercase look-alikes: Η Ζ Μ Ν Υ Н І Ј\n",
+            encoding="utf-8",
+        )
+        try:
+            uppercase_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(uppercase_holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if (
+                uppercase_scan.returncode == 0
+                or "look-alike protected holdout content" not in uppercase_scan.stderr
+            ):
+                print("FAIL release scan did not detect uppercase-only look-alikes")
+                return 1
+        finally:
+            transformed.write_text(uppercase_original, encoding="utf-8")
+
+        lowercase_exclusion_original = transformed.read_text(encoding="utf-8")
+        transformed.write_text(
+            lowercase_exclusion_original
+            + "\nUnrelated lowercase scripts: η ζ μ ν н\n",
+            encoding="utf-8",
+        )
+        try:
+            lowercase_exclusion_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(uppercase_holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if lowercase_exclusion_scan.returncode:
+                print("FAIL release scan broadened uppercase-only mappings to lowercase scripts")
+                return 1
+        finally:
+            transformed.write_text(lowercase_exclusion_original, encoding="utf-8")
+
         split_left = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
         split_right = ROOT / "examples" / "release-candidates" / "README.md"
         split_left_original = split_left.read_text(encoding="utf-8")

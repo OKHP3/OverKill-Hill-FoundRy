@@ -25,6 +25,19 @@ visibility change as part of this checklist.
   matching: other scripts, spelling changes, paraphrases, reordered fragments,
   and semantic similarity remain outside the protection boundary. Unrelated
   multilingual text is allowed.
+  Boundary review on 2026-09-03: the release threat model is accidental or
+  adversarial disclosure of an ASCII protected holdout through visually
+  substituted text, not classification of multilingual content. The retained
+  folds are the existing common substitutions plus exact Cyrillic `І/і` → `i`
+  and `Ј/ј` → `j`, and uppercase-only `Н` → `h`, Greek `Ζ` → `z`, `Η` → `h`,
+  `Μ` → `m`, `Ν` → `n`, and `Υ` → `y`. Uppercase forms are handled before
+  case-folding so visually different lowercase `н`, `η`, `ζ`, `μ`, and `ν`
+  are not broadened into false positives. For example, ordinary text such as
+  Greek `μην ζώνη` and Cyrillic `данные` remains unrelated, while an exact
+  `І` or `Ј` in a legitimate name is not a match unless the complete
+  protected ASCII value is present. This is a narrow boundary change, covered
+  by the evaluator regression cases for uppercase-only substitutions and
+  lowercase exclusions.
 - [x] Package preflight passes on the public example.
 - [x] Human source, license, privacy, and conflict review is signed and dated
   in `provenance.json` by Jamie OverKill Hill on 2026-08-21.
