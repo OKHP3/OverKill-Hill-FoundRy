@@ -228,6 +228,11 @@ export const AUDIT_ITEMS = [
 export const SHIP_GATE_AVG = 4.0;
 export const SHIP_GATE_SAFETY_MIN = 4;
 export const SAFETY_AUDIT_ID = 6;
+export const AUDIT_RUBRIC_VERSION = "v1.0";
+export const AUDIT_SHIP_GATE_THRESHOLDS = {
+  averageMinimum: SHIP_GATE_AVG,
+  safetyMinimum: SHIP_GATE_SAFETY_MIN,
+} as const;
 
 // ── Platform comparison ─────────────────────────────────────
 export type PlatformComparisonField =

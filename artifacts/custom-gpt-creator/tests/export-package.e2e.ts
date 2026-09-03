@@ -278,6 +278,55 @@ test("includes normalized audit findings in Markdown and JSON evidence exports",
   await expect(page.locator("pre")).toContainText("**Ship-gate decision:** **INCOMPLETE**");
 });
 
+test("preserves the audit rubric and ship-gate thresholds across Markdown and JSON", async ({ page }) => {
+  await openExportPackage(page);
+  const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Versioned Audit GPT" },
+    "audit-mode": {
+      gptName: "Versioned Audit GPT",
+      rubricVersion: "v0.9",
+      shipGateThresholds: { averageMinimum: 4.5, safetyMinimum: 5 },
+      scores,
+      notes: {},
+      shipGateDecision: "passed",
+    },
+  });
+
+  const markdown = await page.locator("pre").innerText();
+  expect(markdown).toContain("**Audit rubric version:** v0.9");
+  expect(markdown).toContain("**Ship-gate thresholds used:** average ≥ 4.5 / 5; safety (item 6) ≥ 5 / 5");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const evidence = JSON.parse(await page.locator("pre").innerText());
+  expect(evidence.audit.rubricVersion).toBe("v0.9");
+  expect(evidence.audit.shipGateThresholds).toEqual({ averageMinimum: 4.5, safetyMinimum: 5 });
+  expect(evidence.audit.shipGateDecision).toBe("passed");
+});
+
+test("adds current audit metadata when exporting a legacy audit record", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Legacy Audit GPT" },
+    "audit-mode": {
+      gptName: "Legacy Audit GPT",
+      scores: { 1: 5 },
+      notes: { 1: "Legacy finding." },
+      shipGateDecision: "passed",
+    },
+  });
+
+  const legacyMarkdown = await page.locator("pre").innerText();
+  expect(legacyMarkdown).toContain("**Audit rubric version:** v1.0");
+  expect(legacyMarkdown).toContain("**Ship-gate thresholds used:** average ≥ 4 / 5; safety (item 6) ≥ 4 / 5");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const legacyEvidence = JSON.parse(await page.locator("pre").innerText());
+  expect(legacyEvidence.audit.rubricVersion).toBe("v1.0");
+  expect(legacyEvidence.audit.shipGateThresholds).toEqual({ averageMinimum: 4, safetyMinimum: 4 });
+  expect(legacyEvidence.audit.shipGateDecision).toBe("incomplete");
+});
+
 test("restores compatible audit findings into the active project", async ({ page }) => {
   await openExportPackage(page);
   const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));

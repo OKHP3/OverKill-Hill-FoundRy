@@ -2,8 +2,8 @@ import {
   AUDIT_ITEMS,
   BUILD_STEPS,
   SAFETY_AUDIT_ID,
-  SHIP_GATE_AVG,
-  SHIP_GATE_SAFETY_MIN,
+  AUDIT_RUBRIC_VERSION,
+  AUDIT_SHIP_GATE_THRESHOLDS,
 } from "../data/knowledge";
 
 export const WORKSPACE_KEY = "cgpt-workspace";
@@ -42,6 +42,11 @@ interface AuditEvidenceItem {
 
 interface AuditEvidence {
   gptName: string;
+  rubricVersion: string;
+  shipGateThresholds: {
+    averageMinimum: number;
+    safetyMinimum: number;
+  };
   scores: Record<string, number>;
   notes: Record<string, string>;
   items: AuditEvidenceItem[];
@@ -138,6 +143,10 @@ function isAuditScore(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 5;
 }
 
+function isAuditThreshold(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 5;
+}
+
 function isShipGateDecision(value: unknown): value is ShipGateDecision {
   return value === "incomplete" || value === "passed" || value === "failed";
 }
@@ -153,14 +162,15 @@ function auditDecisionExplanation(decision: ShipGateDecision): string {
   }
 }
 
-function normalizeAuditDecision(scores: Record<string, number>): ShipGateDecision {
-  const scoredItems = AUDIT_ITEMS.map((item) => scores[String(item.id)]);
-  if (scoredItems.some((score) => score === undefined)) return "incomplete";
-
-  const average = scoredItems.reduce((total, score) => total + score, 0) / AUDIT_ITEMS.length;
-  return average >= SHIP_GATE_AVG && scores[String(SAFETY_AUDIT_ID)] >= SHIP_GATE_SAFETY_MIN
-    ? "passed"
-    : "failed";
+function normalizeAuditThresholds(value: unknown): AuditEvidence["shipGateThresholds"] | undefined {
+  if (value === undefined) return AUDIT_SHIP_GATE_THRESHOLDS;
+  if (!isRecord(value) || !isAuditThreshold(value.averageMinimum) || !isAuditThreshold(value.safetyMinimum)) {
+    return undefined;
+  }
+  return {
+    averageMinimum: value.averageMinimum,
+    safetyMinimum: value.safetyMinimum,
+  };
 }
 
 function validateAuditEvidencePackage(value: unknown): { audit?: AuditEvidence; artifactName?: string; error?: string } {
@@ -222,9 +232,13 @@ function validateAuditEvidencePackage(value: unknown): { audit?: AuditEvidence; 
   }
 
   const rawAudit = value.audit;
+  const shipGateThresholds = isRecord(rawAudit) ? normalizeAuditThresholds(rawAudit.shipGateThresholds) : undefined;
   if (
     !isRecord(rawAudit) ||
     typeof rawAudit.gptName !== "string" ||
+    (rawAudit.rubricVersion !== undefined &&
+      (typeof rawAudit.rubricVersion !== "string" || !rawAudit.rubricVersion.trim())) ||
+    !shipGateThresholds ||
     !isRecord(rawAudit.scores) ||
     !isRecord(rawAudit.notes) ||
     !Array.isArray(rawAudit.items) ||
@@ -270,22 +284,30 @@ function validateAuditEvidencePackage(value: unknown): { audit?: AuditEvidence; 
     return { error: "This evidence package contains audit findings for an unknown rubric item." };
   }
 
-  const normalizedDecision = normalizeAuditDecision(scores);
+  const averageScore = AUDIT_ITEMS.every((item) => scores[String(item.id)] !== undefined)
+    ? AUDIT_ITEMS.reduce((total, item) => total + scores[String(item.id)], 0) / AUDIT_ITEMS.length
+    : null;
+  const normalizedDecision: ShipGateDecision =
+    averageScore === null
+      ? "incomplete"
+      : averageScore >= shipGateThresholds.averageMinimum &&
+          scores[String(SAFETY_AUDIT_ID)] >= shipGateThresholds.safetyMinimum
+        ? "passed"
+        : "failed";
   const items = AUDIT_ITEMS.map((item) => ({
     id: item.id,
     question: item.question,
     score: scores[String(item.id)] ?? null,
     notes: notes[String(item.id)] ?? "",
   }));
-  const allItemsScored = normalizedDecision !== "incomplete";
-  const averageScore = allItemsScored
-    ? items.reduce((total, item) => total + (item.score ?? 0), 0) / items.length
-    : null;
-
   return {
     artifactName: artifact.name.trim(),
     audit: {
       gptName: rawAudit.gptName,
+      rubricVersion: typeof rawAudit.rubricVersion === "string" && rawAudit.rubricVersion.trim()
+        ? rawAudit.rubricVersion
+        : AUDIT_RUBRIC_VERSION,
+      shipGateThresholds,
       scores,
       notes,
       items,

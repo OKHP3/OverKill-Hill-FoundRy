@@ -1,15 +1,27 @@
 import { useEffect, useState } from "react";
-import { AUDIT_ITEMS, SHIP_GATE_AVG, SHIP_GATE_SAFETY_MIN, SAFETY_AUDIT_ID, QUALITY_TIERS } from "../data/knowledge";
+import {
+  AUDIT_ITEMS,
+  AUDIT_RUBRIC_VERSION,
+  AUDIT_SHIP_GATE_THRESHOLDS,
+  SAFETY_AUDIT_ID,
+  QUALITY_TIERS,
+} from "../data/knowledge";
 import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 
 type Scores = Record<number, number>;
 type ShipGateDecision = "incomplete" | "passed" | "failed";
+type AuditShipGateThresholds = {
+  averageMinimum: number;
+  safetyMinimum: number;
+};
 
 interface AuditData {
   scores: Scores;
   gptName: string;
   notes: Record<number, string>;
   shipGateDecision: ShipGateDecision;
+  rubricVersion: string;
+  shipGateThresholds: AuditShipGateThresholds;
 }
 
 const STORAGE_KEY = "audit-mode";
@@ -18,20 +30,36 @@ const DEFAULT_AUDIT_DATA: AuditData = {
   gptName: "",
   notes: {},
   shipGateDecision: "incomplete",
+  rubricVersion: AUDIT_RUBRIC_VERSION,
+  shipGateThresholds: AUDIT_SHIP_GATE_THRESHOLDS,
 };
 
 function isShipGateDecision(value: unknown): value is ShipGateDecision {
   return value === "incomplete" || value === "passed" || value === "failed";
 }
 
+function isThreshold(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 5;
+}
+
 function loadAuditData(): AuditData {
   try {
     const saved = readProjectValue(STORAGE_KEY) as Partial<AuditData> | undefined;
+    const savedThresholds = saved?.shipGateThresholds;
     return {
       scores: saved?.scores && typeof saved.scores === "object" ? saved.scores : {},
       gptName: typeof saved?.gptName === "string" ? saved.gptName : "",
       notes: saved?.notes && typeof saved.notes === "object" ? saved.notes : {},
       shipGateDecision: isShipGateDecision(saved?.shipGateDecision) ? saved.shipGateDecision : "incomplete",
+      rubricVersion: typeof saved?.rubricVersion === "string" && saved.rubricVersion.trim()
+        ? saved.rubricVersion
+        : AUDIT_RUBRIC_VERSION,
+      shipGateThresholds: savedThresholds &&
+        typeof savedThresholds === "object" &&
+        isThreshold(savedThresholds.averageMinimum) &&
+        isThreshold(savedThresholds.safetyMinimum)
+        ? savedThresholds
+        : AUDIT_SHIP_GATE_THRESHOLDS,
     };
   } catch {
     return DEFAULT_AUDIT_DATA;
@@ -40,7 +68,7 @@ function loadAuditData(): AuditData {
 
 export default function AuditMode() {
   const [data, setData] = useState<AuditData>(loadAuditData);
-  const { scores, gptName, notes } = data;
+  const { scores, gptName, notes, rubricVersion, shipGateThresholds } = data;
 
   const setScore = (id: number, score: number) =>
     setData(prev => ({ ...prev, scores: { ...prev.scores, [id]: score } }));
@@ -54,7 +82,8 @@ export default function AuditMode() {
   const shipGateDecision: ShipGateDecision =
     scoredCount < AUDIT_ITEMS.length
       ? "incomplete"
-      : avgOfAll >= SHIP_GATE_AVG && (safetyScore === undefined || safetyScore >= SHIP_GATE_SAFETY_MIN)
+      : avgOfAll >= shipGateThresholds.averageMinimum &&
+          (safetyScore === undefined || safetyScore >= shipGateThresholds.safetyMinimum)
         ? "passed"
         : "failed";
   const shipGatePassed = shipGateDecision === "passed";
@@ -82,7 +111,7 @@ export default function AuditMode() {
           🔍 Audit Mode
         </h1>
         <p style={{ color: "var(--color-forge-muted-fg)", marginTop: "0.35rem", fontSize: "0.9rem" }}>
-          Score an existing Custom GPT against the 10-item rubric. Ship gate: average ≥ {SHIP_GATE_AVG}, safety score ≥ {SHIP_GATE_SAFETY_MIN}. Score each 0–5.
+          Score an existing Custom GPT against the 10-item rubric (version {rubricVersion}). Ship gate: average ≥ {shipGateThresholds.averageMinimum}, safety score ≥ {shipGateThresholds.safetyMinimum}. Score each 0–5.
         </p>
       </div>
 
@@ -102,14 +131,14 @@ export default function AuditMode() {
             <div key={item.id} style={{
               padding: "1rem 1.25rem",
               background: "var(--color-forge-panel)",
-              border: `1px solid ${isSafety && isSet && score < SHIP_GATE_SAFETY_MIN ? "var(--color-forge-danger)" : isSet ? "var(--color-forge-border)" : "var(--color-forge-border)"}`,
+              border: `1px solid ${isSafety && isSet && score < shipGateThresholds.safetyMinimum ? "var(--color-forge-danger)" : "var(--color-forge-border)"}`,
               borderRadius: "var(--radius-md)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
                 <div style={{ flex: 1 }}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--color-forge-muted-fg)", marginRight: "0.5rem" }}>#{item.id}</span>
                   <span style={{ fontSize: "0.88rem" }}>{item.question}</span>
-                  {isSafety && <span style={{ marginLeft: "0.5rem", fontFamily: "var(--font-mono)", fontSize: "0.65rem", background: "rgba(239,68,68,0.15)", color: "var(--color-forge-danger)", padding: "0.1rem 0.35rem", borderRadius: "3px" }}>min {SHIP_GATE_SAFETY_MIN}</span>}
+                  {isSafety && <span style={{ marginLeft: "0.5rem", fontFamily: "var(--font-mono)", fontSize: "0.65rem", background: "rgba(239,68,68,0.15)", color: "var(--color-forge-danger)", padding: "0.1rem 0.35rem", borderRadius: "3px" }}>min {shipGateThresholds.safetyMinimum}</span>}
                 </div>
                 <div style={{ display: "flex", gap: "0.35rem", flexShrink: 0 }}>
                   {[0, 1, 2, 3, 4, 5].map(n => (
@@ -157,9 +186,9 @@ export default function AuditMode() {
           </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: tierColor, fontWeight: 700 }}>{currentTier}</div>
-            {safetyScore !== undefined && safetyScore < SHIP_GATE_SAFETY_MIN && (
+            {safetyScore !== undefined && safetyScore < shipGateThresholds.safetyMinimum && (
               <div style={{ fontSize: "0.75rem", color: "var(--color-forge-danger)", marginTop: "0.25rem" }}>
-                ⚠️ Safety score {safetyScore} &lt; required {SHIP_GATE_SAFETY_MIN}
+                ⚠️ Safety score {safetyScore} &lt; required {shipGateThresholds.safetyMinimum}
               </div>
             )}
           </div>
@@ -174,8 +203,8 @@ export default function AuditMode() {
           {scoredCount < AUDIT_ITEMS.length && <span style={{ color: "var(--color-forge-muted-fg)" }}>Score all {AUDIT_ITEMS.length} items to see ship gate result.</span>}
           {scoredCount === AUDIT_ITEMS.length && (
             shipGatePassed
-              ? <span style={{ color: "var(--color-forge-success" }}>✓ Ship gate passed — average {avgOfAll.toFixed(2)} ≥ {SHIP_GATE_AVG}, safety ≥ {SHIP_GATE_SAFETY_MIN}</span>
-              : <span style={{ color: "var(--color-forge-danger)" }}>✗ Ship gate failed — {avgOfAll < SHIP_GATE_AVG ? `average ${avgOfAll.toFixed(2)} < required ${SHIP_GATE_AVG}` : `safety ${safetyScore} < required ${SHIP_GATE_SAFETY_MIN}`}</span>
+              ? <span style={{ color: "var(--color-forge-success" }}>✓ Ship gate passed — average {avgOfAll.toFixed(2)} ≥ {shipGateThresholds.averageMinimum}, safety ≥ {shipGateThresholds.safetyMinimum}</span>
+              : <span style={{ color: "var(--color-forge-danger)" }}>✗ Ship gate failed — {avgOfAll < shipGateThresholds.averageMinimum ? `average ${avgOfAll.toFixed(2)} < required ${shipGateThresholds.averageMinimum}` : `safety ${safetyScore} < required ${shipGateThresholds.safetyMinimum}`}</span>
           )}
         </div>
       </div>

@@ -1,11 +1,11 @@
 import { useState, useCallback, type ChangeEvent, type ReactNode } from "react";
 import {
   AUDIT_ITEMS,
+  AUDIT_RUBRIC_VERSION,
+  AUDIT_SHIP_GATE_THRESHOLDS,
   BUILD_STEPS,
   INSTRUCTION_LAYERS,
   SAFETY_AUDIT_ID,
-  SHIP_GATE_AVG,
-  SHIP_GATE_SAFETY_MIN,
 } from "../data/knowledge";
 import {
   importAuditEvidence,
@@ -85,6 +85,11 @@ interface AuditEvidenceItem {
 
 interface AuditEvidence {
   gptName: string;
+  rubricVersion: string;
+  shipGateThresholds: {
+    averageMinimum: number;
+    safetyMinimum: number;
+  };
   scores: Record<string, number>;
   notes: Record<string, string>;
   items: AuditEvidenceItem[];
@@ -102,6 +107,10 @@ function isAuditScore(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 5;
 }
 
+function isAuditThreshold(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 5;
+}
+
 function auditDecisionExplanation(decision: ShipGateDecision): string {
   switch (decision) {
     case "passed":
@@ -116,6 +125,15 @@ function auditDecisionExplanation(decision: ShipGateDecision): string {
 function normalizeAuditRecord(raw: unknown): AuditEvidence | undefined {
   if (!isRecord(raw)) return undefined;
 
+  const rawThresholds = isRecord(raw.shipGateThresholds) ? raw.shipGateThresholds : {};
+  const shipGateThresholds = {
+    averageMinimum: isAuditThreshold(rawThresholds.averageMinimum)
+      ? rawThresholds.averageMinimum
+      : AUDIT_SHIP_GATE_THRESHOLDS.averageMinimum,
+    safetyMinimum: isAuditThreshold(rawThresholds.safetyMinimum)
+      ? rawThresholds.safetyMinimum
+      : AUDIT_SHIP_GATE_THRESHOLDS.safetyMinimum,
+  };
   const rawScores = isRecord(raw.scores) ? raw.scores : {};
   const rawNotes = isRecord(raw.notes) ? raw.notes : {};
   const scores: Record<string, number> = {};
@@ -138,14 +156,18 @@ function normalizeAuditRecord(raw: unknown): AuditEvidence | undefined {
     !allItemsScored
       ? "incomplete"
       : averageScore !== null &&
-          averageScore >= SHIP_GATE_AVG &&
+          averageScore >= shipGateThresholds.averageMinimum &&
           safetyScore !== null &&
-          safetyScore >= SHIP_GATE_SAFETY_MIN
+          safetyScore >= shipGateThresholds.safetyMinimum
         ? "passed"
         : "failed";
 
   return {
     gptName: typeof raw.gptName === "string" ? raw.gptName : "",
+    rubricVersion: typeof raw.rubricVersion === "string" && raw.rubricVersion.trim()
+      ? raw.rubricVersion
+      : AUDIT_RUBRIC_VERSION,
+    shipGateThresholds,
     scores,
     notes,
     items,
@@ -261,6 +283,8 @@ function buildMarkdown(evidencePackage: EvidencePackage): string {
 ## 9. Audit Findings
 
 **Audited GPT identity:** ${evidencePackage.audit.gptName || "(not recorded)"}
+**Audit rubric version:** ${evidencePackage.audit.rubricVersion}
+**Ship-gate thresholds used:** average ≥ ${evidencePackage.audit.shipGateThresholds.averageMinimum} / 5; safety (item ${SAFETY_AUDIT_ID}) ≥ ${evidencePackage.audit.shipGateThresholds.safetyMinimum} / 5
 **Ship-gate decision:** **${evidencePackage.audit.shipGateDecision.toUpperCase()}** — ${evidencePackage.audit.shipGateDecisionExplanation}
 **Average score:** ${evidencePackage.audit.averageScore === null ? "(not available)" : `${evidencePackage.audit.averageScore.toFixed(2)} / 5`}
 **Safety score (item ${SAFETY_AUDIT_ID}):** ${evidencePackage.audit.safetyScore === null ? "(not scored)" : `${evidencePackage.audit.safetyScore} / 5`}
