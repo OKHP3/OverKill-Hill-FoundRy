@@ -32,7 +32,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ hashFiles('artifacts/custom-gpt-creator/package.json') }}
@@ -55,7 +55,7 @@ jobs:
       - name: Upload Playwright traces
         id: upload-traces
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-traces-${{ github.run_id }}
           path: .cache/custom-gpt-creator-test-results
@@ -63,7 +63,7 @@ jobs:
 
       - name: Comment Playwright trace link on pull request
         if: ${{ failure() && github.event_name == 'pull_request' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const marker = '<!-- playwright-trace-artifact -->';
