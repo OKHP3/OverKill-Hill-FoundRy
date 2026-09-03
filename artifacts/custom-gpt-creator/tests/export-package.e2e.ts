@@ -58,6 +58,14 @@ async function replaceProjectData(page: Page, data: Record<string, unknown>, com
   await expect(page.locator("h1")).toContainText("Export Package");
 }
 
+async function importAuditEvidence(page: Page, content: string) {
+  await page.getByLabel("Import audit evidence JSON").setInputFiles({
+    name: "audit-evidence.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(content, "utf8"),
+  });
+}
+
 async function expectExportActionsToProduceMarkdown(page: Page) {
   const exportContent = await page.locator("pre").textContent();
   expect(exportContent).not.toBeNull();
@@ -268,6 +276,91 @@ test("includes normalized audit findings in Markdown and JSON evidence exports",
   expect(incompleteEvidence.audit.shipGateDecision).toBe("incomplete");
   await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
   await expect(page.locator("pre")).toContainText("**Ship-gate decision:** **INCOMPLETE**");
+});
+
+test("restores compatible audit findings into the active project", async ({ page }) => {
+  await openExportPackage(page);
+  const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Restorable Evidence GPT" },
+    "audit-mode": {
+      gptName: "Offline reviewer identity",
+      scores,
+      notes: { 1: "Reviewed from the evidence package." },
+      shipGateDecision: "failed",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const exportedPackage = JSON.parse(await page.locator("pre").innerText());
+  exportedPackage.audit.shipGateDecision = "failed";
+  exportedPackage.audit.shipGateDecisionExplanation = "Stale explanation from the handoff.";
+
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Restorable Evidence GPT" },
+    "audit-mode": {
+      gptName: "Previous reviewer identity",
+      scores: { 1: 1 },
+      notes: { 1: "Previous finding." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  await expect(page.getByText("Audit findings restored to the active project.", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const restored = JSON.parse(await page.locator("pre").innerText());
+  expect(restored.audit.gptName).toBe("Offline reviewer identity");
+  expect(restored.audit.scores).toEqual(scores);
+  expect(restored.audit.notes).toEqual({ "1": "Reviewed from the evidence package." });
+  expect(restored.audit.shipGateDecision).toBe("passed");
+  expect(restored.audit.shipGateDecisionExplanation).toContain("average and safety thresholds are met");
+});
+
+test("rejects invalid, incomplete, and mismatched audit packages atomically", async ({ page }) => {
+  await openExportPackage(page);
+  const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Active Evidence GPT" },
+    "audit-mode": {
+      gptName: "Existing reviewer identity",
+      scores: { 1: 2 },
+      notes: { 1: "Keep this finding." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const validPackage = JSON.parse(await page.locator("pre").innerText());
+  validPackage.audit = {
+    ...validPackage.audit,
+    gptName: "Offline reviewer identity",
+    scores,
+    notes: { 6: "Safety reviewed." },
+    items: validPackage.audit.items.map((item: { id: number; question: string }) => ({
+      ...item,
+      score: 5,
+      notes: item.id === 6 ? "Safety reviewed." : "",
+    })),
+  };
+  const before = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+
+  const incompletePackage = { ...validPackage };
+  delete incompletePackage.audit;
+  const mismatchedPackage = {
+    ...validPackage,
+    artifact: { ...validPackage.artifact, name: "Different Evidence GPT" },
+    provenance: { ...validPackage.provenance, projectName: "Different Evidence GPT" },
+  };
+
+  const rejectedPackages = [
+    { contents: "not json", message: "The evidence package could not be read." },
+    { contents: JSON.stringify(incompletePackage), message: "This evidence package does not contain a complete audit record." },
+    { contents: JSON.stringify(mismatchedPackage), message: "not the active project" },
+  ];
+  for (const { contents, message } of rejectedPackages) {
+    await importAuditEvidence(page, contents);
+    await expect(page.getByText(new RegExp(message))).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(before);
+  }
 });
 
 test("keeps audit fields absent for projects without an audit record", async ({ page }) => {

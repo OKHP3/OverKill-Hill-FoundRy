@@ -1,4 +1,4 @@
-import { useState, useCallback, type ReactNode } from "react";
+import { useState, useCallback, type ChangeEvent, type ReactNode } from "react";
 import {
   AUDIT_ITEMS,
   BUILD_STEPS,
@@ -7,7 +7,12 @@ import {
   SHIP_GATE_AVG,
   SHIP_GATE_SAFETY_MIN,
 } from "../data/knowledge";
-import { readProjectValue } from "../lib/creatorStorage";
+import {
+  importAuditEvidence,
+  loadWorkspace,
+  persistWorkspace,
+  readProjectValue,
+} from "../lib/creatorStorage";
 import { calculateReadiness, type ReadinessState } from "../lib/readiness";
 
 function loadCompletedSteps(): Set<number> {
@@ -566,6 +571,8 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
   const [markdownView, setMarkdownView] = useState<"raw" | "preview">("raw");
+  const [auditImportMessage, setAuditImportMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [, setAuditImportRevision] = useState(0);
   const [storedCompletedSteps] = useState(loadCompletedSteps);
   const [generatedAt] = useState(() => new Date().toISOString());
   const completedSteps = liveCompletedSteps ?? storedCompletedSteps;
@@ -608,6 +615,31 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
     const a = document.createElement("a");
     a.href = url; a.download = `${name}-spec.${isJson ? "json" : "md"}`; a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const importAudit = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = importAuditEvidence(String(reader.result), loadWorkspace());
+      if (!result.workspace) {
+        setAuditImportMessage({ type: "error", text: result.error ?? "The audit evidence could not be imported." });
+        return;
+      }
+      if (!persistWorkspace(result.workspace)) {
+        setAuditImportMessage({ type: "error", text: "The audit evidence was valid, but could not be saved in this browser." });
+        return;
+      }
+      setAuditImportMessage({ type: "success", text: "Audit findings restored to the active project." });
+      setAuditImportRevision((revision) => revision + 1);
+    };
+    reader.onerror = () => {
+      setAuditImportMessage({ type: "error", text: "The evidence package could not be read. It may be corrupt or incomplete." });
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -662,6 +694,44 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
           </ul>
         </div>
       )}
+
+      <section
+        aria-label="Restore audit findings"
+        style={{
+          marginBottom: "1rem", padding: "1rem 1.1rem",
+          background: "var(--color-forge-panel)", border: "1px solid var(--color-forge-border)",
+          borderRadius: "var(--radius-md)",
+        }}
+      >
+        <strong style={{ display: "block", color: "var(--color-forge-accent)", marginBottom: "0.35rem" }}>
+          Restore audit findings
+        </strong>
+        <span style={{ display: "block", color: "var(--color-forge-muted-fg)", fontSize: "0.85rem", marginBottom: "0.65rem" }}>
+          Import a compatible Evidence (JSON) package to restore scores and notes for this project. Existing project data is unchanged when validation fails.
+        </span>
+        <label style={{ ...secondaryBtn, display: "inline-block", cursor: "pointer" }}>
+          Import audit evidence JSON
+          <input
+            type="file"
+            accept="application/json,.json"
+            aria-label="Import audit evidence JSON"
+            onChange={importAudit}
+            style={{ display: "none" }}
+          />
+        </label>
+        {auditImportMessage && (
+          <div
+            role={auditImportMessage.type === "error" ? "alert" : "status"}
+            style={{
+              marginTop: "0.7rem",
+              color: auditImportMessage.type === "error" ? "var(--color-forge-danger)" : "var(--color-forge-success)",
+              fontSize: "0.82rem",
+            }}
+          >
+            {auditImportMessage.text}
+          </div>
+        )}
+      </section>
 
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
