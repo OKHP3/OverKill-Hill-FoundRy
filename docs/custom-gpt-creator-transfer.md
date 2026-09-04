@@ -138,6 +138,22 @@ pnpm --filter @workspace/custom-gpt-creator run typecheck
 
 Workspace-wide strict TypeScript currently passes for the canonical source and the dedicated artifact. Keep this check in the normal validation sequence before committing creator changes.
 
+### GitHub Markdown rendering check
+
+The deterministic Playwright suite validates the export bytes and compares
+CommonMark and GitHub-style local parsers. A separate, network-dependent check
+uses GitHub's documented `POST /markdown` endpoint in `gfm` mode against the
+versioned fixture
+`artifacts/custom-gpt-creator/tests/fixtures/github-markdown-fixture.v1.md`:
+
+```bash
+pnpm --filter @workspace/custom-gpt-creator run test:github-markdown
+```
+
+This check is intentionally not part of `test:e2e`: GitHub availability and
+rate limits must not make the deterministic browser suite flaky. The fixture is
+read-only and the check confirms its bytes are unchanged after rendering.
+
 ---
 
 ## 6. GitHub Pages deployment
