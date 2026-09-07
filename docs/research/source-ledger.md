@@ -21,10 +21,10 @@ Accessed September 7, 2026. Publisher/owner for all listed primary sources: OKHP
 
 ## Gap matrix and stop decisions
 
-- Region ownership: confirmed by owner; historical lineage ambiguity retained and bounded.
+- Region ownership: confirmed by owner; subsequent clarification establishes OverKill as baseline mentor with reciprocal learning, rather than shared application ownership.
 - Shared Skillz versus local FoundRys: confirmed by owner and public catalog implementation; no second catalog needed.
 - Source versus runtime: supported by package/entrypoint/route source and rendered apps; external GPT behavior not assessed.
-- Repository visibility: current metadata checked; public deployment does not authorize private exports.
+- Repository visibility: current metadata checked; owner confirmed public FoundRy status is intentional on September 7. Historical private policy is superseded; public deployment does not authorize private exports.
 - Replit parity: not established, no remote mutation needed for isolated GitHub implementation.
 - Production behavior of generated systems: not assumed; must be validated independently by their owners.
 

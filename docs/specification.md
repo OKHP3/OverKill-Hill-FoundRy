@@ -1,6 +1,6 @@
 # ReFolDec Specification
 
-**Status:** v0.1 FoundRy-hosted private scaffold; public release not yet graduated
+**Status:** v0.1 scaffold in the public FoundRy repository; separate capability release not yet graduated
 **Name:** ReFolDec — Recursively Folding Codec  
 **Purpose:** bidirectional process-capture and transformation framework
 
@@ -8,9 +8,9 @@
 
 ## Repository relationship and visibility
 
-OverKill Hill FoundRy is the primary identity of the repository that hosts this specification. It is a private governance relay. ReFolDec is a FoundRy-hosted capability and prospective public artifact, not an alternate name for the relay.
+OverKill Hill FoundRy is the primary identity of the repository that hosts this specification. It is an intentionally public governance relay and regional mentor pattern. ReFolDec is a FoundRy-hosted capability and prospective public artifact, not an alternate name for the relay.
 
-ReFolDec material can be prepared here while private. A public ReFolDec release must be published through a separately approved artifact surface after the FoundRy graduation checks; it must not include private FoundRy, Notion, client, or employer material.
+Source-safe ReFolDec material can be prepared here; private source review must occur outside this public repository. A public ReFolDec release must be published through a separately approved artifact surface after the FoundRy graduation checks; it must not include private FoundRy, Notion, client, or employer material.
 
 ---
 
@@ -137,7 +137,7 @@ This turns human process knowledge into reusable non-human operating instruction
 ReFolDec uses separate persistence planes:
 
 - **Notion:** private capture and synthesis plane.
-- **FoundRy:** private governance and development relay.
+- **FoundRy:** public governance and development relay.
 - **Approved public artifact surface:** public, versioned ReFolDec publication plane after graduation.
 
 Public ReFolDec artifacts should not depend on private Notion pages or private FoundRy sources.

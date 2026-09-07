@@ -52,7 +52,8 @@ known workspace version and validates project identities, field types and size.
 A backup replacement affects capability projects only, not Custom GPT projects.
 
 Exports preserve an OverKill scope. The universe diagram communicates ownership,
-not a security boundary or authentication mechanism. Skillz is the shared catalog;
+not a security boundary or authentication mechanism. FoundRy supplies the initial mentor pattern for the two sibling FoundRys, and
+improvements can flow in either direction (see [mentoring model](foundry-mentoring-model.md)). Skillz is the shared catalog;
 this application does not install, execute or publish a selected skill remotely.
 Private source release still requires the repository's graduation checks.
 

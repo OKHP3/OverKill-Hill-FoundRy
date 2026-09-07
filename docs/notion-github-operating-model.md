@@ -3,7 +3,7 @@
 ReFolDec is developed through three distinct persistence planes:
 
 - **Notion** is the private workshop: capture, drafting, ideation, synthesis, and working memory.
-- **OverKill Hill FoundRy** is the private governance and development relay that hosts the ReFolDec capability scaffold.
+- **OverKill Hill FoundRy** is the public governance and development relay that hosts the ReFolDec capability scaffold.
 - **An approved public artifact surface** is the canonical release location for public ReFolDec Markdown, schemas, examples, specs, and release-ready artifacts.
 
 The rule is simple: a public ReFolDec artifact must not require private Notion or FoundRy access to be understood.
@@ -27,7 +27,8 @@ If a public ReFolDec artifact needs to reference an idea first drafted in Notion
 Notion capture
 → Notion synthesis
 → Markdown distillation
-→ private FoundRy review
+→ private-source review outside the public repository
+→ source-safe FoundRy development
 → approved public artifact surface
 → optional site/project page
 ```
@@ -54,7 +55,7 @@ Notion is the writing desk.
 
 ## GitHub role
 
-GitHub can host both the private FoundRy relay and an approved public ReFolDec release surface. The FoundRy repository remains private; only separately graduated ReFolDec artifacts may be public.
+The FoundRy repository is intentionally public. Its ReFolDec scaffolds are publicly readable; a separately approved ReFolDec release still needs its own graduation record. Private drafts and sources stay outside this repository until reviewed for publication.
 
 Use the appropriate GitHub surface for:
 

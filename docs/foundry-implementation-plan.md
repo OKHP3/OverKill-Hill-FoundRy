@@ -4,7 +4,7 @@ Date: 2026-09-07. Owner request: research the seven OKHP3 elements, preserve the
 
 ## Scope and evidence
 
-OverKill FoundRy is the OverKill region's capability workshop. AskJamie and Glee-fully each own a separate FoundRy. Skillz remains the shared catalog across all three. Universal governance originates in OverKill-Hill. Public repository visibility is separate from application audience and permission to publish user-authored material.
+OverKill FoundRy is the OverKill region's capability workshop. AskJamie and Glee-fully each own a separate FoundRy. Skillz remains the shared catalog across all three. Universal governance originates in OverKill-Hill, the baseline reference for the sibling sites. This FoundRy supplies the initial mentor pattern for both sibling FoundRys; improvements can flow back to it or across to either sibling. The owner confirmed intentional public visibility on September 7; see [the mentoring model](foundry-mentoring-model.md). Public repository visibility is separate from application audience and permission to publish user-authored material.
 
 Primary sources: owner instructions, seven current GitHub repositories, five live websites, seven named Replit project URLs, local runtime and governance source. Read-only research distinguishes authored documentation, running browser features, and unavailable evidence. The runtime is intentionally browser-local; preserve the GPT creator and Canvas previews.
 

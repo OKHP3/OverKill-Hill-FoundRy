@@ -6,7 +6,7 @@ This repository is the OverKill Hill P³ FoundRy relay. It translates the golden
 
 This repo is not merely a content repository. It is a template-of-templates and governance relay.
 
-**Identity boundary:** FoundRy is the primary identity of this private repository. ReFolDec (Recursively Folding Codec) is a FoundRy-hosted capability and prospective public artifact, not an alternate repository identity. Work on ReFolDec may live here while private; a public ReFolDec release requires its own approved publication surface and the graduation checks in section 7.
+**Identity boundary:** FoundRy is the primary identity of this intentionally public repository. ReFolDec (Recursively Folding Codec) is a FoundRy-hosted capability and prospective public artifact, not an alternate repository identity. Source-safe ReFolDec development may live here; a public ReFolDec release requires its own approved publication surface and the graduation checks in section 7.
 
 ## 1. Authority Chain
 
@@ -126,7 +126,7 @@ Private repos may become public only after:
 
 Repositories with sensitive client or employer context must not be graduated automatically.
 
-For a FoundRy-hosted capability such as ReFolDec, public documentation or exports must be treated as a separate graduation target. They must not imply that this FoundRy relay itself is public or that private source material is publishable.
+For a FoundRy-hosted capability such as ReFolDec, public documentation or exports must be treated as a separate graduation target. The FoundRy relay is intentionally public, as confirmed by the owner on 2026-09-07. Repository visibility does not authorize publication of private source material or establish a separate capability release.
 
 ## 8. Agent Behavior
 
@@ -143,8 +143,11 @@ AI agents working in this repo must:
 
 The capability workbench is the OverKill region's application. AskJamie and
 Glee-fully own distinct FoundRys; Skillz is the catalog shared across all three.
-Preserve universal governance from OverKill-Hill and distinguish historical relay
-lineage from application ownership. Do not import private sibling content.
+OverKill-Hill supplies the baseline pattern and resolves universal governance
+questions. This FoundRy is the initial mentor pattern for both sibling FoundRys;
+each can improve the mentor or the other sibling. Preserve distinct application
+ownership and adopt shared changes through review, with universal rules reconciled
+at OverKill-Hill. See `docs/foundry-mentoring-model.md`. Do not import private sibling content.
 
 The existing creator runs from `artifacts/custom-gpt-creator`, with canonical
 implementation in `artifacts/mockup-sandbox/src`. Preserve `cgpt-workspace`
@@ -152,9 +155,9 @@ projects and Canvas previews when extending it. Capability projects use a separa
 versioned browser store. Do not label generated starters, authored acceptance
 criteria, or structural completeness as tested behavior or publication.
 
-GitHub visibility was observed as public on 2026-09-07, despite the historical
-private charter and permanent-private manifest. That discrepancy is documented
-in `docs/universe-research.md`; it does not waive source graduation requirements.
+The owner confirmed on 2026-09-07 that public repository visibility is intended.
+Current governance and the manifest reflect that decision. Historical private
+posture records are dated evidence, not current visibility policy.
 
 ## 8.2 Validation entry point
 

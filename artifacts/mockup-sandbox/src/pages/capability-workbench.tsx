@@ -272,9 +272,9 @@ export default function CapabilityWorkbench({
           <p className="cw-kicker">Orientation</p>
           <h2 id="universe-title">Three workshops, one shared catalog</h2>
           <p>
-            FoundRy is the OverKill Hill workshop. AskJamie and Glee-fully keep
-            their own regions. Skillz is shared across all three; FoundRy
-            remains within the OKH region.
+            FoundRy is the OverKill Hill workshop and mentor pattern for the
+            distinct AskJamie and Glee-fully FoundRys. All three can learn from
+            each other. Skillz is their shared catalog.
           </p>
         </div>
         <svg
