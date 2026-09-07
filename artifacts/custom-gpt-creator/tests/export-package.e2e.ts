@@ -128,6 +128,23 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
 });
 
+test("keeps international project names readable in downloaded filenames", async ({ page }) => {
+  await openExportPackage(page);
+
+  for (const { projectName, filename } of [
+    { projectName: "日本語アシスタント", filename: "日本語アシスタント-spec.md" },
+    { projectName: "Привет мир", filename: "привет-мир-spec.md" },
+    { projectName: "Crème brûlée", filename: "crème-brûlée-spec.md" },
+  ]) {
+    await replaceProjectData(page, { "step-0": { gptName: projectName } });
+
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "⬇ Download .md" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(filename);
+  }
+});
+
 test("keeps incomplete export warnings and controls in sync", async ({ page }) => {
   await openExportPackage(page);
 

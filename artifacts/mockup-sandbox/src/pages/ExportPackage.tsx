@@ -35,6 +35,16 @@ function loadStep(key: string): any {
   try { return readProjectValue(key) ?? {}; } catch { return {}; }
 }
 
+function sanitizeDownloadName(value: unknown): string {
+  const rawName = typeof value === "string" ? value : "";
+  const normalizedName = (rawName || "custom-gpt").toLowerCase().normalize("NFC");
+  const sanitizedName = normalizedName
+    .replace(/\s+/gu, "-")
+    .replace(/[^\p{L}\p{N}\p{M}-]/gu, "");
+
+  return /[\p{L}\p{N}]/u.test(sanitizedName) ? sanitizedName : "custom-gpt";
+}
+
 interface EvidencePackage {
   schemaVersion: "1.0";
   artifact: {
@@ -631,7 +641,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
 
   const download = () => {
     const brief = loadStep("step-0");
-    const name = (brief.gptName || "custom-gpt").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const name = sanitizeDownloadName(brief.gptName);
     const isJson = format === "json";
     const contentBytes = new TextEncoder().encode(content);
     const blob = new Blob([contentBytes], { type: isJson ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8" });
