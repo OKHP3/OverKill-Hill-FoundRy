@@ -1,3 +1,12 @@
+# Capability workbench — 2026-09-07
+
+- Record owner-confirmed public visibility and reciprocal FoundRy mentoring; reconcile current governance and preserve dated historical review evidence.
+
+- Add OverKill capability projects for prompts, skills, workflows and software starters, with local persistence, recovery backups, source preview and ZIP exports.
+- Retain the Custom GPT creator at `#creator` and preserve its separate workspace data.
+- Document the seven-element universe, region boundaries and current source/deployment evidence.
+- Preserve existing private-source graduation controls and record the repository visibility discrepancy.
+
 # Changelog
 
 All notable changes to the private OverKill Hill FoundRy relay and its hosted capabilities should be recorded here. ReFolDec entries describe the FoundRy-hosted capability scaffold unless they explicitly identify a separately approved public release.

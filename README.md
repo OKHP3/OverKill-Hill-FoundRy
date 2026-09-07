@@ -1,8 +1,42 @@
 # OverKill-Hill-FoundRy
 
-The private forge of OverKill Hill P³™ — where experimental architectures, recursive ledgers, promptcraft systems, local AI workbenches, narrative frameworks, and prototype agents are cast, refined, and stress-tested before public release.
+## Capability workbench
 
-> **Repository identity:** OverKill Hill FoundRy is the primary identity and purpose of this repository. It is a private governance relay, not a public product repository. **ReFolDec** (Recursively Folding Codec) is a FoundRy-hosted capability: its specifications and release materials may be developed here, but any public ReFolDec artifact must graduate to a separately approved public surface.
+The application opens a browser-local workbench for prompts, Agent Skills,
+workflows, and software starters. Define a capability, keep named projects,
+record its input/output contract and evidence, inspect generated files, and
+export a portable source ZIP. The existing nine-station **Custom GPT studio**
+remains available at `#creator`, with its original projects and backups.
+
+- [Open FoundRy](https://okhp3.github.io/OverKill-Hill-FoundRy/)
+- [Run locally and build a capability](docs/capability-workbench.md)
+- [Seven-element universe research](docs/universe-research.md)
+- [Implementation and validation plan](docs/foundry-implementation-plan.md)
+- [Current-state assessment and maturation](docs/capability-workbench-maturation.md)
+- [Parent feature-page parity review](docs/research/foundry-feature-page-parity-review.md)
+
+**Region boundary:** this FoundRy serves OverKill. AskJamie and Glee-fully have
+separate FoundRys. [Skillz](https://okhp3.github.io/skillz/) is shared by all three;
+this application references that catalog without copying it or publishing projects
+into it. Universal governance continues to originate in `OKHP3/OverKill-Hill`.
+
+**Public by intent:** the owner confirmed this repository’s public status on
+September 7, 2026. FoundRy is the mentor pattern for the AskJamie and Glee-fully
+FoundRys, which remain distinct and can contribute improvements back to it or
+to each other. OverKill-Hill supplies the universe’s baseline and reference for
+universal governance questions. See the [mentoring model](docs/foundry-mentoring-model.md).
+
+Application projects stay in browser storage until exported. Public repository
+status does not approve private source publication or a separate capability release.
+
+The following relay charter and capability catalog preserve the existing source
+and governance context. Historical "Active" labels describe maintained material,
+not verified executable services.
+
+
+The public forge of OverKill Hill P³™ — where experimental architectures, recursive ledgers, promptcraft systems, local AI workbenches, narrative frameworks, and prototype agents are cast, refined, and stress-tested before public release.
+
+> **Repository identity:** OverKill Hill FoundRy is the primary identity and purpose of this repository. It is a public governance relay, capability workbench, and mentor pattern for the regional FoundRys. **ReFolDec** (Recursively Folding Codec) is a FoundRy-hosted capability: its specifications and release materials may be developed here, but any public ReFolDec artifact must graduate to a separately approved public surface.
 
 ## Role
 
@@ -18,11 +52,11 @@ OKHP3/OverKill-Hill
 
 ReFolDec is a bidirectional process-capture and transformation capability maintained within the FoundRy. It folds raw material into durable artifacts, unfolds mature artifacts into reusable primitives, and refolds those primitives into stronger outputs.
 
-- **FoundRy repository:** private governance and development relay.
+- **FoundRy repository:** intentionally public governance and development relay.
 - **ReFolDec within this repository:** hosted capability and release scaffold.
 - **Public ReFolDec:** a future, separately reviewed artifact surface; it must not expose private FoundRy, Notion, client, or employer material.
 
-The FoundRy’s private status does not make ReFolDec public, and ReFolDec’s future public release does not rename or change the visibility of this repository.
+ReFolDec scaffolds in this public repository are publicly readable. That availability does not establish a separately reviewed ReFolDec release or rename this repository.
 
 ## Responsibilities
 

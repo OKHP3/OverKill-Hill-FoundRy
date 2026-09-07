@@ -1,6 +1,6 @@
 # ReFolDec Roadmap
 
-**Relationship to this repository:** ReFolDec is a capability hosted by the private OverKill Hill FoundRy relay. This roadmap plans the capability and any future public artifact; it does not change the FoundRy repository’s identity or visibility.
+**Relationship to this repository:** ReFolDec is a capability hosted by the public OverKill Hill FoundRy relay. This roadmap plans the capability and any future public artifact; it does not change the FoundRy repository’s identity or visibility.
 
 ## v0.1 — FoundRy-hosted capability scaffold
 

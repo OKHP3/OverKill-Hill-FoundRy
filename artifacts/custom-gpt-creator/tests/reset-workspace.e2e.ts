@@ -29,7 +29,7 @@ async function getCreatorStorage(page: Page): Promise<Record<string, string>> {
 }
 
 test("cancels without changing progress and clears all saved progress on Start over", async ({ page }) => {
-  await page.goto("./");
+  await page.goto("./#creator");
   await seedSavedProgress(page);
 
   await expect(page.locator("h1")).toContainText("Step 8 · Ship & Govern");
