@@ -1,5 +1,7 @@
 # FoundRy / ReFolDec / Custom GPT Creator Maturity Baseline
 
+> Visibility update — 2026-09-07: the owner confirmed FoundRy is intentionally public. Private-repository statements in this dated record describe its earlier posture; current authority is [the mentoring model](foundry-mentoring-model.md), `AGENTS.md`, and `manifest.yaml`. Historical review results are preserved.
+
 **Review record:** `maturity-baseline-v0.1`  
 **Review date:** 2026-08-22  
 **Repository:** `OKHP3/OverKill-Hill-FoundRy`  

@@ -4,8 +4,8 @@ repo:
   display_name: OverKill Hill FoundRy
   type: foundry-relay
   lifecycle_status: active
-  visibility: private
-  purpose: Private OverKill Hill governance relay for child-repository scaffolds, registries, and hosted capability development.
+  visibility: public
+  purpose: Public OverKill Hill governance relay, capability workbench, and mentor pattern for distinct regional FoundRys and OKH child repositories.
 brand_domain: overkillhill
 author: Jamie Hill
 governance:
@@ -19,11 +19,13 @@ lineage:
   branch_id: governance
   tool_id: relay
 visibility_control:
-  visibility_lock: permanent-private
-  public_graduation_allowed: false
+  visibility_lock: null
+  public_graduation_allowed: true
   requires_public_source_audit: true
-  bfs_firewall: true
+  bfs_firewall: false
+  # Owner confirmed intentional public status on 2026-09-07.
+  # This is not an employer-isolated repository; source audits remain required.
 hosted_capabilities:
   - name: ReFolDec
     relationship: FoundRy-hosted process-capture capability and prospective public artifact
-    publication_status: private scaffold; separate public graduation required
+    publication_status: public repository scaffold; separate ReFolDec release graduation required

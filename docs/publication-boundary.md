@@ -1,6 +1,6 @@
 # Publication Boundary
 
-ReFolDec uses a hard boundary between private ideation, private FoundRy development, and separately approved public publication.
+ReFolDec uses a hard boundary between private ideation, source-safe development in the public FoundRy, and separately approved capability releases.
 
 ## Rule
 
@@ -21,7 +21,7 @@ A public ReFolDec artifact surface should never require private Notion or FoundR
 
 ## Rationale
 
-Notion is the writing desk. The FoundRy relay is the private development shelf. A separately approved public ReFolDec surface is the public artifact shelf.
+Notion is the writing desk. The FoundRy relay is the public development shelf for source-safe material. A separately approved public ReFolDec surface is the public artifact shelf.
 
 A reader should be able to understand a public ReFolDec release package without access to private Notion or FoundRy material.
 

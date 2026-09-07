@@ -1,15 +1,15 @@
 schema_version: "1.0"
 foundry: OverKill-Hill-FoundRy
 brand_domain: overkillhill
-last_reviewed: 2026-08-22
+last_reviewed: 2026-09-07
 review_owner: Jamie Hill
 review_interval_days: 180
 hosted_capabilities:
   - name: ReFolDec
     type: capability
     lifecycle_status: prototype
-    visibility: private
-    relationship: FoundRy-hosted capability; separate public graduation required
+    visibility: public
+    relationship: Public repository scaffold; separate capability release graduation required
 repositories:
   - name: OverKill-Hill
     type: site
@@ -50,4 +50,20 @@ repositories:
     parent_foundry: OKHP3/OverKill-Hill-FoundRy
     lineage: FoundRy child repository
     last_reviewed: 2026-08-22
+    external: true
+  - name: AskJamie-FoundRy
+    type: foundry-relay
+    lifecycle_status: active
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: Distinct regional FoundRy; OverKill mentor baseline with reciprocal learning, not application ownership
+    last_reviewed: 2026-09-07
+    external: true
+  - name: Glee-fullyTools-FoundRy
+    type: foundry-relay
+    lifecycle_status: active
+    owner: Jamie Hill
+    parent_foundry: OKHP3/OverKill-Hill-FoundRy
+    lineage: Distinct regional FoundRy; OverKill mentor baseline with reciprocal learning, not application ownership
+    last_reviewed: 2026-09-07
     external: true

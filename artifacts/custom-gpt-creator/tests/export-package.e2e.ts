@@ -36,7 +36,7 @@ async function openExportPackage(page: Page) {
       },
     });
   });
-  await page.goto("./");
+  await page.goto("./#creator");
   await page.evaluate((key) => {
     localStorage.clear();
     const id = "project-test";

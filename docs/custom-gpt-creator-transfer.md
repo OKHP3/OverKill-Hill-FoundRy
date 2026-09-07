@@ -1,5 +1,7 @@
 # Custom GPT Creator SPA — FoundRy Transfer Document
 
+> Visibility update — 2026-09-07: the owner confirmed FoundRy is intentionally public. Private-repository statements in this dated record describe its earlier posture; current authority is [the mentoring model](foundry-mentoring-model.md), `AGENTS.md`, and `manifest.yaml`. Historical review results are preserved.
+
 **Repository:** `OKHP3/OverKill-Hill-FoundRy`
 **Receiving Replit:** `https://replit.com/t/overkill-hill/repls/OverKill-Hill-FoundRy`
 **Transfer date:** 2026-08-06
