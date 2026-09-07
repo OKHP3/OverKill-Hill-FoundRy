@@ -14,6 +14,7 @@ import KnowledgeFiles from "./pages/KnowledgeFiles";
 import PlatformCompare from "./pages/PlatformCompare";
 import ShipGovern from "./pages/ShipGovern";
 import TestMatrix from "./pages/TestMatrix";
+import CapabilityWorkbench from "./pages/capability-workbench";
 import {
   activeProject,
   exportWorkspace,
@@ -507,7 +508,8 @@ function CreatorShell() {
         </nav>
 
         <div className="creator-sidebar-footer">
-          <a href="/__mockup/" className="creator-preview-link">↗ Open forge mockups</a>
+          <a href="#workbench" className="creator-preview-link">← Capability workbench</a>
+          {import.meta.env.DEV && <a href="/__mockup/" className="creator-preview-link">↗ Open forge mockups</a>}
           <button type="button" className="creator-reset-button" onClick={resetWorkspace}>
             ↻ Start over
           </button>
@@ -549,7 +551,23 @@ function CreatorShell() {
 
 const managerBtn: React.CSSProperties = { width: "100%", textAlign: "left", padding: "0.38rem", background: "transparent", color: "var(--color-forge-fg)", border: "0", borderRadius: "var(--radius-sm)", cursor: "pointer", fontSize: "0.75rem" };
 
+function WorkbenchView() {
+  const { preference, setPreference } = useTheme();
+  return <>
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "1rem 2rem 0", display: "flex", justifyContent: "flex-end" }}>
+      <ThemeToggle preference={preference} setPreference={setPreference} />
+    </div>
+    <CapabilityWorkbench onOpenCreator={() => { window.location.hash = "creator"; }} />
+  </>;
+}
+
 function App() {
+  const [studio, setStudio] = useState(() => window.location.hash === "#creator");
+  useEffect(() => {
+    const sync = () => setStudio(window.location.hash === "#creator");
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const previewPath = getPreviewPath();
 
   if (previewPath) {
@@ -563,7 +581,7 @@ function App() {
 
   // The Canvas artifact intentionally keeps its gallery at /__mockup. The
   // dedicated web artifact uses the same source with BASE_PATH=/custom-gpt-creator/.
-  return getBasePath() === "/__mockup" ? <Gallery /> : <CreatorShell />;
+  return getBasePath() === "/__mockup" ? <Gallery /> : studio ? <CreatorShell /> : <WorkbenchView />;
 }
 
 export default App;

@@ -139,7 +139,24 @@ AI agents working in this repo must:
 - Update `registry/index.yaml` when child repo relationships are created or materially changed.
 - Keep public-facing copy clear, practical, and portfolio-grade.
 
-## 8.1 Validation entry point
+## 8.1 Application scope
+
+The capability workbench is the OverKill region's application. AskJamie and
+Glee-fully own distinct FoundRys; Skillz is the catalog shared across all three.
+Preserve universal governance from OverKill-Hill and distinguish historical relay
+lineage from application ownership. Do not import private sibling content.
+
+The existing creator runs from `artifacts/custom-gpt-creator`, with canonical
+implementation in `artifacts/mockup-sandbox/src`. Preserve `cgpt-workspace`
+projects and Canvas previews when extending it. Capability projects use a separate
+versioned browser store. Do not label generated starters, authored acceptance
+criteria, or structural completeness as tested behavior or publication.
+
+GitHub visibility was observed as public on 2026-09-07, despite the historical
+private charter and permanent-private manifest. That discrepancy is documented
+in `docs/universe-research.md`; it does not waive source graduation requirements.
+
+## 8.2 Validation entry point
 
 Run the complete governance sequence before review:
 

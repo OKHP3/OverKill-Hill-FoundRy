@@ -48,6 +48,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm exec playwright install-deps chromium
 
+      - name: Test capability storage and source bundles
+        run: pnpm run test:capability
+
       - name: Run e2e tests
         working-directory: artifacts/custom-gpt-creator
         run: pnpm run test:e2e

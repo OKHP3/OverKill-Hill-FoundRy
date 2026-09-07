@@ -25,7 +25,7 @@ async function expectCreatorPath(page: Page) {
 test("keeps the build brief through navigation, reload, and Markdown export", async ({
   page,
 }) => {
-  await page.goto("./");
+  await page.goto("./#creator");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await expectCreatorPath(page);
@@ -80,7 +80,7 @@ test("keeps the build brief through navigation, reload, and Markdown export", as
 test("keeps audit evidence with its project through reload and project switching", async ({
   page,
 }) => {
-  await page.goto("./");
+  await page.goto("./#creator");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 

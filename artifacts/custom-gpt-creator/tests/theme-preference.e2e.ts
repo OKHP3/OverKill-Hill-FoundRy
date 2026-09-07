@@ -88,7 +88,7 @@ for (const preference of ["light", "dark"] as const) {
   test(`persists ${preference} and applies it before the creator mounts again`, async ({
     page,
   }) => {
-    await page.goto("./");
+    await page.goto("./#creator");
     await page.evaluate((key) => localStorage.removeItem(key), THEME_STORAGE_KEY);
     await page.reload();
 

@@ -1,5 +1,36 @@
 # OverKill-Hill-FoundRy
 
+## Capability workbench
+
+This unreleased application change opens a browser-local workbench for prompts, Agent Skills,
+workflows, and software starters. Define a capability, keep named projects,
+record its input/output contract and evidence, inspect generated files, and
+export a portable source ZIP. The existing nine-station **Custom GPT studio**
+remains available at `#creator`, with its original projects and backups.
+
+- [Current published application](https://okhp3.github.io/OverKill-Hill-FoundRy/) (workbench awaits merge and deployment)
+- [Run locally and build a capability](docs/capability-workbench.md)
+- [Seven-element universe research](docs/universe-research.md)
+- [Implementation and validation plan](docs/foundry-implementation-plan.md)
+
+**Region boundary:** this FoundRy serves OverKill. AskJamie and Glee-fully have
+separate FoundRys. [Skillz](https://okhp3.github.io/skillz/) is shared by all three;
+this application references that catalog without copying it or publishing projects
+into it. Universal governance continues to originate in `OKHP3/OverKill-Hill`.
+
+**Visibility discrepancy, observed September 7, 2026:** GitHub reports this
+repository as public and serves the application on Pages. The historical relay
+charter and manifest below retain a private/permanent-private policy. These are
+not consistent visibility records. The current application must not be treated
+as access control for private material; its project contents stay in browser
+storage until the user exports them. This change does not grant public release
+approval for private sources or change repository visibility.
+
+The following relay charter and capability catalog preserve the existing source
+and governance context. Historical "Active" labels describe maintained material,
+not verified executable services.
+
+
 The private forge of OverKill Hill P³™ — where experimental architectures, recursive ledgers, promptcraft systems, local AI workbenches, narrative frameworks, and prototype agents are cast, refined, and stress-tested before public release.
 
 > **Repository identity:** OverKill Hill FoundRy is the primary identity and purpose of this repository. It is a private governance relay, not a public product repository. **ReFolDec** (Recursively Folding Codec) is a FoundRy-hosted capability: its specifications and release materials may be developed here, but any public ReFolDec artifact must graduate to a separately approved public surface.
