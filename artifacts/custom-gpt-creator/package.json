@@ -9,8 +9,9 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
-    "test:github-markdown": "node tests/github-markdown-render.mjs"
+    "test:github-markdown": "node tests/github-markdown-render.mjs",
+    "test:github-markdown:playwright": "GITHUB_MARKDOWN_CHECK=1 playwright test tests/github-markdown.e2e.ts",
+    "test:e2e:headed": "playwright test --headed"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
