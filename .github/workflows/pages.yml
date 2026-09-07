@@ -1,4 +1,4 @@
-name: Deploy Custom GPT Creator to GitHub Pages
+name: Deploy FoundRy workbench to GitHub Pages
 
 on:
   push:
@@ -25,8 +25,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
-        with:
-          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -40,7 +38,7 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
-      - name: Build Custom GPT Creator
+      - name: Build FoundRy application
         working-directory: artifacts/custom-gpt-creator
         env:
           NODE_ENV: production
@@ -66,8 +64,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
-        with:
-          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
