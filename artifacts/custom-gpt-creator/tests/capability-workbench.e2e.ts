@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import {
   buildCapabilityFiles,
+  createCapabilityBackup,
   newProject,
 } from "../../mockup-sandbox/src/lib/capability-workbench";
 
@@ -289,4 +290,38 @@ test("project lifecycle, kind changes and oversized edits preserve a usable work
   await expect(page.getByLabel("Capability name", { exact: true })).toHaveValue(
     "Original project",
   );
+});
+
+
+test("failed backup selections clear earlier replacement prompts and reset the input", async ({ page }) => {
+  await page.goto("./");
+  const project = newProject();
+  const valid = { name: "valid.json", mimeType: "application/json", buffer: Buffer.from(createCapabilityBackup({ version: 1, activeId: project.id, projects: [project] })) };
+  const input = page.locator('input[type="file"]');
+  const prompt = page.getByText("Replace this workspace?", { exact: true });
+  for (const invalid of [
+    { name: "invalid.json", mimeType: "application/json", buffer: Buffer.from("{broken") },
+    { name: "oversize.json", mimeType: "application/json", buffer: Buffer.alloc(2_000_001, "x") },
+  ]) {
+    await input.setInputFiles(valid);
+    await expect(prompt).toBeVisible();
+    await input.setInputFiles(invalid);
+    await expect(prompt).not.toBeVisible();
+    await expect(page.getByRole("alert")).toContainText("Import stopped:");
+    await expect(input).toHaveValue("");
+    await input.setInputFiles(invalid);
+    await expect(prompt).not.toBeVisible();
+    await expect(input).toHaveValue("");
+  }
+  await input.setInputFiles(valid);
+  await expect(prompt).toBeVisible();
+  await page.evaluate(() => {
+    FileReader.prototype.readAsText = function () {
+      this.dispatchEvent(new ProgressEvent("error"));
+    };
+  });
+  await input.setInputFiles(valid);
+  await expect(prompt).not.toBeVisible();
+  await expect(page.getByRole("alert")).toContainText("could not be read");
+  await expect(input).toHaveValue("");
 });

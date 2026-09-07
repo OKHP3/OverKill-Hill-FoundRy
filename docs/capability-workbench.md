@@ -6,7 +6,8 @@ runnable starter; implementing a bespoke system remains work for its builder.
 
 ## Run it locally
 
-Use Node 22 or newer and pnpm 10 (the CI toolchain).
+Use Node 22 or newer and pnpm 10.34.5, as pinned by `packageManager` in
+`package.json`. CI reads that same pin.
 
 ```bash
 pnpm install --frozen-lockfile

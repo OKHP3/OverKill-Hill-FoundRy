@@ -111,6 +111,7 @@ export default function CapabilityWorkbench({
   const [importError, setImportError] = useState("");
   const [selectedFile, setSelectedFile] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const importRevision = useRef(0);
   const project =
     workspace.projects.find((item) => item.id === workspace.activeId) ||
     workspace.projects[0];
@@ -213,14 +214,19 @@ export default function CapabilityWorkbench({
   const chooseImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    event.target.value = "";
+    const revision = ++importRevision.current;
+    setPendingImport(null);
+    setImportError("");
     if (file.size > MAX_CAPABILITY_BACKUP_BYTES) {
       setImportError(
-        `Import stopped: backups must be ${Math.floor(MAX_CAPABILITY_BACKUP_BYTES / 1_000_000)} MB or smaller.`,
+        `Backups must be ${Math.floor(MAX_CAPABILITY_BACKUP_BYTES / 1_000_000)} MB or smaller.`,
       );
       return;
     }
     const reader = new FileReader();
     reader.onload = () => {
+      if (revision !== importRevision.current) return;
       try {
         setPendingImport(parseCapabilityBackup(String(reader.result)));
         setImportError("");
@@ -232,10 +238,11 @@ export default function CapabilityWorkbench({
         );
       }
     };
-    reader.onerror = () =>
-      setImportError("Import stopped: this backup could not be read.");
+    reader.onerror = () => {
+      if (revision !== importRevision.current) return;
+      setImportError("This backup could not be read.");
+    };
     reader.readAsText(file);
-    event.target.value = "";
   };
 
   return (
