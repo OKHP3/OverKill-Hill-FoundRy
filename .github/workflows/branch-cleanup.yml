@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Find and remove eligible branches
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const defaultStaleDays = 30;
