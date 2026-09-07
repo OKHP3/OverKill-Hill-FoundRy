@@ -1,4 +1,4 @@
-# Capability workbench — unreleased
+# Capability workbench — 2026-09-07
 
 - Record owner-confirmed public visibility and reciprocal FoundRy mentoring; reconcile current governance and preserve dated historical review evidence.
 
