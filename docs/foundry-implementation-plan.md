@@ -15,7 +15,7 @@ Primary sources: owner instructions, seven current GitHub repositories, five liv
 3. Implement a persistent capability workbench: named projects; prompt, skill, workflow and software targets; intent/contracts; components; Skillz references; evidence gates; portable source bundle exports and recovery backups. **Complete.**
 4. Integrate the existing Custom GPT creator as a dedicated studio; preserve old storage, nine stations, audit and exports. Add a clear three-ring universe view and source method references. **Complete.**
 5. Verify unit/domain behavior, generated artifacts, existing and new browser journeys, mobile/keyboard behavior, typecheck/build, filenames and complete governance sequence. Resolve consequential defects. **Complete locally.**
-6. Commit reviewable slices and open a pull request with evidence and limitations. Keep deployment status distinct from local acceptance and merge status. **In progress: local acceptance complete; PR delivery follows.**
+6. Commit reviewable slices and open a pull request with evidence and limitations. Keep deployment status distinct from local acceptance and merge status. **Complete: [pull request #23](https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/23) is open for review; merge and deployment remain separate.**
 
 ## Delegation and cost control
 
