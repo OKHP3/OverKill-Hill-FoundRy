@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JSON Contract Inspector — contract inspector starter</title>
+<style>body{font:16px system-ui;max-width:760px;margin:3rem auto;padding:0 1rem}textarea,pre{box-sizing:border-box;width:100%;padding:1rem}textarea{min-height:10rem}button{padding:.7rem 1rem}pre{background:#f4f4f4;white-space:pre-wrap}</style></head>
+<body><h1>JSON Contract Inspector</h1><p>This dependency-free starter inspects a JSON input contract. It does not implement or validate the bespoke capability.</p>
+<label for="input">JSON input</label><textarea id="input">{"example":true}</textarea><button id="inspect" type="button">Inspect contract</button><pre id="output" aria-live="polite"></pre>
+<script type="application/json" id="capability-config">{"name":"JSON Contract Inspector","purpose":"Inspect a JSON value and report its top-level fields and primitive value types."}</script>
+<script>const input=document.querySelector("#input"),output=document.querySelector("#output");document.querySelector("#inspect").addEventListener("click",()=>{try{const value=JSON.parse(input.value);const describe=v=>Array.isArray(v)?"array":v===null?"null":typeof v;const fields=value&&typeof value==="object"&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).map(([key,val])=>[key,describe(val)])):{value:describe(value)};output.textContent=JSON.stringify({validJson:true,fields},null,2)}catch(error){output.textContent=JSON.stringify({validJson:false,error:error instanceof Error?error.message:"Invalid JSON"},null,2)}});</script></body></html>
