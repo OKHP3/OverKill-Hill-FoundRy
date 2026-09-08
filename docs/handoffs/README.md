@@ -5,6 +5,15 @@ task coordinator maintains links here; each linked issue, PR, or Markdown record
 owns the detailed status and evidence. Keep this index limited to this repository.
 Do not infer ownership of sibling repositories from the universe context.
 
+## Coop-pertition batch — 2026-09-07
+
+The owner explicitly authorized 20 FoundRy tasks and six OverKill website tasks
+alongside Replit's existing work. See the
+[task catalog and dispatch record](coop-pertition-2026-09-07/README.md). Each has
+an isolated branch/worktree and exclusive new output paths. Existing source edits
+and integration remain coordinated with their owners; this batch does not take
+over the website's earlier remediation queue or the Replit synchronization task.
+
 ## Existing assignment reported by the owner — 2026-09-07
 
 | Task ID | Scope | Reported executor | Record / next action |
