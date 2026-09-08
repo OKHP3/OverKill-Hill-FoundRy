@@ -64,8 +64,10 @@ be completed or explicitly transferred/removed by the owner before full closeout
 - Six streaming regression tests passed with Python via `py -3`, including
   multi-megabyte records, tiny chunks, branch counts, filtering, byte hashes,
   malformed records, size guard, and existing-output rejection.
-- `py -3 scripts/governance-check.py` passed after another process corrected an
-  unrelated historical release hash. The original failure was GOV-PUBLIC-020.
+- `py -3 scripts/governance-check.py` temporarily passed after another process
+  corrected an unrelated historical release hash. After merging updated main,
+  the final check failed again with GOV-PUBLIC-020. This remains a review blocker;
+  the six extractor regressions passed on the reconciled branch.
 - Filename dry-run reported no changes needed.
 - Browser surface discovery timed out; authenticated project access is unverified.
 - No real export run, 1.5 GB performance measurement, live comparative skill
