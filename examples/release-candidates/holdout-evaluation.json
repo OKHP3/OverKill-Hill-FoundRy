@@ -46,7 +46,7 @@
   },
   "verdict": "pass",
   "evaluated_package_matches_current": false,
-  "current_package_sha256": "91aa890dfedb0ba515e92dbbc424e3894ba731a801909658da0eb71810969e59",
+  "current_package_sha256": "0b1f07d323d5d69192bf10383a5bf32084022eb0aa31fe712b43cde65b7f8e45",
   "release_consequence": "Historical reference-runtime behavior is evidenced for the recorded package hash only. The current package hash differs; rerun the protected holdout before approval or deployment. Do not generalize to live models, other hosts, reliability, outcomes, or production readiness.",
   "limitations": [
     "The adapter is a deterministic reference runtime, not a live model or host integration.",
