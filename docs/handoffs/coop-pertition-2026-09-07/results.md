@@ -1,5 +1,7 @@
 # Coop-pertition execution results
 
+Current status: see the [verified 2026-09-08 closeout](closeout-2026-09-08.md). The candidate-stage account below is preserved as history.
+
 Recorded September 7, 2026 (America/Chicago); final collection continued into September 8 UTC.
 
 All 26 requested tasks were dispatched to `gpt-5.6-luna` at low effort in waves

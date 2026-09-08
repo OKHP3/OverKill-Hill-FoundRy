@@ -1,5 +1,7 @@
 # Coop-pertition dispatch — 2026-09-07
 
+Current status: see the [verified 2026-09-08 closeout](closeout-2026-09-08.md). The candidate-stage account below is preserved as history.
+
 Owner-authorized: 20 FoundRy tasks and six OverKill website delegates, performed by ChatGPT/Codex agents alongside existing Replit work. Skillz is read-only context. This dispatch does not supersede website A03-A21/T01-T06/W13 ownership.
 
 FoundRy baseline: `29d3e1abbb833034c083a82922bbe23a8191eb2f`. Website baseline: `9c186345333a2cbb965805c65f43d294aadfc0ae`. Refresh before integration. Replit checkpoint and overlapping source ownership remain unverified.
