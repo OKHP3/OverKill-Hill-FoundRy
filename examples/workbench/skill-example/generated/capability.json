@@ -1,0 +1,68 @@
+{
+  "schema": "okh-capability-package",
+  "schemaVersion": 1,
+  "audience": "overkillhill",
+  "lineage": {
+    "parentFoundry": "OKHP3/OverKill-Hill-FoundRy"
+  },
+  "capability": {
+    "id": "repository-handoff-skill",
+    "name": "Repository handoff",
+    "kind": "skill",
+    "owner": "OverKill Hill",
+    "version": "0.1.0",
+    "purpose": "Prepare a concise, evidence-backed handoff for a repository task between agents.",
+    "audience": "OverKill Hill maintainers and collaborating agents",
+    "inputs": "Repository status, task scope, exact files, validation results, and known limits.",
+    "outputs": "A Markdown handoff that states the base, owned scope, changes, checks, risks, and continuation point.",
+    "constraints": "Keep private material out of the handoff; preserve exact paths and commit identifiers; never imply approval, publication, or model execution.",
+    "instructions": "When the request concerns handing work to another agent, collect the current branch and base commit, state the exclusive file scope, record changes and meaningful checks, distinguish confirmed evidence from inference, and list limits or open questions. When the request is unrelated to repository handoff, do not activate this skill.",
+    "acceptance": "A handoff names the task, base, owner, changed paths, validation commands and outcomes, and remaining limits. A non-handoff request is explicitly a non-trigger.",
+    "components": "SKILL.md, trigger and non-trigger examples, manual evaluation recipe, and provenance record.",
+    "skillRefs": "https://github.com/OKHP3/skillz/tree/main/skills/repository-handoff",
+    "evidence": "Generated from the current capability-workbench skill target; structural package checks and backup roundtrip are run locally.",
+    "reviewed": false,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  "readiness": {
+    "state": "ready-for-owner-review-structural-draft",
+    "blockers": [],
+    "checks": [
+      {
+        "label": "Named capability",
+        "passed": true
+      },
+      {
+        "label": "Accountable owner and version",
+        "passed": true
+      },
+      {
+        "label": "Purpose and intended audience",
+        "passed": true
+      },
+      {
+        "label": "Input and output contract",
+        "passed": true
+      },
+      {
+        "label": "Constraints and instructions",
+        "passed": true
+      },
+      {
+        "label": "Acceptance criteria",
+        "passed": true
+      },
+      {
+        "label": "Components identified",
+        "passed": true
+      },
+      {
+        "label": "Validation evidence recorded",
+        "passed": true
+      }
+    ],
+    "behavioralValidation": "not-claimed",
+    "publicationAuthorized": false
+  }
+}
