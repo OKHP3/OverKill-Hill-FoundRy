@@ -32,21 +32,21 @@ for (const viewport of viewports) {
       await page.getByLabel("Audience", { exact: true }).fill("Maintainers");
       await expectNoHorizontalOverflow(page);
 
-      await page.getByRole("button", { name: "Contract", exact: true }).click();
+      await page.getByRole("button", { name: /Contract/ }).click();
       await page.getByLabel("Inputs", { exact: true }).fill("Source records");
       await page.getByLabel("Outputs", { exact: true }).fill("Reviewable package");
       await page.getByLabel("Constraints", { exact: true }).fill("Stay local");
       await page.getByLabel("Acceptance criteria", { exact: true }).fill("Controls remain visible and usable.");
 
-      await page.getByRole("button", { name: "Build", exact: true }).click();
+      await page.getByRole("button", { name: /Build/ }).click();
       await page.getByLabel("Instructions", { exact: true }).fill("Capture the method.");
       await page.getByLabel("Components", { exact: true }).fill("Forms and package preview");
       await page.getByLabel("Skillz and canonical references").fill("https://github.com/OKHP3/skillz");
 
-      await page.getByRole("button", { name: "Validate", exact: true }).click();
+      await page.getByRole("button", { name: /Validate/ }).click();
       await page.getByLabel("Evidence and validation notes").fill("Observed in Playwright.");
       await page.getByRole("checkbox", { name: /I reviewed this starter/ }).check();
-      await page.getByRole("button", { name: "Package", exact: true }).click();
+      await page.getByRole("button", { name: /Package/ }).click();
       await expect(page.getByRole("button", { name: "Download starter ZIP", exact: true })).toBeVisible();
 
       await expect(page.getByLabel("Generated files")).toBeVisible();
