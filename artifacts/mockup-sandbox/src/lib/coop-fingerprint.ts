@@ -24,7 +24,7 @@ function writeUint32(value: number): Uint8Array {
   return bytes;
 }
 
-function frame(files: readonly FingerprintFile[]): Uint8Array {
+function frame(files: readonly FingerprintFile[]): ArrayBuffer {
   const sorted = [...files].sort((left, right) => comparePaths(left.path, right.path));
   const seen = new Set<string>();
   const chunks: Uint8Array[] = [writeUint32(sorted.length)];
@@ -40,13 +40,13 @@ function frame(files: readonly FingerprintFile[]): Uint8Array {
   }
 
   const totalLength = chunks.reduce((total, chunk) => total + chunk.length, 0);
-  const result = new Uint8Array(totalLength);
+  const result = new Uint8Array(new ArrayBuffer(totalLength));
   let offset = 0;
   for (const chunk of chunks) {
     result.set(chunk, offset);
     offset += chunk.length;
   }
-  return result;
+  return result.buffer;
 }
 
 /** Return the lowercase SHA-256 digest of a canonically framed file set. */
