@@ -43,7 +43,7 @@ test("workbench and studio keep independent projects across history and reload",
         createdAt: "2026-09-07T00:00:00.000Z",
         updatedAt: "2026-09-07T00:00:00.000Z",
         archived: false,
-        data: {},
+        data: { "step-0": { gptName: "Persisted GPT brief" } },
         completedSteps: [],
         currentPage: 0,
         sidebarOpen: true,
@@ -51,7 +51,9 @@ test("workbench and studio keep independent projects across history and reload",
     ],
   };
 
-  await page.addInitScript(
+  // Seed once. Re-seeding on every navigation would mask persistence failures.
+  await page.goto("./");
+  await page.evaluate(
     ({ capabilityKey, capability, creatorKey, creator, unrelatedKey }) => {
       localStorage.setItem(capabilityKey, JSON.stringify(capability));
       localStorage.setItem(creatorKey, JSON.stringify(creator));
@@ -88,6 +90,10 @@ test("workbench and studio keep independent projects across history and reload",
   ).toBeVisible();
   await page.reload();
   await expect(page.getByText("Seeded GPT", { exact: true })).toBeVisible();
+  await expect(page.locator('input[value="Persisted GPT brief"]')).toBeVisible();
+  // The studio initializes its own fields/timestamp. Workbench navigation must
+  // preserve that studio-owned state exactly after the studio has saved it.
+  const creatorAfterStudio = await page.evaluate((key) => localStorage.getItem(key), creatorKey);
 
   await page.goto("./");
   await expect(
@@ -109,7 +115,7 @@ test("workbench and studio keep independent projects across history and reload",
     ),
   ).toEqual({
     capability: JSON.stringify(capability),
-    creator: JSON.stringify(creator),
+    creator: creatorAfterStudio,
     unrelated: "preserve-me",
   });
 });
