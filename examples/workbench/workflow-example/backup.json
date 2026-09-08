@@ -1,0 +1,35 @@
+{
+  "schema": "okh-capability-workspace-backup",
+  "schemaVersion": 1,
+  "audience": "overkillhill",
+  "lineage": {
+    "parentFoundry": "OKHP3/OverKill-Hill-FoundRy"
+  },
+  "exportedAt": "2026-09-08T00:52:15.952Z",
+  "workspace": {
+    "version": 1,
+    "activeId": "release-evidence-checklist",
+    "projects": [
+      {
+        "id": "release-evidence-checklist",
+        "name": "Local release evidence checklist",
+        "kind": "workflow",
+        "owner": "OverKill Hill",
+        "version": "0.1.0",
+        "purpose": "Guide a human through collecting and reviewing release evidence before publishing a local capability package.",
+        "audience": "OverKill Hill capability authors",
+        "inputs": "A candidate package, its intended release revision, and available local check results.",
+        "outputs": "A dated evidence checklist with pass, fail, inconclusive, and not-run outcomes plus explicit human follow-up steps.",
+        "constraints": "Local and reviewable; do not run a scheduler or claim workflow-engine execution; preserve source references and separate authored expectations from observed checks.",
+        "instructions": "1. Identify the candidate revision and package files.\n2. Run the available structural generator and backup round-trip checks.\n3. Record each check as pass or fail with command and evidence path.\n4. Ask a human to review release readiness and publication authority.\n5. Stop on missing or contradictory evidence.",
+        "acceptance": "The walkthrough shows one synthetic pass and one synthetic fail; each outcome names its evidence and human action. Structural checks are executed separately from this authored walkthrough.",
+        "components": "Checklist template, evidence ledger, backup fixture, generated workflow plan",
+        "skillRefs": "",
+        "evidence": "Structural generator and backup parser checks are run locally; the walkthrough below is synthetic authored documentation.",
+        "reviewed": false,
+        "createdAt": "2026-09-08T00:52:15.946Z",
+        "updatedAt": "2026-09-08T00:52:15.946Z"
+      }
+    ]
+  }
+}
