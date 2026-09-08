@@ -1,113 +1,160 @@
 #!/usr/bin/env python3
-"""Bounded-memory extractor for ChatGPT's top-level conversations array."""
-import argparse, hashlib, json, sys
+"""Stream a UTF-8 conversation array into exact selected raw JSON records."""
+import argparse
+import hashlib
+import json
+import math
+import sys
 from pathlib import Path
 
 CHUNK = 1024 * 1024
 
-def _safe_name(n, ident):
-    return f"record-{n:08d}-{hashlib.sha256(ident.encode('utf-8')).hexdigest()[:16]}.json"
 
-def _mapping_nodes(value):
-    if isinstance(value, dict):
-        return 1 + sum(_mapping_nodes(v) for v in value.values())
-    if isinstance(value, list):
-        return sum(_mapping_nodes(v) for v in value)
-    return 0
-
-def _records(stream):
-    """Yield exact bytes for each object in a top-level JSON array."""
-    buf = bytearray(); started = False; depth = 0; in_string = False; escape = False
-    done = False; index = 0; cursor = 0; member_start = None; need_value = True; need_comma = False
+def _records(stream, limit=256 * 1024 * 1024):
+    state, raw, depth, index = 'start', bytearray(), 0, 0
+    quoted = escaped = False
+    prefix = stream.read(3)
+    while len(prefix) < 3:
+        extra = stream.read(3 - len(prefix))
+        if not extra:
+            break
+        prefix += extra
+    chunk = b'' if prefix == b'\xef\xbb\xbf' else prefix
     while True:
+        for b in chunk:
+            if state == 'record':
+                raw.append(b)
+                if len(raw) > limit:
+                    raise ValueError('record exceeds --max-record-mb')
+                if quoted:
+                    if escaped:
+                        escaped = False
+                    elif b == 92:
+                        escaped = True
+                    elif b == 34:
+                        quoted = False
+                elif b == 34:
+                    quoted = True
+                elif b in (123, 91):
+                    depth += 1
+                elif b in (125, 93):
+                    depth -= 1
+                    if depth == 0:
+                        yield index, bytes(raw)
+                        raw.clear()
+                        index += 1
+                        state = 'separator'
+                continue
+            if b in b' \t\r\n':
+                continue
+            if state == 'start' and b == 91:
+                state = 'first'
+            elif state in ('first', 'separator') and b == 93:
+                state = 'end'
+            elif state == 'separator' and b == 44:
+                state = 'next'
+            elif state in ('first', 'next') and b == 123:
+                raw.append(b)
+                depth = 1
+                state = 'record'
+            else:
+                raise ValueError('invalid array separator, member, or trailing data')
         chunk = stream.read(CHUNK)
-        if chunk: buf.extend(chunk)
-        final = not chunk
-        while cursor < len(buf):
-            pos = cursor
-            b = buf[pos]
-            if not started:
-                if b in b' \t\r\n':
-                    cursor += 1; continue
-                if b == 0xEF and bytes(buf[pos:pos+3]) == b'\xef\xbb\xbf':
-                    cursor += 3; continue
-                if b != ord('['): raise ValueError('top-level JSON value is not an array')
-                started = True; cursor += 1; continue
-            if done:
-                if bytes(buf[pos:pos+1]).strip(): raise ValueError('trailing garbage after array')
-                cursor += 1; continue
-            if depth == 0 and not in_string:
-                if b in b' \t\r\n': cursor += 1; continue
-                if need_comma:
-                    if b != ord(','): raise ValueError('missing comma between array members')
-                    need_comma = False; need_value = True; cursor += 1; continue
-                if b == ord(']'):
-                    if not need_value and not need_comma: raise ValueError('invalid array state')
-                    done = True; del buf[:pos+1]; pos = 0; continue
-                if not need_value or b != ord('{'):
-                    raise ValueError('array member is not a mapping object')
-                member_start = pos; depth = 1; in_string = False; escape = False; need_value = False; cursor += 1; continue
-            if in_string:
-                if escape: escape = False
-                elif b == ord('\\'): escape = True
-                elif b == ord('"'): in_string = False
-            elif b == ord('"'): in_string = True
-            elif b == ord('{') or b == ord('['): depth += 1
-            elif b == ord('}') or b == ord(']'):
-                depth -= 1
-                if depth == 0:
-                    raw = bytes(buf[member_start:pos+1]); del buf[:pos+1]; cursor = 0
-                    yield index, raw; index += 1; need_comma = True
-                    continue
-            cursor += 1
-        if final:
-            if not started or not done or depth or in_string:
-                raise ValueError('truncated or invalid JSON array')
-            return
-        # retain only the current incomplete member; whitespace is harmless
-        if len(buf) > 1024 * 1024 * 1024:
-            raise ValueError('single record exceeds parser safety limit')
+        if not chunk:
+            break
+    if state != 'end':
+        raise ValueError('truncated or invalid JSON array')
+
+
+def strict_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('duplicate JSON object key')
+        result[key] = value
+    return result
+
+
+def invalid_constant(value):
+    raise ValueError('non-JSON numeric constant')
+
 
 def main(argv=None):
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--input', required=True, type=Path)
     ap.add_argument('--output', required=True, type=Path)
-    ap.add_argument('--ids', type=Path)
-    ap.add_argument('--all', action='store_true', dest='all_records')
+    select = ap.add_mutually_exclusive_group(required=True)
+    select.add_argument('--ids', type=Path, help='One selected conversation ID per line')
+    select.add_argument('--all', action='store_true', dest='all_records')
     ap.add_argument('--max-record-mb', type=float, default=256)
     args = ap.parse_args(argv)
-    if bool(args.ids) == bool(args.all_records): ap.error('provide exactly one of --ids or --all')
-    if args.output.exists(): raise SystemExit('output directory already exists; refusing overwrite')
+    if not math.isfinite(args.max_record_mb) or args.max_record_mb <= 0:
+        ap.error('--max-record-mb must be finite and positive')
     allow = None
     if args.ids:
-        allow = {line.strip() for line in args.ids.read_text(encoding='utf-8-sig').splitlines() if line.strip()}
-    args.output.mkdir(parents=True)
-    records_dir = args.output / 'records'; records_dir.mkdir()
-    manifest = {'complete': False, 'source': str(args.input), 'records': [], 'totals': {'scanned': 0, 'selected': 0, 'mapping_nodes': 0}, 'missing_ids': [], 'duplicate_ids': [], 'source_sha256': None, 'source_hash_complete': False}
-    seen = set(); source_hash = hashlib.sha256(); status_error = None
+        allow = {x.strip() for x in args.ids.read_text(encoding='utf-8-sig').splitlines() if x.strip()}
+        if not allow:
+            ap.error('IDs list is empty')
+    if not args.input.is_file():
+        ap.error('input file does not exist')
+    try:
+        args.output.mkdir(parents=True, exist_ok=False)
+    except FileExistsError:
+        ap.error('output directory already exists; refusing overwrite')
+    records_dir = args.output / 'records'
+    records_dir.mkdir()
+    manifest = {'complete': False, 'source': str(args.input), 'records': [],
+                'totals': {'scanned': 0, 'selected': 0, 'mapping_nodes': 0},
+                'missing_ids': [], 'duplicate_ids': [], 'source_sha256': None,
+                'source_hash_complete': False,
+                'coverage_note': 'Complete means file scan only; assets and project coverage unverified.'}
+    seen, source_hash, failure = set(), hashlib.sha256(), None
     try:
         with args.input.open('rb') as src:
             class Tee:
-                def read(self, n=-1):
-                    b = src.read(n); source_hash.update(b); return b
-            for n, raw in _records(Tee()):
-                if len(raw) > args.max_record_mb * 1024 * 1024: raise ValueError(f'record {n} exceeds --max-record-mb')
-                obj = json.loads(raw)
-                ident = str(obj.get('id') or obj.get('conversation_id') or '') if isinstance(obj, dict) else ''
-                if ident in seen and ident: manifest['duplicate_ids'].append(ident)
-                if ident: seen.add(ident)
-                manifest['totals']['scanned'] += 1; manifest['totals']['mapping_nodes'] += _mapping_nodes(obj)
+                def read(self, n):
+                    data = src.read(n)
+                    source_hash.update(data)
+                    return data
+            for n, raw in _records(Tee(), int(args.max_record_mb * 1024 * 1024)):
+                obj = json.loads(raw.decode('utf-8'), object_pairs_hook=strict_object,
+                                 parse_constant=invalid_constant)
+                ident = obj.get('id') or obj.get('conversation_id')
+                if not isinstance(ident, str) or not ident:
+                    raise ValueError(f'record {n} has no string conversation ID')
+                if obj.get('id') and obj.get('conversation_id') and obj['id'] != obj['conversation_id']:
+                    raise ValueError(f'record {n} has conflicting conversation IDs')
+                mapping = obj.get('mapping')
+                if not isinstance(mapping, dict):
+                    raise ValueError(f'record {n} has no mapping object')
+                if ident in seen:
+                    manifest['duplicate_ids'].append(ident)
+                seen.add(ident)
+                manifest['totals']['scanned'] += 1
                 if args.all_records or ident in allow:
-                    name = _safe_name(n, ident or f'index-{n}')
+                    name = f'record-{n:08d}.json'
                     (records_dir / name).write_bytes(raw)
-                    manifest['records'].append({'index': n, 'id': ident, 'file': f'records/{name}', 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)})
+                    manifest['records'].append({'index': n, 'id': ident,
+                        'file': f'records/{name}', 'sha256': hashlib.sha256(raw).hexdigest(),
+                        'bytes': len(raw), 'mapping_nodes': len(mapping)})
                     manifest['totals']['selected'] += 1
-        manifest['source_sha256'] = source_hash.hexdigest(); manifest['source_hash_complete'] = True; manifest['missing_ids'] = sorted(allow - seen) if allow is not None else []
+                    manifest['totals']['mapping_nodes'] += len(mapping)
+        manifest['source_sha256'] = source_hash.hexdigest()
+        manifest['source_hash_complete'] = True
         manifest['complete'] = True
     except Exception as exc:
-        status_error = str(exc); manifest['error'] = status_error; manifest['source_sha256'] = source_hash.hexdigest()
-    (args.output / 'manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-    if status_error: print(status_error, file=sys.stderr); return 1
+        failure = str(exc)
+        manifest['error'] = failure
+        manifest['source_prefix_sha256'] = source_hash.hexdigest()
+    manifest['missing_ids'] = sorted(allow - seen) if allow is not None else []
+    (args.output / 'manifest.json').write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=True) + '\n', encoding='utf-8')
+    if failure:
+        print(failure, file=sys.stderr)
+        return 1
+    print(json.dumps(manifest['totals']))
     return 0
 
-if __name__ == '__main__': sys.exit(main())
+
+if __name__ == '__main__':
+    sys.exit(main())

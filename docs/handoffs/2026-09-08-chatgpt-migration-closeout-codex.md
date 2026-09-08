@@ -2,7 +2,7 @@
 
 Task ID: chatgpt-migration-closeout
 
-Status: in-progress; source migration blocked on source location and project inventory.
+Status: tooling validated; source migration blocked on source file and project inventory.
 
 Repository: OKHP3/OverKill-Hill-FoundRy.
 Task owner and integration owner: Codex root.
@@ -37,8 +37,9 @@ private source corpus, or capability release is authorized by this record.
 
 ## Remaining activities and dependencies
 
-1. Obtain the owner's local export path. No ChatGPT export was identified in the
-   inspected ingestion directory; broader personal folders were not searched.
+1. Obtain the actual export file. The owner supplied `custom-gpts/ingestion/`;
+   recursive inspection found older Aurifexo working material, no export ZIP or
+   gigabyte-scale conversations JSON. The largest existing file was 6,222,379 bytes.
 2. Establish authenticated access and enumerate the target project's threads,
    project instructions, files, and other supported artifacts with a dated cutoff.
 3. Run extraction against the real export, normalize the selected conversation
@@ -58,5 +59,21 @@ Not ready to archive as a fully completed migration. The tool package can be
 published independently, but the source-dependent acceptance criteria above must
 be completed or explicitly transferred/removed by the owner before full closeout.
 
-Exact next input: local path to the existing export ZIP or conversations JSON.
+## Validation evidence
+
+- Six streaming regression tests passed with Python via `py -3`, including
+  multi-megabyte records, tiny chunks, branch counts, filtering, byte hashes,
+  malformed records, size guard, and existing-output rejection.
+- `py -3 scripts/governance-check.py` passed after another process corrected an
+  unrelated historical release hash. The original failure was GOV-PUBLIC-020.
+- Filename dry-run reported no changes needed.
+- Browser surface discovery timed out; authenticated project access is unverified.
+- No real export run, 1.5 GB performance measurement, live comparative skill
+  benchmark, project inventory, or semantic incorporation is claimed.
+- A concurrent process committed and amended shared-checkout work during this
+  task. Root preserved that history and applied a focused parser correction;
+  those concurrent commits must not be represented as isolated root work.
+
+Exact next input: actual export ZIP or conversations JSON in the supplied folder,
+or its full path elsewhere.
 Exact next operation: validate its shape and select the project inventory IDs.
