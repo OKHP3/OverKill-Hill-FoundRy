@@ -1,0 +1,26 @@
+{
+  "schema": "okh-prompt-example-cases",
+  "schemaVersion": 1,
+  "evaluationStatus": "authored-expectations-only",
+  "note": "These cases describe what a reviewer should look for. They are not model-run results.",
+  "cases": [
+    {
+      "id": "dated-owner-action",
+      "input": "Sam: I will send the revised brief to Jo by Friday. Decision: use the short intake form.",
+      "authoredExpectation": "One action row: send revised brief; owner Sam; due Friday; source reference includes Sam and the sentence. The decision is not an action row.",
+      "executedCheck": "not-run"
+    },
+    {
+      "id": "missing-fields",
+      "input": "Next: investigate the export warning. We still need to decide who owns it and when it is due.",
+      "authoredExpectation": "One action row for investigating the export warning; owner and due date are unknown; source reference points to the Next sentence.",
+      "executedCheck": "not-run"
+    },
+    {
+      "id": "no-commitment",
+      "input": "The team discussed the new layout and agreed it is worth revisiting later.",
+      "authoredExpectation": "No definite action row unless a reviewer decides that revisiting later is an explicit commitment; if included, it must be marked uncertain and cite the sentence.",
+      "executedCheck": "not-run"
+    }
+  ]
+}

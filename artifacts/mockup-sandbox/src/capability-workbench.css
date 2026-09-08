@@ -206,11 +206,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
   font: 0.68rem var(--font-mono);
   color: var(--color-forge-muted-fg);
 }
 .cw-projectbar select {
   width: min(300px, 50vw);
+  min-width: 0;
+  max-width: 100%;
   padding: 0.48rem;
 }
 .cw-import-error {
