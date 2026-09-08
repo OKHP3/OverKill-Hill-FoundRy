@@ -6,14 +6,43 @@
     "allowed_path": "examples/workbench/prompt-example/",
     "objective": "Build one public-safe capability project and importable backup for a useful prompt: extract action items with source references. Generate its package with the real generator, add representative input/expected-output cases and explain that model behavior is not yet evaluated.",
     "acceptance": "Backup parses, export matches generator, cases distinguish authored expectations from executed checks.",
-    "status": "dispatched",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f01",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f01",
+    "worktree": ".cache/coop-pertition/worktrees/f01",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "agent_task": "/root/coop_f01"
+    "agent_task": "/root/coop_f01",
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "commit": "7eb757f2a51de5a36ef72193a8304269851d5cae",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/f01.md",
+      "examples/workbench/prompt-example/README.md",
+      "examples/workbench/prompt-example/backup.json",
+      "examples/workbench/prompt-example/cases.json",
+      "examples/workbench/prompt-example/generate.ts",
+      "examples/workbench/prompt-example/generated/AGENTS.md",
+      "examples/workbench/prompt-example/generated/README.md",
+      "examples/workbench/prompt-example/generated/capability.json",
+      "examples/workbench/prompt-example/generated/docs/build-plan.md",
+      "examples/workbench/prompt-example/generated/docs/skillz-references.md",
+      "examples/workbench/prompt-example/generated/docs/validation.md",
+      "examples/workbench/prompt-example/generated/prompts/prompt-contract.md",
+      "examples/workbench/prompt-example/project.ts"
+    ],
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f01.md",
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f01.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f02",
@@ -22,14 +51,41 @@
     "allowed_path": "examples/workbench/skill-example/",
     "objective": "Build one public-safe capability project and backup for a repository handoff skill. Generate package via existing generator and add trigger/non-trigger examples, provenance and a manual evaluation recipe. Do not install or publish a skill.",
     "acceptance": "Backup roundtrip and generated SKILL.md verified; no claim of model execution.",
-    "status": "dispatched",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f02",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f02",
+    "worktree": ".cache/coop-pertition/worktrees/f02",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "agent_task": "/root/coop_f02"
+    "agent_task": "/root/coop_f02",
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "commit": "3779ca04a00274493231a8e6498704067fb2a7c9",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/f02.md",
+      "examples/workbench/skill-example/README.md",
+      "examples/workbench/skill-example/backup.json",
+      "examples/workbench/skill-example/generated/AGENTS.md",
+      "examples/workbench/skill-example/generated/README.md",
+      "examples/workbench/skill-example/generated/capability.json",
+      "examples/workbench/skill-example/generated/docs/build-plan.md",
+      "examples/workbench/skill-example/generated/docs/skillz-references.md",
+      "examples/workbench/skill-example/generated/docs/validation.md",
+      "examples/workbench/skill-example/generated/skill/SKILL.md",
+      "examples/workbench/skill-example/provenance.md"
+    ],
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f02.md",
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f02.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f03",
@@ -38,14 +94,40 @@
     "allowed_path": "examples/workbench/workflow-example/",
     "objective": "Build a capability project and backup for a local release evidence checklist. Generate the workflow package and provide a worked synthetic pass/fail walkthrough with explicit human steps.",
     "acceptance": "Backup/generator checks pass; worked example is labeled synthetic; no execution-engine claim.",
-    "status": "dispatched",
-    "thread_id": null,
+    "status": "candidate-ready",
+    "thread_id": "01a07e7f-4ef8-7063-bf0f-9259da6d8421",
     "branch": "coop/f03",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f03",
+    "worktree": ".cache/coop-pertition/worktrees/f03",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "agent_task": "/root/coop_f03"
+    "agent_task": "/root/coop_f03",
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "commit": "e6ddca0dfbda6e620936729eafa4d4f3365b4b6a",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/f03.md",
+      "examples/workbench/workflow-example/AGENTS.md",
+      "examples/workbench/workflow-example/README.md",
+      "examples/workbench/workflow-example/backup.json",
+      "examples/workbench/workflow-example/capability.json",
+      "examples/workbench/workflow-example/docs/build-plan.md",
+      "examples/workbench/workflow-example/docs/skillz-references.md",
+      "examples/workbench/workflow-example/docs/synthetic-walkthrough.md",
+      "examples/workbench/workflow-example/docs/validation.md",
+      "examples/workbench/workflow-example/docs/workflow-plan.md"
+    ],
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f03.md",
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f03.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f04",
@@ -54,14 +136,44 @@
     "allowed_path": "examples/workbench/software-example/",
     "objective": "Build a JSON contract-inspector capability example using the existing software generator. Include importable backup, generated source, valid/invalid/hostile input cases and a repeatable smoke checker.",
     "acceptance": "Actual starter behavior checked with available runtime; manual browser checks reported separately.",
-    "status": "queued",
-    "thread_id": null,
+    "status": "candidate-ready",
+    "thread_id": "01a07e80-fad3-72e0-bd21-0bd6c088bf22",
     "branch": "coop/f04",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f04",
+    "worktree": ".cache/coop-pertition/worktrees/f04",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f04",
+    "commit": "843fe55b613ef63ef984527e8bf97afee3203221",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f04.md",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/f04.md",
+      "examples/workbench/software-example/README.md",
+      "examples/workbench/software-example/generate.mjs",
+      "examples/workbench/software-example/generated/AGENTS.md",
+      "examples/workbench/software-example/generated/README.md",
+      "examples/workbench/software-example/generated/app/README.md",
+      "examples/workbench/software-example/generated/app/index.html",
+      "examples/workbench/software-example/generated/backup.json",
+      "examples/workbench/software-example/generated/capability.json",
+      "examples/workbench/software-example/generated/docs/build-plan.md",
+      "examples/workbench/software-example/generated/docs/skillz-references.md",
+      "examples/workbench/software-example/generated/docs/validation.md",
+      "examples/workbench/software-example/smoke-check.mjs"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "review_note": "Coordinator corrected inaccurate real-browser claim to Node VM; candidate regenerated and retested.",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f04.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f05",
@@ -70,14 +182,32 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-zip.test.ts",
     "objective": "Add nonredundant tests against buildCapabilityZip for Unicode names/content, CRC and entry bytes, empty files and unsafe paths. Use an independent standard reader if practical. Do not change generator.",
     "acceptance": "Boundary tests reproduce expected archive behavior; actual defects documented with minimal reproduction.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f05",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f05",
+    "worktree": ".cache/coop-pertition/worktrees/f05",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f05",
+    "commit": "b5796d640dd0f8bfafc9a2cf8202272023e8d0b4",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f05.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-zip.test.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f05.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f05.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f06",
@@ -86,14 +216,32 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-backup-bounds.test.ts",
     "objective": "Add table-driven parser/export tests at UTF-8 field and project count boundaries, unknown envelopes and mutation isolation, covering gaps beyond existing nine tests. Do not change parser.",
     "acceptance": "Boundary failures and accepted edge cases are explicit and assertions do not mirror implementation.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f06",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f06",
+    "worktree": ".cache/coop-pertition/worktrees/f06",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f06",
+    "commit": "3e9f7299f3d0fcc03b5c07c4e2a531927512816e",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f06.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-backup-bounds.test.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f06.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f06.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f07",
@@ -102,14 +250,32 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-storage.test.ts",
     "objective": "Add isolated tests for unavailable storage, quota failures, recovery backup preservation and capability/GPT namespace separation. Restore globals and module state between scenarios. Do not change storage.",
     "acceptance": "Tests verify preservation under failure; no cross-test state leak.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f07",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f07",
+    "worktree": ".cache/coop-pertition/worktrees/f07",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f07",
+    "commit": "a76f04628c734fa2018ea290b75cf62d529c10af",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f07.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-storage.test.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f07.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f07.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f08",
@@ -118,14 +284,32 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-evidence.test.ts",
     "objective": "Verify all generated package types keep authored evidence separate from behavioral proof and publication permission, including reviewed=true and empty/whitespace evidence. Do not change generator.",
     "acceptance": "Tests cover meaningful missing branches; report discovered defects instead of weakening assertions.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f08",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f08",
+    "worktree": ".cache/coop-pertition/worktrees/f08",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f08",
+    "commit": "7449d6d5cc68fcc18e395f364e9c717b474185f9",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f08.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-evidence.test.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f08.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f08.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f09",
@@ -134,14 +318,32 @@
     "allowed_path": "artifacts/custom-gpt-creator/tests/coop-keyboard.e2e.ts",
     "objective": "Add focused keyboard navigation and dialog focus tests for capability import/delete and project selection. Use existing Playwright infrastructure and own PORT. No application changes.",
     "acceptance": "Runnable test with focused pass/fail evidence and keyboard limitations.",
-    "status": "queued",
-    "thread_id": null,
+    "status": "candidate-ready",
+    "thread_id": "01a07e83-7736-7dd2-9486-aad593531902",
     "branch": "coop/f09",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f09",
+    "worktree": ".cache/coop-pertition/worktrees/f09",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f09",
+    "commit": "addc8a3ae516da516987358dbf7cd674995aea0c",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f09.md",
+    "changed_files": [
+      "artifacts/custom-gpt-creator/tests/coop-keyboard.e2e.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f09.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f09.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f10",
@@ -150,14 +352,33 @@
     "allowed_path": "artifacts/custom-gpt-creator/tests/coop-responsive.e2e.ts",
     "objective": "Add bounded responsive checks at 320 and 390px with long project names and package filenames; test light/dark overflow and usable controls. No CSS or runtime edits.",
     "acceptance": "Reproducible viewport assertions; defects include selectors and screenshots when possible.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f10",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f10",
+    "worktree": ".cache/coop-pertition/worktrees/f10",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f10",
+    "commit": "82e10dbeb2e1147a95b7d219885488b76202110e",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f10.md",
+    "changed_files": [
+      "artifacts/custom-gpt-creator/tests/coop-responsive.e2e.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f10.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "held-for-responsive-defect-owner",
+    "validation_summary": "4 responsive tests failed at horizontal-overflow assertion; later package assertions not reached.",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f10.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/tree/coop/f10",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f11",
@@ -166,14 +387,32 @@
     "allowed_path": "artifacts/custom-gpt-creator/tests/coop-coexistence.e2e.ts",
     "objective": "Add nonredundant coverage for workbench/studio browser Back/Forward navigation and independent project persistence across reload. Do not modify source or existing tests.",
     "acceptance": "Both stores retain seeded data; route history tested without resetting unrelated browser state.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f11",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f11",
+    "worktree": ".cache/coop-pertition/worktrees/f11",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f11",
+    "commit": "409439a90162c5b2c17c58280a0b9d9911b7683b",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f11.md",
+    "changed_files": [
+      "artifacts/custom-gpt-creator/tests/coop-coexistence.e2e.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f11.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f11.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f12",
@@ -182,14 +421,33 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-contract.ts",
     "objective": "Implement a pure standalone versioned JSON contract parser with field names, primitive type, required flag and helpful path errors. Reject duplicate fields and unknown versions. Add adjacent coop-contract.test.ts. Do not wire into UI or replace free-text inputs.",
     "acceptance": "Positive/negative tests; documented experimental API; no claim existing projects migrated.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f12",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f12",
+    "worktree": ".cache/coop-pertition/worktrees/f12",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f12",
+    "commit": "f82880eaba2649f71a51adf10b5d4ff87908f991",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f12.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-contract.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-contract.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f12.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f12.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f13",
@@ -198,14 +456,33 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-result.ts",
     "objective": "Implement a pure standalone result-record validator with package digest, environment, command, result(pass/fail/inconclusive/not-run), timestamp and evidence reference. Add coop-result.test.ts. Do not execute commands or interpret prose as proof.",
     "acceptance": "Invalid or missing evidence cannot yield a verified result; caller trust boundary documented.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f13",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f13",
+    "worktree": ".cache/coop-pertition/worktrees/f13",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f13",
+    "commit": "f10d475f4d9e8f7fda70bdcf0699a3a51710031b",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f13.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-result.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-result.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f13.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f13.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f14",
@@ -214,14 +491,34 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-fingerprint.ts",
     "objective": "Implement a standalone async SHA-256 fingerprint for generated file path/content pairs with canonical ordering, unambiguous framing, duplicate-path rejection and no network. Add coop-fingerprint.test.ts.",
     "acceptance": "Order invariant; bytes/path changes alter digest; Unicode and delimiters covered; no UI integration.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f14",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f14",
+    "worktree": ".cache/coop-pertition/worktrees/f14",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f14",
+    "commit": "b217df01b8d929bcf1b2750aea5b77b0cceb3758",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f14.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-fingerprint.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-fingerprint.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f14.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "integration_status": "not-integrated",
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f14.md",
+    "worker_status": "completed-candidate",
+    "review_note": "ArrayBuffer-backed framing correction resolves shared TypeScript check without unsafe cast.",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f15",
@@ -230,14 +527,33 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-project-diff.ts",
     "objective": "Implement a pure diff of two CapabilityProject values, separating authored-field changes from id/timestamp metadata, with deterministic ordering and no HTML rendering. Add coop-project-diff.test.ts.",
     "acceptance": "Empty and edited diffs, Unicode and malicious text safely returned as data; no store or UI changes.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f15",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f15",
+    "worktree": ".cache/coop-pertition/worktrees/f15",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f15",
+    "integration_status": "not-integrated",
+    "commit": "5e40de7df6f2436525458609db8a9c761fa55e00",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f15.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-project-diff.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-project-diff.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f15.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f15.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f16",
@@ -246,14 +562,33 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-import-plan.ts",
     "objective": "Implement pure dry-run plan for merging two valid CapabilityWorkspace values. Identify identical, conflicting and new project IDs; never overwrite or mutate inputs and flag project-count overflow. Add coop-import-plan.test.ts. No actual writes.",
     "acceptance": "Deterministic plan covers identity collisions and bounds; conflict resolution remains explicit.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f16",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f16",
+    "worktree": ".cache/coop-pertition/worktrees/f16",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f16",
+    "integration_status": "not-integrated",
+    "commit": "dc6e353ee3d80b9438ecc5e7fdaca53aa670d161",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f16.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-import-plan.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-import-plan.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f16.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f16.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f17",
@@ -262,14 +597,32 @@
     "allowed_path": "docs/workbench-backup-migration-design.md",
     "objective": "Write an implementation-ready migration contract around the actual version1 backup schema: dispatch by version, preserve original bytes, dry-run preview, unknown-version failure, recovery fixtures and rollback. Do not invent historical supported schemas.",
     "acceptance": "Exact current fields cited; proposed future changes labeled; acceptance fixture matrix included.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f17",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f17",
+    "worktree": ".cache/coop-pertition/worktrees/f17",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "agent_task": "/root/coop_f17",
+    "integration_status": "not-integrated",
+    "commit": "afa8c4a94244210beb94e8c5fe694f3cafa68170",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f17.md",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/f17.md",
+      "docs/workbench-backup-migration-design.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f17.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f18",
@@ -278,14 +631,33 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-skill-reference.ts",
     "objective": "Implement standalone parsing for explicit canonical OKHP3/skillz GitHub blob references with optional immutable commit revision; distinguish pinned from mutable references, reject other hosts/repos and credential-bearing URLs. Add coop-skill-reference.test.ts. No fetch/catalog copying.",
     "acceptance": "Pinned and unpinned cases, malformed URLs and userinfo covered; original text preserved.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f18",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f18",
+    "worktree": ".cache/coop-pertition/worktrees/f18",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_f18",
+    "commit": "7ddfdb17074e32c5761445a013d65c3e62aa03a4",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f18.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-skill-reference.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-skill-reference.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f18.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f18.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f19",
@@ -294,14 +666,33 @@
     "allowed_path": "artifacts/mockup-sandbox/src/lib/coop-agent-handoff.ts",
     "objective": "Implement a standalone text handoff generator from CapabilityProject plus explicit baseSHA, allowed files, acceptance and budget fields. Mark project text as source data, leave authorization with caller, and include evidence-return fields. Add coop-agent-handoff.test.ts. No agent dispatch or execution.",
     "acceptance": "Stable output with unsafe text treated as data, missing required metadata rejected, no publication authority invented.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f19",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f19",
+    "worktree": ".cache/coop-pertition/worktrees/f19",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_f19",
+    "commit": "b991a94395aaac54286f33d2f3b224326558b053",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f19.md",
+    "changed_files": [
+      "artifacts/mockup-sandbox/src/lib/coop-agent-handoff.test.ts",
+      "artifacts/mockup-sandbox/src/lib/coop-agent-handoff.ts",
+      "docs/handoffs/coop-pertition-2026-09-07/f19.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f19.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "f20",
@@ -310,14 +701,32 @@
     "allowed_path": "docs/research/workbench-release-addendum-2026-09-07.md",
     "objective": "Create a dated source-and-GitHub-backed addendum to maturation report verifying PR23/24, exact main and checks. Preserve historic assessment; map shipped state versus remaining roadmap. Only current repo reads and this new document.",
     "acceptance": "Exact evidence links and retrieval time; Replit state unknown unless directly verified; no production-readiness inflation.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/f20",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/f20",
+    "worktree": ".cache/coop-pertition/worktrees/f20",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f"
+    "base_sha": "29d3e1abbb833034c083a82922bbe23a8191eb2f",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_f20",
+    "commit": "1ed585c13f103aa76957fcad21a3942fe2837ac2",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/f20.md",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/f20.md",
+      "docs/research/workbench-release-addendum-2026-09-07.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "coordinator_checks": {
+      "filenames": "PASS",
+      "governance": "PASS"
+    },
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/f20.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill-FoundRy/pull/25",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "w01",
@@ -326,14 +735,29 @@
     "allowed_path": "tests/test-foundry-feature-contract.py",
     "objective": "Create focused standard-library Python checks for canonical FoundRy source versus the current application contract: primary app link, separate GPT studio, local storage/recovery, target kinds and honest evidence language. Read old dispatch; avoid general project-status framework changes.",
     "acceptance": "Passing current invariants plus explicit opt-in expected-future checks for real parity defects; default CI remains unchanged.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/w01",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/w01",
+    "worktree": ".cache/coop-pertition/worktrees/w01",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae"
+    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_w01",
+    "commit": "906f4f8bd02b74ff0a6c3271fb919448e6626495",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/w01.md",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/w01.md",
+      "tests/test-foundry-feature-contract.py"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/w01.md",
+    "worker_status": "completed-candidate",
+    "validation_summary": "6 current-contract tests pass;2 future-parity checks skipped by default.",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill/pull/64",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "w02",
@@ -342,14 +766,29 @@
     "allowed_path": "tests/foundry-embed-acceptance.test.mjs",
     "objective": "Add an isolated read-only browser acceptance script for the FoundRy embed and direct-app fallback: sandbox affordances, open-app link, keyboard access and downloadable-backup limits. Use existing dependencies; no sandbox permission or runtime edits.",
     "acceptance": "Actual current behavior recorded with bounded assertions; no silent sandbox broadening; invocation documented.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/w02",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/w02",
+    "worktree": ".cache/coop-pertition/worktrees/w02",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae"
+    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_w02",
+    "commit": "59f49ff50072f65a596419b577e802413093e719",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/w02.md",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/w02.md",
+      "tests/foundry-embed-acceptance.test.mjs"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/w02.md",
+    "worker_status": "completed-candidate",
+    "validation_summary": "2 bounded parent embed harness tests pass; external app downloads not covered.",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill/pull/64",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "w03",
@@ -358,14 +797,28 @@
     "allowed_path": "assets/docs/foundry-metadata-parity-2026-09-07.md",
     "objective": "Audit only FoundRy page title, description, social metadata, iframe title and alt text against released workbench. Provide exact before/after copy and owning source locations as a reviewable candidate. Preserve owner voice; do not edit shared config/generated HTML.",
     "acceptance": "Every proposed claim grounded in current FoundRy source; current/future distinctions explicit.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/w03",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/w03",
+    "worktree": ".cache/coop-pertition/worktrees/w03",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae"
+    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_w03",
+    "commit": "fcd60818e91f24145a2cb3652efd43620de33b9d",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/w03.md",
+    "changed_files": [
+      "assets/docs/foundry-metadata-parity-2026-09-07.md",
+      "docs/handoffs/coop-pertition-2026-09-07/w03.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/w03.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill/pull/64",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "w04",
@@ -374,14 +827,28 @@
     "allowed_path": "assets/docs/foundry-recovery-faq-2026-09-07.md",
     "objective": "Draft exact replacement FAQ copy for named projects, backup/import, source ZIP versus GPT exports, origin-specific storage and capability release boundary. Map each paragraph to source evidence and destination block. Preserve origin story.",
     "acceptance": "Ready-to-apply content candidate; no false runtime or blanket licensing claims; no page edits.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/w04",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/w04",
+    "worktree": ".cache/coop-pertition/worktrees/w04",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae"
+    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_w04",
+    "commit": "1eb71235b720a0b1c706802febab4ee24cc0e0bd",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/w04.md",
+    "changed_files": [
+      "assets/docs/foundry-recovery-faq-2026-09-07.md",
+      "docs/handoffs/coop-pertition-2026-09-07/w04.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/w04.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill/pull/64",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "w05",
@@ -390,14 +857,29 @@
     "allowed_path": "tests/test-foundry-launch-routes.py",
     "objective": "Add focused tests for legacy /found-ry/ redirect, canonical /projects/found-ry/ route, app launch URLs and no confusing redirect to legacy studio. Use existing source/generated distinction; no generated edits.",
     "acceptance": "Route-specific assertions and fixtures; current defects reproduced, not hidden by changing expected URLs.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/w05",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/w05",
+    "worktree": ".cache/coop-pertition/worktrees/w05",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae"
+    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae",
+    "integration_status": "proposal-requires-route-policy-decision",
+    "agent_task": "/root/coop_w05",
+    "commit": "f43515720d562c2ff84fc3c7eef86053bf21b67c",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/w05.md",
+    "changed_files": [
+      "docs/handoffs/coop-pertition-2026-09-07/w05.md",
+      "tests/test-foundry-launch-routes.py"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/w05.md",
+    "worker_status": "completed-candidate",
+    "validation_summary": "4 current route checks pass; proposed automatic redirect check skipped by default and fails opt-in; live hosting redirect unknown.",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill/pull/64",
+    "publication_status": "candidate-published-not-merged"
   },
   {
     "id": "w06",
@@ -406,13 +888,27 @@
     "allowed_path": "assets/docs/foundry-journey-review-2026-09-07.md",
     "objective": "Act as independent challenger of the current feature page: can a first-time visitor choose workbench versus GPT studio, understand actual output, recover work and find the correct app? Identify five-or-fewer prioritized evidence-backed improvements with exact copy/markup candidates. Do not repeat whole-site A20 audit.",
     "acceptance": "Evaluate clarity, claim accuracy, parent CSS reuse and keyboard/mobile implications; no speculative redesign or shared runtime edits.",
-    "status": "queued",
+    "status": "candidate-ready",
     "thread_id": null,
     "branch": "coop/w06",
-    "worktree": "/Volumes/OKH-Local/04_GitHub_Mirrors/OverKill-Hill-FoundRy/.cache/coop-pertition/worktrees/w06",
+    "worktree": ".cache/coop-pertition/worktrees/w06",
     "model": "gpt-5.6-luna",
     "evidence": null,
     "effort": "low",
-    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae"
+    "base_sha": "9c186345333a2cbb965805c65f43d294aadfc0ae",
+    "integration_status": "not-integrated",
+    "agent_task": "/root/coop_w06",
+    "commit": "b1c3b6e889079a373b855a65a0c308a827ed17fe",
+    "handoff": "docs/handoffs/coop-pertition-2026-09-07/w06.md",
+    "changed_files": [
+      "assets/docs/foundry-journey-review-2026-09-07.md",
+      "docs/handoffs/coop-pertition-2026-09-07/w06.md"
+    ],
+    "scope_check": "PASS",
+    "worktree_clean": true,
+    "handoff_receipt": "docs/handoffs/coop-pertition-2026-09-07/w06.md",
+    "worker_status": "completed-candidate",
+    "review_url": "https://github.com/OKHP3/OverKill-Hill/pull/64",
+    "publication_status": "candidate-published-not-merged"
   }
 ]

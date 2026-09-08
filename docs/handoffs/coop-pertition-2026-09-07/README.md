@@ -4,6 +4,10 @@ Owner-authorized: 20 FoundRy tasks and six OverKill website delegates, performed
 
 FoundRy baseline: `29d3e1abbb833034c083a82922bbe23a8191eb2f`. Website baseline: `9c186345333a2cbb965805c65f43d294aadfc0ae`. Refresh before integration. Replit checkpoint and overlapping source ownership remain unverified.
 
+## Model and review policy
+
+Execution uses `gpt-5.6-luna` at low effort in waves of at most three active subagents. Each task retains its own branch/worktree even when waiting for a slot. Do not turn task count into an incentive for trivial changes: a justified no-change result or reproducible defect report is valid. The coordinator checks exact file scope, meaningful tests and evidence before integration. Browser test failures caused by actual product defects remain visible.
+
 ## Execution contract
 
 Each task owns a distinct new path and an isolated branch/worktree. Workers may inspect shared source but may not edit it, push, merge, deploy, change dependencies/hosting, or mutate the owner checkout. Additional unit tests may be adjacent to the named standalone module. Each worker owns one `docs/handoffs/coop-pertition-2026-09-07/<task-id>.md` handoff in its own worktree. Pure modules are experimental candidates until wired in and integration-tested; tests/examples are not released features.
@@ -150,5 +154,8 @@ Add focused tests for legacy /found-ry/ redirect, canonical /projects/found-ry/ 
 Act as independent challenger of the current feature page: can a first-time visitor choose workbench versus GPT studio, understand actual output, recover work and find the correct app? Identify five-or-fewer prioritized evidence-backed improvements with exact copy/markup candidates. Do not repeat whole-site A20 audit.
 
 ## Dispatch evidence
+
+All 26 delegates returned committed candidates. See [execution results and validation limits](results.md) and the per-task receipts. The FoundRy and website review packages remain draft PRs.
+
 
 The machine-readable dispatch state is maintained beside this document in `dispatch.json`. Planned, dispatched, accepted, completed, integrated and verified are distinct states. IDs and worktree paths must be observed, not invented. A completed worker result is a candidate pending integration, not a claim of production delivery.
