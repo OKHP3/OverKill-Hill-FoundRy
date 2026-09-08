@@ -6,7 +6,7 @@ Status: tooling validated; source migration blocked on source file and project i
 
 Repository: OKHP3/OverKill-Hill-FoundRy.
 Task owner and integration owner: Codex root.
-Base: 8eb2f99 after final upstream reconciliation; branch: codex/chatgpt-migration-closeout.
+Canonical publication: `950ccea` on `main` after final upstream reconciliation.
 
 ## Scope and acknowledgement
 
@@ -59,6 +59,16 @@ Not ready to archive as a fully completed migration. The tool package can be
 published independently, but the source-dependent acceptance criteria above must
 be completed or explicitly transferred/removed by the owner before full closeout.
 
+## Final source-access check
+
+On 2026-09-08, the authenticated ChatGPT browser session was used for a
+read-only check of the Aurifexo-R conversation and project URLs recorded in the
+source manifest. ChatGPT reported that the active account did not have access to
+the conversation, and the associated project page exposed no recoverable project
+content. This confirms the access limitation; it does not establish that the
+source was deleted or that another authorized account lacks it. No account,
+project, conversation, or source material was changed.
+
 ## Validation evidence
 
 - Six streaming regression tests passed with Python via `py -3`, including
@@ -70,7 +80,9 @@ be completed or explicitly transferred/removed by the owner before full closeout
   newline-stable package-hash implementation; it does not turn the historical
   holdout into current-package evidence.
 - Filename dry-run reported no changes needed.
-- Browser surface discovery timed out; authenticated project access is unverified.
+- The read-only browser check confirmed that the active authenticated account
+  cannot access the recorded Aurifexo-R conversation or recover content from its
+  project page.
 - No real export run, 1.5 GB performance measurement, live comparative skill
   benchmark, project inventory, or semantic incorporation is claimed.
 - A concurrent process committed and amended shared-checkout work during this
