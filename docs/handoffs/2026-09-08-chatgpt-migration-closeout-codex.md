@@ -6,7 +6,7 @@ Status: tooling validated; source migration blocked on source file and project i
 
 Repository: OKHP3/OverKill-Hill-FoundRy.
 Task owner and integration owner: Codex root.
-Base: 7d2d964; branch: codex/chatgpt-migration-closeout.
+Base: 8eb2f99 after final upstream reconciliation; branch: codex/chatgpt-migration-closeout.
 
 ## Scope and acknowledgement
 
@@ -64,10 +64,11 @@ be completed or explicitly transferred/removed by the owner before full closeout
 - Six streaming regression tests passed with Python via `py -3`, including
   multi-megabyte records, tiny chunks, branch counts, filtering, byte hashes,
   malformed records, size guard, and existing-output rejection.
-- `py -3 scripts/governance-check.py` temporarily passed after another process
-  corrected an unrelated historical release hash. After merging updated main,
-  the final check failed again with GOV-PUBLIC-020. This remains a review blocker;
-  the six extractor regressions passed on the reconciled branch.
+- `python3 scripts/governance-check.py` passed after the final upstream
+  reconciliation, including the public graduation and release-record consistency
+  audits. The previous GOV-PUBLIC-020 hash mismatch is resolved by the merged,
+  newline-stable package-hash implementation; it does not turn the historical
+  holdout into current-package evidence.
 - Filename dry-run reported no changes needed.
 - Browser surface discovery timed out; authenticated project access is unverified.
 - No real export run, 1.5 GB performance measurement, live comparative skill
