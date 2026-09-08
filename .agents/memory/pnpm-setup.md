@@ -19,3 +19,10 @@ The root `tsconfig.base.json` must exist at `/home/runner/workspace/tsconfig.bas
 git show 90c25805:tsconfig.base.json > tsconfig.base.json
 ```
 Its absence causes `Cannot find type definition file for 'node'` errors in tsc (but does NOT prevent Vite from serving — esbuild is used for transpilation).
+
+## Local pnpm pin mismatch
+The repository pins a newer pnpm version than the Repl's installed pnpm in some sessions. Without an explicit local opt-out, ordinary workflow commands can recursively self-bootstrap pnpm until thread resources are exhausted.
+
+**Why:** Managed artifact workflows all invoke plain `pnpm`, so one failed bootstrap can multiply across every running service.
+
+**How to apply:** Keep the repository's `packageManager` pin for CI, but retain the workspace `.npmrc` opt-out and use bounded, non-interactive flags in `scripts/post-merge.sh` for local Repl setup.

@@ -16,6 +16,7 @@ export default defineConfig({
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "line" : "list",
+  testIgnore: process.env.GITHUB_MARKDOWN_CHECK ? [] : ["**/github-markdown.e2e.ts"],
   use: {
     baseURL,
     trace: "retain-on-failure",
@@ -23,7 +24,7 @@ export default defineConfig({
       ? { executablePath: process.env.REPLIT_PLAYWRIGHT_CHROMIUM_EXECUTABLE }
       : undefined,
   },
-  webServer: process.env.CREATOR_BASE_URL
+  webServer: process.env.CREATOR_BASE_URL || process.env.GITHUB_MARKDOWN_CHECK
     ? undefined
     : {
         command:
