@@ -21,6 +21,9 @@ const buildStepLabels = [
   "Ship & Govern",
 ] as const;
 
+const unicodeAndMixedLineEndings =
+  "日本語のレビュー 🌍\r\nDeuxième ligne — café\rDritte Zeile\nFourth line";
+
 async function openExportPackage(page: Page) {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", {
@@ -92,8 +95,8 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   await openExportPackage(page);
 
   const instructions = {
-    1: "You are a careful research assistant.",
-    2: "Prefer accurate, concise answers.",
+    1: `You are a careful research assistant.\r\n${unicodeAndMixedLineEndings}`,
+    2: `Prefer accurate, concise answers — especially for déjà vu.\n${unicodeAndMixedLineEndings}`,
   };
   await page.evaluate((savedInstructions) => {
     const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
@@ -103,16 +106,18 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   await page.reload();
 
   await page.getByRole("button", { name: "Instructions Only" }).click();
-  const exportContent = await page.locator("pre").innerText();
+  const exportContent = await page.locator("pre").textContent();
   expect(exportContent).toBe(
-    "## Identity & Scope\nYou are a careful research assistant.\n\n## Operating Principles\nPrefer accurate, concise answers.",
+    `## Identity & Scope\nYou are a careful research assistant.\r\n${unicodeAndMixedLineEndings}\n\n## Operating Principles\nPrefer accurate, concise answers — especially for déjà vu.\n${unicodeAndMixedLineEndings}`,
   );
+  expect(exportContent).not.toBeNull();
+  const exactExportContent = exportContent!;
 
   const copyButton = page.getByRole("button", { name: /Copy/ });
   await copyButton.click();
   await expect
     .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
-    .toBe(exportContent);
+    .toBe(exactExportContent);
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "⬇ Download .md" }).click();
@@ -120,7 +125,24 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   expect(download.suggestedFilename()).toBe("custom-gpt-spec.md");
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
-  await expect(readFile(downloadPath!, "utf8")).resolves.toBe(exportContent);
+  await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
+});
+
+test("keeps international project names readable in downloaded filenames", async ({ page }) => {
+  await openExportPackage(page);
+
+  for (const { projectName, filename } of [
+    { projectName: "日本語アシスタント", filename: "日本語アシスタント-spec.md" },
+    { projectName: "Привет мир", filename: "привет-мир-spec.md" },
+    { projectName: "Crème brûlée", filename: "crème-brûlée-spec.md" },
+  ]) {
+    await replaceProjectData(page, { "step-0": { gptName: projectName } });
+
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "⬇ Download .md" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(filename);
+  }
 });
 
 test("keeps incomplete export warnings and controls in sync", async ({ page }) => {
@@ -191,12 +213,24 @@ test("distinguishes incomplete, blocked, and ready-for-review packages", async (
 
 test("exports structured evidence with provenance and explicit validation boundary", async ({ page }) => {
   await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": {
+      nonGoals: unicodeAndMixedLineEndings,
+      allowedSources: "Sources déjà vérifiées",
+    },
+    "step-1": { catastrophicMistakes: unicodeAndMixedLineEndings },
+    "step-3": { retrievalNotes: unicodeAndMixedLineEndings },
+  });
   await page.getByRole("button", { name: "Evidence (JSON)" }).click();
 
-  const jsonText = await page.locator("pre").innerText();
+  const jsonText = await page.locator("pre").textContent();
+  expect(jsonText).not.toBeNull();
+  const exactJsonText = jsonText!;
   const evidence = JSON.parse(jsonText);
   expect(evidence.schemaVersion).toBe("1.0");
   expect(evidence.artifact.type).toBe("custom-gpt-specification");
+  expect(evidence.boundaries.nonGoals).toBe(unicodeAndMixedLineEndings);
+  expect(evidence.phases["step-1-conversation-contract"].catastrophicMistakes).toBe(unicodeAndMixedLineEndings);
   expect(evidence.provenance.source).toBe("browser-local-project");
   expect(evidence.readiness.behavioralValidation).toBe("not-claimed");
   expect(evidence.readiness).toHaveProperty("confidence");
@@ -207,7 +241,7 @@ test("exports structured evidence with provenance and explicit validation bounda
   await page.getByRole("button", { name: "Copy" }).click();
   await expect
     .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
-    .toBe(jsonText);
+    .toBe(exactJsonText);
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "⬇ Download .json" }).click();
@@ -215,7 +249,7 @@ test("exports structured evidence with provenance and explicit validation bounda
   expect(download.suggestedFilename()).toBe("custom-gpt-spec.json");
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
-  await expect(readFile(downloadPath!, "utf8")).resolves.toBe(jsonText);
+  await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactJsonText, "utf8"));
 });
 
 test("includes normalized audit findings in Markdown and JSON evidence exports", async ({ page }) => {
