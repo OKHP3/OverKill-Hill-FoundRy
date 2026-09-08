@@ -16,8 +16,10 @@ const project = {
   acceptance: "Valid objects report field types; arrays and primitives report their shape; malformed JSON reports validJson false; hostile text cannot inject markup.",
   components: "Generated app/index.html, app/README.md, and the versioned FoundRy backup envelope.",
   skillRefs: "",
-  evidence: "Smoke checker exercises valid, invalid, and hostile JSON in a real browser runtime.",
+  evidence: "Smoke checker exercises valid, invalid, and hostile JSON in the Node VM runtime with a minimal DOM harness.",
   reviewed: false,
+  createdAt: "2026-09-07T00:00:00.000Z",
+  updatedAt: "2026-09-07T00:00:00.000Z",
 };
 
 const root = new URL("./generated/", import.meta.url);

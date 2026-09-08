@@ -11,7 +11,7 @@ Valid objects report field types; arrays and primitives report their shape; malf
 
 ## Recorded evidence
 
-Smoke checker exercises valid, invalid, and hostile JSON in a real browser runtime.
+Smoke checker exercises valid, invalid, and hostile JSON in the Node VM runtime with a minimal DOM harness.
 
 ## Structural checks
 
