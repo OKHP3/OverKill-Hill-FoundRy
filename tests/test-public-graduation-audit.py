@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "scripts" / "public-graduation-audit.py"
 RELEASE = ROOT / "examples" / "release-candidates"
+TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".txt"}
 
 
 def run(candidate: Path) -> subprocess.CompletedProcess[str]:
@@ -42,6 +43,16 @@ def expect_failure(candidate: Path, *needles: str) -> bool:
     return True
 
 
+def rewrite_skill_line_endings(candidate: Path, newline: bytes) -> None:
+    for path in (candidate / "skill").rglob("*"):
+        if not path.is_file():
+            continue
+        if path.suffix.lower() not in TEXT_SUFFIXES and path.name.upper() != "LICENSE":
+            continue
+        content = path.read_bytes().replace(b"\r\n", b"\n")
+        path.write_bytes(content.replace(b"\n", newline))
+
+
 def main() -> int:
     baseline = run(RELEASE)
     if baseline.returncode != 0:
@@ -51,6 +62,13 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="public-graduation-audit-") as directory:
         candidate = Path(directory) / "release-candidates"
         shutil.copytree(RELEASE, candidate)
+
+        rewrite_skill_line_endings(candidate, b"\r\n")
+        newline_variant = run(candidate)
+        if newline_variant.returncode != 0:
+            print("FAIL package hash changed after CRLF normalization:")
+            print(newline_variant.stdout, newline_variant.stderr)
+            return 1
 
         edit_json(
             candidate,
