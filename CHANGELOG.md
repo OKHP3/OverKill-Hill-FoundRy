@@ -1,5 +1,7 @@
 # Capability workbench — 2026-09-07
 
+- Add allocation-aware collaboration instructions and compact handoffs for ChatGPT/Codex, Claude, Copilot, and Replit; correct current Replit visibility and workbench notes.
+
 - Record owner-confirmed public visibility and reciprocal FoundRy mentoring; reconcile current governance and preserve dated historical review evidence.
 
 - Add OverKill capability projects for prompts, skills, workflows and software starters, with local persistence, recovery backups, source preview and ZIP exports.
@@ -9,7 +11,7 @@
 
 # Changelog
 
-All notable changes to the private OverKill Hill FoundRy relay and its hosted capabilities should be recorded here. ReFolDec entries describe the FoundRy-hosted capability scaffold unless they explicitly identify a separately approved public release.
+All notable changes to the intentionally public OverKill Hill FoundRy relay and its hosted capabilities should be recorded here. ReFolDec entries describe the FoundRy-hosted capability scaffold unless they explicitly identify a separately approved public release. Earlier private-posture entries below preserve historical decisions.
 
 ## 0.1.0 — ReFolDec hosted capability scaffold
 
