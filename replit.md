@@ -1,16 +1,34 @@
 # OverKill Hill FoundRy
 
-Private governance relay and capability forge for developing, validating, and
-graduating OverKill Hill P³ artifacts. FoundRy is the primary private identity;
+Intentionally public governance relay and capability forge for developing,
+validating, and graduating OverKill Hill P³ artifacts. FoundRy is the primary identity;
 ReFolDec is a separately bounded capability and is not this repository's public
 product surface.
+
+## Agent coordination — 2026-09-07
+
+Read `AGENTS.md` and `docs/agent-collaboration.md` before continuing work. The
+owner reports six website/FoundRy synchronization tasks already underway; Skillz
+is context only. Finish or checkpoint this Repl's current task before accepting
+overlapping work, and provide the protocol's compact handoff with actual Git and
+runtime evidence. Receipt of these instructions by other hosts has not been verified.
+Locate the current assignment in `docs/handoffs/README.md`; record this session's
+checkpoint and acknowledgement there through its linked task record before a
+coordinator assigns overlapping work elsewhere.
+
+Conserve Replit tokens: route portable implementation, analysis, and documentation
+to the owner's larger ChatGPT/Codex allocation when access permits; use Claude
+for bounded second opinions and Copilot for small tasks. Replit owns its local Git
+reconciliation and platform-specific verification. Confirm each assignment and
+handoff; do not assume chats, quotas, or permissions are shared between hosts.
 
 ## Run & Operate
 
 - `pnpm run typecheck` — full TypeScript check across the workspace.
 - `pnpm --filter @workspace/api-server run dev` — start the API server.
-- `pnpm --filter @workspace/custom-gpt-creator run dev` — run the browser-only
-  Custom GPT Creator.
+- `pnpm --filter @workspace/custom-gpt-creator run dev` — run the browser-local
+  capability workbench and existing Custom GPT studio; see
+  `docs/capability-workbench.md` for the port/base-path setup and validation.
 - `pnpm --filter @workspace/okh-capabilities run dev` — run Forge Capabilities.
 - `pnpm --filter @workspace/okh-foundry-landing run dev` — run the FoundRy
   landing artifact.
@@ -52,8 +70,9 @@ expectations into public evaluation records.
 
 ## Architecture decisions
 
-- FoundRy remains private; public capabilities graduate to separately approved
-  publication surfaces.
+- All three regional FoundRy repositories are intentionally public. Separate
+  capability releases still require their approved publication surfaces and
+  graduation checks; private source material is not approved for publication.
 - Durable capabilities are the source of truth; GPTs, skills, websites, agents,
   and wrappers are deployment targets.
 - The Custom GPT Creator remains browser-only and localStorage-backed, without
@@ -65,14 +84,17 @@ expectations into public evaluation records.
 
 ## Product
 
-The workspace provides internal FoundRy landing, identity, capability, Canvas
-preview, and Custom GPT Creator artifacts. These support evidence-backed GPT
+The workspace provides the OverKill capability workbench, the existing Custom GPT
+studio, and FoundRy landing, identity, capability, and Canvas-preview artifacts.
+The workbench is implemented in `artifacts/mockup-sandbox/src` and deployed through
+`artifacts/custom-gpt-creator`. Preserve its separate capability store and the
+studio's `cgpt-workspace` projects. These support evidence-backed GPT
 and capability design, structured export, governance review, and controlled
 public-graduation preparation.
 
 ## User preferences
 
-Keep private FoundRy governance separate from any public ReFolDec artifact.
+Preserve FoundRy identity and the separate ReFolDec release boundary.
 Preserve evidence status and uncertainty instead of inflating release claims.
 
 ## Gotchas

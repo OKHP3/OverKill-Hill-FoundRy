@@ -171,6 +171,31 @@ This is the same repository-local entry point used by governance CI. It runs
 the manifest, registry, scaffold sync, public graduation, and release-record
 consistency checks without changing the existing checks.
 
+## 8.3 Collaboration across agent hosts
+
+Follow [the collaboration protocol](docs/agent-collaboration.md) when work crosses
+ChatGPT/Codex, Claude, GitHub Copilot, or Replit. This is a repository-local
+working agreement, not a new universal governance rule.
+
+- Optimize useful work per token; elapsed time is secondary. Prefer the owner's
+  larger ChatGPT allocation for portable work, Claude for bounded second opinions,
+  Copilot for small targeted tasks, and Replit for its checkout and runtime needs.
+  Select the least costly capable model and effort available to the assigned host.
+- Fetch and inspect current Git state before editing. Preserve local work and
+  reconcile with `origin/main`; never overwrite another host's work to gain parity.
+- Use one task owner, one implementation branch, explicit file scope, and one
+  integration owner per task. Independent agents may work in separate checkouts;
+  coordinate overlapping files and do not duplicate an active assignment.
+- Pass the protocol's compact handoff with exact commit and validation evidence.
+  A host must acknowledge a handoff before it counts as accepted. Chat history,
+  account allowances, and access permissions are not assumed to transfer.
+- Reuse relevant verified evidence; rerun required checks and checks invalidated
+  by changes. Do not spend tokens repeating whole-repository research or polling.
+- The six website/FoundRy Repls are distinct workspaces. Skillz is context only
+  in the current reconciliation round. Modify this repository only unless the
+  owner explicitly expands scope. All three regional FoundRy repositories are
+  intentionally public; preserve private-source and capability-release boundaries.
+
 ## 9. Directory Contract
 
 ```text
