@@ -4,7 +4,7 @@ This directory is the durable, deduplicated result of the temporary Custom GPT s
 
 1. `okhp3-custom-gpt-readiness`: recover evidence and decide whether a concept is ready to build.
 2. `okhp3-custom-gpt-builder`: create, test, release, and maintain a Custom GPT.
-3. `okhp3-custom-gpt-skill-conversion-planner`: map a configured Custom GPT into a portable Agent Skill plan.
+3. `okhp3-gpt-skill-conversion-plan`: map a configured Custom GPT into a portable Agent Skill plan.
 4. `okhp3-skill-foundry`: author, evaluate, and improve the resulting SKILL.md package.
 
 The documents here do not preserve the temporary source corpus verbatim. They retain only reusable methods, explicitly label the strength of each claim, and avoid repeating the same guidance in multiple forms.

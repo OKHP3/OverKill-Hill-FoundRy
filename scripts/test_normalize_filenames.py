@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import os
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
@@ -81,6 +82,31 @@ class FilenameAuditTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(result.stdout, "No changes needed.\n")
+
+    def test_legacy_output_encoding_does_not_crash_on_unicode_filename(self) -> None:
+        repository = self.create_fixture_repository()
+        (repository / "needs‑normalization.txt").touch()
+
+        environment = os.environ.copy()
+        environment["PYTHONIOENCODING"] = "cp1252"
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                str(repository),
+                "--recursive",
+                "--ascii-only",
+                "--include-dirs",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env=environment,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Dry-run: 1 rename(s) planned.", result.stdout)
 
 
 if __name__ == "__main__":
