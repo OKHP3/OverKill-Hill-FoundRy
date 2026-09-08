@@ -71,10 +71,14 @@ def repository_revision(root: Path) -> str:
 
 def package_hash(skill_path: Path) -> str:
     digest = hashlib.sha256()
-    for path in sorted(path for path in skill_path.rglob("*") if path.is_file()):
+    paths = (path for path in skill_path.rglob("*") if path.is_file())
+    for path in sorted(paths, key=lambda item: item.relative_to(skill_path).as_posix()):
         digest.update(path.relative_to(skill_path).as_posix().encode("utf-8"))
         digest.update(b"\0")
-        digest.update(path.read_bytes())
+        content = path.read_bytes()
+        if path.suffix.lower() in {".md", ".json", ".yaml", ".yml", ".py", ".txt"} or path.name.upper() == "LICENSE":
+            content = content.replace(b"\r\n", b"\n")
+        digest.update(content)
         digest.update(b"\0")
     return digest.hexdigest()
 

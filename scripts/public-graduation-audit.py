@@ -85,10 +85,14 @@ def _package_hash(package: pathlib.Path) -> str | None:
     if not package.is_dir():
         return None
     digest = hashlib.sha256()
-    for path in sorted(path for path in package.rglob("*") if path.is_file()):
+    paths = (path for path in package.rglob("*") if path.is_file())
+    for path in sorted(paths, key=lambda item: item.relative_to(package).as_posix()):
         digest.update(path.relative_to(package).as_posix().encode("utf-8"))
         digest.update(b"\0")
-        digest.update(path.read_bytes())
+        content = path.read_bytes()
+        if path.suffix.lower() in {".md", ".json", ".yaml", ".yml", ".py", ".txt"} or path.name.upper() == "LICENSE":
+            content = content.replace(b"\r\n", b"\n")
+        digest.update(content)
         digest.update(b"\0")
     return digest.hexdigest()
 
