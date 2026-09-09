@@ -408,6 +408,37 @@ test("restores compatible audit findings into the active project", async ({ page
   expect(restored.audit.notes).toEqual({ "1": "Reviewed from the evidence package." });
   expect(restored.audit.shipGateDecision).toBe("passed");
   expect(restored.audit.shipGateDecisionExplanation).toContain("average and safety thresholds are met");
+
+  const verifyRestoredAuditMode = async () => {
+    await expect(page.locator("h1")).toContainText("Audit Mode");
+    await expect(page.getByLabel("GPT name / URL being audited")).toHaveValue("Offline reviewer identity");
+    for (const itemId of Object.keys(scores)) {
+      await expect(page.getByRole("button", { name: `Score 5 for audit item ${itemId}`, exact: true })).toHaveAttribute("aria-pressed", "true");
+    }
+    await expect(page.getByRole("textbox", { name: "Notes for audit item 1", exact: true })).toHaveValue("Reviewed from the evidence package.");
+    await expect(page.getByTestId("audit-ship-gate-decision")).toHaveAttribute("data-decision", "passed");
+  };
+
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Audit Mode" }).click();
+  await verifyRestoredAuditMode();
+
+  await page.reload();
+  await verifyRestoredAuditMode();
+
+  page.once("dialog", (dialog) => dialog.accept("Unrelated GPT"));
+  await page.getByRole("button", { name: /Current project/ }).click();
+  await page.getByRole("button", { name: "＋ New project", exact: true }).click();
+  await expect(page.locator("h1")).toContainText("Build Brief");
+
+  await page.getByRole("button", { name: /Current project/ }).click();
+  await navigation.getByRole("button", { name: "Audit Mode" }).click();
+  await expect(page.locator("h1")).toContainText("Audit Mode");
+  await expect(page.getByLabel("GPT name / URL being audited")).toHaveValue("");
+  await expect(page.getByTestId("audit-ship-gate-decision")).toHaveAttribute("data-decision", "incomplete");
+
+  await page.getByRole("button", { name: "Test GPT", exact: true }).click();
+  await verifyRestoredAuditMode();
 });
 
 test("cancels a valid audit replacement without changing existing findings", async ({ page }) => {

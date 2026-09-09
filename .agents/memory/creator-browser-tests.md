@@ -34,3 +34,11 @@ viewer serializes the same safe code or HTML boundary differently.
 
 **How to apply:** Keep the downloaded-byte equality assertion separate, then
 record renderer-specific differences explicitly alongside shared structure checks.
+
+## Accessible-name ambiguity
+
+Scope navigation selectors to the named workflow region and use exact accessible names for numbered controls.
+
+**Why:** Emoji prefixes make exact button names differ from visible labels, while item 1 labels are prefixes of item 10 labels; Playwright strict mode otherwise waits or resolves multiple controls.
+
+**How to apply:** Prefer `navigation.getByRole("button", { name: "Audit Mode" })` for workflow navigation and exact role/name selectors for numbered scores and notes.
