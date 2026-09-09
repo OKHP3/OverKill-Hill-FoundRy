@@ -184,12 +184,74 @@ def main() -> int:
             print(scan.stdout, scan.stderr)
             return 1
 
+        protected_prompt = json.loads(holdout.read_text(encoding="utf-8"))["prompt"]
+        binary_artifact = ROOT / "examples" / "release-candidates" / "README.md"
+        binary_original = binary_artifact.read_bytes()
+        binary_artifact.write_bytes(
+            b"\xff\xfe protected bytes: "
+            + protected_prompt.encode("utf-8")
+        )
+        try:
+            binary_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if (
+                binary_scan.returncode == 0
+                or "undecodable release artifact" not in binary_scan.stderr
+                or "examples/release-candidates/README.md" not in binary_scan.stderr
+                or "convert it to UTF-8" not in binary_scan.stderr
+            ):
+                print("FAIL release scan allowed protected bytes in an undecodable artifact")
+                return 1
+        finally:
+            binary_artifact.write_bytes(binary_original)
+
+        mixed_binary_original = binary_artifact.read_bytes()
+        mixed_binary_artifact = (
+            b"valid UTF-8 protected text: "
+            + protected_prompt.encode("utf-8")
+            + b"\x00binary tail"
+        )
+        binary_artifact.write_bytes(mixed_binary_artifact)
+        try:
+            mixed_binary_scan = subprocess.run(
+                [
+                    sys.executable,
+                    str(TOOL),
+                    "--scan-release-artifacts",
+                    "--holdout-file",
+                    str(holdout),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if (
+                mixed_binary_scan.returncode == 0
+                or "mixed-binary release artifact" not in mixed_binary_scan.stderr
+                or "examples/release-candidates/README.md" not in mixed_binary_scan.stderr
+                or "remove it from the release shelf" not in mixed_binary_scan.stderr
+            ):
+                print("FAIL release scan allowed protected text in a mixed-binary artifact")
+                return 1
+        finally:
+            binary_artifact.write_bytes(mixed_binary_original)
+
         leaked = ROOT / "examples" / "release-candidates" / "holdout-evaluation.md"
         original = leaked.read_text(encoding="utf-8")
         leaked.write_text(
             original
             + "\nProtected text: "
-            + json.loads(holdout.read_text(encoding="utf-8"))["prompt"]
+            + protected_prompt
             + "\n",
             encoding="utf-8",
         )

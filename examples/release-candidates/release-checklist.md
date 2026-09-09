@@ -14,6 +14,11 @@ visibility change as part of this checklist.
   --holdout-file examples/release-candidates/skill/tests/protected-holdout.json`
   (the maintainer fixture is temporary and untracked). A failure blocks release
   records from shipping until protected content and placeholder hashes are removed.
+   Release artifacts are text-only: every tracked file must decode as UTF-8 and
+   must not contain a NUL byte. Undecodable or mixed-binary files are not
+   allowed because protected bytes could otherwise evade the holdout checks.
+   Remove the file from the release shelf or convert it to UTF-8 text, then
+   rerun the scan; the failure identifies the offending path and remediation.
   The scan detects exact content and canonicalized content within one file or
   across distinct tracked release files, regardless of file order.
   Canonicalization is limited to Unicode compatibility normalization, case

@@ -189,6 +189,9 @@ def split_protected_match(
 def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
     """Find protected content and known placeholder hashes in tracked records.
 
+    Release artifacts are text-only: every tracked artifact must be valid UTF-8
+    and must not contain a NUL byte. Rejecting undecodable or mixed-binary
+    artifacts keeps protected bytes from bypassing the content checks.
     The release gate checks exact values plus canonicalized values within a
     single file and across distinct tracked files. Canonicalization catches
     light transformations (Unicode compatibility forms, case, whitespace, and
@@ -212,9 +215,21 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
         relative = path.relative_to(root)
         if relative == MAINTAINER_FIXTURE or relative == REGRESSION_TEST:
             continue
+        content = path.read_bytes()
         try:
-            text = path.read_text(encoding="utf-8")
-        except UnicodeDecodeError:
+            text = content.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            errors.append(
+                f"{relative}: undecodable release artifact ({exc}); remove it "
+                "from the release shelf or convert it to UTF-8 before retrying"
+            )
+            continue
+        if "\x00" in text:
+            errors.append(
+                f"{relative}: mixed-binary release artifact (NUL byte found); "
+                "remove it from the release shelf or convert it to UTF-8 text "
+                "before retrying"
+            )
             continue
         artifacts.append((path, text))
         canonical_text = canonicalize_protected_text(text)
@@ -391,8 +406,9 @@ def main() -> int:
         "--scan-release-artifacts",
         action="store_true",
         help=(
-            "Fail if tracked release records contain exact, lightly transformed, "
-            "or split protected holdout content, or placeholder hashes"
+            "Fail if tracked release records are not UTF-8, contain NUL bytes, "
+            "contain exact, lightly transformed, or split protected holdout "
+            "content, or contain placeholder hashes"
         ),
     )
     args = parser.parse_args()
