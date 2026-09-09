@@ -91,6 +91,68 @@ async function expectExportActionsToProduceMarkdown(page: Page) {
   await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
 }
 
+async function expectSelectedExportActions(
+  page: Page,
+  expectedFilename: string,
+  expectedExtension: "md" | "json",
+) {
+  const exportContent = await page.locator("pre").textContent();
+  expect(exportContent).not.toBeNull();
+  const exactExportContent = exportContent!;
+
+  await page.evaluate(() => {
+    delete (window as Window & { __copiedExport?: string }).__copiedExport;
+  });
+  await page.getByRole("button", { name: /Cop/ }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport))
+    .toBe(exactExportContent);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: `⬇ Download .${expectedExtension}` }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe(expectedFilename);
+
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
+}
+
+test("switches export formats before copying and downloading", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Switching Formats GPT" },
+    "step-2": {
+      1: "Identity marker for the selected export.",
+      2: "Operating marker for the selected export.",
+    },
+  });
+
+  const markdownContent = await page.locator("pre").textContent();
+  expect(markdownContent).not.toBeNull();
+  expect(markdownContent).toContain("Identity marker for the selected export.");
+  await expectSelectedExportActions(page, "switching-formats-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  const instructionsContent = await page.locator("pre").textContent();
+  expect(instructionsContent).toBe(
+    "## Identity & Scope\nIdentity marker for the selected export.\n\n## Operating Principles\nOperating marker for the selected export.",
+  );
+  expect(instructionsContent).not.toBe(markdownContent);
+  await expectSelectedExportActions(page, "switching-formats-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const jsonContent = await page.locator("pre").textContent();
+  expect(jsonContent).not.toBeNull();
+  const evidence = JSON.parse(jsonContent!);
+  expect(evidence.phases["step-2-instruction-stack"]).toEqual({
+    1: "Identity marker for the selected export.",
+    2: "Operating marker for the selected export.",
+  });
+  expect(jsonContent).not.toBe(instructionsContent);
+  await expectSelectedExportActions(page, "switching-formats-gpt-spec.json", "json");
+});
+
 test("copies and downloads the Instructions Only export", async ({ page }) => {
   await openExportPackage(page);
 
