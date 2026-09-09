@@ -84,3 +84,11 @@ zoom percentage was not verified, so this is not a 200%/400% acceptance pass.
 The temporary tab was closed and zoom restored. No VoiceOver speech,
 physical-phone behavior, human judgment, or new-main deployment is certified by
 this bounded observation.
+
+## Native Mac portability refresh
+
+On September 9, the actual Mac host ran `tests/test-murderbird-review-boundary.py`
+(3 tests, pass) and `tests/test-release-package.py` (12 tests, pass) with Python
+3.14.5. HEAD was `a03e87d5e122f0b98f5643c50d2f81ca1a7b791d` both before and
+after execution. This refresh closes the bounded native portability check on
+that candidate. It does not replace the spoken AT or physical-device sessions.
