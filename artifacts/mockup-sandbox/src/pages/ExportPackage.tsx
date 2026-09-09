@@ -609,7 +609,9 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const instructionsOnly = (() => {
     const layerData = loadStep("step-2");
     return INSTRUCTION_LAYERS
-      .map(l => layerData[l.id] ? `## ${l.label}\n${layerData[l.id]}` : "")
+      .map(l => typeof layerData[l.id] === "string" && layerData[l.id].trim()
+        ? `## ${l.label}\n${layerData[l.id]}`
+        : "")
       .filter(Boolean)
       .join("\n\n");
   })();

@@ -190,6 +190,48 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
 });
 
+test("exports sparse instruction layers in order and preserves exact copied and downloaded bytes", async ({ page }) => {
+  await openExportPackage(page);
+
+  const instructions = {
+    1: "You are the evidence archivist — preserve the source of every claim.",
+    3: "   \r\n",
+    4: "Use tools only after checking scope: 日本語の境界を守る。",
+    6: "Format the result as a concise decision record.",
+    8: "Good: 「source」→ outcome.\nBad: inventing facts.",
+  };
+  await page.evaluate((savedInstructions) => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    workspace.projects[0].data["step-2"] = savedInstructions;
+    localStorage.setItem("cgpt-workspace", JSON.stringify(workspace));
+  }, instructions);
+  await page.reload();
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  const exportContent = await page.locator("pre").textContent();
+  expect(exportContent).toBe(
+    [
+      "## Identity & Scope",
+      instructions[1],
+      "",
+      "## Tool Policy",
+      instructions[4],
+      "",
+      "## Output Policy",
+      instructions[6],
+      "",
+      "## Examples",
+      instructions[8],
+    ].join("\n"),
+  );
+  expect(exportContent).not.toContain("## Operating Principles");
+  expect(exportContent).not.toContain("## Dialogue Policy");
+  expect(exportContent).not.toContain("## Knowledge Policy");
+  expect(exportContent).not.toContain("## Safety & Boundaries");
+
+  await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
+});
+
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {
   await openExportPackage(page);
 
