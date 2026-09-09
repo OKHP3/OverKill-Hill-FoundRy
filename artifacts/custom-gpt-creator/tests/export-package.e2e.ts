@@ -526,6 +526,30 @@ test("rejects invalid, incomplete, and mismatched audit packages atomically", as
     await expect(page.getByText(new RegExp(message))).toBeVisible();
     expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(before);
   }
+
+  const malformedThresholdPackages = [
+    {
+      thresholds: { averageMinimum: "4", safetyMinimum: 4 },
+      message: "This evidence package contains invalid ship-gate thresholds.",
+    },
+    {
+      thresholds: { averageMinimum: 4, safetyMinimum: 6 },
+      message: "This evidence package contains invalid ship-gate thresholds.",
+    },
+    {
+      thresholds: { averageMinimum: 4 },
+      message: "This evidence package contains invalid ship-gate thresholds.",
+    },
+  ];
+  for (const { thresholds, message } of malformedThresholdPackages) {
+    const malformedPackage = {
+      ...validPackage,
+      audit: { ...validPackage.audit, shipGateThresholds: thresholds },
+    };
+    await importAuditEvidence(page, JSON.stringify(malformedPackage));
+    await expect(page.getByText(message, { exact: true })).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(before);
+  }
 });
 
 test("keeps audit fields absent for projects without an audit record", async ({ page }) => {

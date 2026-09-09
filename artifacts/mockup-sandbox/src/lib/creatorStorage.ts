@@ -232,7 +232,11 @@ function validateAuditEvidencePackage(value: unknown): { audit?: AuditEvidence; 
   }
 
   const rawAudit = value.audit;
+  const hasShipGateThresholds = isRecord(rawAudit) && Object.prototype.hasOwnProperty.call(rawAudit, "shipGateThresholds");
   const shipGateThresholds = isRecord(rawAudit) ? normalizeAuditThresholds(rawAudit.shipGateThresholds) : undefined;
+  if (hasShipGateThresholds && !shipGateThresholds) {
+    return { error: "This evidence package contains invalid ship-gate thresholds." };
+  }
   if (
     !isRecord(rawAudit) ||
     typeof rawAudit.gptName !== "string" ||
