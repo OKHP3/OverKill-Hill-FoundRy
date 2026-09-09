@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression test for governance-check.py failure propagation."""
+"""Regression tests for governance-check.py failure propagation and fail-fast behavior."""
 from __future__ import annotations
 
 import importlib.util
@@ -43,9 +43,11 @@ def repository_snapshot() -> dict[str, bytes]:
     }
 
 
-def run_with_failing_check(runner, failing_check: Path) -> tuple[int, str]:
+def run_with_checks(
+    runner, checks: tuple[tuple[str, tuple[str, ...]], ...]
+) -> tuple[int, str]:
     original_checks = runner.CHECKS
-    runner.CHECKS = (("Deliberately failing check", (str(failing_check),)),)
+    runner.CHECKS = checks
     try:
         with tempfile.TemporaryFile() as output:
             saved_stdout = os.dup(sys.stdout.fileno())
@@ -81,7 +83,21 @@ def main() -> int:
             f"raise SystemExit({EXPECTED_FAILURE})\n",
             encoding="utf-8",
         )
-        status, output = run_with_failing_check(runner, failing_check)
+        sentinel_marker = Path(directory) / "sentinel-ran"
+        sentinel_check = Path(directory) / "sentinel-check.py"
+        sentinel_check.write_text(
+            f"from pathlib import Path\n"
+            f"Path({str(sentinel_marker)!r}).write_text('ran', encoding='utf-8')\n",
+            encoding="utf-8",
+        )
+        status, output = run_with_checks(
+            runner,
+            (
+                ("Deliberately failing check", (str(failing_check),)),
+                ("Sentinel check that must be skipped", (str(sentinel_check),)),
+            ),
+        )
+        sentinel_ran = sentinel_marker.exists()
 
     after = repository_snapshot()
     if status != EXPECTED_FAILURE:
@@ -95,6 +111,9 @@ def main() -> int:
             "FAIL governance runner swallowed the actionable failure output:\n"
             f"{output}"
         )
+        return 1
+    if sentinel_ran:
+        print("FAIL governance runner executed a check after the first failure")
         return 1
     if before != after:
         changed = sorted(set(before) ^ set(after))
