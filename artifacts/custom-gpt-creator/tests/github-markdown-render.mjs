@@ -63,6 +63,18 @@ assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public do
 assert.match(rendered, /<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
 assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
 assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
+assert.match(
+  rendered,
+  /Before executable raw HTML &lt;script&gt;alert\("xss"\)&lt;\/script&gt; after executable raw HTML\./,
+);
+assert.match(
+  rendered,
+  /Before unsafe attributes <span>attributes removed<\/span> after unsafe attributes\./,
+);
+assert.doesNotMatch(rendered, /<script/);
+assert.doesNotMatch(rendered, /onclick=/);
+assert.doesNotMatch(rendered, /style=/);
+assert.doesNotMatch(rendered, /data-testid=/);
 assert.doesNotMatch(rendered, /class="raw-html"/);
 assert.deepEqual(await readFile(fixturePath), fixtureBytes);
 

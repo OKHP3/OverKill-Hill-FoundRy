@@ -26,6 +26,10 @@ const answer = "safe";
 
 Before raw HTML <span data-testid="raw-html-boundary">boundary</span> after raw HTML.
 
+Before executable raw HTML <script>alert("xss")</script> after executable raw HTML.
+
+Before unsafe attributes <span onclick="alert('xss')" style="display:none" data-testid="unsafe-attribute">attributes removed</span> after unsafe attributes.
+
 ### Non-Goals / Out of Scope
 Do not publish unverified claims.
 

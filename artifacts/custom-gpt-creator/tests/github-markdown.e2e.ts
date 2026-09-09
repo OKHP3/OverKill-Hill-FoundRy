@@ -74,6 +74,16 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   expect(renderedHtml).toContain(
     'Before raw HTML <span>boundary</span> after raw HTML.',
   );
+  expect(renderedHtml).toContain(
+    'Before executable raw HTML &lt;script&gt;alert("xss")&lt;/script&gt; after executable raw HTML.',
+  );
+  expect(renderedHtml).toContain(
+    "Before unsafe attributes <span>attributes removed</span> after unsafe attributes.",
+  );
+  expect(renderedHtml).not.toContain("<script");
+  expect(renderedHtml).not.toContain("onclick=");
+  expect(renderedHtml).not.toContain("style=");
+  expect(renderedHtml).not.toContain("data-testid=");
   expect(renderedHtml).toMatch(/<h3[^>]*>Per-item findings<\/h3>/);
   await expect(readFile(fixturePath)).resolves.toEqual(fixtureBytes);
 });
