@@ -40,7 +40,7 @@ interface AuditEvidenceItem {
   notes: string;
 }
 
-interface AuditEvidence {
+export interface AuditEvidence {
   gptName: string;
   rubricVersion: string;
   shipGateThresholds: {
@@ -409,7 +409,11 @@ export function importWorkspace(raw: string, existing: CreatorWorkspace): { work
   }
 }
 
-export function importAuditEvidence(raw: string, existing: CreatorWorkspace): { workspace?: CreatorWorkspace; error?: string } {
+export function importAuditEvidence(raw: string, existing: CreatorWorkspace): {
+  workspace?: CreatorWorkspace;
+  preview?: { artifactName: string; audit: AuditEvidence };
+  error?: string;
+} {
   if (raw.length > MAX_BACKUP_BYTES) return { error: "This evidence package is larger than the 2 MB safety limit." };
 
   try {
@@ -435,6 +439,10 @@ export function importAuditEvidence(raw: string, existing: CreatorWorkspace): { 
       workspace: {
         ...existing,
         projects: existing.projects.map((item) => item.id === project.id ? updatedProject : item),
+      },
+      preview: {
+        artifactName: validation.artifactName,
+        audit: validation.audit,
       },
     };
   } catch {

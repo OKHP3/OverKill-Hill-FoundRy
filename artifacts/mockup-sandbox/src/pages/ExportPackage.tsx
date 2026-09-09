@@ -8,6 +8,8 @@ import {
   SAFETY_AUDIT_ID,
 } from "../data/knowledge";
 import {
+  type AuditEvidence,
+  type CreatorWorkspace,
   importAuditEvidence,
   loadWorkspace,
   persistWorkspace,
@@ -84,29 +86,13 @@ interface EvidencePackage {
   phases: Record<string, unknown>;
 }
 
-type ShipGateDecision = "incomplete" | "passed" | "failed";
+type ShipGateDecision = AuditEvidence["shipGateDecision"];
 
 interface AuditEvidenceItem {
   id: number;
   question: string;
   score: number | null;
   notes: string;
-}
-
-interface AuditEvidence {
-  gptName: string;
-  rubricVersion: string;
-  shipGateThresholds: {
-    averageMinimum: number;
-    safetyMinimum: number;
-  };
-  scores: Record<string, number>;
-  notes: Record<string, string>;
-  items: AuditEvidenceItem[];
-  averageScore: number | null;
-  safetyScore: number | null;
-  shipGateDecision: ShipGateDecision;
-  shipGateDecisionExplanation: string;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -606,6 +592,11 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
   const [markdownView, setMarkdownView] = useState<"raw" | "preview">("raw");
   const [auditImportMessage, setAuditImportMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [pendingAuditImport, setPendingAuditImport] = useState<{
+    workspace: CreatorWorkspace;
+    artifactName: string;
+    audit: AuditEvidence;
+  } | null>(null);
   const [, setAuditImportRevision] = useState(0);
   const [storedCompletedSteps] = useState(loadCompletedSteps);
   const [generatedAt] = useState(() => new Date().toISOString());
@@ -659,21 +650,38 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
     const reader = new FileReader();
     reader.onload = () => {
       const result = importAuditEvidence(String(reader.result), loadWorkspace());
-      if (!result.workspace) {
+      if (!result.workspace || !result.preview) {
+        setPendingAuditImport(null);
         setAuditImportMessage({ type: "error", text: result.error ?? "The audit evidence could not be imported." });
         return;
       }
-      if (!persistWorkspace(result.workspace)) {
-        setAuditImportMessage({ type: "error", text: "The audit evidence was valid, but could not be saved in this browser." });
-        return;
-      }
-      setAuditImportMessage({ type: "success", text: "Audit findings restored to the active project." });
-      setAuditImportRevision((revision) => revision + 1);
+      setAuditImportMessage(null);
+      setPendingAuditImport({
+        workspace: result.workspace,
+        artifactName: result.preview.artifactName,
+        audit: result.preview.audit,
+      });
     };
     reader.onerror = () => {
       setAuditImportMessage({ type: "error", text: "The evidence package could not be read. It may be corrupt or incomplete." });
     };
     reader.readAsText(file);
+  };
+
+  const confirmAuditImport = () => {
+    if (!pendingAuditImport) return;
+    if (!persistWorkspace(pendingAuditImport.workspace)) {
+      setAuditImportMessage({ type: "error", text: "The audit evidence was valid, but could not be saved in this browser." });
+      return;
+    }
+    setPendingAuditImport(null);
+    setAuditImportMessage({ type: "success", text: "Audit findings restored to the active project." });
+    setAuditImportRevision((revision) => revision + 1);
+  };
+
+  const cancelAuditImport = () => {
+    setPendingAuditImport(null);
+    setAuditImportMessage({ type: "success", text: "Import canceled. Existing audit findings were not changed." });
   };
 
   return (
@@ -753,6 +761,43 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
             style={{ display: "none" }}
           />
         </label>
+        {pendingAuditImport && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="audit-import-preflight-title"
+            aria-describedby="audit-import-preflight-description"
+            data-testid="audit-import-preflight"
+            style={{
+              marginTop: "0.9rem",
+              padding: "1rem",
+              background: "color-mix(in srgb, var(--color-forge-accent) 8%, var(--color-forge-panel))",
+              border: "1px solid var(--color-forge-accent)",
+              borderRadius: "var(--radius-md)",
+            }}
+          >
+            <strong id="audit-import-preflight-title" style={{ display: "block", color: "var(--color-forge-accent)", marginBottom: "0.35rem" }}>
+              Review audit replacement
+            </strong>
+            <p id="audit-import-preflight-description" style={{ margin: "0 0 0.8rem", color: "var(--color-forge-muted-fg)", fontSize: "0.82rem" }}>
+              The package is valid, but nothing has been saved yet. Confirm to replace the active project&apos;s existing audit findings.
+            </p>
+            <dl style={{ display: "grid", gridTemplateColumns: "minmax(10rem, max-content) 1fr", gap: "0.35rem 0.8rem", margin: "0 0 0.9rem", fontSize: "0.84rem" }}>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Package project</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.artifactName}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Audited identity</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.audit.gptName || "(not recorded)"}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Scored items</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{Object.keys(pendingAuditImport.audit.scores).length} / {pendingAuditImport.audit.items.length}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Normalized ship-gate</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)", fontWeight: 700 }}>{pendingAuditImport.audit.shipGateDecision.toUpperCase()}</dd>
+            </dl>
+            <div style={{ display: "flex", gap: "0.55rem" }}>
+              <button type="button" onClick={confirmAuditImport} style={primaryBtn}>Confirm replacement</button>
+              <button type="button" onClick={cancelAuditImport} style={secondaryBtn}>Cancel</button>
+            </div>
+          </div>
+        )}
         {auditImportMessage && (
           <div
             role={auditImportMessage.type === "error" ? "alert" : "status"}

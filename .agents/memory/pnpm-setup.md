@@ -13,6 +13,14 @@ pnpm install --filter @workspace/mockup-sandbox
 
 **How to apply:** If the workflow fails with `Cannot find module '.../vite/bin/vite.js'`, run the install command above, then restart the workflow.
 
+
+## Validation fallback
+When the workspace `packageManager` pin cannot bootstrap because concurrent workflows exhaust process or thread capacity, validate with the package-local `tsc`, Vite, and Playwright binaries instead of changing the pin.
+
+**Why:** The source and installed dependencies can remain healthy even while Corepack's pnpm bootstrap fails before the project command starts.
+
+**How to apply:** Keep the repository configuration unchanged, run the equivalent package-local checks directly, and report the workflow bootstrap failure separately from source validation.
+
 ## tsconfig.base.json
 The root `tsconfig.base.json` must exist at `/home/runner/workspace/tsconfig.base.json`. It was not git-tracked in earlier commits; recover from commit `90c25805` if missing:
 ```

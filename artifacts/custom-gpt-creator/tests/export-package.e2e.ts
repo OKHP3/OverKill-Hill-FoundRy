@@ -387,7 +387,18 @@ test("restores compatible audit findings into the active project", async ({ page
       shipGateDecision: "incomplete",
     },
   });
+  const beforeImport = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
   await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  const preflight = page.getByTestId("audit-import-preflight");
+  await expect(preflight).toBeVisible();
+  await expect(preflight).toContainText("Offline reviewer identity");
+  await expect(preflight).toContainText("Scored items");
+  await expect(preflight).toContainText("10 / 10");
+  await expect(preflight).toContainText("Normalized ship-gate");
+  await expect(preflight).toContainText("PASSED");
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
+
+  await page.getByRole("button", { name: "Confirm replacement" }).click();
   await expect(page.getByText("Audit findings restored to the active project.", { exact: true })).toBeVisible();
 
   await page.getByRole("button", { name: "Evidence (JSON)" }).click();
@@ -397,6 +408,46 @@ test("restores compatible audit findings into the active project", async ({ page
   expect(restored.audit.notes).toEqual({ "1": "Reviewed from the evidence package." });
   expect(restored.audit.shipGateDecision).toBe("passed");
   expect(restored.audit.shipGateDecisionExplanation).toContain("average and safety thresholds are met");
+});
+
+test("cancels a valid audit replacement without changing existing findings", async ({ page }) => {
+  await openExportPackage(page);
+  const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Cancelable Evidence GPT" },
+    "audit-mode": {
+      gptName: "Existing reviewer identity",
+      scores: { 1: 2 },
+      notes: { 1: "Keep this finding." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const exportedPackage = JSON.parse(await page.locator("pre").innerText());
+  exportedPackage.audit = {
+    ...exportedPackage.audit,
+    gptName: "Incoming reviewer identity",
+    scores,
+    notes: {},
+    items: exportedPackage.audit.items.map((item: { id: number; question: string }) => ({
+      ...item,
+      score: 5,
+      notes: "",
+    })),
+  };
+
+  const beforeImport = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+  await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  await expect(page.getByTestId("audit-import-preflight")).toBeVisible();
+  await page.getByRole("button", { name: "Cancel" }).click();
+  await expect(page.getByText("Import canceled. Existing audit findings were not changed.", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const unchanged = JSON.parse(await page.locator("pre").innerText());
+  expect(unchanged.audit.gptName).toBe("Existing reviewer identity");
+  expect(unchanged.audit.scores).toEqual({ "1": 2 });
+  expect(unchanged.audit.notes).toEqual({ "1": "Keep this finding." });
 });
 
 test("rejects invalid, incomplete, and mismatched audit packages atomically", async ({ page }) => {
