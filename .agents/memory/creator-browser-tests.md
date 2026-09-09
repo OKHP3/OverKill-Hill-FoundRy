@@ -35,6 +35,18 @@ viewer serializes the same safe code or HTML boundary differently.
 **How to apply:** Keep the downloaded-byte equality assertion separate, then
 record renderer-specific differences explicitly alongside shared structure checks.
 
+## GitHub renderer attributes
+
+The GitHub Markdown API decorates rendered headings and block elements with
+attributes such as `dir="auto"` and adds `notranslate` classes to code. Text
+quotes remain literal text rather than becoming `&quot;`.
+
+**Why:** Exact opening-tag or text-escaping assertions can fail on harmless
+GitHub renderer details while missing a real loss of Markdown structure.
+
+**How to apply:** Match semantic tags with attribute-tolerant patterns and
+assert the rendered text/structure separately from renderer-specific attributes.
+
 ## Accessible-name ambiguity
 
 Scope navigation selectors to the named workflow region and use exact accessible names for numbered controls.

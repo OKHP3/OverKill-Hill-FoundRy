@@ -34,16 +34,35 @@ if (!response.ok) {
 }
 
 assert.match(rendered, /<h1[^>]*>Custom GPT Specification Package<\/h1>/);
-assert.match(rendered, /<h2[^>]*>0\. Build Brief<\/h2>/);
-assert.match(rendered, /<h3[^>]*>Primary Outcomes<\/h3>/);
-assert.match(rendered, /<ul[^>]*>[\s\S]*<ul[^>]*>[\s\S]*Nested item/);
-assert.match(rendered, /<ol[^>]*>[\s\S]*Review the package\./);
+const headings = [
+  "0. Build Brief",
+  "1. Conversation Contract",
+  "2. Instructions",
+  "3. Knowledge Files",
+  "4. Capabilities",
+  "5. Actions / Apps",
+  "6. Conversation Starters",
+  "7. Test Matrix",
+  "8. Governance",
+  "Evidence and Provenance Record",
+  "9. Audit Findings",
+];
+const headingMarkup = (heading) =>
+  new RegExp(`<h2[^>]*>${heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h2>`);
+for (const heading of headings) assert.match(rendered, headingMarkup(heading));
+assert.deepEqual(
+  headings.map((heading) => rendered.search(headingMarkup(heading))),
+  [...headings.map((heading) => rendered.search(headingMarkup(heading)))].sort((a, b) => a - b),
+);
 assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
 assert.match(rendered, /<strong>Ready<\/strong>/);
-assert.match(rendered, /<a href="https:\/\/example\.com\/docs"[^>]*>Read the docs<\/a>/);
+assert.match(rendered, /<a href="https:\/\/example\.com\/evidence"[^>]*>Read the evidence guide<\/a>/);
 assert.match(rendered, /class="highlight highlight-source-ts"/);
 assert.match(rendered, /answer/);
-assert.match(rendered, /<span>literal HTML<\/span>/);
+assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
+assert.match(rendered, /<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
+assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
+assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
 assert.doesNotMatch(rendered, /class="raw-html"/);
 assert.deepEqual(await readFile(fixturePath), fixtureBytes);
 
