@@ -4,16 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
+import { resolveArtifactBuildContract } from '../../scripts/src/artifact-contract';
 
-const rawPort = process.env.PORT ?? '24910';
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH ?? '/okh-identity/';
+const { port, basePath } = resolveArtifactBuildContract(
+  'okh-identity-card',
+  process.env,
+);
 
 export default defineConfig({
   base: basePath,

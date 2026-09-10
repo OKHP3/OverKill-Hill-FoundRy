@@ -4,16 +4,12 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
+import { resolveArtifactBuildContract } from "../../scripts/src/artifact-contract";
 
-const rawPort = process.env.PORT ?? "8081";
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH ?? "/__mockup";
+const { port, basePath } = resolveArtifactBuildContract(
+  "mockup-sandbox",
+  process.env,
+);
 
 export default defineConfig({
   base: basePath,

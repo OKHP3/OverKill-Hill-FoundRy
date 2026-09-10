@@ -41,6 +41,22 @@ handoff; do not assume chats, quotas, or permissions are shared between hosts.
   service contract when those variables are omitted; explicit values still
   override the defaults for deployment builds.
 
+### Artifact build contract ownership
+
+The typed, dependency-free source of truth for Vite artifact defaults is
+`scripts/src/artifact-contract.ts`. It owns each artifact's fallback port and
+base path, and every artifact Vite config must resolve its `PORT` and
+`BASE_PATH` through that module.
+
+Each `.replit-artifact/artifact.toml` remains the managed-service registration
+for the same artifact. Its `localPort`, service `PORT`, and service
+`BASE_PATH` must mirror the corresponding contract entry so Replit routing and
+local fallback behavior agree. When adding an artifact, add one typed contract
+entry, wire its Vite config to that entry, and register the same port and path
+in its manifest. Deployment-specific overrides, such as the GitHub Pages
+`BASE_PATH`, stay explicit in the deployment workflow and must not change the
+shared defaults.
+
 The ReFolDec validation path is dependency-free:
 
 - `python3 tests/test-refoldec-holdout-evaluate.py`
