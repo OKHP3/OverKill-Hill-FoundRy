@@ -41,6 +41,7 @@ ACTIONABLE_FAILURE = (
     "FAIL GOV-RUNNER-TEST: dependency check rejected fixture "
     "(remediation: inspect the fixture)"
 )
+MISSING_CHECK_NAME = "Configured check that is unavailable"
 
 
 def load_runner():
@@ -153,6 +154,27 @@ def main() -> int:
                 "FAIL governance runner executed healthy checks out of order:\n"
                 f"expected {expected_order!r}\n"
                 f"got {recorded_order!r}"
+            )
+            return 1
+
+        missing_check = directory_path / "missing-check.py"
+        status, output = run_with_checks(
+            runner,
+            ((MISSING_CHECK_NAME, (str(missing_check),)),),
+        )
+        if status == 0:
+            print("FAIL governance runner accepted an unavailable check")
+            return 1
+        if MISSING_CHECK_NAME not in output or "governance check unavailable" not in output:
+            print(
+                "FAIL governance runner did not identify the unavailable check:\n"
+                f"{output}"
+            )
+            return 1
+        if "Repair:" not in output or "scripts/governance-check.py" not in output:
+            print(
+                "FAIL governance runner did not provide a repair path:\n"
+                f"{output}"
             )
             return 1
 
