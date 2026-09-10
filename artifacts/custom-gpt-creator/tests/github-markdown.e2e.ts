@@ -48,6 +48,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
     data: {
       text: markdown,
       mode: "gfm",
+      context: "OKHP3/OverKill-Hill-FoundRy",
     },
   });
 
@@ -91,7 +92,9 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
     expect(renderedHtml).toMatch(
       /<markdown-accessiblity-table><table role="table">[\s\S]*<th>Signal<\/th>[\s\S]*<td><strong>Ready<\/strong><\/td>/,
     );
-    expect(renderedHtml).toContain('<div class="highlight highlight-source-ts"><pre class="notranslate">');
+    expect(renderedHtml).toMatch(
+      /<div class="highlight highlight-source-ts"[^>]*><pre class="notranslate">/,
+    );
     expect(renderedHtml).toContain('<span class="pl-s1">answer</span>');
   });
   checkBehavior(renderedHtml, "safe links remain links", "Read the evidence guide", () => {
@@ -115,8 +118,18 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
+  checkBehavior(
+    renderedHtml,
+    "nested repository-relative evidence links preserve nested paths",
+    "Read the nested repository evidence guide",
+    () => {
+      expect(renderedHtml).toContain(
+        '<a href="./docs/evidence-guide.md">Read the nested repository evidence guide</a>',
+      );
+    },
+  );
   checkBehavior(renderedHtml, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
-    expect(renderedHtml).toMatch(/<p>Unsafe protocol link<\/p>/);
+    expect(renderedHtml).toMatch(/<p[^>]*>Unsafe protocol link<\/p>/);
     expect(renderedHtml).toContain('alt="Unsafe protocol image"');
     expect(renderedHtml).not.toMatch(/(?:href|src)=["'][^"']*javascript:/i);
   });
@@ -140,8 +153,8 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
     expect(renderedHtml).not.toContain("data-testid=");
   });
   checkBehavior(renderedHtml, "lists and audit findings render", "Allowed:", () => {
-    expect(renderedHtml).toMatch(/<ul>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
-    expect(renderedHtml).toMatch(/<ol>[\s\S]*<li>"Review the evidence\."<\/li>/);
+    expect(renderedHtml).toMatch(/<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
+    expect(renderedHtml).toMatch(/<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
     expect(renderedHtml).toMatch(/<h3[^>]*>Per-item findings<\/h3>/);
   });
   await expect(readFile(fixturePath)).resolves.toEqual(fixtureBytes);

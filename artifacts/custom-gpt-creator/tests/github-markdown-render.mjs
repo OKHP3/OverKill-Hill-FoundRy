@@ -103,6 +103,17 @@ checkBehavior(
     );
   },
 );
+checkBehavior(
+  rendered,
+  "nested repository-relative evidence links preserve nested paths",
+  "Read the nested repository evidence guide",
+  () => {
+    assert.match(
+      rendered,
+      /<a href="\.\/docs\/evidence-guide\.md"[^>]*>Read the nested repository evidence guide<\/a>/,
+    );
+  },
+);
 checkBehavior(rendered, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
   assert.match(rendered, /<p[^>]*>Unsafe protocol link<\/p>/);
   assert.match(rendered, /alt="Unsafe protocol image"/);
