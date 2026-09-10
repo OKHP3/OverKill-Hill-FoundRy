@@ -500,6 +500,14 @@ def apply_plan(plans: list[RenamePlan]) -> None:
 
 
 def main(argv: list[str]) -> int:
+    # Windows consoles may expose a legacy code page that cannot encode every
+    # filename (for example U+2011). Keep diagnostics usable instead of
+    # raising UnicodeEncodeError while reporting a planned rename.
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(errors="backslashreplace")
+
     parser = argparse.ArgumentParser(
         description="Normalize filenames to lowercase-kebab-case ASCII.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
