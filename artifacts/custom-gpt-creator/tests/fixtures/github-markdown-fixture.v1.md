@@ -20,6 +20,8 @@ Produce a readable, reviewable specification.
 
 [Read the evidence guide](https://example.com/evidence)
 
+[Read the repository evidence guide](./evidence-guide.md)
+
 ```ts
 const answer = "safe";
 ```

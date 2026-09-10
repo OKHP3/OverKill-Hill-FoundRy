@@ -57,6 +57,10 @@ assert.deepEqual(
 assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
 assert.match(rendered, /<strong>Ready<\/strong>/);
 assert.match(rendered, /<a href="https:\/\/example\.com\/evidence"[^>]*>Read the evidence guide<\/a>/);
+assert.match(
+  rendered,
+  /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
+);
 assert.match(rendered, /class="highlight highlight-source-ts"/);
 assert.match(rendered, /answer/);
 assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);

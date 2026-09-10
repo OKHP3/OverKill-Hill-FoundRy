@@ -69,6 +69,9 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   expect(renderedHtml).toContain(
     '<a href="https://example.com/evidence" rel="nofollow">Read the evidence guide</a>',
   );
+  expect(renderedHtml).toContain(
+    '<a href="./evidence-guide.md">Read the repository evidence guide</a>',
+  );
   expect(renderedHtml).toMatch(/<ul>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
   expect(renderedHtml).toMatch(/<ol>[\s\S]*<li>"Review the evidence\."<\/li>/);
   expect(renderedHtml).toContain(
