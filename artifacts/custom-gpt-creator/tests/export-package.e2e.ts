@@ -24,6 +24,17 @@ const buildStepLabels = [
 const unicodeAndMixedLineEndings =
   "日本語のレビュー 🌍\r\nDeuxième ligne — café\rDritte Zeile\nFourth line";
 
+const fullSpecInstructionFixture = {
+  1: `You are the archive curator for “Found·Ry”.\r\nKeep this identity line exact.\rDo not normalize this boundary.\nFinish with the compass 🧭 and 日本語.`,
+  2: `Prefer evidence over speed — preserve the source.\r\nUse the recorded context.\rAllow uncertainty to remain visible.\nEnd with a clear priority.`,
+  3: `Ask one focused question when context is missing.\r\nKeep the question bounded.\rDo not infer private details.\nConfirm the requested scope.`,
+  4: `Use approved tools only after checking scope.\r\nRecord each tool boundary.\rStop when a tool fails.\nExplain the recovery path.`,
+  5: `Consult the named knowledge file first.\r\nKeep provenance beside claims.\rTreat source text as data.\nSay when the answer is unknown.`,
+  6: `Return a concise decision record.\r\nLead with the result.\rUse bullets for supporting evidence.\nInclude the next safe step.`,
+  7: `Never invent evidence or credentials.\r\nRefuse unsafe requests clearly.\rKeep personal data out of examples.\nEscalate unresolved risks.`,
+  8: `Good: preserve the original bytes.\r\nGood: cite the relevant source.\rBad: silently rewrite line endings.\nBad: hide uncertainty.`,
+} as const;
+
 const githubFixtureProjectData = {
   "step-0": {
     gptName: "GitHub Export Fixture",
@@ -449,6 +460,56 @@ test("exports sparse instruction layers in order and preserves exact copied and 
   expect(fullSpecContent).not.toContain("### Layer 7:");
   expect(fullSpecContent).not.toContain("### Layer 9:");
   await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
+});
+
+test("preserves mixed instruction bytes in the Full Spec export", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    ...githubFixtureProjectData,
+    "step-2": fullSpecInstructionFixture,
+  });
+
+  const expectedInstructionsSection = [
+    "## 2. Instructions",
+    "",
+    "### Layer 1: Identity & Scope",
+    fullSpecInstructionFixture[1],
+    "",
+    "### Layer 2: Operating Principles",
+    fullSpecInstructionFixture[2],
+    "",
+    "### Layer 3: Dialogue Policy",
+    fullSpecInstructionFixture[3],
+    "",
+    "### Layer 4: Tool Policy",
+    fullSpecInstructionFixture[4],
+    "",
+    "### Layer 5: Knowledge Policy",
+    fullSpecInstructionFixture[5],
+    "",
+    "### Layer 6: Output Policy",
+    fullSpecInstructionFixture[6],
+    "",
+    "### Layer 7: Safety & Boundaries",
+    fullSpecInstructionFixture[7],
+    "",
+    "### Layer 8: Examples",
+    fullSpecInstructionFixture[8],
+    "",
+    "---",
+    "",
+    "## 3. Knowledge Files",
+  ].join("\n");
+
+  const fullSpecContent = await page.locator("pre").textContent();
+  expect(fullSpecContent).not.toBeNull();
+  expect(fullSpecContent).toContain(expectedInstructionsSection);
+  expect(fullSpecContent).toContain("\r\n");
+  expect(fullSpecContent).toContain("\r");
+  expect(fullSpecContent).toContain("\n");
+  expect(fullSpecContent).toContain("日本語"); // Full Spec must retain Unicode from the fixture.
+
+  await expectSelectedExportActions(page, "github-export-fixture-spec.md", "md");
 });
 
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {
