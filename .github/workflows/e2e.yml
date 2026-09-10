@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace from clean artifact environment
+        run: env -u PORT -u BASE_PATH pnpm run build
+
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v6

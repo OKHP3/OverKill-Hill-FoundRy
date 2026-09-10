@@ -43,8 +43,11 @@ jobs:
         env:
           NODE_ENV: production
           PORT: 5000
-          # Project site URL is https://okhp3.github.io/OverKill-Hill-FoundRy/
-          # If a custom domain is configured at the repository level, change to /
+          # The local root build derives each artifact's registered service
+          # route. Pages intentionally overrides only this deployed artifact:
+          # https://okhp3.github.io/OverKill-Hill-FoundRy/
+          # If a custom domain is configured at the repository level, change
+          # this to /.
           BASE_PATH: /OverKill-Hill-FoundRy/
         run: pnpm run build
 

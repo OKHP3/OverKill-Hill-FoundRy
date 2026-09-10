@@ -36,8 +36,10 @@ handoff; do not assume chats, quotas, or permissions are shared between hosts.
   artifact.
 - `pnpm --filter @workspace/mockup-sandbox run dev` — run isolated Canvas
   component previews.
-- `pnpm run build` — run workspace typechecks and production builds when the
-  root build script is available.
+- `pnpm run build` — run workspace typechecks and production builds from a clean
+  shell. Each Vite artifact derives `PORT` and `BASE_PATH` from its registered
+  service contract when those variables are omitted; explicit values still
+  override the defaults for deployment builds.
 
 The ReFolDec validation path is dependency-free:
 
