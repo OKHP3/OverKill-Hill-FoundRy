@@ -105,6 +105,16 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       '<a href="https://example.com/safe" rel="nofollow">Safe HTTPS link</a>',
     );
   });
+  checkBehavior(
+    renderedHtml,
+    "relative evidence links preserve section anchors",
+    "Read the repository evidence section",
+    () => {
+      expect(renderedHtml).toContain(
+        '<a href="./evidence-guide.md#evidence-handling">Read the repository evidence section</a>',
+      );
+    },
+  );
   checkBehavior(renderedHtml, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
     expect(renderedHtml).toMatch(/<p>Unsafe protocol link<\/p>/);
     expect(renderedHtml).toContain('alt="Unsafe protocol image"');

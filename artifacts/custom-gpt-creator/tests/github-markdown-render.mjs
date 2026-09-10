@@ -92,6 +92,17 @@ checkBehavior(rendered, "safe links remain links", "Read the evidence guide", ()
   );
   assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
 });
+checkBehavior(
+  rendered,
+  "relative evidence links preserve section anchors",
+  "Read the repository evidence section",
+  () => {
+    assert.match(
+      rendered,
+      /<a href="\.\/evidence-guide\.md#evidence-handling"[^>]*>Read the repository evidence section<\/a>/,
+    );
+  },
+);
 checkBehavior(rendered, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
   assert.match(rendered, /<p[^>]*>Unsafe protocol link<\/p>/);
   assert.match(rendered, /alt="Unsafe protocol image"/);

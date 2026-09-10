@@ -22,6 +22,8 @@ Produce a readable, reviewable specification.
 
 [Read the repository evidence guide](./evidence-guide.md)
 
+[Read the repository evidence section](./evidence-guide.md#evidence-handling)
+
 [Unsafe protocol link](javascript:alert("xss"))
 
 ![Unsafe protocol image](javascript:alert("xss"))
