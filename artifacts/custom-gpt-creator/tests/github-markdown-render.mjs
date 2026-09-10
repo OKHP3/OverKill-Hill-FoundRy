@@ -7,6 +7,27 @@ const fixturePath = fileURLToPath(
 );
 const fixtureBytes = await readFile(fixturePath);
 const fixture = fixtureBytes.toString("utf8");
+const renderedFragment = (html, marker) => {
+  const markerPosition = html.indexOf(marker);
+  if (markerPosition === -1) {
+    return `[marker "${marker}" not found]\n${html.slice(0, 500)}`;
+  }
+
+  const start = Math.max(0, markerPosition - 180);
+  const end = Math.min(html.length, markerPosition + marker.length + 260);
+  return html.slice(start, end);
+};
+const checkBehavior = (rendered, behavior, marker, assertion) => {
+  try {
+    assertion();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `${behavior} failed: ${message}\nRendered fragment near "${marker}":\n${renderedFragment(rendered, marker)}`,
+      { cause: error },
+    );
+  }
+};
 const endpoint =
   process.env.GITHUB_MARKDOWN_API_URL ?? "https://api.github.com/markdown";
 const apiVersion = process.env.GITHUB_MARKDOWN_API_VERSION ?? "2022-11-28";
@@ -54,36 +75,53 @@ assert.deepEqual(
   headings.map((heading) => rendered.search(headingMarkup(heading))),
   [...headings.map((heading) => rendered.search(headingMarkup(heading)))].sort((a, b) => a - b),
 );
-assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
-assert.match(rendered, /<strong>Ready<\/strong>/);
-assert.match(rendered, /<a href="https:\/\/example\.com\/evidence"[^>]*>Read the evidence guide<\/a>/);
-assert.match(
-  rendered,
-  /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
-);
-assert.match(rendered, /<p[^>]*>Unsafe protocol link<\/p>/);
-assert.match(rendered, /alt="Unsafe protocol image"/);
-assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
-assert.doesNotMatch(rendered, /(?:href|src)=["'][^"']*javascript:/i);
-assert.match(rendered, /class="highlight highlight-source-ts"/);
-assert.match(rendered, /answer/);
-assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
-assert.match(rendered, /<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
-assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
-assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
-assert.match(
-  rendered,
-  /Before executable raw HTML &lt;script&gt;alert\("xss"\)&lt;\/script&gt; after executable raw HTML\./,
-);
-assert.match(
-  rendered,
-  /Before unsafe attributes <span>attributes removed<\/span> after unsafe attributes\./,
-);
-assert.doesNotMatch(rendered, /<script/);
-assert.doesNotMatch(rendered, /onclick=/);
-assert.doesNotMatch(rendered, /style="display:none"/);
-assert.doesNotMatch(rendered, /data-testid=/);
-assert.doesNotMatch(rendered, /class="raw-html"/);
+checkBehavior(rendered, "table and code rendering", "Signal", () => {
+  assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
+  assert.match(rendered, /<strong>Ready<\/strong>/);
+  assert.match(rendered, /class="highlight highlight-source-ts"/);
+  assert.match(rendered, /answer/);
+});
+checkBehavior(rendered, "safe links remain links", "Read the evidence guide", () => {
+  assert.match(
+    rendered,
+    /<a href="https:\/\/example\.com\/evidence"[^>]*>Read the evidence guide<\/a>/,
+  );
+  assert.match(
+    rendered,
+    /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
+  );
+  assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
+});
+checkBehavior(rendered, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
+  assert.match(rendered, /<p[^>]*>Unsafe protocol link<\/p>/);
+  assert.match(rendered, /alt="Unsafe protocol image"/);
+  assert.doesNotMatch(rendered, /(?:href|src)=["'][^"']*javascript:/i);
+});
+checkBehavior(rendered, "safe inline HTML is preserved", "Before raw HTML", () => {
+  assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
+});
+checkBehavior(rendered, "executable raw HTML is escaped", "Before executable raw HTML", () => {
+  assert.match(
+    rendered,
+    /Before executable raw HTML &lt;script&gt;alert\("xss"\)&lt;\/script&gt; after executable raw HTML\./,
+  );
+  assert.doesNotMatch(rendered, /<script/);
+});
+checkBehavior(rendered, "unsafe HTML attributes are removed", "Before unsafe attributes", () => {
+  assert.match(
+    rendered,
+    /Before unsafe attributes <span>attributes removed<\/span> after unsafe attributes\./,
+  );
+  assert.doesNotMatch(rendered, /onclick=/);
+  assert.doesNotMatch(rendered, /style="display:none"/);
+  assert.doesNotMatch(rendered, /data-testid=/);
+  assert.doesNotMatch(rendered, /class="raw-html"/);
+});
+checkBehavior(rendered, "lists and audit findings render", "Allowed:", () => {
+  assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
+  assert.match(rendered, /<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
+  assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
+});
 assert.deepEqual(await readFile(fixturePath), fixtureBytes);
 
 console.log(
