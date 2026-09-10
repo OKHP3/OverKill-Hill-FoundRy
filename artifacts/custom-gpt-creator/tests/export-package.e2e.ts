@@ -436,6 +436,19 @@ test("exports sparse instruction layers in order and preserves exact copied and 
   expect(exportContent).not.toContain("## Safety & Boundaries");
 
   await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  const fullSpecContent = await page.locator("pre").textContent();
+  expect(fullSpecContent).not.toBeNull();
+  expect(fullSpecContent).toContain("### Layer 1: Identity & Scope\n" + instructions[1]);
+  expect(fullSpecContent).toContain("### Layer 4: Tool Policy\n" + instructions[4]);
+  expect(fullSpecContent).toContain("### Layer 6: Output Policy\n" + instructions[6]);
+  expect(fullSpecContent).toContain("### Layer 8: Examples\n" + instructions[8]);
+  expect(fullSpecContent).not.toContain("### Layer 3:");
+  expect(fullSpecContent).not.toContain("### Layer 5:");
+  expect(fullSpecContent).not.toContain("### Layer 7:");
+  expect(fullSpecContent).not.toContain("### Layer 9:");
+  await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
 });
 
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {

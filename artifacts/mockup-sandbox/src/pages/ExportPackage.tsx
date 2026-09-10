@@ -292,7 +292,9 @@ ${evidencePackage.audit.items.map((item) =>
 ` : "";
 
   const instructionBlock = INSTRUCTION_LAYERS
-    .map(l => layerData[l.id] ? `### Layer ${l.id}: ${l.label}\n${layerData[l.id]}` : "")
+    .map(l => typeof layerData[l.id] === "string" && layerData[l.id].trim()
+      ? `### Layer ${l.id}: ${l.label}\n${layerData[l.id]}`
+      : "")
     .filter(Boolean)
     .join("\n\n");
 
