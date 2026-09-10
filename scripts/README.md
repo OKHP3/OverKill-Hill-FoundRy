@@ -6,6 +6,19 @@ Seeded from `OKHP3/OverKill-Hill/scripts` only when the script is applicable to 
 
 Site-rendering scripts, HTML page mutators, image conversion scripts, and CSS/JS publication scripts should not be copied here unless this repository begins publishing a deployable site surface.
 
+## Artifact build contract check
+
+Run the dependency-free check used before the workspace build in GitHub
+Actions:
+
+```bash
+python3 scripts/check-artifact-contract.py
+```
+
+The check compares each Vite artifact's fallback `PORT` and `BASE_PATH` with
+its `.replit-artifact/artifact.toml` service port and routes. It is read-only
+and reports the artifact, variable, and expected value when a contract drifts.
+
 ## Governance validation
 
 Run the complete governance sequence locally with the same entry point used by

@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check artifact build contracts
+        run: python3 scripts/check-artifact-contract.py
+
       - name: Build workspace from clean artifact environment
         run: env -u PORT -u BASE_PATH pnpm run build
 
