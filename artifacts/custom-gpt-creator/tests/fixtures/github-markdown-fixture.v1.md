@@ -22,6 +22,12 @@ Produce a readable, reviewable specification.
 
 [Read the repository evidence guide](./evidence-guide.md)
 
+[Unsafe protocol link](javascript:alert("xss"))
+
+![Unsafe protocol image](javascript:alert("xss"))
+
+[Safe HTTPS link](https://example.com/safe)
+
 ```ts
 const answer = "safe";
 ```

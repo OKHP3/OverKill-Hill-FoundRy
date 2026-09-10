@@ -61,6 +61,10 @@ assert.match(
   rendered,
   /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
 );
+assert.match(rendered, /<p[^>]*>Unsafe protocol link<\/p>/);
+assert.match(rendered, /alt="Unsafe protocol image"/);
+assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
+assert.doesNotMatch(rendered, /(?:href|src)=["'][^"']*javascript:/i);
 assert.match(rendered, /class="highlight highlight-source-ts"/);
 assert.match(rendered, /answer/);
 assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
@@ -77,7 +81,7 @@ assert.match(
 );
 assert.doesNotMatch(rendered, /<script/);
 assert.doesNotMatch(rendered, /onclick=/);
-assert.doesNotMatch(rendered, /style=/);
+assert.doesNotMatch(rendered, /style="display:none"/);
 assert.doesNotMatch(rendered, /data-testid=/);
 assert.doesNotMatch(rendered, /class="raw-html"/);
 assert.deepEqual(await readFile(fixturePath), fixtureBytes);

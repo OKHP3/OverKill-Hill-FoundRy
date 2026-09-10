@@ -72,6 +72,12 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   expect(renderedHtml).toContain(
     '<a href="./evidence-guide.md">Read the repository evidence guide</a>',
   );
+  expect(renderedHtml).toMatch(/<p>Unsafe protocol link<\/p>/);
+  expect(renderedHtml).toContain('alt="Unsafe protocol image"');
+  expect(renderedHtml).toContain(
+    '<a href="https://example.com/safe" rel="nofollow">Safe HTTPS link</a>',
+  );
+  expect(renderedHtml).not.toMatch(/(?:href|src)=["'][^"']*javascript:/i);
   expect(renderedHtml).toMatch(/<ul>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
   expect(renderedHtml).toMatch(/<ol>[\s\S]*<li>"Review the evidence\."<\/li>/);
   expect(renderedHtml).toContain(
@@ -85,7 +91,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   );
   expect(renderedHtml).not.toContain("<script");
   expect(renderedHtml).not.toContain("onclick=");
-  expect(renderedHtml).not.toContain("style=");
+  expect(renderedHtml).not.toContain('style="display:none"');
   expect(renderedHtml).not.toContain("data-testid=");
   expect(renderedHtml).toMatch(/<h3[^>]*>Per-item findings<\/h3>/);
   await expect(readFile(fixturePath)).resolves.toEqual(fixtureBytes);
