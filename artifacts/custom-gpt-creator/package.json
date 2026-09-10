@@ -11,7 +11,8 @@
     "test:e2e": "playwright test",
     "test:github-markdown": "node tests/github-markdown-render.mjs",
     "test:github-markdown:playwright": "GITHUB_MARKDOWN_CHECK=1 playwright test tests/github-markdown.e2e.ts",
-    "refresh:github-markdown-fixture": "GITHUB_MARKDOWN_FIXTURE_REFRESH=1 playwright test tests/github-markdown-fixture-refresh.e2e.ts && playwright test tests/export-package.e2e.ts --grep \"keeps the committed GitHub fixture generated from representative Creator data\"",
+    "test:github-markdown:fixture": "playwright test tests/export-package.e2e.ts --grep \"keeps the committed GitHub fixture generated from representative Creator data\"",
+    "refresh:github-markdown-fixture": "GITHUB_MARKDOWN_FIXTURE_REFRESH=1 playwright test tests/github-markdown-fixture-refresh.e2e.ts && pnpm run test:github-markdown:fixture",
     "test:e2e:headed": "playwright test --headed"
   },
   "devDependencies": {

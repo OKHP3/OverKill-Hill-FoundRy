@@ -5,6 +5,12 @@ GitHub fixture generated from representative Creator data` test in
 `export-package.e2e.ts`. Normal test runs compare the fixture with a fresh
 Creator export and never write to the repository.
 
+To run only this deterministic drift guard:
+
+```sh
+pnpm run test:github-markdown:fixture
+```
+
 When an intentional exporter change requires a new fixture, run:
 
 ```sh
