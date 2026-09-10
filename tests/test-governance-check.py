@@ -158,7 +158,8 @@ def main() -> int:
 
         failing_check = Path(directory) / "failing-check.py"
         failing_check.write_text(
-            f"print({ACTIONABLE_FAILURE!r}, flush=True)\n"
+            "import sys\n"
+            f"print({ACTIONABLE_FAILURE!r}, file=sys.stderr, flush=True)\n"
             f"raise SystemExit({EXPECTED_FAILURE})\n",
             encoding="utf-8",
         )
