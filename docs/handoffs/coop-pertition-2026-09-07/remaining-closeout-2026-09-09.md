@@ -110,3 +110,57 @@ VoiceOver was returned to off and that state was visibly verified. Completing
 this requirement needs an observable Safari/VoiceOver session or existing
 real-session results. The ordinary Safari search checks above remain valid
 within their stated limits.
+
+## September 11 execution update
+
+The September 9 blockers above are historical. The following refresh supersedes
+those state observations, while preserving the original acceptance protocol.
+
+- Website main and the clean local checkout match
+  `640f0a951e99cd1e2f9b540ed52bb9848f72f13b`. PR97 merged the Replit recovery
+  and pending release repairs. PR93 and PR94 are closed, and there are no open
+  website PRs at this checkpoint. Closed status alone does not certify that
+  every auxiliary branch byte was adopted.
+- Exact-commit Site Validation succeeded:
+  https://github.com/OKHP3/OverKill-Hill/actions/runs/34570818796
+- Exact-commit Pages deployment succeeded:
+  https://github.com/OKHP3/OverKill-Hill/actions/runs/34531330160
+- The live release manifest identifies that commit. Independently retrieved
+  homepage, shared JavaScript, and stylesheet SHA-256 values match its integrity
+  inventory. Git config, AGENTS.md, and source page-manifest URLs return 404.
+- The current live-edge verifier completed 487 checks with zero failures,
+  39 blocked checks and 315 warnings. The blocked checks concern GitHub Pages
+  header/cache enforcement limitations. This is a partial policy verification,
+  not a content failure or proof that repository headers are enforced.
+- Direct Replit shell inspection after fetching origin reports a clean main;
+  HEAD and origin/main both equal `640f0a951e99cd1e2f9b540ed52bb9848f72f13b`.
+  The old unpublished JSON-LD work is therefore reconciled. The publishing
+  panel reports the public `over-kill-hill.replit.app` deployment was last
+  published three days ago; this is not exact-current-release publication
+  evidence. The Replit connector additionally requires reauthentication, but
+  the browser workspace remains usable.
+- The FoundRy checkout was safely fast-forwarded from `6a01239` to origin/main
+  `267d286` before this record update. No owner work was discarded.
+- Native macOS reports Tahoe 26.6.2. VoiceOver Utility already has its caption
+  panel enabled. The approved activation visibly switched VoiceOver on, but
+  the control tool again timed out retrieving VoiceOver output. A subsequent
+  Settings observation showed VoiceOver off. The temporary Safari tab was
+  closed. No spoken-output or caption-based acceptance pass is claimed.
+
+### Work still required
+
+1. Complete the real Safari/VoiceOver protocol above on the accepted release,
+   including actual 200%/400% zoom observations. An observable native session
+   or existing real-session results are needed; ordinary accessibility-tree
+   inspection is not a substitute. Repair and retest any reproduced failure.
+2. After acceptance, refresh the existing Replit publication through its browser
+   workflow and verify runtime, manifest identity and served bytes. Its clean
+   source parity is already verified; a three-day-old publication badge is not
+   enough to claim deployed parity.
+3. Retain auxiliary work owned by other existing tasks until its disposition
+   is evidenced. The website currently has worktrees for cache-bust closeout,
+   A21 integration, and AI-reviewed locale policy. The original 26-task batch
+   and this root's superseded PR91 cleanup remain completed as recorded above.
+   No additional delegate or worktree was created by this execution.
+4. Attach the final acceptance and publication receipts, then make the final
+   archive declaration. This conversation remains open pending those receipts.
