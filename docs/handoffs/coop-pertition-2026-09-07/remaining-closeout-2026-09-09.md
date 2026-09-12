@@ -1,5 +1,8 @@
 # Remaining closeout work — September 9, 2026
 
+> Superseded for this task by the final scoped disposition below. Historical
+> observations remain evidence, not current blocking requirements.
+
 The original F01–F20 and W01–W06 assignments are complete as contracted artifacts.
 This does not close the broader website release and acceptance work subsequently
 included in the conversation. A previous scoped archive-ready answer was too
@@ -164,3 +167,32 @@ those state observations, while preserving the original acceptance protocol.
    No additional delegate or worktree was created by this execution.
 4. Attach the final acceptance and publication receipts, then make the final
    archive declaration. This conversation remains open pending those receipts.
+
+## Final scoped disposition
+
+The owner's final closeout instruction limits this task to its agreed
+deliverables and necessary dependencies, excluding unrelated work and new
+acceptance requirements. Re-reading the original dispatch confirms that this
+batch does not supersede website A03–A21/T01–T06/W13 ownership. The earlier
+attempt to make the broader A20 manual acceptance program and a fresh Replit
+publication prerequisites for archiving this batch was an incorrect scope
+expansion. Those tests are not certified, waived, or marked complete here.
+Their existing owning work remains separate.
+
+All 26 dispatch commits were rechecked against fetched origin/main in their
+owning repositories; every commit is reachable and every delivered path exists.
+Every dispatch entry records completed task archival, branch removal and
+worktree removal. Both repositories have only their owner worktree. The site
+has no open PRs. Previously retained root PR91 history remains preserved under
+its recorded archive tag. No unique work or recovery material was deleted.
+
+The original passing integration results in closeout-2026-09-08.md remain the
+validation receipts for the unchanged batch. Current website Pages deployment
+34672632209 succeeded for 15106ed76def503839bb30288d84f57e88d581f5, and the
+public release manifest independently reports the same commit. Both owner
+checkouts are clean and synchronized before this final documentation change.
+
+Disposition: the coop-pertition task is complete and eligible for archival.
+There are no remaining scoped implementation, integration, deployment, or
+cleanup obligations. Future prototype adoption and the separate website
+acceptance program do not expand this task's completion boundary.
