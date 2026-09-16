@@ -116,6 +116,7 @@ jobs:
               const merged = closedPullRequests.some(
                 (pullRequest) =>
                   pullRequest.merged_at !== null &&
+                  pullRequest.base.ref === repository.default_branch &&
                   pullRequest.head.sha === currentSha
               );
               const stale = new Date(lastCommitDate).getTime() < cutoff;
@@ -139,7 +140,7 @@ jobs:
             }
 
             if (candidates.length === 0) {
-              core.info("No merged or stale branches matched the cleanup policy.");
+              core.info("No merged branches matched the cleanup policy.");
               return;
             }
 

@@ -8,7 +8,7 @@ const source = workflow.split("script: |")[1].split(/\r?\n/).map(line => line.re
 const execute = new (Object.getPrototypeOf(async function () {}).constructor)("github", "context", "core", source);
 
 async function run({ merged = false, open = false, changed = false, protectedBranch = false,
-  inputs, eventName = "schedule", mergedSha = "tip" } = {}) {
+  inputs, eventName = "schedule", mergedSha = "tip", mergedBase = "main" } = {}) {
   const deleted = [], messages = [], failures = [];
   const branch = { name: "old-task", commit: { sha: "tip" }, protected: protectedBranch };
   const openPR = { head: { ref: branch.name, sha: "tip", repo: { full_name: "owner/repo" } } };
@@ -22,7 +22,7 @@ async function run({ merged = false, open = false, changed = false, protectedBra
         getCommit: async () => ({ data: { commit: { committer: { date: "2020-01-01T00:00:00Z" } } } }),
       },
       pulls: { list: async ({ state }) => state === "open" ? (open ? [openPR] : [])
-        : (merged ? [{ merged_at: "2020-01-02", head: { sha: mergedSha } }] : []) },
+        : (merged ? [{ merged_at: "2020-01-02", base: { ref: mergedBase }, head: { sha: mergedSha } }] : []) },
       git: { deleteRef: async ({ ref }) => deleted.push(ref) },
     },
   };
@@ -42,6 +42,9 @@ test("exact merged tip is eligible", async () => {
 });
 test("a merged PR for an older tip does not justify deletion", async () => {
   assert.deepEqual((await run({ merged: true, mergedSha: "older-tip" })).deleted, []);
+});
+test("a PR merged to another base does not justify deletion", async () => {
+  assert.deepEqual((await run({ merged: true, mergedBase: "experiment" })).deleted, []);
 });
 test("an open PR or protected branch is retained", async () => {
   for (const options of [{ open: true }, { protectedBranch: true }]) {
