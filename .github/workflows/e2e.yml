@@ -31,8 +31,14 @@ jobs:
       - name: Check artifact build contracts
         run: python3 scripts/check-artifact-contract.py
 
+      - name: Check branch cleanup safety
+        run: node --test tests/branch-cleanup-test.mjs
+
       - name: Build workspace from clean artifact environment
         run: env -u PORT -u BASE_PATH pnpm run build
+
+      - name: Check generated preview module stays synchronized
+        run: git diff --exit-code -- artifacts/mockup-sandbox/src/.generated/mockup-components.ts
 
       - name: Cache Playwright browsers
         id: playwright-cache

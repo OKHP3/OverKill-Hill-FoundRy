@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       stale_days:
-        description: "Delete branches whose latest commit is older than this many days"
+        description: "Report unmerged branches older than this many days for review"
         required: false
         default: "30"
         type: number
@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   cleanup:
-    name: Delete merged or stale branches
+    name: Delete merged branches and report stale work
     runs-on: ubuntu-latest
     steps:
       - name: Find and remove eligible branches
@@ -36,10 +36,10 @@ jobs:
           script: |
             const defaultStaleDays = 30;
             const staleDays = context.eventName === "workflow_dispatch"
-              ? Number(core.getInput("stale_days") || defaultStaleDays)
+              ? Number(context.payload.inputs?.stale_days || defaultStaleDays)
               : defaultStaleDays;
             const dryRun = context.eventName === "workflow_dispatch"
-              ? core.getBooleanInput("dry_run")
+              ? context.payload.inputs?.dry_run !== "false"
               : false;
 
             if (!Number.isInteger(staleDays) || staleDays < 1) {
@@ -116,11 +116,16 @@ jobs:
               const merged = closedPullRequests.some(
                 (pullRequest) =>
                   pullRequest.merged_at !== null &&
+                  pullRequest.base.ref === repository.default_branch &&
                   pullRequest.head.sha === currentSha
               );
               const stale = new Date(lastCommitDate).getTime() < cutoff;
 
-              if (merged || stale) {
+              // Age does not prove that a branch's work has landed.
+              if (stale && !merged) {
+                core.info(`Review ${branch.name}: stale, but no merged PR matches its current tip.`);
+              }
+              if (merged) {
                 candidates.push({
                   name: branch.name,
                   sha: currentSha,
@@ -135,7 +140,7 @@ jobs:
             }
 
             if (candidates.length === 0) {
-              core.info("No merged or stale branches matched the cleanup policy.");
+              core.info("No merged branches matched the cleanup policy.");
               return;
             }
 

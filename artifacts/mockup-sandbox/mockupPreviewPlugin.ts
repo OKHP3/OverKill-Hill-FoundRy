@@ -45,7 +45,8 @@ export function mockupPreviewPlugin(): Plugin {
       ignore: ["**/_*/**", "**/_*.tsx"],
     });
 
-    return files.map((f) => ({
+    // Glob traversal order differs across hosts; keep the tracked module stable.
+    return files.sort().map((f) => ({
       globKey: "./" + f.slice("src/".length),
       importPath: path.posix.relative("src/.generated", f),
     }));
