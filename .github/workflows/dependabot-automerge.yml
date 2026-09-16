@@ -31,7 +31,24 @@ jobs:
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: |
+          # An unprotected base cannot use GitHub's native auto-merge queue.
+          # Leave it for a reviewed maintainer merge; propagate other failures.
+          base_path=$(jq -rn --arg ref "$BASE_BRANCH" '$ref | @uri')
+          protected=$(gh api "repos/$GITHUB_REPOSITORY/branches/$base_path" --jq .protected)
+          if [[ "$protected" != "true" ]]; then
+            echo "::notice::Unprotected base: leave this PR for a reviewed maintainer merge."
+            exit 0
+          fi
+          if output=$(gh pr merge --auto --squash "$PR_URL" 2>&1); then
+            printf '%s\n' "$output"
+          elif [[ "$output" == *"Protected branch rules not configured for this branch"* ]]; then
+            echo "::notice::Native auto-merge requires protected branch rules; this PR needs a reviewed maintainer merge."
+          else
+            printf '%s\n' "$output" >&2
+            exit 1
+          fi
         env:
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
