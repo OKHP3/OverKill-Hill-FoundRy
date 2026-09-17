@@ -418,6 +418,32 @@ test("preserves mixed instruction bytes in the Full Spec export", async ({ page 
   await expectSelectedExportActions(page, "github-export-fixture-spec.md", "md");
 });
 
+test("preserves mixed instruction bytes in the Evidence JSON export", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    ...githubFixtureProjectData,
+    "step-2": fullSpecInstructionFixture,
+  });
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const jsonContent = await page.locator("pre").textContent();
+  expect(jsonContent).not.toBeNull();
+  const exactJsonContent = jsonContent!;
+  const evidence = JSON.parse(exactJsonContent);
+
+  expect(evidence.phases["step-2-instruction-stack"]).toEqual(fullSpecInstructionFixture);
+  for (const [layerId, instruction] of Object.entries(fullSpecInstructionFixture)) {
+    expect(evidence.phases["step-2-instruction-stack"][layerId]).toBe(instruction);
+  }
+  expect(exactJsonContent).toContain(JSON.stringify(fullSpecInstructionFixture[1]));
+  expect(exactJsonContent).toContain("\\r\\n");
+  expect(exactJsonContent).toContain("\\r");
+  expect(exactJsonContent).toContain("\\n");
+  expect(exactJsonContent).toContain("日本語");
+
+  await expectSelectedExportActions(page, "github-export-fixture-spec.json", "json");
+});
+
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {
   await openExportPackage(page);
 
