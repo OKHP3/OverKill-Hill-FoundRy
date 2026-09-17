@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for governance-check.py ordering, propagation, and fail-fast behavior."""
+"""Regression tests for governance validation ordering, propagation, and CI behavior."""
 from __future__ import annotations
 
 import importlib.util
@@ -15,6 +15,16 @@ RUNNER = ROOT / "scripts" / "governance-check.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "governance.yml"
 EXPECTED_FAILURE = 23
 EXPECTED_CI_ENTRY_POINT = "python3 scripts/governance-check.py"
+EXPECTED_SUMMARY_HEADING = "## Governance validation failed"
+EXPECTED_WORKFLOW_CONTRACT = (
+    'python3 scripts/governance-check.py 2>&1 | tee "$runner_output"',
+    'runner_status="${PIPESTATUS[0]}"',
+    'if [ "$runner_status" -ne 0 ]; then',
+    'echo "## Governance validation failed"',
+    'cat "$runner_output"',
+    '} >> "$GITHUB_STEP_SUMMARY"',
+    'exit "$runner_status"',
+)
 EXPECTED_CHECKS = (
     (
         "Validate relay manifest",
@@ -125,10 +135,23 @@ def main() -> int:
         return 1
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    if workflow.count(f"run: {EXPECTED_CI_ENTRY_POINT}") != 1:
+    if workflow.count(EXPECTED_CI_ENTRY_POINT) != 1:
         print(
             "FAIL governance workflow does not use the unified entry point exactly once: "
             f"{EXPECTED_CI_ENTRY_POINT}"
+        )
+        return 1
+    for contract in EXPECTED_WORKFLOW_CONTRACT:
+        if contract not in workflow:
+            print(
+                "FAIL governance workflow is missing its CI summary contract: "
+                f"{contract}"
+            )
+            return 1
+    if workflow.count(EXPECTED_SUMMARY_HEADING) != 1:
+        print(
+            "FAIL governance workflow must define exactly one failure summary heading: "
+            f"{EXPECTED_SUMMARY_HEADING}"
         )
         return 1
 
