@@ -108,7 +108,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
     "Read the nested repository evidence guide",
     () => {
       expect(renderedHtml).toContain(
-        '<a href="./docs/evidence-guide.md">Read the nested repository evidence guide</a>',
+        '<a href="./docs/evidence-guide.md#evidence-handling">Read the nested repository evidence guide</a>',
       );
     },
   );

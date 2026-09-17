@@ -22,7 +22,7 @@ Produce a readable, reviewable specification.
 
 [Read the repository evidence guide](./evidence-guide.md)
 
-[Read the nested repository evidence guide](./docs/evidence-guide.md)
+[Read the nested repository evidence guide](./docs/evidence-guide.md#evidence-handling)
 
 [Read the repository evidence section](./evidence-guide.md#evidence-handling)
 

@@ -79,7 +79,7 @@ export const assertRenderedMarkdown = (rendered) => {
     () => {
       assert.match(
         rendered,
-        /<a href="\.\/docs\/evidence-guide\.md"[^>]*>Read the nested repository evidence guide<\/a>/,
+        /<a href="\.\/docs\/evidence-guide\.md#evidence-handling"[^>]*>Read the nested repository evidence guide<\/a>/,
       );
     },
   );
