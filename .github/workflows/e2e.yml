@@ -64,6 +64,10 @@ jobs:
       - name: Test capability storage and source bundles
         run: pnpm run test:capability
 
+      - name: Check committed GitHub fixture drift
+        working-directory: artifacts/custom-gpt-creator
+        run: pnpm run test:github-markdown:fixture
+
       - name: Run e2e tests
         working-directory: artifacts/custom-gpt-creator
         run: pnpm run test:e2e
