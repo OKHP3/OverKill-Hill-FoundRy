@@ -156,10 +156,24 @@ def main() -> int:
             return 1
 
         missing_check = directory_path / "missing-check.py"
+        missing_sentinel_marker = directory_path / "missing-sentinel-ran"
+        missing_sentinel = directory_path / "missing-sentinel.py"
+        missing_sentinel.write_text(
+            f"from pathlib import Path\n"
+            f"Path({str(missing_sentinel_marker)!r}).write_text('ran', encoding='utf-8')\n",
+            encoding="utf-8",
+        )
         status, output = run_with_checks(
             runner,
-            ((MISSING_CHECK_NAME, (str(missing_check),)),),
+            (
+                (MISSING_CHECK_NAME, (str(missing_check),)),
+                (
+                    "Sentinel check that must be skipped after an unavailable check",
+                    (str(missing_sentinel),),
+                ),
+            ),
         )
+        missing_sentinel_ran = missing_sentinel_marker.exists()
         if status == 0:
             print("FAIL governance runner accepted an unavailable check")
             return 1
@@ -174,6 +188,9 @@ def main() -> int:
                 "FAIL governance runner did not provide a repair path:\n"
                 f"{output}"
             )
+            return 1
+        if missing_sentinel_ran:
+            print("FAIL governance runner executed a check after an unavailable check")
             return 1
 
         failing_check = Path(directory) / "failing-check.py"
