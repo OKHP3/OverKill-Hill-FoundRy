@@ -175,9 +175,11 @@ function normalizeAuditRecord(raw: unknown): AuditEvidence | undefined {
 }
 
 function formatInstructionLayers(
-  layerData: Record<string, unknown>,
+  layerData: unknown,
   heading: (layer: (typeof INSTRUCTION_LAYERS)[number]) => string,
 ): string {
+  if (!isRecord(layerData)) return "";
+
   return INSTRUCTION_LAYERS
     .flatMap((layer) => {
       const content = layerData[layer.id];

@@ -314,6 +314,60 @@ test("exports sparse instruction layers in order and preserves exact copied and 
   await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
 });
 
+test("ignores malformed instruction values and containers without changing valid content", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Malformed Layers GPT" },
+    "step-2": {
+      1: { text: "Do not stringify this object as an instruction." },
+      2: ["Do not stringify this array as an instruction."],
+      3: 123,
+      4: false,
+      5: null,
+      6: "  Preserve this valid instruction exactly.  \r\n  ",
+      7: { toString: "Do not stringify this object either." },
+      8: " \t\r\n",
+    },
+  });
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  const instructionsContent = await page.locator("pre").textContent();
+  expect(instructionsContent).toBe(
+    "## Output Policy\n  Preserve this valid instruction exactly.  \r\n  ",
+  );
+  expect(instructionsContent).not.toContain("Identity & Scope");
+  expect(instructionsContent).not.toContain("Operating Principles");
+  expect(instructionsContent).not.toContain("Do not stringify");
+  await expectSelectedExportActions(page, "malformed-layers-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  const fullSpecContent = await page.locator("pre").textContent();
+  expect(fullSpecContent).not.toBeNull();
+  expect(fullSpecContent).toContain(
+    "### Layer 6: Output Policy\n  Preserve this valid instruction exactly.  \r\n  ",
+  );
+  expect(fullSpecContent).not.toContain("### Layer 1:");
+  expect(fullSpecContent).not.toContain("### Layer 2:");
+  expect(fullSpecContent).not.toContain("Do not stringify");
+  await expectSelectedExportActions(page, "malformed-layers-gpt-spec.md", "md");
+
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Malformed Container GPT" },
+    "step-2": "A malformed saved instruction container",
+  });
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  await expect(page.locator("pre")).toHaveText("");
+  await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  const malformedContainerFullSpec = await page.locator("pre").textContent();
+  expect(malformedContainerFullSpec).not.toBeNull();
+  expect(malformedContainerFullSpec).toContain("## 2. Instructions\n\n(no instruction layers filled)");
+  expect(malformedContainerFullSpec).not.toContain("### Layer 1:");
+  await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
+});
+
 test("preserves mixed instruction bytes in the Full Spec export", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {
