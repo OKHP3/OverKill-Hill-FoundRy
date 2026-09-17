@@ -53,10 +53,16 @@ def check_artifacts(root: Path) -> list[str]:
     contracts = parse_build_contracts(contract_path)
     errors: list[str] = []
     artifact_root = root / "artifacts"
+    manifest_paths = sorted(
+        artifact_root.glob("*/.replit-artifact/artifact.toml")
+    )
+    registered_artifacts: set[str] = set()
+    artifact_by_port: dict[int, str] = {}
 
-    for vite_config in sorted(artifact_root.glob("*/vite.config.ts")):
-        artifact = vite_config.parent.name
-        manifest_path = vite_config.parent / ".replit-artifact/artifact.toml"
+    for manifest_path in manifest_paths:
+        artifact = manifest_path.parent.parent.name
+        registered_artifacts.add(artifact)
+        vite_config = manifest_path.parent.parent / "vite.config.ts"
         contract = contracts.get(artifact)
 
         if contract is None:
@@ -64,25 +70,18 @@ def check_artifacts(root: Path) -> list[str]:
                 f"{artifact} PORT/BASE_PATH: expected a fallback entry in "
                 f"{contract_path.relative_to(root)}, but none was found"
             )
-            continue
 
-        vite_source = vite_config.read_text(encoding="utf-8")
-        resolver = CONTRACT_RESOLVER_PATTERN.search(vite_source)
-        if resolver is None or resolver.group("name") != artifact:
-            resolved_name = (
-                "none" if resolver is None else repr(resolver.group("name"))
-            )
-            errors.append(
-                f"{artifact} PORT/BASE_PATH: expected vite.config.ts to resolve "
-                f"the {artifact!r} fallback (found {resolved_name})"
-            )
-
-        if not manifest_path.is_file():
-            errors.append(
-                f"{artifact} PORT/BASE_PATH: expected registered service manifest "
-                f"at {manifest_path.relative_to(root)}"
-            )
-            continue
+        if vite_config.is_file():
+            vite_source = vite_config.read_text(encoding="utf-8")
+            resolver = CONTRACT_RESOLVER_PATTERN.search(vite_source)
+            if resolver is None or resolver.group("name") != artifact:
+                resolved_name = (
+                    "none" if resolver is None else repr(resolver.group("name"))
+                )
+                errors.append(
+                    f"{artifact} PORT/BASE_PATH: expected vite.config.ts to resolve "
+                    f"the {artifact!r} fallback (found {resolved_name})"
+                )
 
         try:
             manifest = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
@@ -113,9 +112,20 @@ def check_artifacts(root: Path) -> list[str]:
             continue
 
         registered_port = service.get("localPort")
-        if registered_port != contract.port:
+        if isinstance(registered_port, int):
+            existing_artifact = artifact_by_port.get(registered_port)
+            if existing_artifact is not None:
+                errors.append(
+                    f"artifact preview port {registered_port} is assigned to both "
+                    f"{existing_artifact!r} and {artifact!r} in registered service "
+                    "manifests"
+                )
+            else:
+                artifact_by_port[registered_port] = artifact
+
+        if contract is not None and registered_port != contract.port:
             errors.append(
-                f"{artifact} PORT: expected {contract.port} from the Vite fallback, "
+                f"{artifact} PORT: expected {contract.port} from the artifact contract, "
                 f"but artifact.toml localPort is {format_value(registered_port)}"
             )
 
@@ -123,27 +133,28 @@ def check_artifacts(root: Path) -> list[str]:
         if not isinstance(service_env, dict):
             service_env = {}
 
-        registered_env_port = service_env.get("PORT")
-        if registered_env_port != str(contract.port):
-            errors.append(
-                f"{artifact} PORT: expected {contract.port} in "
-                f"artifact.toml [services.env].PORT, but found "
-                f"{format_value(registered_env_port)}"
-            )
+        if contract is not None and vite_config.is_file():
+            registered_env_port = service_env.get("PORT")
+            if registered_env_port != str(contract.port):
+                errors.append(
+                    f"{artifact} PORT: expected {contract.port} in "
+                    f"artifact.toml [services.env].PORT, but found "
+                    f"{format_value(registered_env_port)}"
+                )
 
-        registered_base_path = service_env.get("BASE_PATH")
-        if registered_base_path != contract.base_path:
-            errors.append(
-                f"{artifact} BASE_PATH: expected route {contract.base_path!r} "
-                f"in artifact.toml [services.env].BASE_PATH, but found "
-                f"{format_value(registered_base_path)}"
-            )
+            registered_base_path = service_env.get("BASE_PATH")
+            if registered_base_path != contract.base_path:
+                errors.append(
+                    f"{artifact} BASE_PATH: expected route {contract.base_path!r} "
+                    f"in artifact.toml [services.env].BASE_PATH, but found "
+                    f"{format_value(registered_base_path)}"
+                )
 
         paths = service.get("paths")
         registered_service_path = (
             paths[0] if isinstance(paths, list) and paths else None
         )
-        if registered_service_path != contract.base_path:
+        if contract is not None and registered_service_path != contract.base_path:
             errors.append(
                 f"{artifact} BASE_PATH: expected route {contract.base_path!r} "
                 f"in artifact.toml [services].paths[0], but found "
@@ -151,15 +162,29 @@ def check_artifacts(root: Path) -> list[str]:
             )
 
         registered_preview_path = manifest.get("previewPath")
-        if registered_preview_path != contract.base_path:
+        if contract is not None and registered_preview_path != contract.base_path:
             errors.append(
                 f"{artifact} BASE_PATH: expected route {contract.base_path!r} "
                 f"in artifact.toml previewPath, but found "
                 f"{format_value(registered_preview_path)}"
             )
 
-    if not list(artifact_root.glob("*/vite.config.ts")):
-        errors.append("artifacts PORT/BASE_PATH: expected at least one Vite artifact")
+    for vite_config in sorted(artifact_root.glob("*/vite.config.ts")):
+        artifact = vite_config.parent.name
+        if artifact not in registered_artifacts:
+            errors.append(
+                f"{artifact} PORT/BASE_PATH: expected registered service manifest "
+                f"at {(vite_config.parent / '.replit-artifact/artifact.toml').relative_to(root)}"
+            )
+
+    for artifact in sorted(contracts.keys() - registered_artifacts):
+        errors.append(
+            f"{artifact} PORT/BASE_PATH: contract entry has no registered artifact "
+            "manifest"
+        )
+
+    if not manifest_paths:
+        errors.append("artifacts PORT/BASE_PATH: expected at least one artifact manifest")
 
     return errors
 
@@ -173,7 +198,7 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    print("Artifact build contracts match Vite fallbacks and registered services.")
+    print("Artifact build contracts match registered services.")
     return 0
 
 

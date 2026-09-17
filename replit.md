@@ -40,13 +40,20 @@ handoff; do not assume chats, quotas, or permissions are shared between hosts.
   shell. Each Vite artifact derives `PORT` and `BASE_PATH` from its registered
   service contract when those variables are omitted; explicit values still
   override the defaults for deployment builds.
+- `pnpm --filter @workspace/scripts run check:artifact-ports` — verify that no
+  two artifact contracts claim the same default port.
 
 ### Artifact build contract ownership
 
-The typed, dependency-free source of truth for Vite artifact defaults is
+The typed, dependency-free source of truth for registered artifact defaults is
 `scripts/src/artifact-contract.ts`. It owns each artifact's fallback port and
-base path, and every artifact Vite config must resolve its `PORT` and
-`BASE_PATH` through that module.
+base path. Every registered preview, including the API server, must have an
+entry, and every Vite config must resolve its `PORT` and `BASE_PATH` through
+that module.
+
+The contract rejects duplicate default ports when it is imported. Run
+`pnpm --filter @workspace/scripts run check:artifact-ports` after adding or
+changing an artifact contract to check port uniqueness directly.
 
 Each `.replit-artifact/artifact.toml` remains the managed-service registration
 for the same artifact. Its `localPort`, service `PORT`, and service

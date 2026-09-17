@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check:artifact-ports": "python3 ./check-artifact-contract.py",
     "hello": "tsx ./src/hello.ts",
+    "test:artifact-ports": "tsx --test ./src/artifact-contract.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
