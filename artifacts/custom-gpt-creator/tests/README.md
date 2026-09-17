@@ -21,4 +21,7 @@ This is the only refresh command. It opts into the Playwright refresh test,
 writes `fixtures/github-markdown-fixture.v1.md` from the shared representative
 data, verifies the written bytes, and then reruns the drift guard. The refresh
 test is skipped and never writes unless `GITHUB_MARKDOWN_FIXTURE_REFRESH=1` is
-set.
+set. The refresh preserves the generated-date line already committed in the
+fixture, so running it on different calendar dates produces identical bytes
+unless exporter behavior changes. The drift guard still normalizes that line
+before reporting the first meaningful content difference.
