@@ -3,32 +3,17 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  checkBehavior,
+  diagnosticBehaviorLabels,
+  renderedFragment,
+} from "./github-markdown-diagnostics.mjs";
+
+export { renderedFragment };
+
 export const fixturePath = fileURLToPath(
   new URL("./fixtures/github-markdown-fixture.v1.md", import.meta.url),
 );
-
-export const renderedFragment = (html, marker) => {
-  const markerPosition = html.indexOf(marker);
-  if (markerPosition === -1) {
-    return `[marker "${marker}" not found]\n${html.slice(0, 500)}`;
-  }
-
-  const start = Math.max(0, markerPosition - 180);
-  const end = Math.min(html.length, markerPosition + marker.length + 260);
-  return html.slice(start, end);
-};
-
-export const checkBehavior = (rendered, behavior, marker, assertion) => {
-  try {
-    assertion();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    throw new Error(
-      `${behavior} failed: ${message}\nRendered fragment near "${marker}":\n${renderedFragment(rendered, marker)}`,
-      { cause: error },
-    );
-  }
-};
 
 const headings = [
   "0. Build Brief",
@@ -54,26 +39,31 @@ export const assertRenderedMarkdown = (rendered) => {
     headings.map((heading) => rendered.search(headingMarkup(heading))),
     [...headings.map((heading) => rendered.search(headingMarkup(heading)))].sort((a, b) => a - b),
   );
-  checkBehavior(rendered, "table and code rendering", "Signal", () => {
+  checkBehavior(rendered, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
     assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
     assert.match(rendered, /<strong>Ready<\/strong>/);
     assert.match(rendered, /class="highlight highlight-source-ts"/);
     assert.match(rendered, /answer/);
   });
-  checkBehavior(rendered, "safe links remain links", "Read the evidence guide", () => {
-    assert.match(
-      rendered,
-      /<a href="https:\/\/example\.com\/evidence"[^>]*>Read the evidence guide<\/a>/,
-    );
-    assert.match(
-      rendered,
-      /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
-    );
-    assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
-  });
   checkBehavior(
     rendered,
-    "relative evidence links preserve section anchors",
+    diagnosticBehaviorLabels.safeLinksRemainLinks,
+    "Read the evidence guide",
+    () => {
+      assert.match(
+        rendered,
+        /<a href="https:\/\/example\.com\/evidence"[^>]*>Read the evidence guide<\/a>/,
+      );
+      assert.match(
+        rendered,
+        /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
+      );
+      assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
+    },
+  );
+  checkBehavior(
+    rendered,
+    diagnosticBehaviorLabels.relativeEvidenceLinksPreserveSectionAnchors,
     "Read the repository evidence section",
     () => {
       assert.match(
@@ -84,7 +74,7 @@ export const assertRenderedMarkdown = (rendered) => {
   );
   checkBehavior(
     rendered,
-    "nested repository-relative evidence links preserve nested paths",
+    diagnosticBehaviorLabels.nestedRepositoryRelativeEvidenceLinksPreserveNestedPaths,
     "Read the nested repository evidence guide",
     () => {
       assert.match(
@@ -95,7 +85,7 @@ export const assertRenderedMarkdown = (rendered) => {
   );
   checkBehavior(
     rendered,
-    "unsafe URL protocols are removed or made non-executable",
+    diagnosticBehaviorLabels.unsafeUrlProtocolsAreRemovedOrMadeNonExecutable,
     "Unsafe protocol link",
     () => {
       for (const marker of [
@@ -124,7 +114,7 @@ export const assertRenderedMarkdown = (rendered) => {
   );
   checkBehavior(
     rendered,
-    "unsafe raw HTML link and image destinations are non-executable",
+    diagnosticBehaviorLabels.unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable,
     "Before unsafe raw HTML link",
     () => {
       assert.match(
@@ -138,31 +128,51 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.doesNotMatch(rendered, /src=["'][^"']*javascript:/i);
     },
   );
-  checkBehavior(rendered, "safe inline HTML is preserved", "Before raw HTML", () => {
-    assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
-  });
-  checkBehavior(rendered, "executable raw HTML is escaped", "Before executable raw HTML", () => {
-    assert.match(
-      rendered,
-      /Before executable raw HTML &lt;script&gt;alert\("xss"\)&lt;\/script&gt; after executable raw HTML\./,
-    );
-    assert.doesNotMatch(rendered, /<script/);
-  });
-  checkBehavior(rendered, "unsafe HTML attributes are removed", "Before unsafe attributes", () => {
-    assert.match(
-      rendered,
-      /Before unsafe attributes <span>attributes removed<\/span> after unsafe attributes\./,
-    );
-    assert.doesNotMatch(rendered, /onclick=/);
-    assert.doesNotMatch(rendered, /style="display:none"/);
-    assert.doesNotMatch(rendered, /data-testid=/);
-    assert.doesNotMatch(rendered, /class="raw-html"/);
-  });
-  checkBehavior(rendered, "lists and audit findings render", "Allowed:", () => {
-    assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
-    assert.match(rendered, /<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
-    assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
-  });
+  checkBehavior(
+    rendered,
+    diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
+    "Before raw HTML",
+    () => {
+      assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
+    },
+  );
+  checkBehavior(
+    rendered,
+    diagnosticBehaviorLabels.executableRawHtmlIsEscaped,
+    "Before executable raw HTML",
+    () => {
+      assert.match(
+        rendered,
+        /Before executable raw HTML &lt;script&gt;alert\("xss"\)&lt;\/script&gt; after executable raw HTML\./,
+      );
+      assert.doesNotMatch(rendered, /<script/);
+    },
+  );
+  checkBehavior(
+    rendered,
+    diagnosticBehaviorLabels.unsafeHtmlAttributesAreRemoved,
+    "Before unsafe attributes",
+    () => {
+      assert.match(
+        rendered,
+        /Before unsafe attributes <span>attributes removed<\/span> after unsafe attributes\./,
+      );
+      assert.doesNotMatch(rendered, /onclick=/);
+      assert.doesNotMatch(rendered, /style="display:none"/);
+      assert.doesNotMatch(rendered, /data-testid=/);
+      assert.doesNotMatch(rendered, /class="raw-html"/);
+    },
+  );
+  checkBehavior(
+    rendered,
+    diagnosticBehaviorLabels.listsAndAuditFindingsRender,
+    "Allowed:",
+    () => {
+      assert.match(rendered, /<ul[^>]*>[\s\S]*<li><strong>Allowed:<\/strong> Public documentation/);
+      assert.match(rendered, /<ol[^>]*>[\s\S]*<li>"Review the evidence\."<\/li>/);
+      assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
+    },
+  );
 };
 
 const runLiveCheck = async () => {
