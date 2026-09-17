@@ -128,11 +128,34 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(renderedHtml, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
-    expect(renderedHtml).toMatch(/<p[^>]*>Unsafe protocol link<\/p>/);
-    expect(renderedHtml).toContain('alt="Unsafe protocol image"');
-    expect(renderedHtml).not.toMatch(/(?:href|src)=["'][^"']*javascript:/i);
-  });
+  checkBehavior(
+    renderedHtml,
+    "unsafe URL protocols are removed or made non-executable",
+    "Unsafe protocol link",
+    () => {
+      for (const marker of [
+        "Unsafe protocol link",
+        "Unsafe protocol image",
+        "Data protocol link",
+        "Data protocol image",
+        "VBScript protocol link",
+        "VBScript protocol image",
+        "Mixed-case data protocol link",
+        "Mixed-case data protocol image",
+        "Mixed-case VBScript protocol link",
+        "Mixed-case VBScript protocol image",
+        "Percent-encoded JavaScript link",
+        "Percent-encoded JavaScript image",
+        "Percent-encoded data link",
+        "Percent-encoded data image",
+      ]) {
+        expect(renderedHtml).toContain(marker);
+      }
+      expect(renderedHtml).not.toMatch(
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+      );
+    },
+  );
   checkBehavior(renderedHtml, "safe inline HTML is preserved", "Before raw HTML", () => {
     expect(renderedHtml).toContain(
       'Before raw HTML <span>boundary</span> after raw HTML.',

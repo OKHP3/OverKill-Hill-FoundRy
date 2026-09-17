@@ -114,11 +114,35 @@ checkBehavior(
     );
   },
 );
-checkBehavior(rendered, "unsafe URL protocols are removed", "Unsafe protocol link", () => {
-  assert.match(rendered, /<p[^>]*>Unsafe protocol link<\/p>/);
-  assert.match(rendered, /alt="Unsafe protocol image"/);
-  assert.doesNotMatch(rendered, /(?:href|src)=["'][^"']*javascript:/i);
-});
+checkBehavior(
+  rendered,
+  "unsafe URL protocols are removed or made non-executable",
+  "Unsafe protocol link",
+  () => {
+    for (const marker of [
+      "Unsafe protocol link",
+      "Unsafe protocol image",
+      "Data protocol link",
+      "Data protocol image",
+      "VBScript protocol link",
+      "VBScript protocol image",
+      "Mixed-case data protocol link",
+      "Mixed-case data protocol image",
+      "Mixed-case VBScript protocol link",
+      "Mixed-case VBScript protocol image",
+      "Percent-encoded JavaScript link",
+      "Percent-encoded JavaScript image",
+      "Percent-encoded data link",
+      "Percent-encoded data image",
+    ]) {
+      assert.ok(rendered.includes(marker), `missing unsafe URL marker: ${marker}`);
+    }
+    assert.doesNotMatch(
+      rendered,
+      /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+    );
+  },
+);
 checkBehavior(rendered, "safe inline HTML is preserved", "Before raw HTML", () => {
   assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
 });
