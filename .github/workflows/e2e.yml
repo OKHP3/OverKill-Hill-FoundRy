@@ -37,6 +37,9 @@ jobs:
       - name: Build workspace from clean artifact environment
         run: env -u PORT -u BASE_PATH pnpm run build
 
+      - name: Smoke-test artifact preview routes
+        run: pnpm --filter @workspace/scripts run check:artifact-routes
+
       - name: Check generated preview module stays synchronized
         run: git diff --exit-code -- artifacts/mockup-sandbox/src/.generated/mockup-components.ts
 
