@@ -66,6 +66,10 @@ Before executable raw HTML <script>alert("xss")</script> after executable raw HT
 
 Before unsafe attributes <span onclick="alert('xss')" style="display:none" data-testid="unsafe-attribute">attributes removed</span> after unsafe attributes.
 
+Before unsafe raw HTML link <a href="javascript:alert('xss')">raw link text</a> after unsafe raw HTML link.
+
+Before unsafe raw HTML image <img src="javascript:alert('xss')" alt="raw image text"> after unsafe raw HTML image.
+
 ### Non-Goals / Out of Scope
 Do not publish unverified claims.
 

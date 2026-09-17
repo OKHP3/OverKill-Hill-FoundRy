@@ -143,6 +143,22 @@ checkBehavior(
     );
   },
 );
+checkBehavior(
+  rendered,
+  "unsafe raw HTML link and image destinations are non-executable",
+  "Before unsafe raw HTML link",
+  () => {
+    assert.match(
+      rendered,
+      /Before unsafe raw HTML link raw link text after unsafe raw HTML link\./,
+    );
+    assert.match(rendered, /Before unsafe raw HTML image/);
+    assert.match(rendered, /raw image text/);
+    assert.match(rendered, /after unsafe raw HTML image\./);
+    assert.doesNotMatch(rendered, /href=["'][^"']*javascript:/i);
+    assert.doesNotMatch(rendered, /src=["'][^"']*javascript:/i);
+  },
+);
 checkBehavior(rendered, "safe inline HTML is preserved", "Before raw HTML", () => {
   assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
 });

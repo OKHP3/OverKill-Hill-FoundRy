@@ -156,6 +156,21 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
+  checkBehavior(
+    renderedHtml,
+    "unsafe raw HTML link and image destinations are non-executable",
+    "Before unsafe raw HTML link",
+    () => {
+      expect(renderedHtml).toContain(
+        "Before unsafe raw HTML link raw link text after unsafe raw HTML link.",
+      );
+      expect(renderedHtml).toContain("Before unsafe raw HTML image");
+      expect(renderedHtml).toContain("raw image text");
+      expect(renderedHtml).toContain("after unsafe raw HTML image.");
+      expect(renderedHtml).not.toMatch(/href=["'][^"']*javascript:/i);
+      expect(renderedHtml).not.toMatch(/src=["'][^"']*javascript:/i);
+    },
+  );
   checkBehavior(renderedHtml, "safe inline HTML is preserved", "Before raw HTML", () => {
     expect(renderedHtml).toContain(
       'Before raw HTML <span>boundary</span> after raw HTML.',
