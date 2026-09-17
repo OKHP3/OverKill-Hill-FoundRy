@@ -37,10 +37,8 @@ EXPECTED_CHECKS = (
         ("tests/test-public-graduation-audit.py",),
     ),
 )
-ACTIONABLE_FAILURE = (
-    "FAIL GOV-RUNNER-TEST: dependency check rejected fixture "
-    "(remediation: inspect the fixture)"
-)
+MIXED_STREAM_CONTEXT = "GOV-RUNNER-TEST context: dependency metadata was rejected"
+MIXED_STREAM_REMEDIATION = "GOV-RUNNER-TEST remediation: inspect the dependency fixture"
 MISSING_CHECK_NAME = "Configured check that is unavailable"
 
 
@@ -181,7 +179,8 @@ def main() -> int:
         failing_check = Path(directory) / "failing-check.py"
         failing_check.write_text(
             "import sys\n"
-            f"print({ACTIONABLE_FAILURE!r}, file=sys.stderr, flush=True)\n"
+            f"print({MIXED_STREAM_CONTEXT!r}, flush=True)\n"
+            f"print({MIXED_STREAM_REMEDIATION!r}, file=sys.stderr, flush=True)\n"
             f"raise SystemExit({EXPECTED_FAILURE})\n",
             encoding="utf-8",
         )
@@ -208,9 +207,15 @@ def main() -> int:
             f"expected {EXPECTED_FAILURE}, got {status}"
         )
         return 1
-    if ACTIONABLE_FAILURE not in output:
+    if MIXED_STREAM_CONTEXT not in output:
         print(
-            "FAIL governance runner swallowed the actionable failure output:\n"
+            "FAIL governance runner swallowed stdout diagnostic context:\n"
+            f"{output}"
+        )
+        return 1
+    if MIXED_STREAM_REMEDIATION not in output:
+        print(
+            "FAIL governance runner swallowed stderr remediation details:\n"
             f"{output}"
         )
         return 1
