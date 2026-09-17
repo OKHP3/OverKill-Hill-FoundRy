@@ -11,17 +11,32 @@ To run only this deterministic drift guard:
 pnpm run test:github-markdown:fixture
 ```
 
-When an intentional exporter change requires a new fixture, run:
+Before updating the fixture, preview and classify the generated difference:
+
+```sh
+pnpm run preview:github-markdown-fixture
+```
+
+The preview never writes the committed fixture. It reports one of three results:
+no changes, generated metadata only, or actual export content changes. For a
+content change, it includes the number of differing line positions and the first
+before/after line. Generated metadata-only changes show the date lines and
+explain that refresh preserves the committed date.
+
+After reviewing an intentional exporter change, update the fixture with the
+existing one-command refresh:
 
 ```sh
 pnpm run refresh:github-markdown-fixture
 ```
 
-This is the only refresh command. It opts into the Playwright refresh test,
-writes `fixtures/github-markdown-fixture.v1.md` from the shared representative
-data, verifies the written bytes, and then reruns the drift guard. The refresh
-test is skipped and never writes unless `GITHUB_MARKDOWN_FIXTURE_REFRESH=1` is
-set. The refresh preserves the generated-date line already committed in the
-fixture, so running it on different calendar dates produces identical bytes
-unless exporter behavior changes. The drift guard still normalizes that line
-before reporting the first meaningful content difference.
+This remains the only write command. It prints the same classified preview,
+opts into the Playwright refresh test, writes
+`fixtures/github-markdown-fixture.v1.md` from the shared representative data,
+verifies the written bytes, and then reruns the drift guard. The test is skipped
+and never writes unless either preview or refresh is explicitly enabled; preview
+mode always returns before the write. The refresh preserves the generated-date
+line already committed in the fixture, so running it on different calendar
+dates produces identical bytes unless exporter behavior changes. The drift guard
+still normalizes that line before reporting the first meaningful content
+difference.
