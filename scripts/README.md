@@ -19,6 +19,15 @@ The check compares each Vite artifact's fallback `PORT` and `BASE_PATH` with
 its `.replit-artifact/artifact.toml` service port and routes. It is read-only
 and reports the artifact, variable, and expected value when a contract drifts.
 
+Run its parser and diagnostic regression tests with:
+
+```bash
+pnpm --filter @workspace/scripts run test:artifact-ports
+```
+
+The diagnostic fixture itself uses only Python's standard library and can also
+run directly with `python3 scripts/test_check_artifact_contract.py`.
+
 ## Governance validation
 
 Run the complete governance sequence locally with the same entry point used by
