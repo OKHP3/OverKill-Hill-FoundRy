@@ -19,6 +19,22 @@ function buildFull(layers: LayerData): string {
     .join("\n\n");
 }
 
+function rawOffsetForDisplayOffset(value: string, displayOffset: number): number {
+  let rawOffset = 0;
+  let visibleOffset = 0;
+
+  while (rawOffset < value.length && visibleOffset < displayOffset) {
+    if (value[rawOffset] === "\r") {
+      rawOffset += value[rawOffset + 1] === "\n" ? 2 : 1;
+    } else {
+      rawOffset += 1;
+    }
+    visibleOffset += 1;
+  }
+
+  return rawOffset;
+}
+
 interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
 export default function InstructionStack({ onNext, onPrev, onComplete }: Props) {
@@ -34,6 +50,20 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
 
   const setLayer = (id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setLayers(prev => ({ ...prev, [id]: e.target.value }));
+
+  const preserveMixedLineEndings = (id: number) => (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const input = e.nativeEvent as InputEvent;
+    if (input.inputType !== "insertText" || !input.data?.includes("\r")) return;
+
+    e.preventDefault();
+    const textarea = e.currentTarget;
+    setLayers(prev => {
+      const current = prev[id] || "";
+      const start = rawOffsetForDisplayOffset(current, textarea.selectionStart);
+      const end = rawOffsetForDisplayOffset(current, textarea.selectionEnd);
+      return { ...prev, [id]: `${current.slice(0, start)}${input.data}${current.slice(end)}` };
+    });
+  };
 
   const full = buildFull(layers);
   const charCount = full.length;
@@ -110,6 +140,7 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
               <textarea
                 value={layers[layer.id] || ""}
                 onChange={setLayer(layer.id)}
+                onBeforeInput={preserveMixedLineEndings(layer.id)}
                 autoComplete="off"
                 rows={8}
                 placeholder={layer.placeholder}

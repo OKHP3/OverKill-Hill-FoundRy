@@ -444,6 +444,52 @@ test("preserves mixed instruction bytes in the Evidence JSON export", async ({ p
   await expectSelectedExportActions(page, "github-export-fixture-spec.json", "json");
 });
 
+test("preserves mixed instruction bytes entered through the editor before export", async ({ page }) => {
+  await openExportPackage(page);
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+
+  const enteredInstruction = fullSpecInstructionFixture[1];
+  await page.locator("textarea").first().fill(enteredInstruction);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        return workspace.projects[0].data["step-2"]?.[1];
+      }),
+    )
+    .toBe(enteredInstruction);
+
+  await expect(page.locator("pre")).toContainText(enteredInstruction);
+
+  await navigation.getByRole("button", { name: "Knowledge Files" }).click();
+  await expect(page.locator("h1")).toContainText("Step 3 · Knowledge Files");
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        return workspace.projects[0].data["step-2"]?.[1];
+      }),
+    )
+    .toBe(enteredInstruction);
+  await expect(page.locator("pre")).toContainText(enteredInstruction);
+
+  await navigation.getByRole("button", { name: "Export Package" }).click();
+  await expect(page.locator("h1")).toContainText("Export Package");
+  const fullSpecContent = await page.locator("pre").textContent();
+  expect(fullSpecContent).not.toBeNull();
+  expect(fullSpecContent).toContain(`### Layer 1: Identity & Scope\n${enteredInstruction}`);
+  expect(fullSpecContent).toContain("\r\n");
+  expect(fullSpecContent).toContain("\r");
+  expect(fullSpecContent).toContain("\n");
+  expect(fullSpecContent).toContain("日本語");
+
+  await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
+});
+
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {
   await openExportPackage(page);
 
