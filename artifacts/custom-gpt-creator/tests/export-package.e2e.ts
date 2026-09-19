@@ -371,6 +371,75 @@ test("ignores malformed instruction values and containers without changing valid
   await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
 });
 
+test("keeps exports usable when saved project sections have malformed shapes", async ({ page }) => {
+  await openExportPackage(page);
+
+  const malformedProjectData = {
+    "step-0": {
+      gptName: "Malformed Sections GPT",
+      outcomes: "Keep this valid build brief content.",
+    },
+    "step-1": {
+      inputs: "Keep this valid conversation contract content.",
+    },
+    "step-2": {
+      1: "Keep this valid instruction layer.",
+      2: { invalid: "instruction object" },
+    },
+    "step-3": {
+      files: [
+        { filename: "valid-reference.md", type: "Reference", topic: "Valid topic", notes: "Keep this routing note." },
+        null,
+        "invalid file entry",
+        { filename: { invalid: true }, topic: ["invalid topic"] },
+      ],
+      retrievalNotes: "Keep these valid retrieval notes.",
+    },
+    "step-5": ["invalid step record"],
+    "step-6": [
+      "Keep this valid conversation starter.",
+      null,
+      { text: "invalid starter entry" },
+    ],
+    "step-7": {
+      cases: [
+        { category: "happy path", prompt: "Keep this valid test prompt.", expectedBehavior: "Keep this valid expected behavior.", result: "pass" },
+        null,
+        { category: { invalid: true }, prompt: ["invalid prompt"] },
+      ],
+      toolFailureTest: "Keep this valid failure test note.",
+    },
+    "step-8": ["invalid step record"],
+  };
+  await replaceProjectData(page, malformedProjectData);
+
+  const fullSpec = await page.locator("pre").textContent();
+  expect(fullSpec).not.toBeNull();
+  expect(fullSpec).toContain("Keep this valid build brief content.");
+  expect(fullSpec).toContain("`valid-reference.md` [Reference] — Valid topic");
+  expect(fullSpec).toContain("*Routing note: Keep this routing note.*");
+  expect(fullSpec).toContain('1. "Keep this valid conversation starter."');
+  expect(fullSpec).toContain("Keep this valid test prompt.");
+  expect(fullSpec).not.toContain("invalid file entry");
+  expect(fullSpec).not.toContain("invalid starter entry");
+  expect(fullSpec).not.toContain("invalid step record");
+  await expectSelectedExportActions(page, "malformed-sections-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  await expect(page.locator("pre")).toHaveText("## Identity & Scope\nKeep this valid instruction layer.");
+  await expectSelectedExportActions(page, "malformed-sections-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const evidenceContent = await page.locator("pre").textContent();
+  expect(evidenceContent).not.toBeNull();
+  const evidence = JSON.parse(evidenceContent!);
+  expect(evidence.artifact.name).toBe("Malformed Sections GPT");
+  expect(evidence.phases["step-3-knowledge-files"]).toEqual(malformedProjectData["step-3"]);
+  expect(evidence.phases["step-6-conversation-starters"]).toEqual(malformedProjectData["step-6"]);
+  expect(evidence.phases["step-7-test-matrix"]).toEqual(malformedProjectData["step-7"]);
+  await expectSelectedExportActions(page, "malformed-sections-gpt-spec.json", "json");
+});
+
 test("repairs malformed saved instructions in the editor and preserves valid layers", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {

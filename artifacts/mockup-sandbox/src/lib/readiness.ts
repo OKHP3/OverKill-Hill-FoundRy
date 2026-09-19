@@ -6,6 +6,12 @@ export type Confidence = "low" | "medium" | "high";
 
 type SavedData = Record<string, any>;
 
+function recordValue(value: unknown): SavedData {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value)
+    ? value as SavedData
+    : {};
+}
+
 export interface ReadinessReport {
   state: ReadinessState;
   confidence: Confidence;
@@ -33,10 +39,10 @@ export function calculateReadiness(
 ): ReadinessReport {
   const saved = data as SavedData;
   const completed = new Set(completedSteps);
-  const brief = saved["step-0"] ?? {};
-  const knowledge = saved["step-3"] ?? {};
-  const tests = saved["step-7"] ?? {};
-  const ship = saved["step-8"] ?? {};
+  const brief = recordValue(saved["step-0"]);
+  const knowledge = recordValue(saved["step-3"]);
+  const tests = recordValue(saved["step-7"]);
+  const ship = recordValue(saved["step-8"]);
   const evidence = [
     { source: "Build Brief", status: status(brief.evidenceStatus), notes: text(brief.evidenceRegister) },
     { source: "Knowledge Files", status: status(knowledge.evidenceStatus), notes: [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n") },
@@ -45,7 +51,10 @@ export function calculateReadiness(
   ];
   const incompleteSteps = BUILD_STEPS.filter(({ id }) => !completed.has(id));
   const failingTests = Array.isArray(tests.cases)
-    ? tests.cases.filter((test: { result?: string }) => test.result === "fail")
+    ? tests.cases.filter((test: unknown): test is { id?: string; result?: string } =>
+        Boolean(test) && typeof test === "object" && !Array.isArray(test) &&
+        (test as { result?: unknown }).result === "fail",
+      )
     : [];
   const blockers = [
     ...failingTests.map((test: { id?: string }) => `Unresolved failing test${test.id ? ` ${test.id}` : ""}`),
