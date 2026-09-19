@@ -371,6 +371,60 @@ test("ignores malformed instruction values and containers without changing valid
   await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
 });
 
+test("repairs malformed saved instructions in the editor and preserves valid layers", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Repairable Instructions GPT" },
+    "step-2": "A malformed saved instruction container",
+  });
+
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect(page.locator("textarea").first()).toHaveValue("");
+
+  const validInstruction = "  Keep this restored value exact.  \r\nMixed endings stay intact.\rLast line.";
+  await page.evaluate((savedInstructions) => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    workspace.projects[0].data["step-2"] = {
+      1: 42,
+      2: false,
+      3: savedInstructions,
+    };
+    localStorage.setItem("cgpt-workspace", JSON.stringify(workspace));
+  }, validInstruction);
+  await page.reload();
+
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect(page.locator("textarea").first()).toHaveValue("");
+  await page.getByRole("button", { name: /3\s+Dialogue Policy/ }).click();
+  await expect(page.locator("textarea").first()).toHaveValue(validInstruction.replace(/\r\n?/g, "\n"));
+  expect(
+    await page.evaluate(() => {
+      const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+      return workspace.projects[0].data["step-2"];
+    }),
+  ).toEqual({ 3: validInstruction });
+
+  await page.getByRole("button", { name: /1\s+Identity & Scope/ }).click();
+  const repairedInstruction = "  Repaired instruction.\r\nKeep this line ending.\rFinal line.  ";
+  await page.locator("textarea").first().fill(repairedInstruction);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        return workspace.projects[0].data["step-2"];
+      }),
+    )
+    .toEqual({ 1: repairedInstruction, 3: validInstruction });
+
+  await page.reload();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect(page.locator("textarea").first()).toHaveValue(repairedInstruction.replace(/\r\n?/g, "\n"));
+  await page.getByRole("button", { name: /3\s+Dialogue Policy/ }).click();
+  await expect(page.locator("textarea").first()).toHaveValue(validInstruction.replace(/\r\n?/g, "\n"));
+});
+
 test("preserves mixed instruction bytes in the Full Spec export", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {

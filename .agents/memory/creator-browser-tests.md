@@ -32,6 +32,19 @@ code content and raw HTML while preserving the exported Markdown's meaning.
 **Why:** A compatibility test should catch lost structure, not fail because one
 viewer serializes the same safe code or HTML boundary differently.
 
+## Textarea newline assertions
+
+Browser textarea values normalize carriage-return line endings to `\n` when read
+through the DOM, even when React state and localStorage retain the original
+mixed line endings.
+
+**Why:** Exact byte-preservation tests can report a false failure if they compare
+the restored string to the DOM value instead of to the persisted/exported value.
+
+**How to apply:** Assert DOM display values with `\r\n?` normalized to `\n`;
+assert localStorage, copied content, or downloaded files against the original
+string when byte preservation is the requirement.
+
 **How to apply:** Keep the downloaded-byte equality assertion separate, then
 record renderer-specific differences explicitly alongside shared structure checks.
 
