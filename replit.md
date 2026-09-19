@@ -22,6 +22,15 @@ for bounded second opinions and Copilot for small tasks. Replit owns its local G
 reconciliation and platform-specific verification. Confirm each assignment and
 handoff; do not assume chats, quotas, or permissions are shared between hosts.
 
+## Git synchronization
+
+Start new work from freshly fetched main on a task branch. Follow
+[`docs/replit-github-recovery.md`](docs/replit-github-recovery.md) for divergence,
+squash integration, cleanup, and verification. If GitHub rejects workflow changes
+because Replit's OAuth credential lacks `workflow` scope, preserve the commits
+and use the existing Windows/GitHub integration route; repeated pulls will not
+fix that permission error.
+
 ## Run & Operate
 
 - `pnpm run typecheck` — full TypeScript check across the workspace.
