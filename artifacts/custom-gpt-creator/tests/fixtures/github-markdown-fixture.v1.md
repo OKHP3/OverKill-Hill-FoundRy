@@ -129,6 +129,8 @@ Ask before taking external action.
 
 1. `evidence-guide.md` [Markdown] — Evidence handling
    *Routing note: Keep source provenance visible.*
+2. `docs/research/source-notes.md` [Markdown] — Nested source notes
+   *Routing note: Keep the repository-relative evidence target traceable.*
 
 **Retrieval notes:**
 Retrieve only the relevant section.

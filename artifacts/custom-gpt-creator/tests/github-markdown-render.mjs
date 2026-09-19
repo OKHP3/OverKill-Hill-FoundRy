@@ -31,7 +31,6 @@ const headings = [
 
 const headingMarkup = (heading) =>
   new RegExp(`<h2[^>]*>${heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h2>`);
-
 export const assertRenderedMarkdown = (rendered) => {
   assert.match(rendered, /<h1[^>]*>Custom GPT Specification Package<\/h1>/);
   for (const heading of headings) assert.match(rendered, headingMarkup(heading));

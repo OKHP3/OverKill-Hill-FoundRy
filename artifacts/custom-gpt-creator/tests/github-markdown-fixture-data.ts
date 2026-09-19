@@ -91,6 +91,12 @@ export const githubFixtureProjectData = {
         topic: "Evidence handling",
         notes: "Keep source provenance visible.",
       },
+      {
+        filename: "docs/research/source-notes.md",
+        type: "Markdown",
+        topic: "Nested source notes",
+        notes: "Keep the repository-relative evidence target traceable.",
+      },
     ],
     retrievalNotes: "Retrieve only the relevant section.",
     conflictHandling: "Record conflicting sources for review.",
