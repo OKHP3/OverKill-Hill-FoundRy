@@ -28,6 +28,11 @@ const buildStepLabels = [
 const unicodeAndMixedLineEndings =
   "日本語のレビュー 🌍\r\nDeuxième ligne — café\rDritte Zeile\nFourth line";
 
+const composedAndDecomposedInstructions = {
+  composed: "Café — résumé: \u00e9",
+  decomposed: "Cafe\u0301 — re\u0301sume\u0301: e\u0301",
+} as const;
+
 const fullSpecInstructionFixture = {
   1: `You are the archive curator for “Found·Ry”.\r\nKeep this identity line exact.\rDo not normalize this boundary.\nFinish with the compass 🧭 and 日本語.`,
   2: `Prefer evidence over speed — preserve the source.\r\nUse the recorded context.\rAllow uncertainty to remain visible.\nEnd with a clear priority.`,
@@ -202,6 +207,35 @@ test("switches export formats before copying and downloading", async ({ page }) 
   });
   expect(jsonContent).not.toBe(instructionsContent);
   await expectSelectedExportActions(page, "switching-formats-gpt-spec.json", "json");
+});
+
+test("preserves composed and decomposed Unicode code points in Evidence JSON", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Unicode Evidence GPT" },
+    "step-2": {
+      1: composedAndDecomposedInstructions.composed,
+      2: composedAndDecomposedInstructions.decomposed,
+    },
+  });
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const displayedJson = await page.locator("pre").textContent();
+  expect(displayedJson).not.toBeNull();
+  const exactDisplayedJson = displayedJson!;
+  const evidence = JSON.parse(exactDisplayedJson);
+  const exportedInstructions = evidence.phases["step-2-instruction-stack"];
+
+  expect(exportedInstructions[1]).toBe(composedAndDecomposedInstructions.composed);
+  expect(exportedInstructions[2]).toBe(composedAndDecomposedInstructions.decomposed);
+  expect([...exportedInstructions[1]].map((character: string) => character.codePointAt(0))).toEqual([
+    0x43, 0x61, 0x66, 0xe9, 0x20, 0x2014, 0x20, 0x72, 0xe9, 0x73, 0x75, 0x6d, 0xe9, 0x3a, 0x20, 0xe9,
+  ]);
+  expect([...exportedInstructions[2]].map((character: string) => character.codePointAt(0))).toEqual([
+    0x43, 0x61, 0x66, 0x65, 0x301, 0x20, 0x2014, 0x20, 0x72, 0x65, 0x301, 0x73, 0x75, 0x6d, 0x65, 0x301, 0x3a, 0x20, 0x65, 0x301,
+  ]);
+
+  await expectSelectedExportActions(page, "unicode-evidence-gpt-spec.json", "json");
 });
 
 test("keeps the committed GitHub fixture generated from representative Creator data", async ({ page }) => {
