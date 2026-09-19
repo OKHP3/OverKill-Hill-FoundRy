@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { INSTRUCTION_LAYERS, INSTRUCTION_CHAR_LIMIT } from "../data/knowledge";
 import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
 import { ChangeLedger, EMPTY_CHANGE_RECORD, PhaseGate, type ChangeRecord } from "../components/PhaseGate";
@@ -40,6 +40,7 @@ interface Props { onNext: () => void; onPrev: () => void; page: number; onComple
 export default function InstructionStack({ onNext, onPrev, onComplete }: Props) {
   const [layers, setLayers] = useState<LayerData>(load);
   const [activeLayer, setActiveLayer] = useState<number>(1);
+  const editorRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
   const [change, setChange] = useState<ChangeRecord>(() => {
   try { return { ...EMPTY_CHANGE_RECORD, ...(readProjectValue(STORAGE_KEY + "-change") as Partial<ChangeRecord> | undefined) }; } catch { return EMPTY_CHANGE_RECORD; }
@@ -51,19 +52,30 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
   const setLayer = (id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setLayers(prev => ({ ...prev, [id]: e.target.value }));
 
-  const preserveMixedLineEndings = (id: number) => (e: React.FormEvent<HTMLTextAreaElement>) => {
-    const input = e.nativeEvent as InputEvent;
-    if (input.inputType !== "insertText" || !input.data?.includes("\r")) return;
+  useEffect(() => {
+    const textarea = editorRef.current;
+    if (!textarea) return;
 
-    e.preventDefault();
-    const textarea = e.currentTarget;
-    setLayers(prev => {
-      const current = prev[id] || "";
-      const start = rawOffsetForDisplayOffset(current, textarea.selectionStart);
-      const end = rawOffsetForDisplayOffset(current, textarea.selectionEnd);
-      return { ...prev, [id]: `${current.slice(0, start)}${input.data}${current.slice(end)}` };
-    });
-  };
+    // React's onBeforeInput polyfill does not expose the native InputEvent.
+    // https://react.dev/reference/react-dom/components/common#common-props
+    const preserveMixedLineEndings = (input: InputEvent) => {
+      const data = input.data;
+      if (!input.cancelable || input.inputType !== "insertText" || !data?.includes("\r")) return;
+
+      input.preventDefault();
+      const selectionStart = textarea.selectionStart;
+      const selectionEnd = textarea.selectionEnd;
+      setLayers(prev => {
+        const current = prev[activeLayer] || "";
+        const start = rawOffsetForDisplayOffset(current, selectionStart);
+        const end = rawOffsetForDisplayOffset(current, selectionEnd);
+        return { ...prev, [activeLayer]: `${current.slice(0, start)}${data}${current.slice(end)}` };
+      });
+    };
+
+    textarea.addEventListener("beforeinput", preserveMixedLineEndings);
+    return () => textarea.removeEventListener("beforeinput", preserveMixedLineEndings);
+  }, [activeLayer]);
 
   const full = buildFull(layers);
   const charCount = full.length;
@@ -138,9 +150,9 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
                 {layer.hint}
               </div>
               <textarea
+                ref={editorRef}
                 value={layers[layer.id] || ""}
                 onChange={setLayer(layer.id)}
-                onBeforeInput={preserveMixedLineEndings(layer.id)}
                 autoComplete="off"
                 rows={8}
                 placeholder={layer.placeholder}
