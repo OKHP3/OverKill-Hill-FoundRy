@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
   checkBehavior,
+  createRendererBehaviorCoverage,
   diagnosticBehaviorLabels,
+  rendererBehaviorManifest,
   renderedFragment,
 } from "./github-markdown-diagnostics.mjs";
 import {
@@ -135,5 +140,83 @@ test("uses the shared GitHub renderer diagnostic contract", () => {
       assert.match(error.message, new RegExp(`${"a".repeat(180)}${marker}`));
       return true;
     },
+  );
+});
+
+test("defines one deterministic behavior manifest for both renderer runners", () => {
+  assert.deepEqual(
+    rendererBehaviorManifest.map(({ id, label }) => [id, label]),
+    [
+      ["tableAndCodeRendering", "table and code rendering"],
+      ["safeLinksRemainLinks", "safe links remain links"],
+      [
+        "relativeEvidenceLinksPreserveSectionAnchors",
+        "relative evidence links preserve section anchors",
+      ],
+      [
+        "nestedRepositoryRelativeEvidenceLinksPreserveNestedPaths",
+        "nested repository-relative evidence links preserve nested paths",
+      ],
+      [
+        "unsafeUrlProtocolsAreRemovedOrMadeNonExecutable",
+        "unsafe URL protocols are removed or made non-executable",
+      ],
+      [
+        "unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable",
+        "unsafe raw HTML link and image destinations are non-executable",
+      ],
+      [
+        "safeRawHtmlLinkAndImageDestinationsRemainUsable",
+        "safe raw HTML link and image destinations remain usable",
+      ],
+      ["safeInlineHtmlIsPreserved", "safe inline HTML is preserved"],
+      ["executableRawHtmlIsEscaped", "executable raw HTML is escaped"],
+      ["unsafeHtmlAttributesAreRemoved", "unsafe HTML attributes are removed"],
+      ["listsAndAuditFindingsRender", "lists and audit findings render"],
+    ],
+  );
+});
+
+test("requires every manifest behavior in both runner sources without GitHub", async () => {
+  const testsDirectory = dirname(fileURLToPath(import.meta.url));
+  const runnerSources = await Promise.all(
+    ["github-markdown.e2e.ts", "github-markdown-render.mjs"].map(async (filename) => [
+      filename,
+      await readFile(resolve(testsDirectory, filename), "utf8"),
+    ]),
+  );
+
+  for (const [filename, source] of runnerSources) {
+    const coverageCalls = source.split("rendererBehaviorCoverage.checkBehavior(").slice(1);
+    for (const { id } of rendererBehaviorManifest) {
+      assert.ok(
+        coverageCalls.some((call) => call.includes(`diagnosticBehaviorLabels.${id}`)),
+        `${filename} is missing manifest behavior ${id}`,
+      );
+    }
+  }
+});
+
+test("fails clearly when a renderer runner loses manifest coverage", () => {
+  const coverage = createRendererBehaviorCoverage("standalone");
+  coverage.checkBehavior("", diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {});
+
+  assert.throws(
+    () => coverage.assertComplete(),
+    (error) => {
+      assert.match(error.message, /standalone GitHub renderer behavior coverage drift/);
+      assert.match(error.message, /missing: safeLinksRemainLinks/);
+      assert.match(error.message, /Update both runners and the shared manifest together/);
+      return true;
+    },
+  );
+});
+
+test("fails clearly when a runner adds an unregistered renderer behavior", () => {
+  const coverage = createRendererBehaviorCoverage("Playwright");
+
+  assert.throws(
+    () => coverage.checkBehavior("", "new renderer behavior", "Signal", () => {}),
+    /Playwright GitHub renderer behavior coverage drift: unknown behavior/,
   );
 });

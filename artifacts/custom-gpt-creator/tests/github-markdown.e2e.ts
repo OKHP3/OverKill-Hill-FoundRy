@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import {
-  checkBehavior,
+  createRendererBehaviorCoverage,
   diagnosticBehaviorLabels,
 } from "./github-markdown-diagnostics.mjs";
 
@@ -33,6 +33,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
 
   const renderedHtml = await response.text();
   expect(response.status(), renderedHtml).toBe(200);
+  const rendererBehaviorCoverage = createRendererBehaviorCoverage("Playwright");
 
   // These assertions intentionally inspect GitHub's HTML response instead of
   // comparing another local parser. The fixture is sent as-is and is never
@@ -67,7 +68,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   ].map((heading) => renderedHtml.search(headingMarkup(heading)));
   expect(headingPositions).toEqual([...headingPositions].sort((a, b) => a - b));
 
-  checkBehavior(renderedHtml, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
+  rendererBehaviorCoverage.checkBehavior(renderedHtml, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
     expect(renderedHtml).toMatch(
       /<markdown-accessiblity-table><table role="table">[\s\S]*<th>Signal<\/th>[\s\S]*<td><strong>Ready<\/strong><\/td>/,
     );
@@ -76,7 +77,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
     );
     expect(renderedHtml).toContain('<span class="pl-s1">answer</span>');
   });
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.safeLinksRemainLinks,
     "Read the evidence guide",
@@ -95,7 +96,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.relativeEvidenceLinksPreserveSectionAnchors,
     "Read the repository evidence section",
@@ -105,7 +106,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.nestedRepositoryRelativeEvidenceLinksPreserveNestedPaths,
     "Read the nested repository evidence guide",
@@ -115,7 +116,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.unsafeUrlProtocolsAreRemovedOrMadeNonExecutable,
     "Unsafe protocol link",
@@ -163,7 +164,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable,
     "Before unsafe raw HTML link",
@@ -197,7 +198,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.safeRawHtmlLinkAndImageDestinationsRemainUsable,
     "Before safe raw HTML link",
@@ -216,7 +217,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).toContain("after safe raw HTML image.");
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
     "Before raw HTML",
@@ -226,7 +227,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.executableRawHtmlIsEscaped,
     "Before executable raw HTML",
@@ -237,7 +238,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).not.toContain("<script");
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.unsafeHtmlAttributesAreRemoved,
     "Before unsafe attributes",
@@ -250,7 +251,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).not.toContain("data-testid=");
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.listsAndAuditFindingsRender,
     "Allowed:",
@@ -260,5 +261,6 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).toMatch(/<h3[^>]*>Per-item findings<\/h3>/);
     },
   );
+  rendererBehaviorCoverage.assertComplete();
   await expect(readFile(fixturePath)).resolves.toEqual(fixtureBytes);
 });

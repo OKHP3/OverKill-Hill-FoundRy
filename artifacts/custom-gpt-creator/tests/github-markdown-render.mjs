@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  checkBehavior,
+  createRendererBehaviorCoverage,
   diagnosticBehaviorLabels,
   renderedFragment,
 } from "./github-markdown-diagnostics.mjs";
@@ -50,19 +50,20 @@ const headings = [
 const headingMarkup = (heading) =>
   new RegExp(`<h2[^>]*>${heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h2>`);
 export const assertRenderedMarkdown = (rendered) => {
+  const rendererBehaviorCoverage = createRendererBehaviorCoverage("standalone");
   assert.match(rendered, /<h1[^>]*>Custom GPT Specification Package<\/h1>/);
   for (const heading of headings) assert.match(rendered, headingMarkup(heading));
   assert.deepEqual(
     headings.map((heading) => rendered.search(headingMarkup(heading))),
     [...headings.map((heading) => rendered.search(headingMarkup(heading)))].sort((a, b) => a - b),
   );
-  checkBehavior(rendered, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
+  rendererBehaviorCoverage.checkBehavior(rendered, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
     assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
     assert.match(rendered, /<strong>Ready<\/strong>/);
     assert.match(rendered, /class="highlight highlight-source-ts"/);
     assert.match(rendered, /answer/);
   });
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.safeLinksRemainLinks,
     "Read the evidence guide",
@@ -82,7 +83,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.relativeEvidenceLinksPreserveSectionAnchors,
     "Read the repository evidence section",
@@ -93,7 +94,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.nestedRepositoryRelativeEvidenceLinksPreserveNestedPaths,
     "Read the nested repository evidence guide",
@@ -104,7 +105,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.unsafeUrlProtocolsAreRemovedOrMadeNonExecutable,
     "Unsafe protocol link",
@@ -153,7 +154,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable,
     "Before unsafe raw HTML link",
@@ -189,7 +190,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.safeRawHtmlLinkAndImageDestinationsRemainUsable,
     "Before safe raw HTML link",
@@ -208,7 +209,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /after safe raw HTML image\./);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
     "Before raw HTML",
@@ -216,7 +217,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.executableRawHtmlIsEscaped,
     "Before executable raw HTML",
@@ -228,7 +229,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.doesNotMatch(rendered, /<script/);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.unsafeHtmlAttributesAreRemoved,
     "Before unsafe attributes",
@@ -243,7 +244,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.doesNotMatch(rendered, /class="raw-html"/);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.listsAndAuditFindingsRender,
     "Allowed:",
@@ -253,6 +254,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
     },
   );
+  rendererBehaviorCoverage.assertComplete();
 };
 
 const runLiveCheck = async () => {
