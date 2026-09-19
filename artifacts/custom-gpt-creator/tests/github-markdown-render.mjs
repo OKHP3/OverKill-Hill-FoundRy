@@ -28,8 +28,20 @@ const boundedResponseDetail = (responseText) => {
   return `${redacted.slice(0, responseDetailLimit - 3)}...`;
 };
 
-export const formatGithubRendererResponseError = (status, responseText) =>
-  `GitHub Markdown rendering failed with ${status}: ${
+/**
+ * Formats a non-2xx GitHub Markdown response for both renderer runners.
+ *
+ * Keep the response detail bounded and redacted so rate-limit and API error
+ * context is useful in CI without allowing a response to flood the logs or
+ * expose credentials.
+ *
+ * @param {number} status
+ * @param {string} endpoint
+ * @param {string} responseText
+ * @returns {string}
+ */
+export const formatGithubRendererResponseError = (status, endpoint, responseText) =>
+  `GitHub Markdown rendering failed with ${status} from ${endpoint}: ${
     boundedResponseDetail(responseText) || "[empty response body]"
   }`;
 
@@ -281,7 +293,9 @@ const runLiveCheck = async () => {
 
   const rendered = await response.text();
   if (!response.ok) {
-    throw new Error(formatGithubRendererResponseError(response.status, rendered));
+    throw new Error(
+      formatGithubRendererResponseError(response.status, endpoint, rendered),
+    );
   }
 
   assertRenderedMarkdown(rendered);

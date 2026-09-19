@@ -20,9 +20,10 @@ test("explains non-success renderer responses with their status and response det
   assert.equal(
     formatGithubRendererResponseError(
       503,
+      "https://api.github.com/markdown",
       '{"message":"Service unavailable","request_id":"req-123"}',
     ),
-    'GitHub Markdown rendering failed with 503: {"message":"Service unavailable","request_id":"req-123"}',
+    'GitHub Markdown rendering failed with 503 from https://api.github.com/markdown: {"message":"Service unavailable","request_id":"req-123"}',
   );
 });
 
@@ -30,14 +31,22 @@ test("bounds and redacts non-success renderer response details", () => {
   const credential = "ghp_renderer-response-secret";
   const diagnostic = formatGithubRendererResponseError(
     401,
+    "https://api.github.com/markdown",
     `{"message":"Bad credentials","authorization":"Bearer ${credential}","detail":"${"x".repeat(600)}"}`,
   );
 
-  assert.match(diagnostic, /^GitHub Markdown rendering failed with 401:/);
+  assert.match(
+    diagnostic,
+    /^GitHub Markdown rendering failed with 401 from https:\/\/api\.github\.com\/markdown:/,
+  );
   assert.match(diagnostic, /"authorization":\[REDACTED\]/);
   assert.match(diagnostic, /\.\.\.$/);
   assert.ok(!diagnostic.includes(credential));
-  assert.ok(diagnostic.length <= "GitHub Markdown rendering failed with 401: ".length + 500);
+  assert.ok(
+    diagnostic.length <=
+      "GitHub Markdown rendering failed with 401 from https://api.github.com/markdown: ".length +
+        500,
+  );
 });
 
 test("keeps behavior and nearby fragment in renderer failure diagnostics", () => {

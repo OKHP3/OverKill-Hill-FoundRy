@@ -6,6 +6,7 @@ import {
   createRendererBehaviorCoverage,
   diagnosticBehaviorLabels,
 } from "./github-markdown-diagnostics.mjs";
+import { formatGithubRendererResponseError } from "./github-markdown-render.mjs";
 
 const fixturePath = resolve("tests/fixtures/github-markdown-fixture.v1.md");
 const githubMarkdownEndpoint = "https://api.github.com/markdown";
@@ -32,7 +33,14 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   });
 
   const renderedHtml = await response.text();
-  expect(response.status(), renderedHtml).toBe(200);
+  expect(
+    response.status(),
+    formatGithubRendererResponseError(
+      response.status(),
+      githubMarkdownEndpoint,
+      renderedHtml,
+    ),
+  ).toBe(200);
   const rendererBehaviorCoverage = createRendererBehaviorCoverage("Playwright");
 
   // These assertions intentionally inspect GitHub's HTML response instead of
