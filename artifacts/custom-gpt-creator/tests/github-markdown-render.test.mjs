@@ -38,6 +38,44 @@ test("keeps behavior and nearby fragment in renderer failure diagnostics", () =>
   );
 });
 
+test("includes the marker and response beginning when a renderer marker is missing", () => {
+  const rendered = [
+    '<h1>Custom GPT Specification Package</h1>',
+    ...[
+      "0. Build Brief",
+      "1. Conversation Contract",
+      "2. Instructions",
+      "3. Knowledge Files",
+      "4. Capabilities",
+      "5. Actions / Apps",
+      "6. Conversation Starters",
+      "7. Test Matrix",
+      "8. Governance",
+      "Evidence and Provenance Record",
+      "9. Audit Findings",
+    ].map((heading) => `<h2>${heading}</h2>`),
+    "<p>beginning of the rendered response without the expected marker</p>",
+  ].join("");
+
+  assert.throws(
+    () => assertRenderedMarkdown(rendered),
+    (error) => {
+      assert.match(error.message, /table and code rendering failed/);
+      assert.match(error.message, /Rendered fragment near "Signal":/);
+      assert.match(error.message, /\[marker "Signal" not found\]/);
+      assert.match(
+        error.message,
+        /<h1>Custom GPT Specification Package<\/h1><h2>0\. Build Brief<\/h2>/,
+      );
+      assert.match(
+        error.message,
+        /beginning of the rendered response without the expected marker/,
+      );
+      return true;
+    },
+  );
+});
+
 test("uses the shared GitHub renderer diagnostic contract", () => {
   const marker = "MARKER";
   const rendered = `${"a".repeat(200)}${marker}${"b".repeat(300)}`;
