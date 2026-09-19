@@ -135,6 +135,12 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
         "Percent-encoded JavaScript image",
         "Percent-encoded data link",
         "Percent-encoded data image",
+        "HTML-entity-encoded JavaScript link",
+        "HTML-entity-encoded JavaScript image",
+        "HTML-entity-encoded data link",
+        "HTML-entity-encoded data image",
+        "HTML-entity-encoded VBScript link",
+        "HTML-entity-encoded VBScript image",
         "Reference-style unsafe protocol link",
         "Reference-style unsafe protocol image",
         "Reference-style data link",
@@ -153,7 +159,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
         expect(renderedHtml).toContain(marker);
       }
       expect(renderedHtml).not.toMatch(
-        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):|(?:java&#x73;cript|data&#x3a;|vb&#x73;cript):)/i,
       );
     },
   );
