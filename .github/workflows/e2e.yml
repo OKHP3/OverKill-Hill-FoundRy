@@ -31,6 +31,14 @@ jobs:
       - name: Check artifact build contracts
         run: python3 scripts/check-artifact-contract.py
 
+      - name: Test artifact contract diagnostics
+        run: |
+          pnpm --filter @workspace/scripts run test:artifact-ports
+          python3 tests/test-artifact-contract.py
+
+      - name: Test GitHub renderer diagnostics
+        run: pnpm --filter @workspace/custom-gpt-creator run test:github-markdown
+
       - name: Check branch cleanup safety
         run: node --test tests/branch-cleanup-test.mjs
 

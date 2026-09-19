@@ -7,7 +7,7 @@
     "check:artifact-ports": "python3 ./check-artifact-contract.py",
     "check:artifact-routes": "python3 ./smoke-artifact-routes.py",
     "hello": "tsx ./src/hello.ts",
-    "test:artifact-ports": "tsx --test ./src/artifact-contract.test.ts && python3 ./test_check_artifact_contract.py",
+    "test:artifact-ports": "tsx --test ./src/artifact-contract-test.ts && python3 ./test_check_artifact_contract.py",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
