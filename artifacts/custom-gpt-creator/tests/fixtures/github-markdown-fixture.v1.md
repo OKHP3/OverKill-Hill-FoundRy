@@ -54,6 +54,66 @@ Produce a readable, reviewable specification.
 
 ![Percent-encoded data image](%64%61%74%61:image/svg+xml;base64,PHN2Zy8+)
 
+[Reference-style unsafe protocol link][reference-unsafe-protocol-link]
+
+![Reference-style unsafe protocol image][reference-unsafe-protocol-image]
+
+[Reference-style data link][reference-data-link]
+
+![Reference-style data image][reference-data-image]
+
+[Reference-style VBScript link][reference-vbscript-link]
+
+![Reference-style VBScript image][reference-vbscript-image]
+
+[Reference-style mixed-case data link][reference-mixed-data-link]
+
+![Reference-style mixed-case data image][reference-mixed-data-image]
+
+[Reference-style mixed-case VBScript link][reference-mixed-vbscript-link]
+
+![Reference-style mixed-case VBScript image][reference-mixed-vbscript-image]
+
+[Reference-style percent-encoded JavaScript link][reference-percent-javascript-link]
+
+![Reference-style percent-encoded JavaScript image][reference-percent-javascript-image]
+
+[Reference-style percent-encoded data link][reference-percent-data-link]
+
+![Reference-style percent-encoded data image][reference-percent-data-image]
+
+[Reference-style safe HTTPS link][reference-safe-https-link]
+
+[reference-unsafe-protocol-link]: javascript:alert("xss")
+
+[reference-unsafe-protocol-image]: javascript:alert("xss")
+
+[reference-data-link]: data:text/plain,unsafe
+
+[reference-data-image]: data:image/svg+xml;base64,PHN2Zy8+
+
+[reference-vbscript-link]: vbscript:alert(1)
+
+[reference-vbscript-image]: vbscript:alert(1)
+
+[reference-mixed-data-link]: DaTa:text/plain,unsafe
+
+[reference-mixed-data-image]: DaTa:image/svg+xml;base64,PHN2Zy8+
+
+[reference-mixed-vbscript-link]: VbScRiPt:alert(1)
+
+[reference-mixed-vbscript-image]: VbScRiPt:alert(1)
+
+[reference-percent-javascript-link]: java%73cript:alert(1)
+
+[reference-percent-javascript-image]: java%73cript:alert(1)
+
+[reference-percent-data-link]: %64%61%74%61:text/plain,unsafe
+
+[reference-percent-data-image]: %64%61%74%61:image/svg+xml;base64,PHN2Zy8+
+
+[reference-safe-https-link]: https://example.com/reference-safe
+
 [Safe HTTPS link](https://example.com/safe)
 
 ```ts

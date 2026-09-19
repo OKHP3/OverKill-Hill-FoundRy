@@ -58,6 +58,10 @@ export const assertRenderedMarkdown = (rendered) => {
         /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
       );
       assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
+      assert.match(
+        rendered,
+        /<a href="https:\/\/example\.com\/reference-safe"[^>]*>Reference-style safe HTTPS link<\/a>/,
+      );
     },
   );
   checkBehavior(
@@ -102,6 +106,20 @@ export const assertRenderedMarkdown = (rendered) => {
         "Percent-encoded JavaScript image",
         "Percent-encoded data link",
         "Percent-encoded data image",
+        "Reference-style unsafe protocol link",
+        "Reference-style unsafe protocol image",
+        "Reference-style data link",
+        "Reference-style data image",
+        "Reference-style VBScript link",
+        "Reference-style VBScript image",
+        "Reference-style mixed-case data link",
+        "Reference-style mixed-case data image",
+        "Reference-style mixed-case VBScript link",
+        "Reference-style mixed-case VBScript image",
+        "Reference-style percent-encoded JavaScript link",
+        "Reference-style percent-encoded JavaScript image",
+        "Reference-style percent-encoded data link",
+        "Reference-style percent-encoded data image",
       ]) {
         assert.ok(rendered.includes(marker), `missing unsafe URL marker: ${marker}`);
       }
