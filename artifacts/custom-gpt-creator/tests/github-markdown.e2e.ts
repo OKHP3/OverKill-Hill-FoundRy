@@ -176,6 +176,25 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).toContain("after unsafe raw HTML image.");
       expect(renderedHtml).not.toMatch(/href=["'][^"']*javascript:/i);
       expect(renderedHtml).not.toMatch(/src=["'][^"']*javascript:/i);
+      for (const marker of [
+        "Before mixed-case unsafe raw HTML link",
+        "mixed-case raw link text",
+        "after mixed-case unsafe raw HTML link.",
+        "Before percent-encoded unsafe raw HTML link",
+        "percent-encoded raw link text",
+        "after percent-encoded unsafe raw HTML link.",
+        "Before mixed-case unsafe raw HTML image",
+        "mixed-case raw image text",
+        "after mixed-case unsafe raw HTML image.",
+        "Before percent-encoded unsafe raw HTML image",
+        "percent-encoded raw image text",
+        "after percent-encoded unsafe raw HTML image.",
+      ]) {
+        expect(renderedHtml).toContain(marker);
+      }
+      expect(renderedHtml).not.toMatch(
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+      );
     },
   );
   checkBehavior(

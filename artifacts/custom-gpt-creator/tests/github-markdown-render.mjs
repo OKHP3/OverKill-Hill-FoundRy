@@ -149,6 +149,26 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /after unsafe raw HTML image\./);
       assert.doesNotMatch(rendered, /href=["'][^"']*javascript:/i);
       assert.doesNotMatch(rendered, /src=["'][^"']*javascript:/i);
+      for (const marker of [
+        "Before mixed-case unsafe raw HTML link",
+        "mixed-case raw link text",
+        "after mixed-case unsafe raw HTML link.",
+        "Before percent-encoded unsafe raw HTML link",
+        "percent-encoded raw link text",
+        "after percent-encoded unsafe raw HTML link.",
+        "Before mixed-case unsafe raw HTML image",
+        "mixed-case raw image text",
+        "after mixed-case unsafe raw HTML image.",
+        "Before percent-encoded unsafe raw HTML image",
+        "percent-encoded raw image text",
+        "after percent-encoded unsafe raw HTML image.",
+      ]) {
+        assert.ok(rendered.includes(marker), `missing raw HTML safety marker: ${marker}`);
+      }
+      assert.doesNotMatch(
+        rendered,
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+      );
     },
   );
   checkBehavior(
