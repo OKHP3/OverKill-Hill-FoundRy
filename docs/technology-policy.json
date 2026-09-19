@@ -1,0 +1,265 @@
+{
+  "description": "Supplemental technologies without package manifests; runtime/current selectors are derived where possible. Manual upstream reference dates must be rechecked explicitly.",
+  "technologies": [
+    {
+      "name": "JavaScript / ECMAScript",
+      "kind": "language",
+      "current": [],
+      "latest": "ECMAScript 2026 (17th edition); compile target intentionally ES2022",
+      "source": "https://ecma-international.org/publications-and-standards/standards/ecma-262/",
+      "evidence": [
+        "tsconfig.base.json"
+      ],
+      "reference_checked": "2026-09-19"
+    },
+    {
+      "name": "HTML",
+      "kind": "standard",
+      "current": [
+        "HTML5 doctype"
+      ],
+      "latest": "WHATWG Living Standard (no numbered stable release)",
+      "source": "https://html.spec.whatwg.org/",
+      "evidence": [
+        "artifacts/custom-gpt-creator/index.html"
+      ]
+    },
+    {
+      "name": "CSS",
+      "kind": "standard",
+      "current": [
+        "CSS modules and Tailwind-generated CSS; no single version"
+      ],
+      "latest": "Module-specific W3C standards; no single CSS release",
+      "source": "https://www.w3.org/Style/CSS/current-work",
+      "evidence": [
+        "artifacts/mockup-sandbox/src/index.css"
+      ]
+    },
+    {
+      "name": "JSON",
+      "kind": "standard",
+      "current": [
+        "JSON syntax"
+      ],
+      "latest": "RFC 8259",
+      "source": "https://www.rfc-editor.org/rfc/rfc8259",
+      "reference_checked": "2026-09-19",
+      "evidence": [
+        "package.json"
+      ]
+    },
+    {
+      "name": "JSON Schema",
+      "kind": "standard",
+      "current": [
+        "2020-12"
+      ],
+      "latest": "2020-12",
+      "source": "https://json-schema.org/specification",
+      "reference_checked": "2026-09-19",
+      "evidence": [
+        "schemas/refoldec-artifact-schema.json"
+      ]
+    },
+    {
+      "name": "YAML",
+      "kind": "standard",
+      "current": [
+        "No explicit YAML directive; parser-specific semantics"
+      ],
+      "latest": "1.2.2",
+      "source": "https://yaml.org/spec/1.2.2/",
+      "reference_checked": "2026-09-19",
+      "evidence": [
+        "pnpm-workspace.yaml"
+      ]
+    },
+    {
+      "name": "TOML",
+      "kind": "standard",
+      "current": [
+        "No version directive; .replit parses with Python tomllib"
+      ],
+      "latest": "1.1.0",
+      "source": "https://toml.io/en/",
+      "reference_checked": "2026-09-19",
+      "evidence": [
+        ".replit"
+      ]
+    },
+    {
+      "name": "OpenAPI",
+      "kind": "standard",
+      "current": [],
+      "lookup": "html",
+      "source": "https://spec.openapis.org/oas/",
+      "pattern": "v(3\\.\\d+\\.\\d+)\\.html",
+      "evidence": [
+        "lib/api-spec/openapi.yaml"
+      ]
+    },
+    {
+      "name": "Markdown / GFM",
+      "kind": "standard",
+      "current": [
+        "GitHub-flavored Markdown; no pinned renderer"
+      ],
+      "latest": "GFM 0.29-gfm / CommonMark 0.31.2 references; hosted renderer managed by GitHub",
+      "source": "https://github.github.com/gfm/",
+      "reference_checked": "2026-09-19",
+      "evidence": [
+        "README.md"
+      ]
+    },
+    {
+      "name": "Mermaid",
+      "kind": "documentation renderer",
+      "current": [
+        "GitHub-managed Markdown diagrams; renderer version unknown"
+      ],
+      "lookup": "npm",
+      "source": "https://registry.npmjs.org/mermaid",
+      "evidence": [
+        "README.md"
+      ]
+    },
+    {
+      "name": "Bash",
+      "kind": "shell",
+      "current": [
+        "Unpinned; GitHub runner and Replit supply shell"
+      ],
+      "lookup": "html",
+      "source": "https://ftp.gnu.org/gnu/bash/",
+      "pattern": "bash-(\\d+\\.\\d+(?:\\.\\d+)?)\\.tar\\.gz",
+      "evidence": [
+        "scripts/post-merge.sh",
+        "package.json#scripts.preinstall"
+      ]
+    },
+    {
+      "name": "Git",
+      "kind": "tooling",
+      "current": [
+        "Unpinned; host supplied"
+      ],
+      "lookup": "html",
+      "source": "https://www.kernel.org/pub/software/scm/git/",
+      "pattern": "git-(\\d+\\.\\d+\\.\\d+)\\.tar\\.xz",
+      "evidence": [
+        "scripts/post-merge.sh"
+      ]
+    },
+    {
+      "name": "Git for Windows",
+      "kind": "tooling",
+      "current": [
+        "2.55.0.windows.5 (observed on audit host 2026-09-19; not a repo pin)"
+      ],
+      "lookup": "github",
+      "source": "https://api.github.com/repos/git-for-windows/git/releases/latest",
+      "evidence": [
+        "git --version"
+      ]
+    },
+    {
+      "name": "GitHub CLI",
+      "kind": "tooling",
+      "current": [
+        "Unpinned in CI; 2.96.0 observed on audit host 2026-09-19"
+      ],
+      "lookup": "github",
+      "source": "https://api.github.com/repos/cli/cli/releases/latest",
+      "evidence": [
+        ".github/workflows/dependabot-automerge.yml"
+      ]
+    },
+    {
+      "name": "PostgreSQL",
+      "kind": "database service",
+      "current": [
+        "Server version unknown; DATABASE_URL supplied externally"
+      ],
+      "lookup": "html",
+      "source": "https://www.postgresql.org/support/versioning/",
+      "pattern": "<td>\\s*(\\d+\\.\\d+)\\s*</td>",
+      "evidence": [
+        "lib/db/src/index.ts",
+        "lib/db/drizzle.config.ts"
+      ]
+    },
+    {
+      "name": "Replit / Nixpkgs",
+      "kind": "managed platform",
+      "current": [],
+      "latest": "NixOS 26.05 upstream; Replit supported channel and installed package versions require host inspection",
+      "source": "https://nixos.org/download/",
+      "reference_checked": "2026-09-19",
+      "evidence": [
+        ".replit"
+      ]
+    },
+    {
+      "name": "GitHub hosted runner",
+      "kind": "managed platform",
+      "current": [],
+      "latest": "Rolling GitHub runner image; exact image recorded in each Actions run",
+      "source": "https://github.com/actions/runner-images",
+      "evidence": [
+        ".github/workflows/"
+      ]
+    },
+    {
+      "name": "GitHub Actions / Pages / Dependabot",
+      "kind": "managed platform",
+      "current": [
+        "GitHub-hosted services; no repository-selectable service version"
+      ],
+      "latest": "Provider managed",
+      "source": "https://docs.github.com/en/pages",
+      "evidence": [
+        ".github/workflows/pages.yml",
+        ".github/dependabot.yml"
+      ]
+    },
+    {
+      "name": "Google Fonts",
+      "kind": "managed service",
+      "current": [
+        "Google Fonts CSS2 API; fonts served dynamically"
+      ],
+      "latest": "Provider managed; no pinned font binary release",
+      "source": "https://developers.google.com/fonts/docs/css2",
+      "evidence": [
+        "artifacts/custom-gpt-creator/index.html",
+        "artifacts/mockup-sandbox/index.html"
+      ]
+    },
+    {
+      "name": "Browser APIs / Web Storage",
+      "kind": "managed platform",
+      "current": [
+        "User browser; localStorage, Blob, File, DOM and download APIs"
+      ],
+      "latest": "Browser-specific releases; no single project version",
+      "source": "https://html.spec.whatwg.org/multipage/webstorage.html",
+      "evidence": [
+        "artifacts/mockup-sandbox/src/lib"
+      ]
+    },
+    {
+      "name": "Chromium",
+      "kind": "test runtime",
+      "current": [
+        "Revision bundled with locked @playwright/test; GitHub installs it using playwright install"
+      ],
+      "latest": "Track Playwright's tested bundled revision, not an independent browser upgrade",
+      "source": "https://playwright.dev/docs/browsers",
+      "evidence": [
+        ".github/workflows/e2e.yml",
+        "artifacts/custom-gpt-creator/playwright.config.ts"
+      ]
+    }
+  ]
+}

@@ -15,6 +15,8 @@ remains available at `#creator`, with its original projects and backups.
 - [Current-state assessment and maturation](docs/capability-workbench-maturation.md)
 - [Parent feature-page parity review](docs/research/foundry-feature-page-parity-review.md)
 - [Agent collaboration and handoff protocol](docs/agent-collaboration.md)
+- [Technology versions and current stable releases](docs/technology-inventory.md)
+- [Dependency tracking and upgrade plan](docs/technology-update-plan.md)
 
 **Region boundary:** this FoundRy serves OverKill. AskJamie and Glee-fully have
 separate FoundRys. [Skillz](https://okhp3.github.io/skillz/) is shared by all three;
