@@ -4,7 +4,6 @@ import {
   AUDIT_RUBRIC_VERSION,
   AUDIT_SHIP_GATE_THRESHOLDS,
   BUILD_STEPS,
-  INSTRUCTION_LAYERS,
   SAFETY_AUDIT_ID,
 } from "../data/knowledge";
 import {
@@ -16,6 +15,7 @@ import {
   readProjectValue,
 } from "../lib/creatorStorage";
 import { calculateReadiness, type ReadinessState } from "../lib/readiness";
+import { formatInstructionLayers } from "../lib/instruction-layers";
 
 function loadCompletedSteps(): Set<number> {
   try {
@@ -172,22 +172,6 @@ function normalizeAuditRecord(raw: unknown): AuditEvidence | undefined {
     shipGateDecision,
     shipGateDecisionExplanation: auditDecisionExplanation(shipGateDecision),
   };
-}
-
-function formatInstructionLayers(
-  layerData: unknown,
-  heading: (layer: (typeof INSTRUCTION_LAYERS)[number]) => string,
-): string {
-  if (!isRecord(layerData)) return "";
-
-  return INSTRUCTION_LAYERS
-    .flatMap((layer) => {
-      const content = layerData[layer.id];
-      return typeof content === "string" && content.trim()
-        ? [`${heading(layer)}\n${content}`]
-        : [];
-    })
-    .join("\n\n");
 }
 
 function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string): EvidencePackage {
