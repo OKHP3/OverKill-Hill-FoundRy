@@ -6,7 +6,34 @@ import {
   diagnosticBehaviorLabels,
   renderedFragment,
 } from "./github-markdown-diagnostics.mjs";
-import { assertRenderedMarkdown } from "./github-markdown-render.mjs";
+import {
+  assertRenderedMarkdown,
+  formatGithubRendererResponseError,
+} from "./github-markdown-render.mjs";
+
+test("explains non-success renderer responses with their status and response details", () => {
+  assert.equal(
+    formatGithubRendererResponseError(
+      503,
+      '{"message":"Service unavailable","request_id":"req-123"}',
+    ),
+    'GitHub Markdown rendering failed with 503: {"message":"Service unavailable","request_id":"req-123"}',
+  );
+});
+
+test("bounds and redacts non-success renderer response details", () => {
+  const credential = "ghp_renderer-response-secret";
+  const diagnostic = formatGithubRendererResponseError(
+    401,
+    `{"message":"Bad credentials","authorization":"Bearer ${credential}","detail":"${"x".repeat(600)}"}`,
+  );
+
+  assert.match(diagnostic, /^GitHub Markdown rendering failed with 401:/);
+  assert.match(diagnostic, /"authorization":\[REDACTED\]/);
+  assert.match(diagnostic, /\.\.\.$/);
+  assert.ok(!diagnostic.includes(credential));
+  assert.ok(diagnostic.length <= "GitHub Markdown rendering failed with 401: ".length + 500);
+});
 
 test("keeps behavior and nearby fragment in renderer failure diagnostics", () => {
   const rendered = [

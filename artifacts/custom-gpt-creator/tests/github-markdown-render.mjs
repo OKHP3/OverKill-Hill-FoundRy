@@ -15,6 +15,24 @@ export const fixturePath = fileURLToPath(
   new URL("./fixtures/github-markdown-fixture.v1.md", import.meta.url),
 );
 
+const responseDetailLimit = 500;
+const sensitiveResponseField = /((?:"?(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[-_ ]?key|access[-_ ]?token|refresh[-_ ]?token|client[-_ ]?secret|token|secret|password)"?)\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^,\s}]+)/gi;
+
+const boundedResponseDetail = (responseText) => {
+  const redacted = String(responseText)
+    .replace(sensitiveResponseField, "$1[REDACTED]")
+    .replace(/\b(Bearer|Basic)\s+[^\s"',}]+/gi, "$1 [REDACTED]")
+    .replace(/\b(?:github_pat|gh[pousr])_[A-Za-z0-9_]+\b/gi, "[REDACTED]");
+
+  if (redacted.length <= responseDetailLimit) return redacted;
+  return `${redacted.slice(0, responseDetailLimit - 3)}...`;
+};
+
+export const formatGithubRendererResponseError = (status, responseText) =>
+  `GitHub Markdown rendering failed with ${status}: ${
+    boundedResponseDetail(responseText) || "[empty response body]"
+  }`;
+
 const headings = [
   "0. Build Brief",
   "1. Conversation Contract",
@@ -261,9 +279,7 @@ const runLiveCheck = async () => {
 
   const rendered = await response.text();
   if (!response.ok) {
-    throw new Error(
-      `GitHub Markdown rendering failed with ${response.status}: ${rendered.slice(0, 500)}`,
-    );
+    throw new Error(formatGithubRendererResponseError(response.status, rendered));
   }
 
   assertRenderedMarkdown(rendered);
