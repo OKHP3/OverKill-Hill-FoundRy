@@ -180,6 +180,25 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   );
   checkBehavior(
     renderedHtml,
+    diagnosticBehaviorLabels.safeRawHtmlLinkAndImageDestinationsRemainUsable,
+    "Before safe raw HTML link",
+    () => {
+      expect(renderedHtml).toMatch(
+        /Before safe raw HTML link <a href="https:\/\/example\.com\/raw-safe"[^>]*>raw safe link text<\/a> after safe raw HTML link\./,
+      );
+      const safeImage = renderedHtml.match(/<img\b[^>]*alt="raw safe image text"[^>]*>/)?.[0];
+      expect(safeImage).toBeDefined();
+      expect(safeImage).toMatch(
+        /(?:src|data-canonical-src)="https:\/\/example\.com\/raw-safe\.png"/,
+      );
+      expect(renderedHtml).toContain(
+        "Before safe raw HTML image",
+      );
+      expect(renderedHtml).toContain("after safe raw HTML image.");
+    },
+  );
+  checkBehavior(
+    renderedHtml,
     diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
     "Before raw HTML",
     () => {

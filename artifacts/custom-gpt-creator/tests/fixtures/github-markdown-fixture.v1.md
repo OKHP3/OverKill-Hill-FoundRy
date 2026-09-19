@@ -142,6 +142,10 @@ Before unsafe raw HTML link <a href="javascript:alert('xss')">raw link text</a> 
 
 Before unsafe raw HTML image <img src="javascript:alert('xss')" alt="raw image text"> after unsafe raw HTML image.
 
+Before safe raw HTML link <a href="https://example.com/raw-safe">raw safe link text</a> after safe raw HTML link.
+
+Before safe raw HTML image <img src="https://example.com/raw-safe.png" alt="raw safe image text"> after safe raw HTML image.
+
 ### Non-Goals / Out of Scope
 Do not publish unverified claims.
 

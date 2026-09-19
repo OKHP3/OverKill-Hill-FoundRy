@@ -18,6 +18,8 @@ export const diagnosticBehaviorLabels = Object.freeze({
     "unsafe URL protocols are removed or made non-executable",
   unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable:
     "unsafe raw HTML link and image destinations are non-executable",
+  safeRawHtmlLinkAndImageDestinationsRemainUsable:
+    "safe raw HTML link and image destinations remain usable",
   safeInlineHtmlIsPreserved: "safe inline HTML is preserved",
   executableRawHtmlIsEscaped: "executable raw HTML is escaped",
   unsafeHtmlAttributesAreRemoved: "unsafe HTML attributes are removed",

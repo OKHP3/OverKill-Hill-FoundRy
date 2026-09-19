@@ -153,6 +153,25 @@ export const assertRenderedMarkdown = (rendered) => {
   );
   checkBehavior(
     rendered,
+    diagnosticBehaviorLabels.safeRawHtmlLinkAndImageDestinationsRemainUsable,
+    "Before safe raw HTML link",
+    () => {
+      assert.match(
+        rendered,
+        /Before safe raw HTML link <a href="https:\/\/example\.com\/raw-safe"[^>]*>raw safe link text<\/a> after safe raw HTML link\./,
+      );
+      const safeImage = rendered.match(/<img\b[^>]*alt="raw safe image text"[^>]*>/)?.[0];
+      assert.ok(safeImage, "safe raw HTML image was not rendered");
+      assert.match(
+        safeImage,
+        /(?:src|data-canonical-src)="https:\/\/example\.com\/raw-safe\.png"/,
+      );
+      assert.match(rendered, /Before safe raw HTML image/);
+      assert.match(rendered, /after safe raw HTML image\./);
+    },
+  );
+  checkBehavior(
+    rendered,
     diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
     "Before raw HTML",
     () => {
