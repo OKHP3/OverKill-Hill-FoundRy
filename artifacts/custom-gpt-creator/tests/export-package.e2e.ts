@@ -33,6 +33,13 @@ const composedAndDecomposedInstructions = {
   decomposed: "Cafe\u0301 — re\u0301sume\u0301: e\u0301",
 } as const;
 
+const jsonSensitiveInstructions = {
+  1: 'Quotes: "double" and \'single\'; backslash: C:\\Users\\Forge\\spec.json',
+  2: "Tabs\tstay tabs; newline follows.\nSecond line.",
+  3: "Null\u0000character stays inside the instruction.",
+  4: "Mixed\r\nline endings and /slashes/ stay exact.\rFinal line.",
+} as const;
+
 const fullSpecInstructionFixture = {
   1: `You are the archive curator for “Found·Ry”.\r\nKeep this identity line exact.\rDo not normalize this boundary.\nFinish with the compass 🧭 and 日本語.`,
   2: `Prefer evidence over speed — preserve the source.\r\nUse the recorded context.\rAllow uncertainty to remain visible.\nEnd with a clear priority.`,
@@ -236,6 +243,34 @@ test("preserves composed and decomposed Unicode code points in Evidence JSON", a
   ]);
 
   await expectSelectedExportActions(page, "unicode-evidence-gpt-spec.json", "json");
+});
+
+test("keeps JSON-sensitive instructions parseable and byte-identical in Evidence JSON", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "JSON Sensitive Evidence GPT" },
+    "step-2": jsonSensitiveInstructions,
+  });
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const displayedJson = await page.locator("pre").textContent();
+  expect(displayedJson).not.toBeNull();
+  const exactDisplayedJson = displayedJson!;
+  const evidence = JSON.parse(exactDisplayedJson);
+  const exportedInstructions = evidence.phases["step-2-instruction-stack"];
+
+  expect(exportedInstructions).toEqual(jsonSensitiveInstructions);
+  for (const [layerId, instruction] of Object.entries(jsonSensitiveInstructions)) {
+    expect(exportedInstructions[layerId]).toBe(instruction);
+  }
+  expect(exactDisplayedJson).toContain(JSON.stringify(jsonSensitiveInstructions[1]));
+  expect(exactDisplayedJson).toContain("\\t");
+  expect(exactDisplayedJson).toContain("\\n");
+  expect(exactDisplayedJson).toContain("\\r\\n");
+  expect(exactDisplayedJson).toContain("\\r");
+  expect(exactDisplayedJson).toContain("\\u0000");
+
+  await expectSelectedExportActions(page, "json-sensitive-evidence-gpt-spec.json", "json");
 });
 
 test("keeps the committed GitHub fixture generated from representative Creator data", async ({ page }) => {
