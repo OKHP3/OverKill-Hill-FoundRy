@@ -5,6 +5,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    open-pull-requests-limit: 3
     groups:
       actions:
         patterns:
@@ -15,6 +16,9 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
     # Group all patch updates into one PR and all minor updates into another.
     # Major version bumps are left ungrouped so they get individual PRs and
     # require manual review.
@@ -28,9 +32,18 @@ updates:
     # Label every Dependabot npm PR so the auto-merge workflow can target it.
     labels:
       - dependencies
-    # Ignore major-version bumps — let those surface as individual PRs for
-    # manual review rather than silently upgrading potentially breaking changes.
-    ignore:
-      - dependency-name: "*"
+    # No major-version ignore: majors must surface as individual review PRs.
+
+  # Parser used by the technology audit; no application Python dependencies.
+  - package-ecosystem: pip
+    directory: "/scripts"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+    cooldown:
+      default-days: 3
+    groups:
+      audit-python:
         update-types:
-          - version-update:semver-major
+          - patch
+          - minor

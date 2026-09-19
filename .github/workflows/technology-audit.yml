@@ -6,8 +6,31 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "docs/technology-inventory.json"
+      - "**/package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "scripts/requirements.txt"
+      - "docs/technology-policy.json"
       - "scripts/technology-audit.py"
+      - "tests/test-technology-audit.py"
+      - ".github/workflows/**"
+      - ".github/dependabot.yml"
+      - "tsconfig.base.json"
+      - "lib/api-spec/openapi.yaml"
+      - ".replit"
+  pull_request:
+    paths:
+      - "**/package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "scripts/requirements.txt"
+      - "docs/technology-policy.json"
+      - "scripts/technology-audit.py"
+      - "tests/test-technology-audit.py"
+      - ".github/workflows/**"
+      - ".github/dependabot.yml"
+      - "tsconfig.base.json"
+      - "lib/api-spec/openapi.yaml"
       - ".replit"
 
 permissions:
@@ -16,10 +39,29 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
-      - name: Check technology releases
-        run: python scripts/technology-audit.py
+      - name: Install audit parser
+        run: python -m pip install -r scripts/requirements.txt
+      - name: Test inventory and release classification
+        run: python tests/test-technology-audit.py
+      - name: Derive inventory without upstream network dependency
+        if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
+        run: python scripts/technology-audit.py --offline
+      - name: Check official stable releases
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/technology-audit.py --fail-on-updates
+      - name: Preserve full inventory even when drift or a lookup fails
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: technology-inventory
+          path: .local/technology-audit/technology-inventory.*
+          if-no-files-found: error
+          retention-days: 30

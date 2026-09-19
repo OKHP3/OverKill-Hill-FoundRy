@@ -1,3 +1,10 @@
+# Technology tracking — 2026-09-19
+
+- Replace the obsolete documentation-only inventory with a source-derived report of the application, locked dependencies, runtimes, workflows and managed services.
+- Compare official stable releases, preserve source evidence and report unresolved provider versions separately.
+- Surface Dependabot major upgrades for review, track the audit parser, and run tested weekly release audits with downloadable reports.
+- Document the ordered migration plan and the current default-branch protection/auto-merge limitation.
+
 # Capability workbench — 2026-09-07
 
 - Add allocation-aware collaboration instructions and compact handoffs for ChatGPT/Codex, Claude, Copilot, and Replit; correct current Replit visibility and workbench notes.
