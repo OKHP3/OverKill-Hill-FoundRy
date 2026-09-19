@@ -31,11 +31,22 @@ jobs:
       - name: Check artifact build contracts
         run: python3 scripts/check-artifact-contract.py
 
+      - name: Test artifact contract diagnostics
+        run: |
+          pnpm --filter @workspace/scripts run test:artifact-ports
+          python3 tests/test-artifact-contract.py
+
+      - name: Test GitHub renderer diagnostics
+        run: pnpm --filter @workspace/custom-gpt-creator run test:github-markdown
+
       - name: Check branch cleanup safety
         run: node --test tests/branch-cleanup-test.mjs
 
       - name: Build workspace from clean artifact environment
         run: env -u PORT -u BASE_PATH pnpm run build
+
+      - name: Smoke-test artifact preview routes
+        run: pnpm --filter @workspace/scripts run check:artifact-routes
 
       - name: Check generated preview module stays synchronized
         run: git diff --exit-code -- artifacts/mockup-sandbox/src/.generated/mockup-components.ts
@@ -60,6 +71,10 @@ jobs:
 
       - name: Test capability storage and source bundles
         run: pnpm run test:capability
+
+      - name: Check committed GitHub fixture drift
+        working-directory: artifacts/custom-gpt-creator
+        run: pnpm run test:github-markdown:fixture
 
       - name: Run e2e tests
         working-directory: artifacts/custom-gpt-creator

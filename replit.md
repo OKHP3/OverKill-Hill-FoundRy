@@ -22,6 +22,15 @@ for bounded second opinions and Copilot for small tasks. Replit owns its local G
 reconciliation and platform-specific verification. Confirm each assignment and
 handoff; do not assume chats, quotas, or permissions are shared between hosts.
 
+## Git synchronization
+
+Start new work from freshly fetched main on a task branch. Follow
+[`docs/replit-github-recovery.md`](docs/replit-github-recovery.md) for divergence,
+squash integration, cleanup, and verification. If GitHub rejects workflow changes
+because Replit's OAuth credential lacks `workflow` scope, preserve the commits
+and use the existing Windows/GitHub integration route; repeated pulls will not
+fix that permission error.
+
 ## Run & Operate
 
 - `pnpm run typecheck` — full TypeScript check across the workspace.
@@ -40,13 +49,20 @@ handoff; do not assume chats, quotas, or permissions are shared between hosts.
   shell. Each Vite artifact derives `PORT` and `BASE_PATH` from its registered
   service contract when those variables are omitted; explicit values still
   override the defaults for deployment builds.
+- `pnpm --filter @workspace/scripts run check:artifact-ports` — verify that no
+  two artifact contracts claim the same default port.
 
 ### Artifact build contract ownership
 
-The typed, dependency-free source of truth for Vite artifact defaults is
+The typed, dependency-free source of truth for registered artifact defaults is
 `scripts/src/artifact-contract.ts`. It owns each artifact's fallback port and
-base path, and every artifact Vite config must resolve its `PORT` and
-`BASE_PATH` through that module.
+base path. Every registered preview, including the API server, must have an
+entry, and every Vite config must resolve its `PORT` and `BASE_PATH` through
+that module.
+
+The contract rejects duplicate default ports when it is imported. Run
+`pnpm --filter @workspace/scripts run check:artifact-ports` after adding or
+changing an artifact contract to check port uniqueness directly.
 
 Each `.replit-artifact/artifact.toml` remains the managed-service registration
 for the same artifact. Its `localPort`, service `PORT`, and service

@@ -143,13 +143,14 @@ Workspace-wide strict TypeScript currently passes for the canonical source and t
 ### GitHub Markdown rendering check
 
 The deterministic Playwright suite validates the export bytes and compares
-CommonMark and GitHub-style local parsers. A separate, network-dependent check
-uses GitHub's documented `POST /markdown` endpoint in `gfm` mode against the
-versioned fixture
+CommonMark and GitHub-style local parsers. The local renderer diagnostic test
+also verifies that behavior-specific failures include a nearby rendered
+fragment. A separate, opt-in network-dependent check uses GitHub's documented
+`POST /markdown` endpoint in `gfm` mode against the versioned fixture
 `artifacts/custom-gpt-creator/tests/fixtures/github-markdown-fixture.v1.md`:
 
 ```bash
-pnpm --filter @workspace/custom-gpt-creator run test:github-markdown
+pnpm --filter @workspace/custom-gpt-creator run test:github-markdown:live
 ```
 
 This check is intentionally not part of `test:e2e`: GitHub availability and

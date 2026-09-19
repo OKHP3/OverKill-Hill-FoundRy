@@ -19,6 +19,29 @@ The check compares each Vite artifact's fallback `PORT` and `BASE_PATH` with
 its `.replit-artifact/artifact.toml` service port and routes. It is read-only
 and reports the artifact, variable, and expected value when a contract drifts.
 
+Run its parser and diagnostic regression tests with:
+
+```bash
+pnpm --filter @workspace/scripts run test:artifact-ports
+```
+
+The diagnostic fixture itself uses only Python's standard library and can also
+run directly with `python3 scripts/test_check_artifact_contract.py`.
+
+## Artifact preview route smoke check
+
+After dependencies are installed, exercise every registered browser artifact
+through its configured preview path:
+
+```bash
+pnpm --filter @workspace/scripts run check:artifact-routes
+```
+
+This starts each web or design artifact on an isolated local port, requests its
+registered entry document, and confirms that its local entry assets remain
+inside the same preview base path and respond successfully. It is intentionally
+separate from the static artifact build contract comparison.
+
 ## Governance validation
 
 Run the complete governance sequence locally with the same entry point used by

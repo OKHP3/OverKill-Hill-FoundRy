@@ -9,9 +9,12 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:e2e": "playwright test",
-    "test:github-markdown": "node tests/github-markdown-render.mjs",
+    "test:github-markdown": "node --test tests/github-markdown-render.test.mjs",
+    "test:github-markdown:live": "node tests/github-markdown-render.mjs",
     "test:github-markdown:playwright": "GITHUB_MARKDOWN_CHECK=1 playwright test tests/github-markdown.e2e.ts",
     "test:github-markdown:fixture": "playwright test tests/export-package.e2e.ts --grep \"keeps the committed GitHub fixture generated from representative Creator data\"",
+    "test:pages-base-path": "node --test tests/pages-base-path.test.mjs",
+    "preview:github-markdown-fixture": "GITHUB_MARKDOWN_FIXTURE_PREVIEW=1 playwright test tests/github-markdown-fixture-refresh.e2e.ts",
     "refresh:github-markdown-fixture": "GITHUB_MARKDOWN_FIXTURE_REFRESH=1 playwright test tests/github-markdown-fixture-refresh.e2e.ts && pnpm run test:github-markdown:fixture",
     "test:e2e:headed": "playwright test --headed"
   },

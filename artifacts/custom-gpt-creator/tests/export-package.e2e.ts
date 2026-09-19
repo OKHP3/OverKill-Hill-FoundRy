@@ -314,6 +314,60 @@ test("exports sparse instruction layers in order and preserves exact copied and 
   await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
 });
 
+test("ignores malformed instruction values and containers without changing valid content", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Malformed Layers GPT" },
+    "step-2": {
+      1: { text: "Do not stringify this object as an instruction." },
+      2: ["Do not stringify this array as an instruction."],
+      3: 123,
+      4: false,
+      5: null,
+      6: "  Preserve this valid instruction exactly.  \r\n  ",
+      7: { toString: "Do not stringify this object either." },
+      8: " \t\r\n",
+    },
+  });
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  const instructionsContent = await page.locator("pre").textContent();
+  expect(instructionsContent).toBe(
+    "## Output Policy\n  Preserve this valid instruction exactly.  \r\n  ",
+  );
+  expect(instructionsContent).not.toContain("Identity & Scope");
+  expect(instructionsContent).not.toContain("Operating Principles");
+  expect(instructionsContent).not.toContain("Do not stringify");
+  await expectSelectedExportActions(page, "malformed-layers-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  const fullSpecContent = await page.locator("pre").textContent();
+  expect(fullSpecContent).not.toBeNull();
+  expect(fullSpecContent).toContain(
+    "### Layer 6: Output Policy\n  Preserve this valid instruction exactly.  \r\n  ",
+  );
+  expect(fullSpecContent).not.toContain("### Layer 1:");
+  expect(fullSpecContent).not.toContain("### Layer 2:");
+  expect(fullSpecContent).not.toContain("Do not stringify");
+  await expectSelectedExportActions(page, "malformed-layers-gpt-spec.md", "md");
+
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Malformed Container GPT" },
+    "step-2": "A malformed saved instruction container",
+  });
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  await expect(page.locator("pre")).toHaveText("");
+  await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  const malformedContainerFullSpec = await page.locator("pre").textContent();
+  expect(malformedContainerFullSpec).not.toBeNull();
+  expect(malformedContainerFullSpec).toContain("## 2. Instructions\n\n(no instruction layers filled)");
+  expect(malformedContainerFullSpec).not.toContain("### Layer 1:");
+  await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
+});
+
 test("preserves mixed instruction bytes in the Full Spec export", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {
@@ -362,6 +416,78 @@ test("preserves mixed instruction bytes in the Full Spec export", async ({ page 
   expect(fullSpecContent).toContain("日本語"); // Full Spec must retain Unicode from the fixture.
 
   await expectSelectedExportActions(page, "github-export-fixture-spec.md", "md");
+});
+
+test("preserves mixed instruction bytes in the Evidence JSON export", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    ...githubFixtureProjectData,
+    "step-2": fullSpecInstructionFixture,
+  });
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const jsonContent = await page.locator("pre").textContent();
+  expect(jsonContent).not.toBeNull();
+  const exactJsonContent = jsonContent!;
+  const evidence = JSON.parse(exactJsonContent);
+
+  expect(evidence.phases["step-2-instruction-stack"]).toEqual(fullSpecInstructionFixture);
+  for (const [layerId, instruction] of Object.entries(fullSpecInstructionFixture)) {
+    expect(evidence.phases["step-2-instruction-stack"][layerId]).toBe(instruction);
+  }
+  expect(exactJsonContent).toContain(JSON.stringify(fullSpecInstructionFixture[1]));
+  expect(exactJsonContent).toContain("\\r\\n");
+  expect(exactJsonContent).toContain("\\r");
+  expect(exactJsonContent).toContain("\\n");
+  expect(exactJsonContent).toContain("日本語");
+
+  await expectSelectedExportActions(page, "github-export-fixture-spec.json", "json");
+});
+
+test("preserves mixed instruction bytes entered through the editor before export", async ({ page }) => {
+  await openExportPackage(page);
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+
+  const enteredInstruction = fullSpecInstructionFixture[1];
+  await page.locator("textarea").first().fill(enteredInstruction);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        return workspace.projects[0].data["step-2"]?.[1];
+      }),
+    )
+    .toBe(enteredInstruction);
+
+  await expect(page.locator("pre")).toContainText(enteredInstruction);
+
+  await navigation.getByRole("button", { name: "Knowledge Files" }).click();
+  await expect(page.locator("h1")).toContainText("Step 3 · Knowledge Files");
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        return workspace.projects[0].data["step-2"]?.[1];
+      }),
+    )
+    .toBe(enteredInstruction);
+  await expect(page.locator("pre")).toContainText(enteredInstruction);
+
+  await navigation.getByRole("button", { name: "Export Package" }).click();
+  await expect(page.locator("h1")).toContainText("Export Package");
+  const fullSpecContent = await page.locator("pre").textContent();
+  expect(fullSpecContent).not.toBeNull();
+  expect(fullSpecContent).toContain(`### Layer 1: Identity & Scope\n${enteredInstruction}`);
+  expect(fullSpecContent).toContain("\r\n");
+  expect(fullSpecContent).toContain("\r");
+  expect(fullSpecContent).toContain("\n");
+  expect(fullSpecContent).toContain("日本語");
+
+  await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
 });
 
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {

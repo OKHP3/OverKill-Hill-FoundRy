@@ -45,4 +45,25 @@ jobs:
         with:
           python-version: "3.12"
       - name: Run complete governance validation
-        run: python3 scripts/governance-check.py
+        run: |
+          runner_output="$(mktemp)"
+          trap 'rm -f "$runner_output"' EXIT
+
+          set +e
+          python3 scripts/governance-check.py 2>&1 | tee "$runner_output"
+          runner_status="${PIPESTATUS[0]}"
+          set -e
+
+          if [ "$runner_status" -ne 0 ]; then
+            {
+              echo "## Governance validation failed"
+              echo
+              echo "The unified governance runner stopped at the first failing check."
+              echo
+              echo '```text'
+              cat "$runner_output"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          exit "$runner_status"

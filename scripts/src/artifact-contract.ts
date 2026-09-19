@@ -9,6 +9,10 @@ export type ArtifactBuildEnvironment = Readonly<{
 }>;
 
 export const artifactBuildContracts = {
+  'api-server': {
+    port: 8080,
+    basePath: '/api',
+  },
   'custom-gpt-creator': {
     port: 20017,
     basePath: '/custom-gpt-creator/',
@@ -30,6 +34,26 @@ export const artifactBuildContracts = {
     basePath: '/okh-identity/',
   },
 } as const satisfies Record<string, ArtifactBuildContract>;
+
+export function validateUniqueArtifactPorts(
+  contracts: Readonly<Record<string, ArtifactBuildContract>>,
+): void {
+  const artifactByPort = new Map<number, string>();
+
+  for (const [artifactName, contract] of Object.entries(contracts)) {
+    const existingArtifact = artifactByPort.get(contract.port);
+
+    if (existingArtifact !== undefined) {
+      throw new Error(
+        `Artifact default port ${contract.port} is assigned to both "${existingArtifact}" and "${artifactName}"`,
+      );
+    }
+
+    artifactByPort.set(contract.port, artifactName);
+  }
+}
+
+validateUniqueArtifactPorts(artifactBuildContracts);
 
 export type ArtifactName = keyof typeof artifactBuildContracts;
 

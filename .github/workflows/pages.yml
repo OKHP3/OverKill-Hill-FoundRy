@@ -38,7 +38,7 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
-      - name: Build FoundRy application
+      - name: Build and verify FoundRy Pages base path
         working-directory: artifacts/custom-gpt-creator
         env:
           NODE_ENV: production
@@ -49,7 +49,7 @@ jobs:
           # If a custom domain is configured at the repository level, change
           # this to /.
           BASE_PATH: /OverKill-Hill-FoundRy/
-        run: pnpm run build
+        run: pnpm run test:pages-base-path
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
