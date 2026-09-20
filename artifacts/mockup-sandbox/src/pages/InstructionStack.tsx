@@ -1,4 +1,4 @@
-import { mergeDisplayEdit, rawOffsetForDisplayOffset } from "../lib/raw-text-edit";
+import { mergeDisplayEdit, rawOffsetForDisplayOffset, type DisplayEditRange } from "../lib/raw-text-edit";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { INSTRUCTION_LAYERS, INSTRUCTION_CHAR_LIMIT } from "../data/knowledge";
 import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
@@ -26,6 +26,7 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
   const [layers, setLayers] = useState<LayerData>(load);
   const [activeLayer, setActiveLayer] = useState<number>(1);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const editRangeRef = useRef<DisplayEditRange | undefined>(undefined);
   const [copied, setCopied] = useState(false);
   const [change, setChange] = useState<ChangeRecord>(() => {
   try { return { ...EMPTY_CHANGE_RECORD, ...(readProjectValue(STORAGE_KEY + "-change") as Partial<ChangeRecord> | undefined) }; } catch { return EMPTY_CHANGE_RECORD; }
@@ -34,20 +35,31 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
   useEffect(() => { writeProjectValue(STORAGE_KEY, layers); }, [layers]);
   useEffect(() => { writeProjectValue(STORAGE_KEY + "-change", change); }, [change]);
 
-  const setLayer = (id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    setLayers(prev => ({ ...prev, [id]: mergeDisplayEdit(prev[id] || "", e.target.value) }));
+  const setLayer = (id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const edited = e.target.value;
+    const range = editRangeRef.current;
+    editRangeRef.current = undefined;
+    setLayers(prev => ({ ...prev, [id]: mergeDisplayEdit(prev[id] || "", edited, range) }));
+  };
 
   useEffect(() => {
+    editRangeRef.current = undefined;
     const textarea = editorRef.current;
     if (!textarea) return;
 
     // React's onBeforeInput polyfill does not expose the native InputEvent.
     // https://react.dev/reference/react-dom/components/common#common-props
     const preserveMixedLineEndings = (input: InputEvent) => {
+      editRangeRef.current = {
+        start: textarea.selectionStart,
+        end: textarea.selectionEnd,
+        inputType: input.inputType,
+      };
       const data = input.data;
       if (!input.cancelable || input.inputType !== "insertText" || !data?.includes("\r")) return;
 
       input.preventDefault();
+      editRangeRef.current = undefined;
       const selectionStart = textarea.selectionStart;
       const selectionEnd = textarea.selectionEnd;
       setLayers(prev => {

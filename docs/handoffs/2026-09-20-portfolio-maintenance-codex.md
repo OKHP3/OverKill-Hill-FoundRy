@@ -58,7 +58,7 @@ Primary advisory records:
 ## Local validation and limits
 
 - pnpm 10.34.5 frozen installation and complete workspace typecheck/build pass.
-- 61 capability/helper tests, 16 technology-audit tests, 7 janitor tests, 8 branch
+- 62 capability/helper tests, 16 technology-audit tests, 7 janitor tests, 8 branch
   cleanup tests, 2 Markdown diagnostics, governance, artifact contracts, and
   ReFolDec fixture checks pass.
 - Pages base-path tests pass both `/` and `/OverKill-Hill-FoundRy/`.
@@ -74,3 +74,11 @@ Primary advisory records:
 
 Canonical local work and other hosts were not overwritten. The isolated candidate
 is the only implementation workspace owned by this maintenance task.
+
+## Automated review follow-up
+
+PR41 identified ambiguous adjacent normalized newlines. Native beforeinput now
+records the actual selection and input direction; the raw splice uses that range
+so deleting a CRLF preserves an adjacent LF. Unit cases cover both selected
+newlines, backward/forward caret deletion, and replacement. The exact browser
+selection/deletion regression and the ordinary typing/export case both pass.
