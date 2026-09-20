@@ -1,3 +1,4 @@
+import { mergeDisplayEdit, rawOffsetForDisplayOffset } from "../lib/raw-text-edit";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { INSTRUCTION_LAYERS, INSTRUCTION_CHAR_LIMIT } from "../data/knowledge";
 import { readProjectValue, writeProjectValue } from "../lib/creatorStorage";
@@ -19,22 +20,6 @@ function buildFull(layers: LayerData): string {
     .join("\n\n");
 }
 
-function rawOffsetForDisplayOffset(value: string, displayOffset: number): number {
-  let rawOffset = 0;
-  let visibleOffset = 0;
-
-  while (rawOffset < value.length && visibleOffset < displayOffset) {
-    if (value[rawOffset] === "\r") {
-      rawOffset += value[rawOffset + 1] === "\n" ? 2 : 1;
-    } else {
-      rawOffset += 1;
-    }
-    visibleOffset += 1;
-  }
-
-  return rawOffset;
-}
-
 interface Props { onNext: () => void; onPrev: () => void; page: number; onComplete: (complete: boolean) => void; }
 
 export default function InstructionStack({ onNext, onPrev, onComplete }: Props) {
@@ -50,7 +35,7 @@ export default function InstructionStack({ onNext, onPrev, onComplete }: Props) 
   useEffect(() => { writeProjectValue(STORAGE_KEY + "-change", change); }, [change]);
 
   const setLayer = (id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    setLayers(prev => ({ ...prev, [id]: e.target.value }));
+    setLayers(prev => ({ ...prev, [id]: mergeDisplayEdit(prev[id] || "", e.target.value) }));
 
   useEffect(() => {
     const textarea = editorRef.current;

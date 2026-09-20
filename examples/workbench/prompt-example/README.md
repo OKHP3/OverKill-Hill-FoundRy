@@ -5,7 +5,7 @@ This public-safe example uses the FoundRy capability generator to package a prom
 Run the generator from the repository root:
 
 ```bash
-node --strip-types examples/workbench/prompt-example/generate.ts
+node --experimental-strip-types examples/workbench/prompt-example/generate.ts
 ```
 
 The command writes `backup.json` and the importable generated package under `generated/`. It also parses the backup produced by the real workbench generator and checks the project identity after the round trip.

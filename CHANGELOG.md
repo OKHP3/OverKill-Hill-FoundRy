@@ -1,3 +1,10 @@
+# Portfolio maintenance - 2026-09-20
+
+- Preserve raw instruction line endings through later edits and keep external handoff data inside valid Markdown fences.
+- Repair Pages base-path, governance regression coverage, artifact discovery, provisional audit reports, and historical evidence boundaries.
+- Integrate reviewed dependency updates with Recharts 3 wrapper compatibility, explicit peers, security patch overrides, and Windows x64 native build dependencies.
+- Synchronize exact-SHA remote deletion protection and its regression tests.
+
 # Technology tracking — 2026-09-19
 
 - Replace the obsolete documentation-only inventory with a source-derived report of the application, locked dependencies, runtimes, workflows and managed services.

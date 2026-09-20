@@ -48,7 +48,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f02",
@@ -97,7 +99,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f03",
@@ -145,7 +149,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f04",
@@ -197,7 +203,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f05",
@@ -237,7 +245,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f06",
@@ -277,7 +287,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f07",
@@ -317,7 +329,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f08",
@@ -357,7 +371,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f09",
@@ -398,7 +414,9 @@
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
     "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
-    "validation_summary": "Two corrected keyboard/dialog tests pass locally and in GitHub CI; original candidate claims superseded by closeout."
+    "validation_summary": "Two corrected keyboard/dialog tests pass locally and in GitHub CI; original candidate claims superseded by closeout.",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f10",
@@ -439,7 +457,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f11",
@@ -480,7 +500,9 @@
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
     "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
-    "validation_summary": "Coexistence test passes with once-only seed and actual persistence checks; original candidate claims superseded by closeout."
+    "validation_summary": "Coexistence test passes with once-only seed and actual persistence checks; original candidate claims superseded by closeout.",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f12",
@@ -521,7 +543,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f13",
@@ -562,7 +586,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f14",
@@ -604,7 +630,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f15",
@@ -645,7 +673,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f16",
@@ -686,7 +716,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f17",
@@ -726,7 +758,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f18",
@@ -767,7 +801,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f19",
@@ -808,7 +844,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "f20",
@@ -848,7 +886,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "d138a6992eff4f05adb60fe75a75d6b9b63036a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "w01",
@@ -885,7 +925,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "6f6079d9a5ac771412f3e153be80e5abb6f4f5a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "w02",
@@ -922,7 +964,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "6f6079d9a5ac771412f3e153be80e5abb6f4f5a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "w03",
@@ -958,7 +1002,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "6f6079d9a5ac771412f3e153be80e5abb6f4f5a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "w04",
@@ -994,7 +1040,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "6f6079d9a5ac771412f3e153be80e5abb6f4f5a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "w05",
@@ -1031,7 +1079,9 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "6f6079d9a5ac771412f3e153be80e5abb6f4f5a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   },
   {
     "id": "w06",
@@ -1067,6 +1117,8 @@
     "worktree_removed": true,
     "branch_removed": true,
     "merge_commit": "6f6079d9a5ac771412f3e153be80e5abb6f4f5a9",
-    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md"
+    "closeout": "docs/handoffs/coop-pertition-2026-09-07/closeout-2026-09-08.md",
+    "acknowledgement_status": "not established by retained receiver identity and UTC acceptance evidence",
+    "acknowledgement_boundary": "Integration and deliverable records below are separate evidence; they do not establish a historical ownership handoff."
   }
 ]

@@ -450,8 +450,11 @@ test("preserves mixed instruction bytes entered through the editor before export
   await navigation.getByRole("button", { name: "Instruction Stack" }).click();
   await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
 
-  const enteredInstruction = fullSpecInstructionFixture[1];
-  await page.locator("textarea").first().fill(enteredInstruction);
+  const originalInstruction = fullSpecInstructionFixture[1];
+  const enteredInstruction = originalInstruction + "!";
+  await page.locator("textarea").first().fill(originalInstruction);
+  await page.locator("textarea").first().press("ControlOrMeta+End");
+  await page.locator("textarea").first().pressSequentially("!");
   await expect
     .poll(() =>
       page.evaluate(() => {
@@ -588,7 +591,7 @@ test("exports structured evidence with provenance and explicit validation bounda
   const jsonText = await page.locator("pre").textContent();
   expect(jsonText).not.toBeNull();
   const exactJsonText = jsonText!;
-  const evidence = JSON.parse(jsonText);
+  const evidence = JSON.parse(exactJsonText);
   expect(evidence.schemaVersion).toBe("1.0");
   expect(evidence.artifact.type).toBe("custom-gpt-specification");
   expect(evidence.boundaries.nonGoals).toBe(unicodeAndMixedLineEndings);

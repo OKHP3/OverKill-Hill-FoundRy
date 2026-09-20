@@ -2,6 +2,7 @@
 """Regression tests for governance validation ordering, propagation, and CI behavior."""
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import os
 import subprocess
@@ -61,7 +62,12 @@ def load_runner():
     return runner
 
 
-def repository_snapshot() -> dict[str, bytes]:
+def file_digest(path: Path) -> str:
+    with path.open("rb") as handle:
+        return hashlib.file_digest(handle, "sha256").hexdigest()
+
+
+def repository_snapshot() -> dict[str, str]:
     result = subprocess.run(
         ["git", "ls-files", "-z"],
         cwd=ROOT,
@@ -70,7 +76,7 @@ def repository_snapshot() -> dict[str, bytes]:
     )
     paths = result.stdout.split(b"\0")
     return {
-        relative.decode("utf-8"): (ROOT / relative.decode("utf-8")).read_bytes()
+        relative.decode("utf-8"): file_digest(ROOT / relative.decode("utf-8"))
         for relative in paths
         if relative
     }

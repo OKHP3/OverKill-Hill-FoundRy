@@ -154,6 +154,18 @@ class CommandContract(unittest.TestCase):
         self.assertEqual(saved["technologies"][0]["status"], "not checked (offline)")
         self.assertIn("NOT CHECKED", output)
 
+    def test_provisional_report_exists_before_network_work_starts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            row = {"name": "test", "kind": "npm direct", "current": ["1.0.0"], "source": "https://example.test"}
+            report = {"technologies": [row], "source_commit": "test", "input_sha256": {}, "workspace_importers": [], "overrides": {}, "local_packages": []}
+            with patch.object(audit, "inventory", return_value=report), patch.object(audit.sys, "argv", ["audit", "--output-dir", str(output)]), patch.object(audit, "ThreadPoolExecutor", side_effect=TimeoutError("registry unavailable")):
+                with self.assertRaises(TimeoutError):
+                    audit.main()
+            saved = json.loads((output / "technology-inventory.json").read_text(encoding="utf-8"))
+            self.assertEqual(saved["technologies"][0]["status"], "not checked (lookup pending)")
+            self.assertTrue((output / "technology-inventory.md").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

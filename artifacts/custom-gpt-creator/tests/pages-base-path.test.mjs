@@ -3,13 +3,16 @@ import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
-const pagesBasePath = '/OverKill-Hill-FoundRy/';
+const pagesBasePath = process.env.BASE_PATH || '/OverKill-Hill-FoundRy/';
 const localBasePath = '/custom-gpt-creator/';
 
 test('builds GitHub Pages assets under the repository base path', async () => {
-  const build = spawnSync('pnpm', ['run', 'build'], {
+  const command = process.env.npm_execpath ? process.execPath : 'pnpm';
+  const args = process.env.npm_execpath ? [process.env.npm_execpath, 'run', 'build'] : ['run', 'build'];
+  const build = spawnSync(command, args, {
     cwd: new URL('..', import.meta.url),
     encoding: 'utf8',
+    windowsHide: true,
     env: {
       ...process.env,
       NODE_ENV: 'production',
@@ -21,7 +24,7 @@ test('builds GitHub Pages assets under the repository base path', async () => {
   assert.equal(
     build.status,
     0,
-    `Pages build failed:\n${build.stdout}\n${build.stderr}`,
+    `Pages build failed:\n${build.error || ""}\n${build.stdout}\n${build.stderr}`,
   );
 
   const html = await readFile(

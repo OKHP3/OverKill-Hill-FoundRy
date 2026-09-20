@@ -37,3 +37,8 @@ For later tasks, add only the task ID, short scope, owner, and canonical record
 link here. Check both this index and open GitHub work before creating a new record.
 Archive completed entries within this file with a date and result link; preserve
 their detailed evidence.
+
+## Portfolio maintenance - 2026-09-20
+
+Codex owns the isolated dependency and historical review repair candidate. See
+[the accepted task and validation record](2026-09-20-portfolio-maintenance-codex.md).

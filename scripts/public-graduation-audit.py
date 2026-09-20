@@ -20,7 +20,7 @@ REQUIRED_FILES = (
     "specification.md",
     "schema.json",
     "LICENSE",
-    "ATTRIBUTION.md",
+    "attribution.md",
     "provenance.json",
     "CHANGELOG.md",
     "equilibrium-decision.md",
@@ -81,6 +81,9 @@ def _record_conflict(
         )
 
 
+NORMALIZED_TEXT_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml", ".py", ".txt"})
+
+
 def _package_hash(package: pathlib.Path) -> str | None:
     if not package.is_dir():
         return None
@@ -90,7 +93,7 @@ def _package_hash(package: pathlib.Path) -> str | None:
         digest.update(path.relative_to(package).as_posix().encode("utf-8"))
         digest.update(b"\0")
         content = path.read_bytes()
-        if path.suffix.lower() in {".md", ".json", ".yaml", ".yml", ".py", ".txt"} or path.name.upper() == "LICENSE":
+        if path.suffix.lower() in NORMALIZED_TEXT_SUFFIXES or path.name.upper() == "LICENSE":
             content = content.replace(b"\r\n", b"\n")
         digest.update(content)
         digest.update(b"\0")
