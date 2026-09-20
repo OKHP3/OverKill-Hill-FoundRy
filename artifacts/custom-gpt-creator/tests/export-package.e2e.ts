@@ -450,8 +450,11 @@ test("preserves mixed instruction bytes entered through the editor before export
   await navigation.getByRole("button", { name: "Instruction Stack" }).click();
   await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
 
-  const enteredInstruction = fullSpecInstructionFixture[1];
-  await page.locator("textarea").first().fill(enteredInstruction);
+  const originalInstruction = fullSpecInstructionFixture[1];
+  const enteredInstruction = originalInstruction + "!";
+  await page.locator("textarea").first().fill(originalInstruction);
+  await page.locator("textarea").first().press("ControlOrMeta+End");
+  await page.locator("textarea").first().pressSequentially("!");
   await expect
     .poll(() =>
       page.evaluate(() => {
@@ -488,6 +491,22 @@ test("preserves mixed instruction bytes entered through the editor before export
   expect(fullSpecContent).toContain("日本語");
 
   await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
+});
+
+test("deletes the selected newline without changing adjacent stored line endings", async ({ page }) => {
+  await openExportPackage(page);
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  const editor = page.locator("textarea").first();
+  await editor.fill("a\r\n\nb");
+  await editor.press("ControlOrMeta+Home");
+  await editor.press("ArrowRight");
+  await editor.press("Shift+ArrowRight");
+  await editor.press("Backspace");
+  await expect.poll(() => page.evaluate(() => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    return workspace.projects[0].data["step-2"]?.[1];
+  })).toBe("a\nb");
 });
 
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {
@@ -588,7 +607,7 @@ test("exports structured evidence with provenance and explicit validation bounda
   const jsonText = await page.locator("pre").textContent();
   expect(jsonText).not.toBeNull();
   const exactJsonText = jsonText!;
-  const evidence = JSON.parse(jsonText);
+  const evidence = JSON.parse(exactJsonText);
   expect(evidence.schemaVersion).toBe("1.0");
   expect(evidence.artifact.type).toBe("custom-gpt-specification");
   expect(evidence.boundaries.nonGoals).toBe(unicodeAndMixedLineEndings);

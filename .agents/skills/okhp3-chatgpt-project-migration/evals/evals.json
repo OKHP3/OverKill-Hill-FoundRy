@@ -35,8 +35,7 @@
         {"id": 3, "text": "Response includes the exception states `open`, `recovered`, or `accepted_loss`."},
         {"id": 4, "text": "Response distinguishes raw evidence from a public-safe artifact lane."}
       ]
-    }
-    ,
+    },
     {
       "id": 4,
       "name": "oversized-export-and-untrusted-source",

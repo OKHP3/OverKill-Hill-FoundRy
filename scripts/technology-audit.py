@@ -237,6 +237,10 @@ def main():
     args = parser.parse_args()
     report = inventory(ROOT)
     report["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    provisional = {**report, "technologies": [{**row, "status": "not checked (lookup pending)"} for row in report["technologies"]]}
+    (args.output_dir / "technology-inventory.json").write_text(json.dumps(provisional, indent=2) + "\n", encoding="utf-8")
+    (args.output_dir / "technology-inventory.md").write_text(markdown(provisional), encoding="utf-8")
     if args.offline:
         for row in report["technologies"]:
             row["status"] = "not checked (offline)"

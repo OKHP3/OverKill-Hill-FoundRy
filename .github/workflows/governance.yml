@@ -14,6 +14,9 @@ on:
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
       - "tests/test-public-graduation-audit.py"
+      - "tests/test-governance-check.py"
+      - ".agents/skills/okhp3-replit-repl-janitor/**"
+      - ".github/workflows/governance.yml"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   pull_request:
@@ -29,6 +32,9 @@ on:
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
       - "tests/test-public-graduation-audit.py"
+      - "tests/test-governance-check.py"
+      - ".agents/skills/okhp3-replit-repl-janitor/**"
+      - ".github/workflows/governance.yml"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   workflow_dispatch:
@@ -44,6 +50,10 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      - name: Test reviewed branch deletion preconditions
+        run: python3 .agents/skills/okhp3-replit-repl-janitor/tests/test_audit_repo.py
+      - name: Test governance runner failure propagation
+        run: python3 tests/test-governance-check.py
       - name: Run complete governance validation
         run: |
           runner_output="$(mktemp)"

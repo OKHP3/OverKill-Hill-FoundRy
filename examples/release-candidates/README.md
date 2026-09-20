@@ -60,4 +60,4 @@ python3 examples/release-candidates/validator/refoldec-validate.py \
 ## License
 
 The package is provided under Apache License 2.0; see `LICENSE` and
-`ATTRIBUTION.md`.
+`attribution.md`.

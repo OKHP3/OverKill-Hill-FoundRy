@@ -69,6 +69,9 @@ def repository_revision(root: Path) -> str:
     return result.stdout.strip()
 
 
+NORMALIZED_TEXT_SUFFIXES = frozenset({".md", ".json", ".yaml", ".yml", ".py", ".txt"})
+
+
 def package_hash(skill_path: Path) -> str:
     digest = hashlib.sha256()
     paths = (path for path in skill_path.rglob("*") if path.is_file())
@@ -76,7 +79,7 @@ def package_hash(skill_path: Path) -> str:
         digest.update(path.relative_to(skill_path).as_posix().encode("utf-8"))
         digest.update(b"\0")
         content = path.read_bytes()
-        if path.suffix.lower() in {".md", ".json", ".yaml", ".yml", ".py", ".txt"} or path.name.upper() == "LICENSE":
+        if path.suffix.lower() in NORMALIZED_TEXT_SUFFIXES or path.name.upper() == "LICENSE":
             content = content.replace(b"\r\n", b"\n")
         digest.update(content)
         digest.update(b"\0")
