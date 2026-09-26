@@ -196,6 +196,22 @@ working agreement, not a new universal governance rule.
   owner explicitly expands scope. All three regional FoundRy repositories are
   intentionally public; preserve private-source and capability-release boundaries.
 
+## 8.4 OverKill project routing
+
+FoundRy is the OverKill region's capability workbench and governance relay. Its
+scope includes reusable prompts, Agent Skills, workflows, software starters,
+and other capability work beyond the retained Custom GPT studio. The public
+`OKHP3/OverKill-Hill` site owns the OverKill brand and portfolio, including the
+published editorial MurderBird story at `/writings/murderbird/`.
+
+All MurderBird creative assets and interactive application implementation belong
+in the sibling [`OKHP3/murderbird-uncaged`](https://github.com/OKHP3/murderbird-uncaged)
+repository. The OverKill-Hill site keeps its story publication, site shell, and
+any copies needed for distribution. A story snapshot in MurderBird Uncaged may
+provide creative context; the website remains the source of truth for editorial
+publication. Do not build a second MurderBird app or keep its creative source
+assets in FoundRy. See [repository boundaries](docs/repository-boundaries.md).
+
 ## 9. Directory Contract
 
 ```text

@@ -23,6 +23,15 @@ separate FoundRys. [Skillz](https://okhp3.github.io/skillz/) is shared by all th
 this application references that catalog without copying it or publishing projects
 into it. Universal governance continues to originate in `OKHP3/OverKill-Hill`.
 
+FoundRy is the OverKill capability workbench for prompts, skills, workflows,
+software starters, and related capabilities; the historic Custom GPT studio
+remains available within it. The [OverKill-Hill site](https://overkillhill.com/)
+owns the public brand, portfolio, and [editorial MurderBird story](https://overkillhill.com/writings/murderbird/).
+MurderBird's creative assets and interactive app belong
+in the sibling [`OKHP3/murderbird-uncaged`](https://github.com/OKHP3/murderbird-uncaged)
+repository. The website retains the published story, its site shell, and any
+copies needed for distribution. See [repository boundaries](docs/repository-boundaries.md).
+
 **Public by intent:** the owner confirmed this repository’s public status on
 September 7, 2026. FoundRy is the mentor pattern for the AskJamie and Glee-fully
 FoundRys, which remain distinct and can contribute improvements back to it or
