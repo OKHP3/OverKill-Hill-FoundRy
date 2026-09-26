@@ -46,14 +46,22 @@ jobs:
 
           valid = (
               isinstance(case, dict)
+              and isinstance(case.get("id"), str)
+              and bool(case.get("id", "").strip())
+              and case.get("partition") == "holdout"
               and isinstance(case.get("prompt"), str)
+              and bool(case.get("prompt", "").strip())
               and isinstance(case.get("expectations"), list)
-              and all(isinstance(item, str) for item in case.get("expectations", []))
+              and len(case.get("expectations", [])) == 3
+              and all(
+                  isinstance(item, str) and item.strip()
+                  for item in case.get("expectations", [])
+              )
           )
           raise SystemExit(0 if valid else 1)
           PY
           then
-            echo "::error::REFOLDEC_PROTECTED_HOLDOUT_JSON must contain a JSON object with a string prompt and a list of expectation strings."
+            echo "::error::REFOLDEC_PROTECTED_HOLDOUT_JSON must contain a JSON holdout with a non-empty id, partition 'holdout', a non-empty prompt, and exactly three non-empty expectation strings."
             exit 1
           fi
 

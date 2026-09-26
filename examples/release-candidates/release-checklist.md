@@ -12,8 +12,13 @@ visibility change as part of this checklist.
 - [x] Release-artifact holdout scan passes:
   `python3 scripts/refoldec-holdout-evaluate.py --scan-release-artifacts
   --holdout-file examples/release-candidates/skill/tests/protected-holdout.json`
-  (the maintainer fixture is temporary and untracked). A failure blocks release
-  records from shipping until protected content and placeholder hashes are removed.
+  (the maintainer fixture is temporary and untracked; clean checkouts do not
+  contain it). Supply a maintainer-controlled JSON object with a non-empty `id`,
+  `partition: "holdout"`, a non-empty `prompt`, and exactly three non-empty
+  strings in `expectations`. The evaluator checks this setup before scanning and
+  reports a checklist-linked error for a missing or malformed fixture without
+  printing its contents. A failure blocks release records from shipping until
+  protected content and placeholder hashes are removed.
   For an automated review package, run the **Package ReFolDec review skill**
   workflow from `main`. It reads the maintainer-only JSON from the GitHub
   Actions repository secret `REFOLDEC_PROTECTED_HOLDOUT_JSON`, writes it only
