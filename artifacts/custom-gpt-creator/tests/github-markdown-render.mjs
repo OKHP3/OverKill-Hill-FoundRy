@@ -20,8 +20,9 @@ const sensitiveResponseField = /((?:"?(?:authorization|proxy-authorization|cooki
 
 const boundedResponseDetail = (responseText) => {
   const redacted = String(responseText)
-    .replace(sensitiveResponseField, "$1[REDACTED]")
+    // Redact the scheme and credential before replacing a header field value.
     .replace(/\b(Bearer|Basic)\s+[^\s"',}]+/gi, "$1 [REDACTED]")
+    .replace(sensitiveResponseField, "$1[REDACTED]")
     .replace(/\b(?:github_pat|gh[pousr])_[A-Za-z0-9_]+\b/gi, "[REDACTED]");
 
   if (redacted.length <= responseDetailLimit) return redacted;

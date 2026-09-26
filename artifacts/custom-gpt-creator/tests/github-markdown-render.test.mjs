@@ -49,6 +49,23 @@ test("bounds and redacts non-success renderer response details", () => {
   );
 });
 
+test("redacts complete header-style Bearer and Basic credentials", () => {
+  for (const [header, scheme, credential] of [
+    ["Authorization", "Bearer", "example.jwt.signature"],
+    ["Proxy-Authorization", "Basic", "dGVzdDpmaXh0dXJl"],
+    ["authorization", "bearer", "opaque-fixture-value"],
+  ]) {
+    const diagnostic = formatGithubRendererResponseError(
+      401,
+      "https://api.github.com/markdown",
+      `${header}: ${scheme} ${credential}\nRequest-ID: safe-fixture`,
+    );
+    assert.ok(!diagnostic.includes(credential), diagnostic);
+    assert.match(diagnostic, /\[REDACTED\]/);
+    assert.match(diagnostic, /Request-ID: safe-fixture/);
+  }
+});
+
 test("keeps behavior and nearby fragment in renderer failure diagnostics", () => {
   const rendered = [
     '<h1>Custom GPT Specification Package</h1>',
