@@ -28,6 +28,18 @@ const buildStepLabels = [
 const unicodeAndMixedLineEndings =
   "日本語のレビュー 🌍\r\nDeuxième ligne — café\rDritte Zeile\nFourth line";
 
+const composedAndDecomposedInstructions = {
+  composed: "Café — résumé: \u00e9",
+  decomposed: "Cafe\u0301 — re\u0301sume\u0301: e\u0301",
+} as const;
+
+const jsonSensitiveInstructions = {
+  1: 'Quotes: "double" and \'single\'; backslash: C:\\Users\\Forge\\spec.json',
+  2: "Tabs\tstay tabs; newline follows.\nSecond line.",
+  3: "Null\u0000character stays inside the instruction.",
+  4: "Mixed\r\nline endings and /slashes/ stay exact.\rFinal line.",
+} as const;
+
 const fullSpecInstructionFixture = {
   1: `You are the archive curator for “Found·Ry”.\r\nKeep this identity line exact.\rDo not normalize this boundary.\nFinish with the compass 🧭 and 日本語.`,
   2: `Prefer evidence over speed — preserve the source.\r\nUse the recorded context.\rAllow uncertainty to remain visible.\nEnd with a clear priority.`,
@@ -204,6 +216,63 @@ test("switches export formats before copying and downloading", async ({ page }) 
   await expectSelectedExportActions(page, "switching-formats-gpt-spec.json", "json");
 });
 
+test("preserves composed and decomposed Unicode code points in Evidence JSON", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Unicode Evidence GPT" },
+    "step-2": {
+      1: composedAndDecomposedInstructions.composed,
+      2: composedAndDecomposedInstructions.decomposed,
+    },
+  });
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const displayedJson = await page.locator("pre").textContent();
+  expect(displayedJson).not.toBeNull();
+  const exactDisplayedJson = displayedJson!;
+  const evidence = JSON.parse(exactDisplayedJson);
+  const exportedInstructions = evidence.phases["step-2-instruction-stack"];
+
+  expect(exportedInstructions[1]).toBe(composedAndDecomposedInstructions.composed);
+  expect(exportedInstructions[2]).toBe(composedAndDecomposedInstructions.decomposed);
+  expect([...exportedInstructions[1]].map((character: string) => character.codePointAt(0))).toEqual([
+    0x43, 0x61, 0x66, 0xe9, 0x20, 0x2014, 0x20, 0x72, 0xe9, 0x73, 0x75, 0x6d, 0xe9, 0x3a, 0x20, 0xe9,
+  ]);
+  expect([...exportedInstructions[2]].map((character: string) => character.codePointAt(0))).toEqual([
+    0x43, 0x61, 0x66, 0x65, 0x301, 0x20, 0x2014, 0x20, 0x72, 0x65, 0x301, 0x73, 0x75, 0x6d, 0x65, 0x301, 0x3a, 0x20, 0x65, 0x301,
+  ]);
+
+  await expectSelectedExportActions(page, "unicode-evidence-gpt-spec.json", "json");
+});
+
+test("keeps JSON-sensitive instructions parseable and byte-identical in Evidence JSON", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "JSON Sensitive Evidence GPT" },
+    "step-2": jsonSensitiveInstructions,
+  });
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const displayedJson = await page.locator("pre").textContent();
+  expect(displayedJson).not.toBeNull();
+  const exactDisplayedJson = displayedJson!;
+  const evidence = JSON.parse(exactDisplayedJson);
+  const exportedInstructions = evidence.phases["step-2-instruction-stack"];
+
+  expect(exportedInstructions).toEqual(jsonSensitiveInstructions);
+  for (const [layerId, instruction] of Object.entries(jsonSensitiveInstructions)) {
+    expect(exportedInstructions[layerId]).toBe(instruction);
+  }
+  expect(exactDisplayedJson).toContain(JSON.stringify(jsonSensitiveInstructions[1]));
+  expect(exactDisplayedJson).toContain("\\t");
+  expect(exactDisplayedJson).toContain("\\n");
+  expect(exactDisplayedJson).toContain("\\r\\n");
+  expect(exactDisplayedJson).toContain("\\r");
+  expect(exactDisplayedJson).toContain("\\u0000");
+
+  await expectSelectedExportActions(page, "json-sensitive-evidence-gpt-spec.json", "json");
+});
+
 test("keeps the committed GitHub fixture generated from representative Creator data", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(
@@ -366,6 +435,129 @@ test("ignores malformed instruction values and containers without changing valid
   expect(malformedContainerFullSpec).toContain("## 2. Instructions\n\n(no instruction layers filled)");
   expect(malformedContainerFullSpec).not.toContain("### Layer 1:");
   await expectSelectedExportActions(page, "malformed-container-gpt-spec.md", "md");
+});
+
+test("keeps exports usable when saved project sections have malformed shapes", async ({ page }) => {
+  await openExportPackage(page);
+
+  const malformedProjectData = {
+    "step-0": {
+      gptName: "Malformed Sections GPT",
+      outcomes: "Keep this valid build brief content.",
+    },
+    "step-1": {
+      inputs: "Keep this valid conversation contract content.",
+    },
+    "step-2": {
+      1: "Keep this valid instruction layer.",
+      2: { invalid: "instruction object" },
+    },
+    "step-3": {
+      files: [
+        { filename: "valid-reference.md", type: "Reference", topic: "Valid topic", notes: "Keep this routing note." },
+        null,
+        "invalid file entry",
+        { filename: { invalid: true }, topic: ["invalid topic"] },
+      ],
+      retrievalNotes: "Keep these valid retrieval notes.",
+    },
+    "step-5": ["invalid step record"],
+    "step-6": [
+      "Keep this valid conversation starter.",
+      null,
+      { text: "invalid starter entry" },
+    ],
+    "step-7": {
+      cases: [
+        { category: "happy path", prompt: "Keep this valid test prompt.", expectedBehavior: "Keep this valid expected behavior.", result: "pass" },
+        null,
+        { category: { invalid: true }, prompt: ["invalid prompt"] },
+      ],
+      toolFailureTest: "Keep this valid failure test note.",
+    },
+    "step-8": ["invalid step record"],
+  };
+  await replaceProjectData(page, malformedProjectData);
+
+  const fullSpec = await page.locator("pre").textContent();
+  expect(fullSpec).not.toBeNull();
+  expect(fullSpec).toContain("Keep this valid build brief content.");
+  expect(fullSpec).toContain("`valid-reference.md` [Reference] — Valid topic");
+  expect(fullSpec).toContain("*Routing note: Keep this routing note.*");
+  expect(fullSpec).toContain('1. "Keep this valid conversation starter."');
+  expect(fullSpec).toContain("Keep this valid test prompt.");
+  expect(fullSpec).not.toContain("invalid file entry");
+  expect(fullSpec).not.toContain("invalid starter entry");
+  expect(fullSpec).not.toContain("invalid step record");
+  await expectSelectedExportActions(page, "malformed-sections-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  await expect(page.locator("pre")).toHaveText("## Identity & Scope\nKeep this valid instruction layer.");
+  await expectSelectedExportActions(page, "malformed-sections-gpt-spec.md", "md");
+
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const evidenceContent = await page.locator("pre").textContent();
+  expect(evidenceContent).not.toBeNull();
+  const evidence = JSON.parse(evidenceContent!);
+  expect(evidence.artifact.name).toBe("Malformed Sections GPT");
+  expect(evidence.phases["step-3-knowledge-files"]).toEqual(malformedProjectData["step-3"]);
+  expect(evidence.phases["step-6-conversation-starters"]).toEqual(malformedProjectData["step-6"]);
+  expect(evidence.phases["step-7-test-matrix"]).toEqual(malformedProjectData["step-7"]);
+  await expectSelectedExportActions(page, "malformed-sections-gpt-spec.json", "json");
+});
+
+test("repairs malformed saved instructions in the editor and preserves valid layers", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Repairable Instructions GPT" },
+    "step-2": "A malformed saved instruction container",
+  });
+
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect(page.locator("textarea").first()).toHaveValue("");
+
+  const validInstruction = "  Keep this restored value exact.  \r\nMixed endings stay intact.\rLast line.";
+  await page.evaluate((savedInstructions) => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    workspace.projects[0].data["step-2"] = {
+      1: 42,
+      2: false,
+      3: savedInstructions,
+    };
+    localStorage.setItem("cgpt-workspace", JSON.stringify(workspace));
+  }, validInstruction);
+  await page.reload();
+
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect(page.locator("textarea").first()).toHaveValue("");
+  await page.getByRole("button", { name: /3\s+Dialogue Policy/ }).click();
+  await expect(page.locator("textarea").first()).toHaveValue(validInstruction.replace(/\r\n?/g, "\n"));
+  expect(
+    await page.evaluate(() => {
+      const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+      return workspace.projects[0].data["step-2"];
+    }),
+  ).toEqual({ 3: validInstruction });
+
+  await page.getByRole("button", { name: /1\s+Identity & Scope/ }).click();
+  const repairedInstruction = "  Repaired instruction.\r\nKeep this line ending.\rFinal line.  ";
+  await page.locator("textarea").first().fill(repairedInstruction);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        return workspace.projects[0].data["step-2"];
+      }),
+    )
+    .toEqual({ 1: repairedInstruction, 3: validInstruction });
+
+  await page.reload();
+  await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
+  await expect(page.locator("textarea").first()).toHaveValue(repairedInstruction.replace(/\r\n?/g, "\n"));
+  await page.getByRole("button", { name: /3\s+Dialogue Policy/ }).click();
+  await expect(page.locator("textarea").first()).toHaveValue(validInstruction.replace(/\r\n?/g, "\n"));
 });
 
 test("preserves mixed instruction bytes in the Full Spec export", async ({ page }) => {

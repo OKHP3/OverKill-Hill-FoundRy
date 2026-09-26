@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  checkBehavior,
+  createRendererBehaviorCoverage,
   diagnosticBehaviorLabels,
   renderedFragment,
 } from "./github-markdown-diagnostics.mjs";
@@ -14,6 +14,36 @@ export { renderedFragment };
 export const fixturePath = fileURLToPath(
   new URL("./fixtures/github-markdown-fixture.v1.md", import.meta.url),
 );
+
+const responseDetailLimit = 500;
+const sensitiveResponseField = /((?:"?(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[-_ ]?key|access[-_ ]?token|refresh[-_ ]?token|client[-_ ]?secret|token|secret|password)"?)\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^,\s}]+)/gi;
+
+const boundedResponseDetail = (responseText) => {
+  const redacted = String(responseText)
+    .replace(sensitiveResponseField, "$1[REDACTED]")
+    .replace(/\b(Bearer|Basic)\s+[^\s"',}]+/gi, "$1 [REDACTED]")
+    .replace(/\b(?:github_pat|gh[pousr])_[A-Za-z0-9_]+\b/gi, "[REDACTED]");
+
+  if (redacted.length <= responseDetailLimit) return redacted;
+  return `${redacted.slice(0, responseDetailLimit - 3)}...`;
+};
+
+/**
+ * Formats a non-2xx GitHub Markdown response for both renderer runners.
+ *
+ * Keep the response detail bounded and redacted so rate-limit and API error
+ * context is useful in CI without allowing a response to flood the logs or
+ * expose credentials.
+ *
+ * @param {number} status
+ * @param {string} endpoint
+ * @param {string} responseText
+ * @returns {string}
+ */
+export const formatGithubRendererResponseError = (status, endpoint, responseText) =>
+  `GitHub Markdown rendering failed with ${status} from ${endpoint}: ${
+    boundedResponseDetail(responseText) || "[empty response body]"
+  }`;
 
 const headings = [
   "0. Build Brief",
@@ -31,21 +61,21 @@ const headings = [
 
 const headingMarkup = (heading) =>
   new RegExp(`<h2[^>]*>${heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h2>`);
-
 export const assertRenderedMarkdown = (rendered) => {
+  const rendererBehaviorCoverage = createRendererBehaviorCoverage("standalone");
   assert.match(rendered, /<h1[^>]*>Custom GPT Specification Package<\/h1>/);
   for (const heading of headings) assert.match(rendered, headingMarkup(heading));
   assert.deepEqual(
     headings.map((heading) => rendered.search(headingMarkup(heading))),
     [...headings.map((heading) => rendered.search(headingMarkup(heading)))].sort((a, b) => a - b),
   );
-  checkBehavior(rendered, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
+  rendererBehaviorCoverage.checkBehavior(rendered, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
     assert.match(rendered, /<markdown-accessiblity-table><table[^>]*>/);
     assert.match(rendered, /<strong>Ready<\/strong>/);
     assert.match(rendered, /class="highlight highlight-source-ts"/);
     assert.match(rendered, /answer/);
   });
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.safeLinksRemainLinks,
     "Read the evidence guide",
@@ -59,9 +89,13 @@ export const assertRenderedMarkdown = (rendered) => {
         /<a href="\.\/evidence-guide\.md"[^>]*>Read the repository evidence guide<\/a>/,
       );
       assert.match(rendered, /<a href="https:\/\/example\.com\/safe"[^>]*>Safe HTTPS link<\/a>/);
+      assert.match(
+        rendered,
+        /<a href="https:\/\/example\.com\/reference-safe"[^>]*>Reference-style safe HTTPS link<\/a>/,
+      );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.relativeEvidenceLinksPreserveSectionAnchors,
     "Read the repository evidence section",
@@ -72,7 +106,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.nestedRepositoryRelativeEvidenceLinksPreserveNestedPaths,
     "Read the nested repository evidence guide",
@@ -83,7 +117,7 @@ export const assertRenderedMarkdown = (rendered) => {
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.unsafeUrlProtocolsAreRemovedOrMadeNonExecutable,
     "Unsafe protocol link",
@@ -103,16 +137,36 @@ export const assertRenderedMarkdown = (rendered) => {
         "Percent-encoded JavaScript image",
         "Percent-encoded data link",
         "Percent-encoded data image",
+        "HTML-entity-encoded JavaScript link",
+        "HTML-entity-encoded JavaScript image",
+        "HTML-entity-encoded data link",
+        "HTML-entity-encoded data image",
+        "HTML-entity-encoded VBScript link",
+        "HTML-entity-encoded VBScript image",
+        "Reference-style unsafe protocol link",
+        "Reference-style unsafe protocol image",
+        "Reference-style data link",
+        "Reference-style data image",
+        "Reference-style VBScript link",
+        "Reference-style VBScript image",
+        "Reference-style mixed-case data link",
+        "Reference-style mixed-case data image",
+        "Reference-style mixed-case VBScript link",
+        "Reference-style mixed-case VBScript image",
+        "Reference-style percent-encoded JavaScript link",
+        "Reference-style percent-encoded JavaScript image",
+        "Reference-style percent-encoded data link",
+        "Reference-style percent-encoded data image",
       ]) {
         assert.ok(rendered.includes(marker), `missing unsafe URL marker: ${marker}`);
       }
       assert.doesNotMatch(
         rendered,
-        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):|(?:java&#x73;cript|data&#x3a;|vb&#x73;cript):)/i,
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable,
     "Before unsafe raw HTML link",
@@ -126,9 +180,48 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /after unsafe raw HTML image\./);
       assert.doesNotMatch(rendered, /href=["'][^"']*javascript:/i);
       assert.doesNotMatch(rendered, /src=["'][^"']*javascript:/i);
+      for (const marker of [
+        "Before mixed-case unsafe raw HTML link",
+        "mixed-case raw link text",
+        "after mixed-case unsafe raw HTML link.",
+        "Before percent-encoded unsafe raw HTML link",
+        "percent-encoded raw link text",
+        "after percent-encoded unsafe raw HTML link.",
+        "Before mixed-case unsafe raw HTML image",
+        "mixed-case raw image text",
+        "after mixed-case unsafe raw HTML image.",
+        "Before percent-encoded unsafe raw HTML image",
+        "percent-encoded raw image text",
+        "after percent-encoded unsafe raw HTML image.",
+      ]) {
+        assert.ok(rendered.includes(marker), `missing raw HTML safety marker: ${marker}`);
+      }
+      assert.doesNotMatch(
+        rendered,
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+      );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
+    rendered,
+    diagnosticBehaviorLabels.safeRawHtmlLinkAndImageDestinationsRemainUsable,
+    "Before safe raw HTML link",
+    () => {
+      assert.match(
+        rendered,
+        /Before safe raw HTML link <a href="https:\/\/example\.com\/raw-safe"[^>]*>raw safe link text<\/a> after safe raw HTML link\./,
+      );
+      const safeImage = rendered.match(/<img\b[^>]*alt="raw safe image text"[^>]*>/)?.[0];
+      assert.ok(safeImage, "safe raw HTML image was not rendered");
+      assert.match(
+        safeImage,
+        /(?:src|data-canonical-src)="https:\/\/example\.com\/raw-safe\.png"/,
+      );
+      assert.match(rendered, /Before safe raw HTML image/);
+      assert.match(rendered, /after safe raw HTML image\./);
+    },
+  );
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
     "Before raw HTML",
@@ -136,7 +229,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /Before raw HTML <span>boundary<\/span> after raw HTML\./);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.executableRawHtmlIsEscaped,
     "Before executable raw HTML",
@@ -148,7 +241,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.doesNotMatch(rendered, /<script/);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.unsafeHtmlAttributesAreRemoved,
     "Before unsafe attributes",
@@ -163,7 +256,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.doesNotMatch(rendered, /class="raw-html"/);
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     rendered,
     diagnosticBehaviorLabels.listsAndAuditFindingsRender,
     "Allowed:",
@@ -173,6 +266,7 @@ export const assertRenderedMarkdown = (rendered) => {
       assert.match(rendered, /<h3[^>]*>Per-item findings<\/h3>/);
     },
   );
+  rendererBehaviorCoverage.assertComplete();
 };
 
 const runLiveCheck = async () => {
@@ -200,7 +294,7 @@ const runLiveCheck = async () => {
   const rendered = await response.text();
   if (!response.ok) {
     throw new Error(
-      `GitHub Markdown rendering failed with ${response.status}: ${rendered.slice(0, 500)}`,
+      formatGithubRendererResponseError(response.status, endpoint, rendered),
     );
   }
 

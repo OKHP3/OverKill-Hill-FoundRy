@@ -4,7 +4,6 @@ import {
   AUDIT_RUBRIC_VERSION,
   AUDIT_SHIP_GATE_THRESHOLDS,
   BUILD_STEPS,
-  INSTRUCTION_LAYERS,
   SAFETY_AUDIT_ID,
 } from "../data/knowledge";
 import {
@@ -16,6 +15,7 @@ import {
   readProjectValue,
 } from "../lib/creatorStorage";
 import { calculateReadiness, type ReadinessState } from "../lib/readiness";
+import { formatInstructionLayers } from "../lib/instruction-layers";
 
 function loadCompletedSteps(): Set<number> {
   try {
@@ -35,6 +35,23 @@ function loadCompletedSteps(): Set<number> {
 
 function loadStep(key: string): any {
   try { return readProjectValue(key) ?? {}; } catch { return {}; }
+}
+
+function loadStepRecord(key: string): Record<string, any> {
+  const value = loadStep(key);
+  return isRecord(value) ? value : {};
+}
+
+function recordArray(value: unknown): Array<Record<string, any>> {
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function textValue(value: unknown): string {
+  return typeof value === "string" ? value : "";
 }
 
 function sanitizeDownloadName(value: unknown): string {
@@ -174,38 +191,24 @@ function normalizeAuditRecord(raw: unknown): AuditEvidence | undefined {
   };
 }
 
-function formatInstructionLayers(
-  layerData: unknown,
-  heading: (layer: (typeof INSTRUCTION_LAYERS)[number]) => string,
-): string {
-  if (!isRecord(layerData)) return "";
-
-  return INSTRUCTION_LAYERS
-    .flatMap((layer) => {
-      const content = layerData[layer.id];
-      return typeof content === "string" && content.trim()
-        ? [`${heading(layer)}\n${content}`]
-        : [];
-    })
-    .join("\n\n");
-}
-
 function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string): EvidencePackage {
-  const brief = loadStep("step-0");
-  const contract = loadStep("step-1");
+  const brief = loadStepRecord("step-0");
+  const contract = loadStepRecord("step-1");
   const layerData = loadStep("step-2");
-  const knowledge = loadStep("step-3");
-  const caps = loadStep("step-4");
-  const actions = loadStep("step-5");
+  const knowledge = loadStepRecord("step-3");
+  const caps = loadStepRecord("step-4");
+  const actions = loadStepRecord("step-5");
   const starters = loadStep("step-6");
-  const tests = loadStep("step-7");
-  const ship = loadStep("step-8");
+  const tests = loadStepRecord("step-7");
+  const ship = loadStepRecord("step-8");
+  const testCases = recordArray(tests.cases);
   const readiness = calculateReadiness({
     "step-0": brief, "step-1": contract, "step-2": layerData, "step-3": knowledge,
-    "step-4": caps, "step-5": actions, "step-6": starters, "step-7": tests, "step-8": ship,
+    "step-4": caps, "step-5": actions, "step-6": starters,
+    "step-7": { ...tests, cases: testCases }, "step-8": ship,
   }, completedSteps);
   const changeLedger = Object.fromEntries(
-    ["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map(key => [key, loadStep(key)])
+    ["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map(key => [key, loadStepRecord(key)])
   );
   const audit = normalizeAuditRecord(readProjectValue("audit-mode"));
 
@@ -213,10 +216,10 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
     schemaVersion: "1.0",
     artifact: {
       type: "custom-gpt-specification",
-      name: brief.gptName || "Untitled GPT",
-      version: ship.currentVersion || "v0.1",
-      owner: ship.ownerName || "",
-      visibility: ship.visibility || "",
+      name: textValue(brief.gptName) || "Untitled GPT",
+      version: textValue(ship.currentVersion) || "v0.1",
+      owner: textValue(ship.ownerName),
+      visibility: textValue(ship.visibility),
     },
     readiness: {
       state: readiness.state,
@@ -232,30 +235,30 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
     humanConfirmation: {
       required: true,
       recorded: readiness.humanConfirmation.recorded,
-      owner: ship.ownerName || "",
-      decision: ship.releaseDecision || "draft",
-      rationale: ship.releaseEvidence || "",
+      owner: textValue(ship.ownerName),
+      decision: textValue(ship.releaseDecision) || "draft",
+      rationale: textValue(ship.releaseEvidence),
     },
     provenance: {
       generatedAt,
       source: "browser-local-project",
-      projectName: brief.gptName || "Untitled GPT",
+      projectName: textValue(brief.gptName) || "Untitled GPT",
       changeLedger,
     },
     boundaries: {
-      nonGoals: brief.nonGoals || "",
-      allowedSources: brief.allowedSources || "",
-      disallowedSources: brief.disallowedSources || "",
-      compliance: brief.compliance || "",
-      toolingAllowed: brief.toolingAllowed || "",
+      nonGoals: textValue(brief.nonGoals),
+      allowedSources: textValue(brief.allowedSources),
+      disallowedSources: textValue(brief.disallowedSources),
+      compliance: textValue(brief.compliance),
+      toolingAllowed: textValue(brief.toolingAllowed),
     },
     failureBehavior: {
-      catastrophicMistakes: contract.catastrophicMistakes || "",
-      toolFailureTest: tests.toolFailureTest || "",
+      catastrophicMistakes: textValue(contract.catastrophicMistakes),
+      toolFailureTest: textValue(tests.toolFailureTest),
       recovery: "Return to the smallest failing phase; keep unknown or failed evidence unresolved until reviewed.",
     },
     assumptions: {
-      knowledgeRetrieval: knowledge.retrievalNotes || "",
+      knowledgeRetrieval: textValue(knowledge.retrievalNotes),
       unresolved: readiness.unresolvedItems,
     },
     phases: {
@@ -273,21 +276,22 @@ function buildEvidencePackage(completedSteps: Set<number>, generatedAt: string):
 }
 
 function buildMarkdown(evidencePackage: EvidencePackage): string {
-  const brief = loadStep("step-0");
-  const contract = loadStep("step-1");
+  const brief = loadStepRecord("step-0");
+  const contract = loadStepRecord("step-1");
   const layerData = loadStep("step-2");
-  const knowledge = loadStep("step-3");
-  const caps = loadStep("step-4");
-  const capsRationale = loadStep("step-4-rationale");
-  const actions = loadStep("step-5");
-  const savedStarters = loadStep("step-6");
-  const starters: string[] = Array.isArray(savedStarters) ? savedStarters : [];
-  const tests = loadStep("step-7");
-  const ship = loadStep("step-8");
+  const knowledge = loadStepRecord("step-3");
+  const knowledgeFiles = recordArray(knowledge.files);
+  const caps = loadStepRecord("step-4");
+  const capsRationale = loadStepRecord("step-4-rationale");
+  const actions = loadStepRecord("step-5");
+  const starters = stringArray(loadStep("step-6"));
+  const tests = loadStepRecord("step-7");
+  const testCases = recordArray(tests.cases);
+  const ship = loadStepRecord("step-8");
   const evidenceSections = [
-    ["Build Brief evidence", brief.evidenceStatus, brief.evidenceRegister],
-    ["Knowledge evidence", knowledge.evidenceStatus, [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n")],
-    ["Evaluation evidence", tests.evidenceStatus, [tests.retrievalVerification, tests.toolFailureTest, tests.ownerReview].filter(Boolean).join("\n")],
+    ["Build Brief evidence", textValue(brief.evidenceStatus), textValue(brief.evidenceRegister)],
+    ["Knowledge evidence", textValue(knowledge.evidenceStatus), [knowledge.retrievalNotes, knowledge.conflictHandling, knowledge.injectionBoundary].filter(Boolean).join("\n")],
+    ["Evaluation evidence", textValue(tests.evidenceStatus), [tests.retrievalVerification, tests.toolFailureTest, tests.ownerReview].filter(Boolean).join("\n")],
   ];
   const auditSection = evidencePackage.audit ? `
 ---
@@ -319,48 +323,48 @@ ${evidencePackage.audit.items.map((item) =>
 
 ## 0. Build Brief
 
-**GPT Name:** ${brief.gptName || "(not set)"}
-**Primary Users:** ${brief.primaryUsers || "(not set)"}
-**Version:** ${ship.currentVersion || "v0.1"}
-**Owner:** ${ship.ownerName || "(not set)"}
-**Visibility:** ${ship.visibility || "(not set)"}
+**GPT Name:** ${textValue(brief.gptName) || "(not set)"}
+**Primary Users:** ${textValue(brief.primaryUsers) || "(not set)"}
+**Version:** ${textValue(ship.currentVersion) || "v0.1"}
+**Owner:** ${textValue(ship.ownerName) || "(not set)"}
+**Visibility:** ${textValue(ship.visibility) || "(not set)"}
 
 ### Primary Outcomes
-${brief.outcomes || "(not defined)"}
+${textValue(brief.outcomes) || "(not defined)"}
 
 ### Non-Goals / Out of Scope
-${brief.nonGoals || "(not defined)"}
+${textValue(brief.nonGoals) || "(not defined)"}
 
 ### Done-When Acceptance Criteria
-${brief.doneCriteria || "(not defined)"}
+${textValue(brief.doneCriteria) || "(not defined)"}
 
 ### Data Sources
-- **Allowed:** ${brief.allowedSources || "(not set)"}
-- **Disallowed:** ${brief.disallowedSources || "(not set)"}
+- **Allowed:** ${textValue(brief.allowedSources) || "(not set)"}
+- **Disallowed:** ${textValue(brief.disallowedSources) || "(not set)"}
 
 ### Tooling & Compliance
-- **Tooling:** ${brief.toolingAllowed || "(not set)"}
-- **Compliance:** ${brief.compliance || "(not set)"}
+- **Tooling:** ${textValue(brief.toolingAllowed) || "(not set)"}
+- **Compliance:** ${textValue(brief.compliance) || "(not set)"}
 
 ### Evidence Register
-- **Status:** ${brief.evidenceStatus || "unknown"}
-${brief.evidenceRegister || "(unknown - verification needed)"}
+- **Status:** ${textValue(brief.evidenceStatus) || "unknown"}
+${textValue(brief.evidenceRegister) || "(unknown - verification needed)"}
 
 ---
 
 ## 1. Conversation Contract
 
 ### Inputs
-${contract.inputs || "(not defined)"}
+${textValue(contract.inputs) || "(not defined)"}
 
 ### Outputs
-${contract.outputs || "(not defined)"}
+${textValue(contract.outputs) || "(not defined)"}
 
 ### Top Tasks (ranked)
-${contract.topTasks || "(not defined)"}
+${textValue(contract.topTasks) || "(not defined)"}
 
 ### Catastrophic Mistakes
-${contract.catastrophicMistakes || "(not defined)"}
+${textValue(contract.catastrophicMistakes) || "(not defined)"}
 
 ---
 
@@ -372,13 +376,13 @@ ${instructionBlock || "(no instruction layers filled)"}
 
 ## 3. Knowledge Files
 
-${knowledge.files && knowledge.files.length > 0
-  ? knowledge.files.map((f: { filename: string; type: string; topic: string; notes: string }, i: number) =>
-      `${i + 1}. \`${f.filename || "(unnamed)"}\` [${f.type}] — ${f.topic || "(no topic)"}${f.notes ? `\n   *Routing note: ${f.notes}*` : ""}`
+${knowledgeFiles.length > 0
+  ? knowledgeFiles.map((f, i) =>
+      `${i + 1}. \`${textValue(f.filename) || "(unnamed)"}\` [${textValue(f.type)}] — ${textValue(f.topic) || "(no topic)"}${textValue(f.notes) ? `\n   *Routing note: ${textValue(f.notes)}*` : ""}`
     ).join("\n")
   : "(no files planned)"}
 
-${knowledge.retrievalNotes ? `**Retrieval notes:**\n${knowledge.retrievalNotes}` : ""}
+${textValue(knowledge.retrievalNotes) ? `**Retrieval notes:**\n${textValue(knowledge.retrievalNotes)}` : ""}
 
 ---
 
@@ -390,25 +394,25 @@ ${Object.entries(caps || {}).filter(([, v]) => v).map(([k]) => `- ✓ ${k}`).joi
 
 ## 5. Actions / Apps
 
-**Choice:** ${actions.choice || "none"}
-${actions.choice === "actions" ? `**Auth type:** ${actions.authType || "none"}
-**Privacy Policy URL:** ${actions.privacyPolicyUrl || "(not set)"}
-${actions.errorHandling ? `**Error handling:** ${actions.errorHandling}` : ""}` : ""}
-${actions.choice === "apps" ? `**Apps notes:** ${actions.appsNotes || "(none)"}` : ""}
+**Choice:** ${textValue(actions.choice) || "none"}
+${actions.choice === "actions" ? `**Auth type:** ${textValue(actions.authType) || "none"}
+**Privacy Policy URL:** ${textValue(actions.privacyPolicyUrl) || "(not set)"}
+${textValue(actions.errorHandling) ? `**Error handling:** ${textValue(actions.errorHandling)}` : ""}` : ""}
+${actions.choice === "apps" ? `**Apps notes:** ${textValue(actions.appsNotes) || "(none)"}` : ""}
 
 ---
 
 ## 6. Conversation Starters
 
-${starters.filter((s: string) => s.trim()).map((s: string, i: number) => `${i + 1}. "${s}"`).join("\n") || "(no starters written)"}
+${starters.filter((s) => s.trim()).map((s, i) => `${i + 1}. "${s}"`).join("\n") || "(no starters written)"}
 
 ---
 
 ## 7. Test Matrix
 
-${tests.cases && tests.cases.length > 0
-  ? tests.cases.map((c: { category: string; prompt: string; expectedBehavior: string; result: string }, i: number) =>
-      `**T${i + 1}** [${c.category}] ${c.result === "pass" ? "✓" : c.result === "fail" ? "✗" : "○"}\n- Prompt: ${c.prompt || "(empty)"}\n- Expected: ${c.expectedBehavior || "(not set)"}`
+${testCases.length > 0
+  ? testCases.map((c, i) =>
+      `**T${i + 1}** [${textValue(c.category)}] ${c.result === "pass" ? "✓" : c.result === "fail" ? "✗" : "○"}\n- Prompt: ${textValue(c.prompt) || "(empty)"}\n- Expected: ${textValue(c.expectedBehavior) || "(not set)"}`
     ).join("\n\n")
   : "(no test cases defined)"}
 
@@ -416,19 +420,19 @@ ${tests.cases && tests.cases.length > 0
 
 ## 8. Governance
 
-**Visibility:** ${ship.visibility || "(not set)"}
-**Version:** ${ship.currentVersion || "(not set)"}
-**Owner:** ${ship.ownerName || "(not set)"}
-**Scheduled review:** ${ship.scheduledReview || "(not set)"}
-**Release decision:** ${ship.releaseDecision || "draft"}
-**Release evidence status:** ${ship.evidenceStatus || "unknown"}
-${ship.releaseEvidence || "(no release decision recorded)"}
+**Visibility:** ${textValue(ship.visibility) || "(not set)"}
+**Version:** ${textValue(ship.currentVersion) || "(not set)"}
+**Owner:** ${textValue(ship.ownerName) || "(not set)"}
+**Scheduled review:** ${textValue(ship.scheduledReview) || "(not set)"}
+**Release decision:** ${textValue(ship.releaseDecision) || "draft"}
+**Release evidence status:** ${textValue(ship.evidenceStatus) || "unknown"}
+${textValue(ship.releaseEvidence) || "(no release decision recorded)"}
 
 ### Change Log
-${ship.changeLog || "(no changelog entry)"}
+${textValue(ship.changeLog) || "(no changelog entry)"}
 
 ### Maintenance Cadence
-${ship.maintenanceCadence || "(not defined)"}
+${textValue(ship.maintenanceCadence) || "(not defined)"}
 
 ---
 
@@ -441,8 +445,8 @@ ${evidenceSections.map(([label, status, notes]) => `### ${label}\n**Status:** ${
 
 ### Change Ledger
   ${["step-2-change", "step-3-change", "step-4-change", "step-5-change"].map((key) => {
-    const change = loadStep(key);
-    return `- **${key}:** ${change.reason || "(no change reason recorded)"} | Expected: ${change.expectedEffect || "unknown"} | Tests: ${change.affectedTests || "unknown"} | Observed: ${change.observedResult || "unknown"} | Rollback: ${change.rollbackDecision || "unknown"}`;
+    const change = loadStepRecord(key);
+    return `- **${key}:** ${textValue(change.reason) || "(no change reason recorded)"} | Expected: ${textValue(change.expectedEffect) || "unknown"} | Tests: ${textValue(change.affectedTests) || "unknown"} | Observed: ${textValue(change.observedResult) || "unknown"} | Rollback: ${textValue(change.rollbackDecision) || "unknown"}`;
   }).join("\n")}
 
 ${auditSection}
@@ -628,8 +632,8 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   );
 
   const content = format === "markdown" ? fullMarkdown : format === "json" ? structuredJson : instructionsOnly;
-  const ship = loadStep("step-8");
-  const tests = loadStep("step-7");
+  const ship = loadStepRecord("step-8");
+  const tests = loadStepRecord("step-7");
   const maturity = evidencePackage.readiness.state === "blocked"
     ? "Blocked"
     : evidencePackage.readiness.state === "confirmed"
@@ -644,7 +648,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   }, [content]);
 
   const download = () => {
-    const brief = loadStep("step-0");
+    const brief = loadStepRecord("step-0");
     const name = sanitizeDownloadName(brief.gptName);
     const isJson = format === "json";
     const contentBytes = new TextEncoder().encode(content);

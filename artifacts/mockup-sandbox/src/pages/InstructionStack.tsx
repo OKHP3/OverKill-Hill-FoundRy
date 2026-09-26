@@ -8,8 +8,22 @@ const STORAGE_KEY = "step-2";
 
 type LayerData = Record<number, string>;
 
+function isInstructionContainer(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function load(): LayerData {
-  try { return (readProjectValue(STORAGE_KEY) as LayerData | undefined) ?? {}; }
+  try {
+    const saved = readProjectValue(STORAGE_KEY);
+    if (!isInstructionContainer(saved)) return {};
+
+    const layers: LayerData = {};
+    for (const layer of INSTRUCTION_LAYERS) {
+      const value = saved[layer.id];
+      if (typeof value === "string") layers[layer.id] = value;
+    }
+    return layers;
+  }
   catch { return {}; }
 }
 

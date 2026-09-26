@@ -3,9 +3,10 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import {
-  checkBehavior,
+  createRendererBehaviorCoverage,
   diagnosticBehaviorLabels,
 } from "./github-markdown-diagnostics.mjs";
+import { formatGithubRendererResponseError } from "./github-markdown-render.mjs";
 
 const fixturePath = resolve("tests/fixtures/github-markdown-fixture.v1.md");
 const githubMarkdownEndpoint = "https://api.github.com/markdown";
@@ -32,7 +33,15 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   });
 
   const renderedHtml = await response.text();
-  expect(response.status(), renderedHtml).toBe(200);
+  expect(
+    response.status(),
+    formatGithubRendererResponseError(
+      response.status(),
+      githubMarkdownEndpoint,
+      renderedHtml,
+    ),
+  ).toBe(200);
+  const rendererBehaviorCoverage = createRendererBehaviorCoverage("Playwright");
 
   // These assertions intentionally inspect GitHub's HTML response instead of
   // comparing another local parser. The fixture is sent as-is and is never
@@ -67,7 +76,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
   ].map((heading) => renderedHtml.search(headingMarkup(heading)));
   expect(headingPositions).toEqual([...headingPositions].sort((a, b) => a - b));
 
-  checkBehavior(renderedHtml, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
+  rendererBehaviorCoverage.checkBehavior(renderedHtml, diagnosticBehaviorLabels.tableAndCodeRendering, "Signal", () => {
     expect(renderedHtml).toMatch(
       /<markdown-accessiblity-table><table role="table">[\s\S]*<th>Signal<\/th>[\s\S]*<td><strong>Ready<\/strong><\/td>/,
     );
@@ -76,7 +85,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
     );
     expect(renderedHtml).toContain('<span class="pl-s1">answer</span>');
   });
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.safeLinksRemainLinks,
     "Read the evidence guide",
@@ -90,9 +99,12 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).toContain(
         '<a href="https://example.com/safe" rel="nofollow">Safe HTTPS link</a>',
       );
+      expect(renderedHtml).toContain(
+        '<a href="https://example.com/reference-safe" rel="nofollow">Reference-style safe HTTPS link</a>',
+      );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.relativeEvidenceLinksPreserveSectionAnchors,
     "Read the repository evidence section",
@@ -102,7 +114,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.nestedRepositoryRelativeEvidenceLinksPreserveNestedPaths,
     "Read the nested repository evidence guide",
@@ -112,7 +124,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.unsafeUrlProtocolsAreRemovedOrMadeNonExecutable,
     "Unsafe protocol link",
@@ -132,15 +144,35 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
         "Percent-encoded JavaScript image",
         "Percent-encoded data link",
         "Percent-encoded data image",
+        "HTML-entity-encoded JavaScript link",
+        "HTML-entity-encoded JavaScript image",
+        "HTML-entity-encoded data link",
+        "HTML-entity-encoded data image",
+        "HTML-entity-encoded VBScript link",
+        "HTML-entity-encoded VBScript image",
+        "Reference-style unsafe protocol link",
+        "Reference-style unsafe protocol image",
+        "Reference-style data link",
+        "Reference-style data image",
+        "Reference-style VBScript link",
+        "Reference-style VBScript image",
+        "Reference-style mixed-case data link",
+        "Reference-style mixed-case data image",
+        "Reference-style mixed-case VBScript link",
+        "Reference-style mixed-case VBScript image",
+        "Reference-style percent-encoded JavaScript link",
+        "Reference-style percent-encoded JavaScript image",
+        "Reference-style percent-encoded data link",
+        "Reference-style percent-encoded data image",
       ]) {
         expect(renderedHtml).toContain(marker);
       }
       expect(renderedHtml).not.toMatch(
-        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):|(?:java&#x73;cript|data&#x3a;|vb&#x73;cript):)/i,
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.unsafeRawHtmlLinkAndImageDestinationsAreNonExecutable,
     "Before unsafe raw HTML link",
@@ -153,9 +185,47 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).toContain("after unsafe raw HTML image.");
       expect(renderedHtml).not.toMatch(/href=["'][^"']*javascript:/i);
       expect(renderedHtml).not.toMatch(/src=["'][^"']*javascript:/i);
+      for (const marker of [
+        "Before mixed-case unsafe raw HTML link",
+        "mixed-case raw link text",
+        "after mixed-case unsafe raw HTML link.",
+        "Before percent-encoded unsafe raw HTML link",
+        "percent-encoded raw link text",
+        "after percent-encoded unsafe raw HTML link.",
+        "Before mixed-case unsafe raw HTML image",
+        "mixed-case raw image text",
+        "after mixed-case unsafe raw HTML image.",
+        "Before percent-encoded unsafe raw HTML image",
+        "percent-encoded raw image text",
+        "after percent-encoded unsafe raw HTML image.",
+      ]) {
+        expect(renderedHtml).toContain(marker);
+      }
+      expect(renderedHtml).not.toMatch(
+        /(?:href|src)=["'][^"']*(?:(?:javascript|data|vbscript):|(?:java%73cript|%64%61%74%61|%76%62%73%63%72%69%70%74):)/i,
+      );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
+    renderedHtml,
+    diagnosticBehaviorLabels.safeRawHtmlLinkAndImageDestinationsRemainUsable,
+    "Before safe raw HTML link",
+    () => {
+      expect(renderedHtml).toMatch(
+        /Before safe raw HTML link <a href="https:\/\/example\.com\/raw-safe"[^>]*>raw safe link text<\/a> after safe raw HTML link\./,
+      );
+      const safeImage = renderedHtml.match(/<img\b[^>]*alt="raw safe image text"[^>]*>/)?.[0];
+      expect(safeImage).toBeDefined();
+      expect(safeImage).toMatch(
+        /(?:src|data-canonical-src)="https:\/\/example\.com\/raw-safe\.png"/,
+      );
+      expect(renderedHtml).toContain(
+        "Before safe raw HTML image",
+      );
+      expect(renderedHtml).toContain("after safe raw HTML image.");
+    },
+  );
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.safeInlineHtmlIsPreserved,
     "Before raw HTML",
@@ -165,7 +235,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       );
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.executableRawHtmlIsEscaped,
     "Before executable raw HTML",
@@ -176,7 +246,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).not.toContain("<script");
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.unsafeHtmlAttributesAreRemoved,
     "Before unsafe attributes",
@@ -189,7 +259,7 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).not.toContain("data-testid=");
     },
   );
-  checkBehavior(
+  rendererBehaviorCoverage.checkBehavior(
     renderedHtml,
     diagnosticBehaviorLabels.listsAndAuditFindingsRender,
     "Allowed:",
@@ -199,5 +269,6 @@ test("renders the complete Creator export through GitHub's documented GFM endpoi
       expect(renderedHtml).toMatch(/<h3[^>]*>Per-item findings<\/h3>/);
     },
   );
+  rendererBehaviorCoverage.assertComplete();
   await expect(readFile(fixturePath)).resolves.toEqual(fixtureBytes);
 });
