@@ -126,7 +126,9 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      - name: Smoke test — verify live site returns 200
+      - name: Verify live page and application assets
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           echo "Checking ${PAGE_URL}"
           HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 --retry 5 --retry-delay 10 --retry-connrefused "${PAGE_URL}")
