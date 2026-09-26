@@ -17,6 +17,7 @@ on:
       - "tests/test-governance-check.py"
       - ".agents/skills/okhp3-replit-repl-janitor/**"
       - ".github/workflows/governance.yml"
+      - ".github/workflows/refoldec-review-package.yml"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   pull_request:
@@ -35,6 +36,7 @@ on:
       - "tests/test-governance-check.py"
       - ".agents/skills/okhp3-replit-repl-janitor/**"
       - ".github/workflows/governance.yml"
+      - ".github/workflows/refoldec-review-package.yml"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   workflow_dispatch:

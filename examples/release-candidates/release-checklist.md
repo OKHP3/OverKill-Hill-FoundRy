@@ -14,6 +14,11 @@ visibility change as part of this checklist.
   --holdout-file examples/release-candidates/skill/tests/protected-holdout.json`
   (the maintainer fixture is temporary and untracked). A failure blocks release
   records from shipping until protected content and placeholder hashes are removed.
+  For an automated review package, run the **Package ReFolDec review skill**
+  workflow from `main`. It reads the maintainer-only JSON from the GitHub
+  Actions repository secret `REFOLDEC_PROTECTED_HOLDOUT_JSON`, writes it only
+  under the runner's temporary directory, and uploads the ZIP only after the
+  scan passes. The workflow does not publish or authorize deployment.
    Release artifacts are text-only: every tracked file must decode as UTF-8 and
    must not contain a NUL byte. Undecodable or mixed-binary files are not
    allowed because protected bytes could otherwise evade the holdout checks.
