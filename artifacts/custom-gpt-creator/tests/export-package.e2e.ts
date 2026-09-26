@@ -1488,18 +1488,44 @@ test("renders uncommon Markdown safely and preserves the downloaded export", asy
   await expect(preview.locator("img")).toHaveCount(0);
   await expect(preview.locator("script")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Raw Markdown" }).click();
-  await expect(page.locator("pre")).toHaveText(exactRawMarkdown);
+  const markdownFormatButton = page.getByRole("button", { name: "Full Spec (Markdown)" });
+  const rawViewButton = page.getByRole("button", { name: "Raw Markdown" });
+  const renderedViewButton = page.getByRole("button", { name: "Rendered Preview" });
+  const copyButton = page.getByRole("button", { name: "📋 Copy" });
+  const downloadButton = page.getByRole("button", { name: "⬇ Download .md" });
+  await expect(markdownFormatButton).toBeVisible();
+  await expect(rawViewButton).toBeVisible();
+  await expect(renderedViewButton).toBeVisible();
+  await expect(copyButton).toBeVisible();
+  await expect(downloadButton).toBeVisible();
+
+  await copyButton.click();
+  await expect(page.getByRole("button", { name: "✓ Copied!" })).toBeVisible();
+  const copiedMarkdown = await page.evaluate(
+    () => (window as Window & { __copiedExport?: string }).__copiedExport,
+  );
+  expect(copiedMarkdown).toBe(exactRawMarkdown);
+  await expect(preview).toBeVisible();
+  await expect(downloadButton).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "⬇ Download .md" }).click();
+  await downloadButton.click();
   const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("uncommon-markdown-日本語-gpt-spec.md");
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
   const downloadedBytes = await readFile(downloadPath!);
   expect(downloadedBytes).toEqual(Buffer.from(exactRawMarkdown, "utf8"));
   const downloadedMarkdown = downloadedBytes.toString("utf8");
   expect(downloadedMarkdown).toBe(exactRawMarkdown);
+  await expect(preview).toBeVisible();
+  await expect(markdownFormatButton).toBeVisible();
+  await expect(rawViewButton).toBeVisible();
+  await expect(renderedViewButton).toBeVisible();
+  await expect(downloadButton).toBeVisible();
+
+  await rawViewButton.click();
+  await expect(page.locator("pre")).toHaveText(exactRawMarkdown);
 
   // Profile 1: markdown-it is a CommonMark-oriented parser with raw HTML disabled.
   // The independent viewer therefore shows intentionally unsupported HTML as literal
