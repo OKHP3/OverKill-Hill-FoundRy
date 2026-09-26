@@ -610,7 +610,9 @@ function renderMarkdownPreview(markdown: string): ReactNode[] {
 export default function ExportPackage({ completedSteps: liveCompletedSteps }: { completedSteps?: Set<number> }) {
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
+  const formatRef = useRef(format);
   const [markdownView, setMarkdownView] = useState<"raw" | "preview">("raw");
+  const copyConfirmationTimeoutRef = useRef<number | null>(null);
   const [auditImportMessage, setAuditImportMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const auditImportTriggerRef = useRef<HTMLButtonElement>(null);
   const auditImportFileRef = useRef<HTMLInputElement>(null);
@@ -649,10 +651,42 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
         ? "Ready for review"
         : "Incomplete";
 
+  const clearCopyConfirmation = useCallback(() => {
+    if (copyConfirmationTimeoutRef.current !== null) {
+      window.clearTimeout(copyConfirmationTimeoutRef.current);
+      copyConfirmationTimeoutRef.current = null;
+    }
+    setCopied(false);
+  }, []);
+
+  const selectFormat = useCallback((nextFormat: typeof format) => {
+    if (nextFormat === format) return;
+    // "Copied" applies only to the selected export; changing formats invalidates it.
+    formatRef.current = nextFormat;
+    clearCopyConfirmation();
+    setFormat(nextFormat);
+  }, [format, clearCopyConfirmation]);
+
+  useEffect(() => () => {
+    if (copyConfirmationTimeoutRef.current !== null) {
+      window.clearTimeout(copyConfirmationTimeoutRef.current);
+      copyConfirmationTimeoutRef.current = null;
+    }
+  }, []);
+
   const copy = useCallback(async () => {
-    await navigator.clipboard.writeText(content);
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
-  }, [content]);
+    const copiedFormat = format;
+    const copiedContent = content;
+    await navigator.clipboard.writeText(copiedContent);
+    if (formatRef.current !== copiedFormat) return;
+
+    clearCopyConfirmation();
+    setCopied(true);
+    copyConfirmationTimeoutRef.current = window.setTimeout(() => {
+      setCopied(false);
+      copyConfirmationTimeoutRef.current = null;
+    }, 2000);
+  }, [content, format, clearCopyConfirmation]);
 
   const download = () => {
     const brief = loadStepRecord("step-0");
@@ -931,7 +965,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {(["markdown", "instructions", "json"] as const).map(f => (
-            <button key={f} onClick={() => setFormat(f)}
+            <button key={f} onClick={() => selectFormat(f)}
               style={{
                 padding: "0.4rem 0.75rem", borderRadius: "var(--radius-md)", cursor: "pointer",
                 background: format === f ? "var(--color-forge-accent)" : "var(--color-forge-panel)",

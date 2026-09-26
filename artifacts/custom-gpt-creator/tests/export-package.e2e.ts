@@ -239,6 +239,53 @@ test("switches export formats before copying and downloading", async ({ page }) 
   await expectSelectedExportActions(page, "switching-formats-gpt-spec.json", "json");
 });
 
+test("clears copy confirmation immediately when the selected export format changes", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Copy Confirmation GPT" },
+    "step-2": {
+      1: "Markdown-only copy marker.",
+      2: "The copied confirmation follows the selected export.",
+    },
+  });
+  await page.clock.install();
+
+  const copyButton = page.getByRole("button", { name: "📋 Copy" });
+  const copiedButton = page.getByRole("button", { name: "✓ Copied!" });
+  const clipboardValue = () =>
+    page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport);
+  const markdownContent = await page.locator("pre").textContent();
+  expect(markdownContent).not.toBeNull();
+
+  await copyButton.click();
+  await expect(copiedButton).toBeVisible();
+  await expect.poll(clipboardValue).toBe(markdownContent);
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  await expect(copyButton).toBeVisible();
+  const instructionsContent = await page.locator("pre").textContent();
+  expect(instructionsContent).not.toBe(markdownContent);
+
+  // The old Markdown confirmation timer must not clear a later format's confirmation.
+  await page.clock.fastForward(1500);
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  await expect(copyButton).toBeVisible();
+  const jsonContent = await page.locator("pre").textContent();
+  expect(jsonContent).not.toBeNull();
+  expect(jsonContent).not.toBe(markdownContent);
+
+  await copyButton.click();
+  await expect(copiedButton).toBeVisible();
+  await expect.poll(clipboardValue).toBe(jsonContent);
+  await page.clock.fastForward(600);
+  await expect(copiedButton).toBeVisible();
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  await expect(copyButton).toBeVisible();
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  await expect(copyButton).toBeVisible();
+});
+
 test("preserves composed and decomposed Unicode code points in Evidence JSON", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {
