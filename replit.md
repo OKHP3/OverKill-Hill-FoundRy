@@ -101,6 +101,10 @@ expectations into public evaluation records.
 - `tests/` — regression checks for governance and release tooling.
 - `docs/` — process, packaging, and graduation guidance.
 - `.agents/skills/` — repository-local governance and capability workflows.
+- MurderBird creative assets and the interactive app belong in the sibling
+  [`OKHP3/murderbird-uncaged`](https://github.com/OKHP3/murderbird-uncaged)
+  repository. The public OverKill-Hill site retains the editorial story,
+  site shell, and distribution copies; see [repository boundaries](docs/repository-boundaries.md).
 
 ## Architecture decisions
 
@@ -118,13 +122,23 @@ expectations into public evaluation records.
 
 ## Product
 
-The workspace provides the OverKill capability workbench, the existing Custom GPT
-studio, and FoundRy landing, identity, capability, and Canvas-preview artifacts.
+The workspace provides the OverKill capability workbench for prompts, Agent
+Skills, workflows, software starters, and related capabilities, alongside the
+existing Custom GPT studio and FoundRy landing, identity, capability, and
+Canvas-preview artifacts.
 The workbench is implemented in `artifacts/mockup-sandbox/src` and deployed through
 `artifacts/custom-gpt-creator`. Preserve its separate capability store and the
 studio's `cgpt-workspace` projects. These support evidence-backed GPT
 and capability design, structured export, governance review, and controlled
 public-graduation preparation.
+
+The public OverKill-Hill site owns the brand, portfolio, and published editorial
+MurderBird story at `/writings/murderbird/`. Keep all MurderBird creative assets
+and interactive app implementation in the sibling
+[`OKHP3/murderbird-uncaged`](https://github.com/OKHP3/murderbird-uncaged)
+repository. The site may retain its story, page shell, and copies needed for
+distribution. The story snapshot supplied to MurderBird Uncaged is creative
+context; editorial publication remains owned by the website.
 
 ## User preferences
 
