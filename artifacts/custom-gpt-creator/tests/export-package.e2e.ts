@@ -1005,14 +1005,19 @@ test("restores compatible audit findings into the active project", async ({ page
   expect(restored.audit.shipGateDecision).toBe("passed");
   expect(restored.audit.shipGateDecisionExplanation).toContain("average and safety thresholds are met");
 
-  const verifyRestoredAuditMode = async () => {
+  const verifyRestoredAuditMode = async ({
+    safetyScore = 5,
+    note = "Reviewed from the evidence package.",
+    decision = "passed",
+  }: { safetyScore?: number; note?: string; decision?: "passed" | "failed" | "incomplete" } = {}) => {
     await expect(page.locator("h1")).toContainText("Audit Mode");
     await expect(page.getByLabel("GPT name / URL being audited")).toHaveValue("Offline reviewer identity");
     for (const itemId of Object.keys(scores)) {
-      await expect(page.getByRole("button", { name: `Score 5 for audit item ${itemId}`, exact: true })).toHaveAttribute("aria-pressed", "true");
+      const expectedScore = itemId === "6" ? safetyScore : 5;
+      await expect(page.getByRole("button", { name: `Score ${expectedScore} for audit item ${itemId}`, exact: true })).toHaveAttribute("aria-pressed", "true");
     }
-    await expect(page.getByRole("textbox", { name: "Notes for audit item 1", exact: true })).toHaveValue("Reviewed from the evidence package.");
-    await expect(page.getByTestId("audit-ship-gate-decision")).toHaveAttribute("data-decision", "passed");
+    await expect(page.getByRole("textbox", { name: "Notes for audit item 1", exact: true })).toHaveValue(note);
+    await expect(page.getByTestId("audit-ship-gate-decision")).toHaveAttribute("data-decision", decision);
   };
 
   const navigation = page.getByRole("navigation", { name: "Creator workflow" });
@@ -1035,6 +1040,25 @@ test("restores compatible audit findings into the active project", async ({ page
 
   await page.getByRole("button", { name: "Test GPT", exact: true }).click();
   await verifyRestoredAuditMode();
+
+  const updatedNote = "Edited after returning to the project.";
+  await page.getByRole("button", { name: "Score 3 for audit item 6", exact: true }).click();
+  await page.getByRole("textbox", { name: "Notes for audit item 1", exact: true }).fill(updatedNote);
+  await expect.poll(() => page.evaluate(() => {
+    const rawWorkspace = localStorage.getItem("cgpt-workspace");
+    if (!rawWorkspace) return null;
+    const workspace = JSON.parse(rawWorkspace);
+    const project = workspace.projects.find((item: { name: string }) => item.name === "Test GPT");
+    const audit = project?.data["audit-mode"];
+    return audit ? {
+      safetyScore: audit.scores["6"],
+      note: audit.notes["1"],
+      decision: audit.shipGateDecision,
+    } : null;
+  })).toEqual({ safetyScore: 3, note: updatedNote, decision: "failed" });
+
+  await page.reload();
+  await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
 });
 
 test("cancels a valid audit replacement without changing existing findings", async ({ page }) => {
