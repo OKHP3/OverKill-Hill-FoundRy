@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { marked } from "marked";
@@ -125,11 +125,34 @@ async function replaceProjectData(page: Page, data: Record<string, unknown>, com
 }
 
 async function importAuditEvidence(page: Page, content: string) {
-  await page.getByLabel("Import audit evidence JSON").setInputFiles({
+  await page.getByTestId("input-audit-evidence-file").setInputFiles({
     name: "audit-evidence.json",
     mimeType: "application/json",
     buffer: Buffer.from(content, "utf8"),
   });
+}
+
+async function importAuditEvidenceWithKeyboard(page: Page, content: string) {
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  const importButton = page.getByRole("button", { name: "Import audit evidence JSON", exact: true });
+  if (!(await importButton.evaluate((element) => document.activeElement === element))) {
+    throw new Error("The audit evidence import button must have keyboard focus before opening its file chooser.");
+  }
+  await page.keyboard.press("Enter");
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles({
+    name: "audit-evidence.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(content, "utf8"),
+  });
+}
+
+async function tabToByKeyboard(page: Page, target: Locator, direction: "Tab" | "Shift+Tab" = "Tab") {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (await target.evaluate((element) => document.activeElement === element)) return;
+    await page.keyboard.press(direction);
+  }
+  throw new Error(`Could not reach ${await target.getAttribute("aria-label") ?? "the requested control"} with keyboard navigation.`);
 }
 
 async function expectExportActionsToProduceMarkdown(page: Page) {
@@ -1054,6 +1077,86 @@ test("cancels a valid audit replacement without changing existing findings", asy
   expect(unchanged.audit.notes).toEqual({ "1": "Keep this finding." });
 });
 
+test("keeps audit replacement review usable with the keyboard", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Keyboard Evidence GPT" },
+    "audit-mode": {
+      gptName: "Existing reviewer identity",
+      scores: { 1: 1 },
+      notes: { 1: "Keep until replacement is confirmed." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  const evidenceButton = page.getByRole("button", { name: "Evidence (JSON)" });
+  await tabToByKeyboard(page, evidenceButton);
+  await page.keyboard.press("Enter");
+  const exportedPackage = JSON.parse(await page.locator("pre").innerText());
+  const importedScores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  exportedPackage.audit = {
+    ...exportedPackage.audit,
+    gptName: "Keyboard restored reviewer",
+    scores: importedScores,
+    notes: { 1: "Imported from the keyboard." },
+    items: exportedPackage.audit.items.map((item: { id: number; question: string }) => ({
+      ...item,
+      score: 5,
+      notes: item.id === 1 ? "Imported from the keyboard." : "",
+    })),
+  };
+  const beforeImport = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+  const trigger = page.getByRole("button", { name: "Import audit evidence JSON", exact: true });
+  const dialog = page.getByTestId("audit-import-preflight");
+  const confirm = page.getByRole("button", { name: "Confirm replacement" });
+  const cancel = page.getByRole("button", { name: "Cancel" });
+
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  await expect(trigger).toBeFocused();
+  await importAuditEvidenceWithKeyboard(page, JSON.stringify(exportedPackage));
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.getByText("Import canceled. Existing audit findings were not changed.", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
+
+  await importAuditEvidenceWithKeyboard(page, JSON.stringify(exportedPackage));
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
+
+  await importAuditEvidenceWithKeyboard(page, JSON.stringify(exportedPackage));
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.getByText("Audit findings restored to the active project.", { exact: true })).toBeVisible();
+
+  const restoredWorkspace = JSON.parse(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))!);
+  const restoredAudit = restoredWorkspace.projects[0].data["audit-mode"];
+  expect(restoredAudit.gptName).toBe("Keyboard restored reviewer");
+  expect(restoredAudit.scores).toEqual(importedScores);
+  expect(restoredAudit.notes).toEqual({ "1": "Imported from the keyboard." });
+});
+
 test("rejects a pending audit replacement after another tab changes the active project", async ({ page }) => {
   await openExportPackage(page);
   await replaceProjectData(page, {
@@ -1111,6 +1214,7 @@ test("rejects a pending audit replacement after another tab changes the active p
 
   await expect(preflight).toBeHidden();
   await expect(page.getByText(/Project data changed while this package was waiting for confirmation/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import audit evidence JSON", exact: true })).toBeFocused();
   expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(afterOtherTabChange);
   const savedWorkspace = JSON.parse(afterOtherTabChange!);
   expect(savedWorkspace.activeProjectId).toBe("project-selected-in-another-tab");

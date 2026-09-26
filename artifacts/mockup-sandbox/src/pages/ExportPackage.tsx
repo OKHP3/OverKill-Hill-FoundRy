@@ -1,4 +1,4 @@
-import { useState, useCallback, type ChangeEvent, type ReactNode } from "react";
+import { useState, useCallback, useEffect, useRef, type ChangeEvent, type ReactNode } from "react";
 import {
   AUDIT_ITEMS,
   AUDIT_RUBRIC_VERSION,
@@ -612,6 +612,9 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
   const [markdownView, setMarkdownView] = useState<"raw" | "preview">("raw");
   const [auditImportMessage, setAuditImportMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const auditImportTriggerRef = useRef<HTMLButtonElement>(null);
+  const auditImportFileRef = useRef<HTMLInputElement>(null);
+  const auditImportDialogRef = useRef<HTMLDivElement>(null);
   const [pendingAuditImport, setPendingAuditImport] = useState<{
     workspace: CreatorWorkspace;
     sourceStorageValue: string;
@@ -635,6 +638,9 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const content = format === "markdown" ? fullMarkdown : format === "json" ? structuredJson : instructionsOnly;
   const ship = loadStepRecord("step-8");
   const tests = loadStepRecord("step-7");
+  const restoreAuditImportFocus = useCallback(() => {
+    window.requestAnimationFrame(() => auditImportTriggerRef.current?.focus());
+  }, []);
   const maturity = evidencePackage.readiness.state === "blocked"
     ? "Blocked"
     : evidencePackage.readiness.state === "confirmed"
@@ -702,6 +708,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
         type: "error",
         text: "Project data changed while this package was waiting for confirmation. Refresh the page, then select the package again to review it against the current project.",
       });
+      restoreAuditImportFocus();
       return;
     }
     if (!persistWorkspace(pendingAuditImport.workspace)) {
@@ -711,12 +718,66 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
     setPendingAuditImport(null);
     setAuditImportMessage({ type: "success", text: "Audit findings restored to the active project." });
     setAuditImportRevision((revision) => revision + 1);
+    restoreAuditImportFocus();
   };
 
-  const cancelAuditImport = () => {
+  const cancelAuditImport = useCallback(() => {
     setPendingAuditImport(null);
     setAuditImportMessage({ type: "success", text: "Import canceled. Existing audit findings were not changed." });
-  };
+    restoreAuditImportFocus();
+  }, [restoreAuditImportFocus]);
+
+  useEffect(() => {
+    if (!pendingAuditImport) return;
+    const dialog = auditImportDialogRef.current;
+    if (!dialog) return;
+
+    dialog.focus();
+    const getFocusableElements = () => Array.from(dialog.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )).filter((element) => element.getAttribute("aria-hidden") !== "true" && element.getClientRects().length > 0);
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        cancelAuditImport();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = getFocusableElements();
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const keepDialogFocus = (event: FocusEvent) => {
+      if (event.target instanceof Node && dialog.contains(event.target)) return;
+      (getFocusableElements()[0] ?? dialog).focus();
+    };
+
+    document.addEventListener("keydown", handleDialogKeyDown);
+    document.addEventListener("focusin", keepDialogFocus);
+    return () => {
+      document.removeEventListener("keydown", handleDialogKeyDown);
+      document.removeEventListener("focusin", keepDialogFocus);
+    };
+  }, [pendingAuditImport, cancelAuditImport]);
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -785,23 +846,38 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
         <span style={{ display: "block", color: "var(--color-forge-muted-fg)", fontSize: "0.85rem", marginBottom: "0.65rem" }}>
           Import a compatible Evidence (JSON) package to restore scores and notes for this project. Existing project data is unchanged when validation fails.
         </span>
-        <label style={{ ...secondaryBtn, display: "inline-block", cursor: "pointer" }}>
+        <button
+          type="button"
+          ref={auditImportTriggerRef}
+          data-testid="button-import-audit-evidence"
+          aria-haspopup="dialog"
+          aria-expanded={Boolean(pendingAuditImport)}
+          aria-controls={pendingAuditImport ? "audit-import-preflight" : undefined}
+          onClick={() => auditImportFileRef.current?.click()}
+          style={secondaryBtn}
+        >
           Import audit evidence JSON
-          <input
-            type="file"
-            accept="application/json,.json"
-            aria-label="Import audit evidence JSON"
-            onChange={importAudit}
-            style={{ display: "none" }}
-          />
-        </label>
+        </button>
+        <input
+          ref={auditImportFileRef}
+          type="file"
+          accept="application/json,.json"
+          aria-hidden="true"
+          tabIndex={-1}
+          data-testid="input-audit-evidence-file"
+          onChange={importAudit}
+          style={{ display: "none" }}
+        />
         {pendingAuditImport && (
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="audit-import-preflight-title"
             aria-describedby="audit-import-preflight-description"
+            id="audit-import-preflight"
             data-testid="audit-import-preflight"
+            ref={auditImportDialogRef}
+            tabIndex={-1}
             style={{
               marginTop: "0.9rem",
               padding: "1rem",
@@ -827,8 +903,8 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
               <dd style={{ margin: 0, color: "var(--color-forge-fg)", fontWeight: 700 }}>{pendingAuditImport.audit.shipGateDecision.toUpperCase()}</dd>
             </dl>
             <div style={{ display: "flex", gap: "0.55rem" }}>
-              <button type="button" onClick={confirmAuditImport} style={primaryBtn}>Confirm replacement</button>
-              <button type="button" onClick={cancelAuditImport} style={secondaryBtn}>Cancel</button>
+              <button type="button" data-testid="button-confirm-audit-replacement" onClick={confirmAuditImport} style={primaryBtn}>Confirm replacement</button>
+              <button type="button" data-testid="button-cancel-audit-replacement" onClick={cancelAuditImport} style={secondaryBtn}>Cancel</button>
             </div>
           </div>
         )}
