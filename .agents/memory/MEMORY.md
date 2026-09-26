@@ -12,3 +12,4 @@
 - [GitHub Markdown sanitization](github-markdown-sanitization.md) — live renderer strips unsafe URL protocols and adds implementation-specific safe attributes.
 - [Public graduation package](public-graduation-package.md) — ReFolDec candidates are mixed release shelves with explicit owner approval and deployment gates.
 - [Malformed export sections](export-malformed-sections.md) — export readers must guard both nested collections and the shared readiness summary before rendering.
+- [Node TypeScript test imports](node-typescript-test-imports.md) — direct Node strip-types tests need explicit `.ts` specifiers in transitive imports.

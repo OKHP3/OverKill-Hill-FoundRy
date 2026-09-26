@@ -4,7 +4,7 @@ import {
   SAFETY_AUDIT_ID,
   AUDIT_RUBRIC_VERSION,
   AUDIT_SHIP_GATE_THRESHOLDS,
-} from "../data/knowledge";
+} from "../data/knowledge.ts";
 
 export const WORKSPACE_KEY = "cgpt-workspace";
 export const WORKSPACE_VERSION = 1;
