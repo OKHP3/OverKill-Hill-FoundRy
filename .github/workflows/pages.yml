@@ -38,21 +38,18 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
       - name: Build and verify FoundRy Pages base path
         working-directory: artifacts/custom-gpt-creator
         env:
           NODE_ENV: production
           PORT: 5000
-          # The local root build derives each artifact's registered service
-          # route. Pages intentionally overrides only this deployed artifact:
-          # https://okhp3.github.io/OverKill-Hill-FoundRy/
-          # If a custom domain is configured at the repository level, change
-          # this to /.
-          BASE_PATH: /OverKill-Hill-FoundRy/
+          # Follow the actual Pages path, including repository casing or custom domains.
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
         run: pnpm run test:pages-base-path
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
@@ -131,7 +128,6 @@ jobs:
 
       - name: Smoke test — verify live site returns 200
         run: |
-          PAGE_URL="${{ steps.deployment.outputs.page_url }}"
           echo "Checking ${PAGE_URL}"
           HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 --retry 5 --retry-delay 10 --retry-connrefused "${PAGE_URL}")
           echo "HTTP status: ${HTTP_STATUS}"
@@ -139,4 +135,36 @@ jobs:
             echo "::error::Smoke test failed — expected 200 but got ${HTTP_STATUS} for ${PAGE_URL}"
             exit 1
           fi
+          python3 - <<'PY'
+          import os
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin, urlsplit
+          from urllib.request import urlopen
+
+          page = os.environ["PAGE_URL"]
+          base = urlsplit(page)
+          class Assets(HTMLParser):
+              urls = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag == "script" and attrs.get("src"):
+                      self.urls.append(attrs["src"])
+                  if tag == "link" and attrs.get("rel") == "stylesheet" and attrs.get("href"):
+                      self.urls.append(attrs["href"])
+
+          parser = Assets()
+          with urlopen(page, timeout=30) as response:
+              parser.feed(response.read().decode("utf-8"))
+          local = [urljoin(page, value) for value in parser.urls
+                   if urlsplit(urljoin(page, value)).netloc == base.netloc]
+          if not local:
+              raise SystemExit("No application assets found in deployed HTML")
+          for url in local:
+              if not urlsplit(url).path.startswith(base.path.rstrip("/") + "/"):
+                  raise SystemExit("Asset uses a different Pages base path: " + url)
+              with urlopen(url, timeout=30) as response:
+                  if response.status != 200 or "text/html" in response.headers.get("Content-Type", ""):
+                      raise SystemExit("Invalid deployed asset: " + url)
+              print("Verified asset:", url)
+          PY
           echo "Smoke test passed."
