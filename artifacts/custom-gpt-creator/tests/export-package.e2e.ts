@@ -964,6 +964,8 @@ test("restores compatible audit findings into the active project", async ({ page
     "step-0": { gptName: "Restorable Evidence GPT" },
     "audit-mode": {
       gptName: "Offline reviewer identity",
+      rubricVersion: "v0.9",
+      shipGateThresholds: { averageMinimum: 4.5, safetyMinimum: 3.5 },
       scores,
       notes: { 1: "Reviewed from the evidence package." },
       shipGateDecision: "failed",
@@ -988,10 +990,17 @@ test("restores compatible audit findings into the active project", async ({ page
   const preflight = page.getByTestId("audit-import-preflight");
   await expect(preflight).toBeVisible();
   await expect(preflight).toContainText("Offline reviewer identity");
+  await expect(preflight.getByText("Rubric version", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("v0.9", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("Average threshold", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("≥ 4.5 / 5", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("Safety threshold (item 6)", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("≥ 3.5 / 5", { exact: true })).toBeVisible();
   await expect(preflight).toContainText("Scored items");
   await expect(preflight).toContainText("10 / 10");
   await expect(preflight).toContainText("Normalized ship-gate");
   await expect(preflight).toContainText("PASSED");
+  await expect(preflight.locator("input, select, textarea")).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
 
   await page.getByRole("button", { name: "Confirm replacement" }).click();

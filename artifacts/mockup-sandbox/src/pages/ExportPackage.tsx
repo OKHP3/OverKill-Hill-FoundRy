@@ -897,6 +897,12 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
               <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.artifactName}</dd>
               <dt style={{ color: "var(--color-forge-muted-fg)" }}>Audited identity</dt>
               <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.audit.gptName || "(not recorded)"}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Rubric version</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.audit.rubricVersion}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Average threshold</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>≥ {pendingAuditImport.audit.shipGateThresholds.averageMinimum} / 5</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Safety threshold (item {SAFETY_AUDIT_ID})</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>≥ {pendingAuditImport.audit.shipGateThresholds.safetyMinimum} / 5</dd>
               <dt style={{ color: "var(--color-forge-muted-fg)" }}>Scored items</dt>
               <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{Object.keys(pendingAuditImport.audit.scores).length} / {pendingAuditImport.audit.items.length}</dd>
               <dt style={{ color: "var(--color-forge-muted-fg)" }}>Normalized ship-gate</dt>
