@@ -1059,6 +1059,52 @@ test("restores compatible audit findings into the active project", async ({ page
 
   await page.reload();
   await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
+
+  await page.getByRole("button", { name: /Current project/ }).click();
+  const projectManager = page.getByRole("region", { name: "Project manager" });
+  await projectManager.getByRole("button", { name: "Duplicate", exact: true }).click();
+  await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
+
+  const copiedNote = "Changed only in the copied project.";
+  await page.getByRole("button", { name: "Score 4 for audit item 6", exact: true }).click();
+  await page.getByRole("textbox", { name: "Notes for audit item 1", exact: true }).fill(copiedNote);
+  await expect.poll(() => page.evaluate(() => {
+    const rawWorkspace = localStorage.getItem("cgpt-workspace");
+    if (!rawWorkspace) return null;
+    const workspace = JSON.parse(rawWorkspace) as {
+      projects: Array<{ name: string; data: Record<string, unknown> }>;
+    };
+    type StoredAudit = {
+      scores: Record<string, number>;
+      notes: Record<string, string>;
+      shipGateDecision: string;
+    };
+    const original = workspace.projects.find((item) => item.name === "Test GPT")?.data["audit-mode"] as StoredAudit | undefined;
+    const copy = workspace.projects.find((item) => item.name === "Test GPT (copy)")?.data["audit-mode"] as StoredAudit | undefined;
+    if (!original || !copy) return null;
+    return {
+      original: {
+        safetyScore: original.scores["6"],
+        note: original.notes["1"],
+        decision: original.shipGateDecision,
+      },
+      copy: {
+        safetyScore: copy.scores["6"],
+        note: copy.notes["1"],
+        decision: copy.shipGateDecision,
+      },
+    };
+  })).toEqual({
+    original: { safetyScore: 3, note: updatedNote, decision: "failed" },
+    copy: { safetyScore: 4, note: copiedNote, decision: "passed" },
+  });
+
+  await page.reload();
+  await verifyRestoredAuditMode({ safetyScore: 4, note: copiedNote, decision: "passed" });
+  await page.getByRole("button", { name: /Current project/ }).click();
+  await page.getByRole("region", { name: "Project manager" })
+    .getByRole("button", { name: "Test GPT", exact: true }).click();
+  await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
 });
 
 test("cancels a valid audit replacement without changing existing findings", async ({ page }) => {
