@@ -42,3 +42,9 @@ test("does not mutate inputs or expose mutable project references", () => {
 test("rejects an invalid project bound", () => {
   assert.throws(() => planCapabilityWorkspaceImport(workspace([project("a")]), workspace([project("b")]), 0), /positive integer/);
 });
+
+test("equal project values ignore key insertion order", () => {
+  const original = project("same");
+  const reordered = Object.fromEntries(Object.entries(original).reverse()) as unknown as CapabilityProject;
+  assert.equal(planCapabilityWorkspaceImport(workspace([original]), workspace([reordered])).projects[0].status, "identical");
+});

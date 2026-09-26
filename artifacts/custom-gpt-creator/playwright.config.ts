@@ -1,5 +1,6 @@
 import { defineConfig } from "@playwright/test";
 
+const githubMarkdownCheck = process.env.GITHUB_MARKDOWN_CHECK === "1";
 const port = process.env.PORT ?? "20017";
 const baseURL =
   process.env.CREATOR_BASE_URL ??
@@ -15,7 +16,7 @@ export default defineConfig({
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "line" : "list",
-  testIgnore: process.env.GITHUB_MARKDOWN_CHECK
+  testIgnore: githubMarkdownCheck
     ? []
     : ["**/github-markdown.e2e.ts"],
   use: {
@@ -26,7 +27,7 @@ export default defineConfig({
       : undefined,
   },
   webServer:
-    process.env.CREATOR_BASE_URL || process.env.GITHUB_MARKDOWN_CHECK
+    (Boolean(process.env.CREATOR_BASE_URL) || githubMarkdownCheck)
       ? undefined
       : {
           command: `PORT=${port} BASE_PATH=/custom-gpt-creator/ pnpm --filter @workspace/custom-gpt-creator run dev`,

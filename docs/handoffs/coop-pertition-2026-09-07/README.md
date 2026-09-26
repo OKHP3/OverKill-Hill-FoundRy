@@ -1,5 +1,7 @@
 # Coop-pertition dispatch — 2026-09-07
 
+Historical ownership evidence correction (2026-09-20): retained deliverable and integration records do not establish each receiver's identity plus UTC scope acceptance. `dispatch.json` explicitly records these acknowledgements as unestablished. Do not infer an active or accepted assignment from completed deliverable status.
+
 Current status: see the [verified 2026-09-08 closeout](closeout-2026-09-08.md). The candidate-stage account below is preserved as history.
 
 Owner-authorized: 20 FoundRy tasks and six OverKill website delegates, performed by ChatGPT/Codex agents alongside existing Replit work. Skillz is read-only context. This dispatch does not supersede website A03-A21/T01-T06/W13 ownership.

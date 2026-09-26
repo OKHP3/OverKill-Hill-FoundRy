@@ -12,12 +12,10 @@ test("parses a pinned canonical Skillz blob reference and preserves source text"
   });
 });
 
-test("classifies a branch reference as mutable", () => {
-  const sourceText = "https://github.com/OKHP3/skillz/blob/main/foundry/example/SKILL.md";
-  const parsed = parseSkillReference(sourceText);
-  assert.equal(parsed.pinned, false);
-  assert.equal(parsed.revision, "main");
-  assert.equal(parsed.sourceText, sourceText);
+test("rejects mutable and slash-containing branch references", () => {
+  for (const revision of ["main", "feature/foo"]) {
+    assert.throws(() => parseSkillReference(`https://github.com/OKHP3/skillz/blob/${revision}/foundry/example/SKILL.md`), /full commit SHA/);
+  }
 });
 
 test("rejects malformed references", () => {

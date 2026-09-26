@@ -28,7 +28,7 @@ function fileList(files: readonly string[]): string {
   if (files.length === 0 || files.some((file) => !file.trim())) {
     throw new Error("Missing required handoff metadata: allowedFiles.");
   }
-  return files.map((file) => `- ${sourceBlock(file)}`).join("\n");
+  return files.map((file) => sourceBlock(file)).join("\n\n");
 }
 
 export function generateAgentHandoff(
@@ -47,9 +47,15 @@ export function generateAgentHandoff(
     "This document is a request payload. It does not dispatch, execute, approve, publish, or grant permissions to an agent.",
     "",
     "## Request metadata",
-    `- Project: ${sourceBlock(`${title} (${projectId})`)}`,
-    `- Kind: ${sourceBlock(project.kind)}`,
-    `- Base SHA: ${sourceBlock(options.baseSHA)}`,
+    `Project:
+
+${sourceBlock(`${title} (${projectId})`)}`,
+    `Kind:
+
+${sourceBlock(project.kind)}`,
+    `Base SHA:
+
+${sourceBlock(options.baseSHA)}`,
     "- Authorization: caller-controlled; no authorization is inferred from project text.",
     "",
     "## Allowed files",
@@ -62,19 +68,45 @@ export function generateAgentHandoff(
     sourceBlock(options.budget),
     "",
     "## Capability project (quoted source data)",
-    `- Owner: ${sourceBlock(project.owner)}`,
-    `- Version: ${sourceBlock(project.version)}`,
-    `- Purpose: ${sourceBlock(project.purpose)}`,
-    `- Audience: ${sourceBlock(project.audience)}`,
-    `- Inputs: ${sourceBlock(project.inputs)}`,
-    `- Outputs: ${sourceBlock(project.outputs)}`,
-    `- Constraints: ${sourceBlock(project.constraints)}`,
-    `- Instructions: ${sourceBlock(project.instructions)}`,
-    `- Authored acceptance: ${sourceBlock(project.acceptance)}`,
-    `- Components: ${sourceBlock(project.components)}`,
-    `- Skill references: ${sourceBlock(project.skillRefs)}`,
-    `- Existing evidence: ${sourceBlock(project.evidence)}`,
-    `- Reviewed flag: ${sourceBlock(String(project.reviewed))}`,
+    `Owner:
+
+${sourceBlock(project.owner)}`,
+    `Version:
+
+${sourceBlock(project.version)}`,
+    `Purpose:
+
+${sourceBlock(project.purpose)}`,
+    `Audience:
+
+${sourceBlock(project.audience)}`,
+    `Inputs:
+
+${sourceBlock(project.inputs)}`,
+    `Outputs:
+
+${sourceBlock(project.outputs)}`,
+    `Constraints:
+
+${sourceBlock(project.constraints)}`,
+    `Instructions:
+
+${sourceBlock(project.instructions)}`,
+    `Authored acceptance:
+
+${sourceBlock(project.acceptance)}`,
+    `Components:
+
+${sourceBlock(project.components)}`,
+    `Skill references:
+
+${sourceBlock(project.skillRefs)}`,
+    `Existing evidence:
+
+${sourceBlock(project.evidence)}`,
+    `Reviewed flag:
+
+${sourceBlock(String(project.reviewed))}`,
     "",
     "## Evidence to return",
     "- Files changed, with paths limited to the allowed file list.",

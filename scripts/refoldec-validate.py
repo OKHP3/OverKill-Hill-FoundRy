@@ -28,7 +28,7 @@ EVIDENCE_STATES = ("confirmed", "inferred", "unknown")
 # records, and licenses) that are not ReFolDec artifact documents. Keep the
 # validator strict for artifact-shaped files while allowing mixed packages.
 PACKAGE_SUPPORT_FILES = {
-    "README.md", "LICENSE", "ATTRIBUTION.md", "CHANGELOG.md",
+    "README.md", "LICENSE", "attribution.md", "CHANGELOG.md",
     "equilibrium-decision.md", "release-checklist.md", "rollback-plan.md",
     "holdout-evaluation.md", "review.json",
     "specification.md", "schema.json", "release-manifest.json",

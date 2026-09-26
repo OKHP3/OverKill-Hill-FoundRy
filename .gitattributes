@@ -1,0 +1,2 @@
+# Keep the byte-exact generated Markdown fixture stable on Windows checkouts.
+artifacts/custom-gpt-creator/tests/fixtures/github-markdown-fixture.v1.md text eol=lf

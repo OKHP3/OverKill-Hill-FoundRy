@@ -41,7 +41,7 @@ export function planCapabilityWorkspaceImport(
     if (!incomingIds.has(project.id)) continue;
     const imported = incoming.projects.find((candidate) => candidate.id === project.id)!;
     plans.push(
-      imported === project || JSON.stringify(imported) === JSON.stringify(project)
+      imported === project || stableProject(imported) === stableProject(project)
         ? { id: project.id, status: "identical", existing: cloneProject(project), incoming: cloneProject(imported) }
         : { id: project.id, status: "conflicting", existing: cloneProject(project), incoming: cloneProject(imported) },
     );
@@ -55,6 +55,10 @@ export function planCapabilityWorkspaceImport(
 
   const projectCount = existing.projects.length + plans.filter((plan) => plan.status === "new").length;
   return { projects: plans, projectCount, maxProjects, countOverflow: projectCount > maxProjects };
+}
+
+function stableProject(project: CapabilityProject): string {
+  return JSON.stringify(Object.entries(project).sort(([a], [b]) => a.localeCompare(b)));
 }
 
 function cloneProject(project: CapabilityProject): CapabilityProject {

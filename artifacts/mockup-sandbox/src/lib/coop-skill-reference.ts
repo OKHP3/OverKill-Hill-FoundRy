@@ -59,6 +59,7 @@ export function parseSkillReference(sourceText: string): SkillReference {
 
   const revision = segments[3];
   const path = segments.slice(4).join("/");
+  if (!COMMIT_SHA.test(revision)) invalid(sourceText, "a full commit SHA is required; mutable blob references are ambiguous");
   if (!revision || !path) invalid(sourceText, "revision and file path are required");
   if (revision === "." || revision === ".." || path.split("/").some((part) => part === "." || part === "..")) {
     invalid(sourceText, "dot path segments are not allowed");

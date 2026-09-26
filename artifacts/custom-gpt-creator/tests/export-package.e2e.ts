@@ -207,7 +207,7 @@ test("switches export formats before copying and downloading", async ({ page }) 
   await page.getByRole("button", { name: "Evidence (JSON)" }).click();
   const jsonContent = await page.locator("pre").textContent();
   expect(jsonContent).not.toBeNull();
-  const evidence = JSON.parse(await page.locator("pre").innerText());
+  const evidence = JSON.parse(jsonContent!);
   expect(evidence.phases["step-2-instruction-stack"]).toEqual({
     1: "Identity marker for the selected export.",
     2: "Operating marker for the selected export.",
@@ -295,11 +295,8 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   await openExportPackage(page);
 
   const instructions = {
-    1: "You are the evidence archivist — preserve the source of every claim.",
-    3: "   \r\n",
-    4: "Use tools only after checking scope: 日本語の境界を守る。",
-    6: "Format the result as a concise decision record.",
-    8: "Good: 「source」→ outcome.\nBad: inventing facts.",
+    1: `You are a careful research assistant.\r\n${unicodeAndMixedLineEndings}`,
+    2: `Prefer accurate, concise answers — especially for déjà vu.\n${unicodeAndMixedLineEndings}`,
   };
   await page.evaluate((savedInstructions) => {
     const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
@@ -325,7 +322,7 @@ test("copies and downloads the Instructions Only export", async ({ page }) => {
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "⬇ Download .md" }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("custom-gpt-spec.json");
+  expect(download.suggestedFilename()).toBe("custom-gpt-spec.md");
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
   await expect(readFile(downloadPath!)).resolves.toEqual(Buffer.from(exactExportContent, "utf8"));
@@ -624,7 +621,7 @@ test("preserves mixed instruction bytes in the Evidence JSON export", async ({ p
   const jsonContent = await page.locator("pre").textContent();
   expect(jsonContent).not.toBeNull();
   const exactJsonContent = jsonContent!;
-  const evidence = JSON.parse(await page.locator("pre").innerText());
+  const evidence = JSON.parse(exactJsonContent);
 
   expect(evidence.phases["step-2-instruction-stack"]).toEqual(fullSpecInstructionFixture);
   for (const [layerId, instruction] of Object.entries(fullSpecInstructionFixture)) {
@@ -645,12 +642,15 @@ test("preserves mixed instruction bytes entered through the editor before export
   await navigation.getByRole("button", { name: "Instruction Stack" }).click();
   await expect(page.locator("h1")).toContainText("Step 2 · Instruction Stack");
 
-  const enteredInstruction = fullSpecInstructionFixture[1];
-  await page.locator("textarea").first().fill(enteredInstruction);
+  const originalInstruction = fullSpecInstructionFixture[1];
+  const enteredInstruction = originalInstruction + "!";
+  await page.locator("textarea").first().fill(originalInstruction);
+  await page.locator("textarea").first().press("ControlOrMeta+End");
+  await page.locator("textarea").first().pressSequentially("!");
   await expect
     .poll(() =>
       page.evaluate(() => {
-    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
         return workspace.projects[0].data["step-2"]?.[1];
       }),
     )
@@ -665,7 +665,7 @@ test("preserves mixed instruction bytes entered through the editor before export
   await expect
     .poll(() =>
       page.evaluate(() => {
-    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+        const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
         return workspace.projects[0].data["step-2"]?.[1];
       }),
     )
@@ -685,6 +685,22 @@ test("preserves mixed instruction bytes entered through the editor before export
   await expectSelectedExportActions(page, "custom-gpt-spec.md", "md");
 });
 
+test("deletes the selected newline without changing adjacent stored line endings", async ({ page }) => {
+  await openExportPackage(page);
+  const navigation = page.getByRole("navigation", { name: "Creator workflow" });
+  await navigation.getByRole("button", { name: "Instruction Stack" }).click();
+  const editor = page.locator("textarea").first();
+  await editor.fill("a\r\n\nb");
+  await editor.press("ControlOrMeta+Home");
+  await editor.press("ArrowRight");
+  await editor.press("Shift+ArrowRight");
+  await editor.press("Backspace");
+  await expect.poll(() => page.evaluate(() => {
+    const workspace = JSON.parse(localStorage.getItem("cgpt-workspace")!);
+    return workspace.projects[0].data["step-2"]?.[1];
+  })).toBe("a\nb");
+});
+
 test("keeps international project names readable in downloaded filenames", async ({ page }) => {
   await openExportPackage(page);
 
@@ -695,9 +711,9 @@ test("keeps international project names readable in downloaded filenames", async
   ]) {
     await replaceProjectData(page, { "step-0": { gptName: projectName } });
 
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "⬇ Download .md" }).click();
-  const download = await downloadPromise;
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "⬇ Download .md" }).click();
+    const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe(filename);
   }
 });
@@ -783,7 +799,7 @@ test("exports structured evidence with provenance and explicit validation bounda
   const jsonText = await page.locator("pre").textContent();
   expect(jsonText).not.toBeNull();
   const exactJsonText = jsonText!;
-  const evidence = JSON.parse(await page.locator("pre").innerText());
+  const evidence = JSON.parse(exactJsonText);
   expect(evidence.schemaVersion).toBe("1.0");
   expect(evidence.artifact.type).toBe("custom-gpt-specification");
   expect(evidence.boundaries.nonGoals).toBe(unicodeAndMixedLineEndings);
@@ -801,7 +817,7 @@ test("exports structured evidence with provenance and explicit validation bounda
     .toBe(exactJsonText);
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "⬇ Download .md" }).click();
+  await page.getByRole("button", { name: "⬇ Download .json" }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("custom-gpt-spec.json");
   const downloadPath = await download.path();
@@ -814,14 +830,13 @@ test("includes normalized audit findings in Markdown and JSON evidence exports",
 
   const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
   await replaceProjectData(page, {
-    "step-0": { gptName: "Versioned Audit GPT" },
+    "step-0": { gptName: "Audited Evidence GPT" },
     "audit-mode": {
-      gptName: "Versioned Audit GPT",
-      rubricVersion: "v0.9",
-      shipGateThresholds: { averageMinimum: 4.5, safetyMinimum: 5 },
+      gptName: "Audited GPT · v1.4",
       scores,
-      notes: {},
-      shipGateDecision: "passed",
+      notes: { 1: "Clear job is supported by the reviewed brief." },
+      // The exporter must derive this from the scores instead of trusting stale state.
+      shipGateDecision: "failed",
     },
   });
 
@@ -923,28 +938,28 @@ test("restores compatible audit findings into the active project", async ({ page
   await openExportPackage(page);
   const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
   await replaceProjectData(page, {
-    "step-0": { gptName: "Cancelable Evidence GPT" },
+    "step-0": { gptName: "Restorable Evidence GPT" },
     "audit-mode": {
-      gptName: "Existing reviewer identity",
-      scores: { 1: 2 },
-      notes: { 1: "Keep this finding." },
-      shipGateDecision: "incomplete",
+      gptName: "Offline reviewer identity",
+      scores,
+      notes: { 1: "Reviewed from the evidence package." },
+      shipGateDecision: "failed",
     },
   });
   await page.getByRole("button", { name: "Evidence (JSON)" }).click();
   const exportedPackage = JSON.parse(await page.locator("pre").innerText());
-  exportedPackage.audit = {
-    ...exportedPackage.audit,
-    gptName: "Incoming reviewer identity",
-    scores,
-    notes: {},
-    items: exportedPackage.audit.items.map((item: { id: number; question: string }) => ({
-      ...item,
-      score: 5,
-      notes: "",
-    })),
-  };
+  exportedPackage.audit.shipGateDecision = "failed";
+  exportedPackage.audit.shipGateDecisionExplanation = "Stale explanation from the handoff.";
 
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Restorable Evidence GPT" },
+    "audit-mode": {
+      gptName: "Previous reviewer identity",
+      scores: { 1: 1 },
+      notes: { 1: "Previous finding." },
+      shipGateDecision: "incomplete",
+    },
+  });
   const beforeImport = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
   await importAuditEvidence(page, JSON.stringify(exportedPackage));
   const preflight = page.getByTestId("audit-import-preflight");
@@ -1141,7 +1156,7 @@ test("renders every generated Markdown construct in the preview", async ({ page 
     },
   });
 
-  const rawMarkdown = await page.locator("pre").textContent();
+  const rawMarkdown = await page.locator("pre").innerText();
   await page.getByRole("button", { name: "Rendered Preview" }).click();
   const preview = page.getByTestId("markdown-preview");
   await expect(preview).toBeVisible();

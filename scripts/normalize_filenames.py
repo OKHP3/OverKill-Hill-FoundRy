@@ -47,7 +47,7 @@ CHAR_SUBSTITUTIONS: dict[str, str] = {
 }
 
 # Well-known filenames that must stay in their conventional form (case-sensitive).
-# GitHub renders README, CHANGELOG, CONTRIBUTING, AGENTS, etc. specially when ALLCAPS.
+# Includes GitHub-rendered governance names and exact tool/config conventions.
 PRESERVE_NAMES: frozenset[str] = frozenset({
     "README.md",
     "README.rst",
@@ -71,7 +71,6 @@ PRESERVE_NAMES: frozenset[str] = frozenset({
     "SECURITY.md",
     "SUPPORT.md",
     "AGENTS.md",
-    "ATTRIBUTION.md",
     # Agent/runtime conventions. These names are consumed by tools and are
     # intentionally not normalized to lowercase-kebab-case.
     "CLAUDE.md",
