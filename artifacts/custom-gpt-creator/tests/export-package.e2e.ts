@@ -1054,6 +1054,77 @@ test("cancels a valid audit replacement without changing existing findings", asy
   expect(unchanged.audit.notes).toEqual({ "1": "Keep this finding." });
 });
 
+test("rejects a pending audit replacement after another tab changes the active project", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Cross-tab Evidence GPT" },
+    "audit-mode": {
+      gptName: "Reviewer from package",
+      scores: { 1: 5 },
+      notes: { 1: "Packaged finding." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const exportedPackage = JSON.parse(await page.locator("pre").innerText());
+
+  await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  const preflight = page.getByTestId("audit-import-preflight");
+  await expect(preflight).toBeVisible();
+  const beforeChange = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+
+  const otherTab = await page.context().newPage();
+  try {
+    await otherTab.goto("./#creator");
+    await otherTab.evaluate((key) => {
+      const workspace = JSON.parse(localStorage.getItem(key)!);
+      const previousProject = workspace.projects.find(
+        (project: { id: string }) => project.id === workspace.activeProjectId,
+      );
+      const nextProject = {
+        ...previousProject,
+        id: "project-selected-in-another-tab",
+        name: "Project selected in another tab",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        data: {
+          "step-0": { gptName: "Project selected in another tab" },
+          "audit-mode": {
+            gptName: "Newer reviewer findings",
+            scores: { 2: 4 },
+            notes: { 2: "Saved in the other tab." },
+            shipGateDecision: "incomplete",
+          },
+        },
+      };
+      workspace.projects.push(nextProject);
+      workspace.activeProjectId = nextProject.id;
+      localStorage.setItem(key, JSON.stringify(workspace));
+    }, workspaceKey);
+  } finally {
+    await otherTab.close();
+  }
+
+  const afterOtherTabChange = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+  expect(afterOtherTabChange).not.toBe(beforeChange);
+  await page.getByRole("button", { name: "Confirm replacement" }).click();
+
+  await expect(preflight).toBeHidden();
+  await expect(page.getByText(/Project data changed while this package was waiting for confirmation/)).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(afterOtherTabChange);
+  const savedWorkspace = JSON.parse(afterOtherTabChange!);
+  expect(savedWorkspace.activeProjectId).toBe("project-selected-in-another-tab");
+  expect(savedWorkspace.projects.at(-1).data["audit-mode"].gptName).toBe("Newer reviewer findings");
+
+  await page.reload();
+  await page.getByRole("button", { name: "Export Package" }).click();
+  await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  await expect(page.getByText(/not the active project "Project selected in another tab"/)).toBeVisible();
+  const reloadedWorkspace = JSON.parse(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))!);
+  expect(reloadedWorkspace.activeProjectId).toBe("project-selected-in-another-tab");
+  expect(reloadedWorkspace.projects.at(-1).data["audit-mode"].gptName).toBe("Newer reviewer findings");
+});
+
 test("rejects invalid, incomplete, and mismatched audit packages atomically", async ({ page }) => {
   await openExportPackage(page);
   const scores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));

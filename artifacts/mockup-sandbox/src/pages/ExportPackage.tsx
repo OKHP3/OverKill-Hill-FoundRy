@@ -10,8 +10,8 @@ import {
   type AuditEvidence,
   type CreatorWorkspace,
   importAuditEvidence,
-  loadWorkspace,
   persistWorkspace,
+  readWorkspaceSnapshot,
   readProjectValue,
 } from "../lib/creatorStorage";
 import { calculateReadiness, type ReadinessState } from "../lib/readiness";
@@ -614,6 +614,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const [auditImportMessage, setAuditImportMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [pendingAuditImport, setPendingAuditImport] = useState<{
     workspace: CreatorWorkspace;
+    sourceStorageValue: string;
     artifactName: string;
     audit: AuditEvidence;
   } | null>(null);
@@ -666,7 +667,13 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
 
     const reader = new FileReader();
     reader.onload = () => {
-      const result = importAuditEvidence(String(reader.result), loadWorkspace());
+      const snapshot = readWorkspaceSnapshot();
+      if (!snapshot.persisted || snapshot.serialized === null) {
+        setPendingAuditImport(null);
+        setAuditImportMessage({ type: "error", text: "The current project could not be verified in browser storage. Refresh the page and try again." });
+        return;
+      }
+      const result = importAuditEvidence(String(reader.result), snapshot.workspace);
       if (!result.workspace || !result.preview) {
         setPendingAuditImport(null);
         setAuditImportMessage({ type: "error", text: result.error ?? "The audit evidence could not be imported." });
@@ -675,6 +682,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
       setAuditImportMessage(null);
       setPendingAuditImport({
         workspace: result.workspace,
+        sourceStorageValue: snapshot.serialized,
         artifactName: result.preview.artifactName,
         audit: result.preview.audit,
       });
@@ -687,6 +695,15 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
 
   const confirmAuditImport = () => {
     if (!pendingAuditImport) return;
+    const currentSnapshot = readWorkspaceSnapshot();
+    if (!currentSnapshot.persisted || currentSnapshot.serialized !== pendingAuditImport.sourceStorageValue) {
+      setPendingAuditImport(null);
+      setAuditImportMessage({
+        type: "error",
+        text: "Project data changed while this package was waiting for confirmation. Refresh the page, then select the package again to review it against the current project.",
+      });
+      return;
+    }
     if (!persistWorkspace(pendingAuditImport.workspace)) {
       setAuditImportMessage({ type: "error", text: "The audit evidence was valid, but could not be saved in this browser." });
       return;
