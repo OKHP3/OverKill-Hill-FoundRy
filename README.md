@@ -1,102 +1,179 @@
-# OverKill-Hill-FoundRy
+# OverKill Hill FoundRy
 
-## Capability workbench
+**Turn a useful idea into a capability you can keep, inspect, and build on.**
 
-The application opens a browser-local workbench for prompts, Agent Skills,
-workflows, and software starters. Define a capability, keep named projects,
-record its input/output contract and evidence, inspect generated files, and
-export a portable source ZIP. The existing nine-station **Custom GPT studio**
-remains available at `#creator`, with its original projects and backups.
+<p align="center">
+  <a href="https://okhp3.github.io/overkill-hill-foundry/">
+    <img src="artifacts/custom-gpt-creator/public/assets/foundry-social-preview.jpg" width="640" alt="A forge hammer rests on a glowing anvil beside fine circuit traces: the OverKill Hill FoundRy workshop." />
+  </a>
+</p>
 
-- [Open FoundRy](https://okhp3.github.io/OverKill-Hill-FoundRy/)
-- [Run locally and build a capability](docs/capability-workbench.md)
-- [Seven-element universe research](docs/universe-research.md)
-- [Implementation and validation plan](docs/foundry-implementation-plan.md)
-- [Current-state assessment and maturation](docs/capability-workbench-maturation.md)
-- [Parent feature-page parity review](docs/research/foundry-feature-page-parity-review.md)
-- [Agent collaboration and handoff protocol](docs/agent-collaboration.md)
-- [Technology versions and current stable releases](docs/technology-inventory.md)
-- [Dependency tracking and upgrade plan](docs/technology-update-plan.md)
+<p align="center">
+  <strong><a href="https://okhp3.github.io/overkill-hill-foundry/">Open FoundRy</a></strong>
+  &nbsp; · &nbsp;
+  <a href="https://okhp3.github.io/overkill-hill-foundry/#creator">Custom GPT studio</a>
+  &nbsp; · &nbsp;
+  <a href="docs/capability-workbench.md">Workbench guide</a>
+  &nbsp; · &nbsp;
+  <a href="https://okhp3.github.io/skillz/">Explore Skillz</a>
+</p>
 
-**Region boundary:** this FoundRy serves OverKill. AskJamie and Glee-fully have
-separate FoundRys. [Skillz](https://okhp3.github.io/skillz/) is shared by all three;
-this application references that catalog without copying it or publishing projects
-into it. Universal governance continues to originate in `OKHP3/OverKill-Hill`.
+[![Governance checks](https://github.com/OKHP3/overkill-hill-foundry/actions/workflows/governance.yml/badge.svg)](https://github.com/OKHP3/overkill-hill-foundry/actions/workflows/governance.yml)
+[![Pages deployment](https://github.com/OKHP3/overkill-hill-foundry/actions/workflows/pages.yml/badge.svg)](https://github.com/OKHP3/overkill-hill-foundry/actions/workflows/pages.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-1c3a34.svg)](LICENSE)
 
-FoundRy is the OverKill capability workbench for prompts, skills, workflows,
-software starters, and related capabilities; the historic Custom GPT studio
-remains available within it. The [OverKill-Hill site](https://overkillhill.com/)
-owns the public brand, portfolio, and [editorial MurderBird story](https://overkillhill.com/writings/murderbird/).
-MurderBird's creative assets and interactive app belong
-in the sibling [`OKHP3/murderbird-uncaged`](https://github.com/OKHP3/murderbird-uncaged)
-repository. The website retains the published story, its site shell, and any
-copies needed for distribution. See [repository boundaries](docs/repository-boundaries.md).
+Bring the idea. Work the contract. Keep the source.
 
-**Public by intent:** the owner confirmed this repository’s public status on
-September 7, 2026. FoundRy is the mentor pattern for the AskJamie and Glee-fully
-FoundRys, which remain distinct and can contribute improvements back to it or
-to each other. OverKill-Hill supplies the universe’s baseline and reference for
-universal governance questions. See the [mentoring model](docs/foundry-mentoring-model.md).
+FoundRy is the OverKill Hill P³ capability workbench: a browser-local workshop for
+**prompts, Agent Skills, workflows, software starters, and Custom GPT specifications**.
+Give an idea a purpose, define what goes in and what comes out, record the evidence,
+and leave with a portable source package. Your work stays in your browser until you
+export it.
 
-Application projects stay in browser storage until exported. Public repository
-status does not approve private source publication or a separate capability release.
+[What you can build](#what-you-can-build) · [Start a project](#start-a-project) ·
+[Brand and sharing assets](#brand-and-sharing-assets) · [Run locally](#run-it-locally) ·
+[Capability catalog](#capability-catalog) · [Project guide](#project-guide)
 
-The following relay charter and capability catalog preserve the existing source
-and governance context. Historical "Active" labels describe maintained material,
-not verified executable services.
+## What you can build
 
+| Bring to the bench | Take away |
+| --- | --- |
+| **A reusable prompt** | Instructions with a defined purpose, input/output contract, and validation notes. |
+| **An Agent Skill** | A `SKILL.md` starter and supporting source, ready to inspect and test in its destination. |
+| **A repeatable workflow** | A portable plan with steps, constraints, and handoff material. |
+| **A software idea** | A runnable JSON contract-inspector starter to extend for your own requirements. |
+| **A Custom GPT concept** | A specification built through the original nine-station studio, from Brief through Ship. |
 
-The public forge of OverKill Hill P³™ — where experimental architectures, recursive ledgers, promptcraft systems, local AI workbenches, narrative frameworks, and prototype agents are cast, refined, and stress-tested before public release.
+The workbench keeps named projects, supports duplication, previews generated files,
+and exports source ZIPs. Workspace backups let you move work between browsers or
+recover it later. The Custom GPT studio retains its own projects and backups.
 
-> **Repository identity:** OverKill Hill FoundRy is the primary identity and purpose of this repository. It is a public governance relay, capability workbench, and mentor pattern for the regional FoundRys. **ReFolDec** (Recursively Folding Codec) is a FoundRy-hosted capability: its specifications and release materials may be developed here, but any public ReFolDec artifact must graduate to a separately approved public surface.
+## Start a project
 
-## Role
+1. **Brief:** choose a capability type and name its purpose, audience, owner, and version.
+2. **Contract:** define inputs, outputs, constraints, and observable acceptance criteria.
+3. **Build:** write the method and components; reference useful packages from Skillz.
+4. **Validate:** record what you tested, what happened, and what remains uncertain.
+5. **Package:** inspect the files and download your source ZIP.
 
-This repository is the OverKill Hill P³ FoundRy relay. It sits between the golden governance in `OKHP3/OverKill-Hill` and the child repositories that carry OKH research, writing, apps, skills, and capability prototypes.
+**No account or provider key is needed.** The authoring path makes no paid model
+calls and does not send project text to an AI service. It loads external fonts.
+Browser storage belongs to the current site and device; export a workspace backup
+before clearing browser data or moving to another device.
+
+See the [complete workbench guide](docs/capability-workbench.md) for imports,
+recovery, storage limits, and the separate Custom GPT workflow.
+
+## What the workbench verifies
+
+FoundRy checks structure and records your evidence. Generated starters, completed
+fields, and authored acceptance criteria do not establish tested behavior. Test the
+exported capability in its intended environment before relying on it. The workbench
+does not execute agents, schedule workflows, publish to Skillz, or synchronize
+projects across devices.
+
+The [dated maturity assessment](docs/capability-workbench-maturation.md) and
+[implementation plan](docs/foundry-implementation-plan.md) explain the evidence and
+remaining work. Workflow badges above link to current run results; historical test
+counts in documents describe the revision tested.
+
+## Brand and sharing assets
+
+The forge carries through the README, browser tab, home-screen shortcut, and link
+preview. The launch link opens the workbench; the artwork above links there too.
+
+| Surface | Assets and configuration |
+| --- | --- |
+| **README and social cards** | [Forge artwork](artifacts/custom-gpt-creator/public/assets/foundry-social-preview.jpg), shared by this README and the Open Graph / X card tags. |
+| **Browser tabs** | [SVG anvil](artifacts/custom-gpt-creator/public/favicon.svg), plus [16 px](artifacts/custom-gpt-creator/public/assets/icons/favicon-16.png) and [32 px](artifacts/custom-gpt-creator/public/assets/icons/favicon-32.png) PNG favicons. |
+| **Apple home screen** | [180 px touch icon](artifacts/custom-gpt-creator/public/assets/icons/apple-touch-icon.png). |
+| **App shortcuts** | [192 px](artifacts/custom-gpt-creator/public/assets/icons/icon-192.png) and [512 px](artifacts/custom-gpt-creator/public/assets/icons/icon-512.png) icons in the [web manifest](artifacts/custom-gpt-creator/public/manifest.webmanifest). |
+| **Pinned tabs and tiles** | [Safari mask icon](artifacts/custom-gpt-creator/public/safari-pinned-tab.svg) and [Windows tile image](artifacts/custom-gpt-creator/public/assets/icons/mstile-150x150.png). |
+| **Search and link metadata** | [Application HTML](artifacts/custom-gpt-creator/index.html): title, description, canonical URL, theme color, Open Graph, X card, and structured application data. |
+
+Shortcut support depends on the browser; the manifest does not promise offline
+operation. See [the asset guide](docs/brand-and-sharing-assets.md) for provenance,
+preview behavior, and GitHub's separate repository social-preview setting.
+
+## Run it locally
+
+Use **Node 22 or newer** and the **pnpm version pinned in `package.json`**.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm --filter @workspace/custom-gpt-creator run dev
+```
+
+Open [localhost:20017/custom-gpt-creator/](http://localhost:20017/custom-gpt-creator/).
+These defaults come from the repository's artifact configuration and work in
+PowerShell as well as a Unix shell.
+
+Useful checks:
+
+```bash
+python3 scripts/governance-check.py
+python3 scripts/normalize_filenames.py . --recursive --ascii-only --include-dirs
+pnpm run test:capability
+pnpm run typecheck
+pnpm --filter @workspace/custom-gpt-creator run test:pages-base-path
+```
+
+On Windows, use `py` if `python3` is unavailable. The [validation guide](docs/capability-workbench.md#validation)
+also covers browser tests and deployment configuration.
+
+The app uses React, TypeScript, and Vite. Its deployment entry is
+[`artifacts/custom-gpt-creator/`](artifacts/custom-gpt-creator/); the canonical
+workbench implementation lives in [`artifacts/mockup-sandbox/src/`](artifacts/mockup-sandbox/src/).
+Canvas previews remain part of that workspace. The API and database packages are
+not part of the browser-local authoring path.
+
+## A workbench and a governance relay
+
+FoundRy also maintains the scaffolds, schemas, registry, and working practices
+that help OverKill child repositories start with a durable foundation.
 
 ```text
 OKHP3/OverKill-Hill
-  → OKHP3/OverKill-Hill-FoundRy
-    → foundry-*, vault-*, article-*, mermaid-*, mac-studio-*, narrative-* child repos
+  → OKHP3/overkill-hill-foundry
+    → foundry-*, vault-*, article-*, narrative-*, mermaid-*, mac-studio-* child repos
 ```
 
-### ReFolDec relationship and publication boundary
+| Location | Purpose |
+| --- | --- |
+| [`_template/`](_template/) | Deployable child-repository starter scaffold. |
+| [`registry/`](registry/) | Child-repository catalog and relationships. |
+| [`schemas/`](schemas/) | Manifest and registry contracts. |
+| [`docs/`](docs/) | Relay design, governance, research, and migration guidance. |
+| [`.github/`](.github/) | Validation, deployment, workflows, and issue templates. |
 
-ReFolDec is a bidirectional process-capture and transformation capability maintained within the FoundRy. It folds raw material into durable artifacts, unfolds mature artifacts into reusable primitives, and refolds those primitives into stronger outputs.
+**One region, distinct applications.** This FoundRy serves OverKill. AskJamie and
+Glee-fully own separate FoundRys; [Skillz](https://okhp3.github.io/skillz/) is their
+shared catalog. FoundRy supplies the initial mentor pattern, and improvements can
+flow between siblings through review. Universal governance originates in
+[OverKill-Hill](https://github.com/OKHP3/OverKill-Hill). See the
+[mentoring model](docs/foundry-mentoring-model.md).
 
-- **FoundRy repository:** intentionally public governance and development relay.
-- **ReFolDec within this repository:** hosted capability and release scaffold.
-- **Public ReFolDec:** a future, separately reviewed artifact surface; it must not expose private FoundRy, Notion, client, or employer material.
+**Public by intent, with release boundaries.** The owner confirmed FoundRy's public
+status on September 7, 2026. This does not approve private inputs for publication.
+ReFolDec is a FoundRy-hosted fold / unfold / refold capability, with publicly
+readable scaffolds here; a separate public ReFolDec release still needs its own
+approved surface and graduation checks. FoundRy remains this repository's identity.
 
-ReFolDec scaffolds in this public repository are publicly readable. That availability does not establish a separately reviewed ReFolDec release or rename this repository.
+The [OverKill Hill website](https://overkillhill.com/) owns the brand, portfolio,
+and [published MurderBird story](https://overkillhill.com/writings/murderbird/).
+MurderBird creative assets and its interactive app belong in
+[`murderbird-uncaged`](https://github.com/OKHP3/murderbird-uncaged); the website keeps
+its editorial publication and distribution copies. See
+[repository boundaries](docs/repository-boundaries.md).
 
-## Responsibilities
+## Capability catalog
 
-- Maintain OKH child repository scaffolds in `_template/`.
-- Maintain OKH child repository registry files in `registry/`.
-- Maintain manifest and registry schemas in `schemas/`.
-- Document governance and migration practice in `docs/`.
-- Provide GitHub workflow and issue template scaffolding in `.github/`.
+Sixteen retained capability folders document the FoundRy lineage: prompt forging,
+GPT construction, validation, assessment, and shared ledgers. Their historical
+**Active** labels mean maintained material, not verified executable services.
 
-## Governed Repository Families
-
-- `foundry-*`
-- `vault-*`
-- `article-*`
-- `narrative-*`
-- `mermaid-*`
-- `mac-studio-*`
-- OKH research, writing, promptcraft, local AI, and systems-design repositories
-
-## Operating Principle
-
-A repository should preserve the durable capability, not merely the latest platform wrapper. GPTs, skills, agents, articles, websites, local modules, and MCP-facing assets are deployment targets.
-
----
-
-## Capability Catalog
-
-The 16 capability folders in this repository span the full lifecycle of GPT construction, validation, and governance within the OverKill Hill P³ / GPT Found‑Rᵧ ecosystem — from raw ideation through canon-sealed export.
+<details>
+<summary><strong>Explore the pipeline, tool documentation, and full capability catalog</strong></summary>
 
 ### Pipeline Diagram
 
@@ -254,3 +331,22 @@ Tools for evaluating prompt quality, resolving competing versions, and maintaini
 | Folder | Purpose | Phase | Status |
 |---|---|---|---|
 | [gpt-crucible](gpt-crucible/README.md) | Original monolithic GPT builder tool — canonical ancestor of PhenoMould-Rᵧ; preserved with full rehydration artifacts and lineage record for traceability of all Crucible-era outputs | Lineage archive | Retired |
+
+</details>
+
+## Project guide
+
+| Looking for… | Start here |
+| --- | --- |
+| Operating rules and publication gates | [AGENTS.md](AGENTS.md) |
+| Architecture and delivery plan | [Implementation plan](docs/foundry-implementation-plan.md) |
+| Current-state evidence and limitations | [Maturation assessment](docs/capability-workbench-maturation.md) |
+| The wider OverKill / AskJamie / Glee-fully ecosystem | [Seven-element universe research](docs/universe-research.md) |
+| Website and workbench alignment | [Parent feature-page parity review](docs/research/foundry-feature-page-parity-review.md) |
+| Working across agent hosts | [Collaboration and handoff protocol](docs/agent-collaboration.md) |
+| Dependencies and maintenance | [Technology inventory](docs/technology-inventory.md) · [Update plan](docs/technology-update-plan.md) |
+| Changes and licensing | [Changelog](CHANGELOG.md) · [Apache 2.0 license](LICENSE) |
+
+Built by [Jamie Hill](https://overkillhill.com/) · **OverKill Hill P³**
+
+*The durable unit is the capability. Keep the source. Improve the craft.*
