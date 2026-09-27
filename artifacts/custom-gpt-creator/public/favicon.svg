@@ -1,3 +1,6 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>OverKill Hill FoundRy anvil</title>
+  <rect width="64" height="64" rx="14" fill="#1c3a34"/>
+  <path d="M8 24h48v8H42c-5 0-8 5-8 10v2h12v8H18v-8h10v-2c0-5-3-10-8-10L8 28z" fill="#f6f2ee"/>
+  <path d="m33 7 3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#e6a03c"/>
 </svg>

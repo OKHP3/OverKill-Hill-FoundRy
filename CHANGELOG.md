@@ -1,3 +1,9 @@
+# README and sharing presentation - 2026-09-27
+
+- Lead the README with forge artwork, application links, an authoring journey, and a browsable asset guide; retain the full historical capability catalog in an expandable section.
+- Connect existing forge artwork and PNG icons to the deployment artifact, and add matching vector favicons, a Safari pinned-tab mask, and a base-relative shortcut manifest.
+- Complete canonical, Open Graph, X card, theme, tile, and structured application metadata without changing workbench storage, exports, or Canvas previews.
+
 # Portfolio maintenance - 2026-09-20
 
 - Preserve raw instruction line endings through later edits and keep external handoff data inside valid Markdown fences.
