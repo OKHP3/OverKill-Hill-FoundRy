@@ -10,9 +10,105 @@ import {
   newProject,
   parseCapabilityBackup,
   saveCapabilityWorkspace,
+  PORTABILITY_DEFAULTS,
   type CapabilityProject,
   type CapabilityWorkspace,
 } from "./capability-workbench.ts";
+
+test("legacy version-1 backups gain defaults without changing project identity or target", () => {
+  const project = newProject("prompt");
+  const backup = JSON.parse(
+    createCapabilityBackup({
+      version: 1,
+      activeId: project.id,
+      projects: [project],
+    }),
+  );
+  for (const key of Object.keys(PORTABILITY_DEFAULTS))
+    delete backup.workspace.projects[0][key];
+  const restored = parseCapabilityBackup(JSON.stringify(backup));
+  assert.equal(restored.projects[0].id, project.id);
+  assert.equal(restored.projects[0].kind, "prompt");
+  assert.equal(restored.projects[0].sourceType, "new");
+  assert.equal(restored.projects[0].delivery, "source");
+  assert.equal(newProject().kind, "skill");
+});
+
+test("conversion fields reject malformed and oversized values and unknown target enums", () => {
+  for (const [field, value] of [
+    ["sourceRef", null],
+    ["behaviorMap", {}],
+    ["sourceInventory", "x".repeat(40_001)],
+    ["delivery", "universal-installer"],
+    ["sourceType", "auto-import"],
+  ]) {
+    const backup = JSON.parse(createCapabilityBackup(workspace()));
+    backup.workspace.projects[0][field as string] = value;
+    assert.throws(() => parseCapabilityBackup(JSON.stringify(backup)));
+  }
+});
+
+test("conversion and packaging require a skill core and explicit source and host records", () => {
+  const project = {
+    ...completeProject("skill"),
+    sourceType: "custom-gpt" as const,
+    delivery: "plugin" as const,
+  };
+  assert.ok(
+    assessCapability(project).blockers.some((text) =>
+      text.includes("Source reference"),
+    ),
+  );
+  Object.assign(project, {
+    sourceRef: "Supplied export 2026-09-27",
+    sourceInventory: "Instructions available; private retrieval missing",
+    behaviorMap: "Procedure preserved; retrieval requires adapter",
+    semanticLoss:
+      "Retrieval ranking unverified; compare against source fixture",
+    runtimeTargets: "Claude\nChatGPT/Codex\nOpenClaw\nPerplexity",
+    toolRequirements:
+      "Search MCP; permission and unavailable-tool tests pending",
+    compatibilityEvidence: "No hosts tested yet",
+    reviewed: true,
+  });
+  const original = workspace(project);
+  assert.deepEqual(
+    parseCapabilityBackup(createCapabilityBackup(original)),
+    original,
+  );
+  assert.equal(
+    assessCapability(project).state,
+    "owner-reviewed-structural-draft",
+  );
+  for (const delivery of ["plugin", "connector"] as const) {
+    const files = buildCapabilityFiles({ ...project, delivery });
+    const compatibility = JSON.parse(
+      files.find((file) => file.path === "adapters/compatibility.json")!
+        .content,
+    );
+    assert.equal(compatibility.installable, false);
+    assert.equal(compatibility.status, "unverified");
+    assert.deepEqual(compatibility.verifiedHosts, []);
+    assert.equal(compatibility.requestedHosts.length, 4);
+    const source = JSON.parse(
+      files.find((file) => file.path === "origin/source.json")!.content,
+    );
+    assert.equal(source.imported, false);
+    assert.equal(source.sourceRevision, null);
+    assert.ok(
+      files.some((file) => file.path === "skills/unicode-guard/SKILL.md"),
+    );
+    assert.match(
+      files.find((file) => file.path === "docs/conversion.md")!.content,
+      /ranking unverified/,
+    );
+  }
+  assert.ok(
+    assessCapability({ ...project, kind: "prompt" }).blockers.some((text) =>
+      text.includes("Portable skill core"),
+    ),
+  );
+});
 
 function completeProject(
   kind: CapabilityProject["kind"] = "prompt",
@@ -157,7 +253,7 @@ test("target packages include bounded target artifacts and honest claims", () =>
       paths.includes(
         {
           prompt: "prompts/prompt-contract.md",
-          skill: "skill/SKILL.md",
+          skill: "skills/unicode-guard/SKILL.md",
           workflow: "docs/workflow-plan.md",
           software: "app/index.html",
         }[kind],
@@ -171,7 +267,7 @@ test("target packages include bounded target artifacts and honest claims", () =>
   const skill = buildCapabilityFiles({
     ...completeProject("skill"),
     purpose: 'quote: "yes"\n---\nprivate',
-  }).find((file) => file.path === "skill/SKILL.md")!.content;
+  }).find((file) => file.path === "skills/unicode-guard/SKILL.md")!.content;
   assert.match(skill, /^---\nname: "unicode-guard"/);
   assert.match(skill, /^---\nname: [^\n]+\ndescription: [^\n]+\n---\n\n# /);
 });
@@ -188,6 +284,18 @@ test("software starter safely embeds hostile text and provides real contract-ins
   assert.match(html, /JSON\.parse\(input\.value\)/);
   assert.match(html, /Object\.fromEntries/);
   assert.match(html, /does not implement or validate the bespoke capability/);
+});
+
+test("skill directory names are portable and match their declared skill name", () => {
+  for (const name of ["CON", "../outside", "🔥", "A".repeat(100)]) {
+    const skill = buildCapabilityFiles({ ...completeProject("skill"), name })
+      .find((file) => file.path.endsWith("/SKILL.md"))!;
+    const directory = skill.path.split("/")[1];
+    assert.match(directory, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    assert.ok(directory.length <= 64);
+    assert.notEqual(directory, "con");
+    assert.ok(skill.content.startsWith(`---\nname: "${directory}"\n`));
+  }
 });
 
 test("stored ZIP has UTF-8 names, valid stored entries, and correct CRC records", () => {

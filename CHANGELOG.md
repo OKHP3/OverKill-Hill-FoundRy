@@ -1,3 +1,10 @@
+# Portable skill FoundRy - 2026-09-27
+
+- Refocus the workbench on portable Agent Skills and host-specific plugin/connector packaging, retaining the GPT studio and browser data.
+- Add conversion dossiers, source inventories, semantic-loss mapping, tool requirements and explicitly unverified compatibility records to authoring and ZIP exports.
+- Establish capability subtree ownership, migration tracking, preservation and release gates without importing or archiving external repositories.
+- Default new projects to skills; read existing version-1 workspaces and backups with additive field defaults. Export skills in a directory matching their frontmatter name.
+
 # Portfolio maintenance - 2026-09-20
 
 - Preserve raw instruction line endings through later edits and keep external handoff data inside valid Markdown fences.

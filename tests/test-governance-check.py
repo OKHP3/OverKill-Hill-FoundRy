@@ -36,6 +36,10 @@ EXPECTED_CHECKS = (
         ("scripts/registry-audit.py", str(ROOT)),
     ),
     (
+        "Validate capability migration records",
+        ("scripts/capability-migration-audit.py", str(ROOT)),
+    ),
+    (
         "Validate child scaffold and relay sync",
         ("scripts/foundry-sync.py", str(ROOT), "--strict"),
     ),

@@ -29,6 +29,12 @@ flowchart TD
 
 ## Learning in every direction
 
+The owner's 2026-09-27 direction makes portable Agent Skills, GPT conversion and
+host-specific plugins/connectors the shared product direction. The
+[OverKill implementation contract](portable-skill-foundry.md) is the initial
+adaptation. Siblings can adopt it through their own reviewed changes; this record
+does not claim their applications or product repositories have been migrated.
+
 Either sibling can improve the mentor or the other sibling. A useful pattern
 can originate anywhere: for example, a better backup flow in AskJamie FoundRy or
 a clearer authoring method in Glee-fully Tools FoundRy may be adopted by OverKill

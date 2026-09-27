@@ -6,6 +6,14 @@ This repository is the OverKill Hill P³ FoundRy relay. It translates the golden
 
 This repo is not merely a content repository. It is a template-of-templates and governance relay.
 
+**Product direction (2026-09-27):** FoundRy is now a workbench for portable Agent
+Skills and their plugins/connectors. Preserve and convert useful Custom GPT
+methods into composable skills; isolate host packaging and tool integrations in
+adapters. Custom GPTs are retained migration sources and optional legacy targets.
+Use `capabilities/<slug>/` for consolidated capability projects and the
+[migration contract](docs/portable-skill-foundry.md) for source-preserving imports.
+This local adaptation does not change the universal governance authority.
+
 **Identity boundary:** FoundRy is the primary identity of this intentionally public repository. ReFolDec (Recursively Folding Codec) is a FoundRy-hosted capability and prospective public artifact, not an alternate repository identity. Source-safe ReFolDec development may live here; a public ReFolDec release requires its own approved publication surface and the graduation checks in section 7.
 
 ## 1. Authority Chain
@@ -168,7 +176,7 @@ python3 scripts/governance-check.py
 ```
 
 This is the same repository-local entry point used by governance CI. It runs
-the manifest, registry, scaffold sync, public graduation, and release-record
+the manifest, registry, capability migration records, scaffold sync, public graduation, and release-record
 consistency checks without changing the existing checks.
 
 ## 8.3 Collaboration across agent hosts
@@ -220,6 +228,7 @@ registry/    Child repo catalog and triage logs
 schemas/     Manifest and registry validation schemas
 docs/        Relay design, governance, and migration guidance
 .github/     GitHub workflow and issue template scaffolds
+capabilities/ Consolidated capability subtrees (portable skills plus adapters)
 ```
 
 ## 10. Filename Compliance Enforcement
@@ -245,3 +254,11 @@ AI agents introducing new files must ensure names are lowercase-kebab-case ASCII
 ## 11. Canonical Principle
 
 The durable unit is the capability, not the platform wrapper. GPTs, skills, agents, local modules, websites, and articles are deployment targets. The repository is the source of truth.
+
+For new capability work, prefer `skills/<skill-name>/SKILL.md` inside its
+capability subtree, with `origin/`, `adapters/`, `tests/`, and `docs/`. A skill may
+compose other skills and use MCP, APIs or applications through explicit tool
+contracts. Record compatibility for each host/version independently. Never equate
+source portability, a packaging plan or a plugin manifest with tested execution.
+Keep contributor skills in `.agents/skills/` distinct from product skills.
+Do not archive source repositories until import parity and recovery are verified.

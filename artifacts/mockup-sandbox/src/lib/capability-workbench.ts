@@ -1,6 +1,20 @@
 export type CapabilityKind = "prompt" | "skill" | "workflow" | "software";
 
-export interface CapabilityProject {
+// Optional additive fields keep version-1 projects and backups readable.
+export const PORTABILITY_DEFAULTS = {
+  sourceType: "new" as "new" | "custom-gpt" | "existing-skill",
+  delivery: "source" as "source" | "plugin" | "connector",
+  sourceRef: "",
+  sourceInventory: "",
+  behaviorMap: "",
+  semanticLoss: "",
+  runtimeTargets: "",
+  toolRequirements: "",
+  compatibilityEvidence: "",
+};
+type PortabilityFields = typeof PORTABILITY_DEFAULTS;
+
+export interface CapabilityProject extends Partial<PortabilityFields> {
   id: string;
   name: string;
   kind: CapabilityKind;
@@ -81,6 +95,12 @@ function cloneWorkspace(workspace: CapabilityWorkspace): CapabilityWorkspace {
     version: 1,
     activeId: workspace.activeId,
     projects: workspace.projects.map((project) => ({
+      ...Object.fromEntries(
+        Object.entries(PORTABILITY_DEFAULTS).map(([key, fallback]) => [
+          key,
+          project[key as keyof PortabilityFields] ?? fallback,
+        ]),
+      ),
       id: project.id,
       name: project.name,
       kind: project.kind,
@@ -128,6 +148,7 @@ function validationError(value: unknown): string | null {
   const ids = new Set<string>();
   const allowedProjectFields = new Set<string>([
     ...stringFields,
+    ...Object.keys(PORTABILITY_DEFAULTS),
     "kind",
     "reviewed",
   ]);
@@ -144,6 +165,25 @@ function validationError(value: unknown): string | null {
     );
     if (unknownField)
       return `The capability workspace contains unknown project field \"${unknownField}\".`;
+    for (const field of Object.keys(PORTABILITY_DEFAULTS)) {
+      if (!(field in candidate)) continue;
+      if (typeof candidate[field] !== "string")
+        return `Project field "${field}" must be text.`;
+      if (byteLength(candidate[field] as string) > MAX_CAPABILITY_FIELD_LENGTH)
+        return `Project field "${field}" exceeds the ${MAX_CAPABILITY_FIELD_LENGTH}-byte limit.`;
+    }
+    if (
+      candidate.sourceType !== undefined &&
+      !["new", "custom-gpt", "existing-skill"].includes(
+        candidate.sourceType as string,
+      )
+    )
+      return "Unknown capability source type.";
+    if (
+      candidate.delivery !== undefined &&
+      !["source", "plugin", "connector"].includes(candidate.delivery as string)
+    )
+      return "Unknown capability delivery target.";
     for (const field of stringFields) {
       if (typeof candidate[field] !== "string")
         return `Project field \"${field}\" must be text.`;
@@ -175,11 +215,12 @@ function blankWorkspace(): CapabilityWorkspace {
   return { version: 1, activeId: project.id, projects: [project] };
 }
 
-export function newProject(kind: CapabilityKind = "prompt"): CapabilityProject {
+export function newProject(kind: CapabilityKind = "skill"): CapabilityProject {
   if (!KINDS.includes(kind))
     throw new Error(`Unknown capability kind: ${String(kind)}`);
   const now = timestamp();
   return {
+    ...PORTABILITY_DEFAULTS,
     id: createId(),
     name: "Untitled capability",
     kind,
@@ -387,6 +428,40 @@ export function assessCapability(project: CapabilityProject): {
       passed: hasText(project.evidence),
     },
   ];
+  if (project.sourceType && project.sourceType !== "new") {
+    checks.push(
+      {
+        label: "Source reference and asset inventory",
+        passed:
+          hasText(project.sourceRef ?? "") &&
+          hasText(project.sourceInventory ?? ""),
+      },
+      {
+        label: "Behavior map and semantic-loss review",
+        passed:
+          hasText(project.behaviorMap ?? "") &&
+          hasText(project.semanticLoss ?? ""),
+      },
+    );
+  }
+  if (project.delivery && project.delivery !== "source") {
+    checks.push(
+      {
+        label: "Portable skill core for packaging",
+        passed: project.kind === "skill",
+      },
+      {
+        label: "Target hosts and tool requirements recorded",
+        passed:
+          hasText(project.runtimeTargets ?? "") &&
+          hasText(project.toolRequirements ?? ""),
+      },
+      {
+        label: "Host compatibility evidence or gaps recorded",
+        passed: hasText(project.compatibilityEvidence ?? ""),
+      },
+    );
+  }
   const blockers = checks
     .filter((check) => !check.passed)
     .map((check) => `${check.label} is incomplete.`);
@@ -417,7 +492,10 @@ function safeSkillName(name: string): string {
     .normalize("NFKD")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return (slug || "untitled-capability").slice(0, 64).replace(/-+$/g, "");
+  const portable = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/.test(slug)
+    ? `capability-${slug}`
+    : slug;
+  return (portable || "untitled-capability").slice(0, 64).replace(/-+$/g, "");
 }
 
 function htmlText(value: string): string {
@@ -466,7 +544,7 @@ export function buildCapabilityFiles(
       JSON.stringify(
         {
           schema: "okh-capability-package",
-          schemaVersion: 1,
+          schemaVersion: 2,
           audience: "overkillhill",
           lineage: { parentFoundry: "OKHP3/OverKill-Hill-FoundRy" },
           capability: checked,
@@ -505,6 +583,54 @@ export function buildCapabilityFiles(
     content: `# Skillz references\n\nReferences are pointers only. This generator does not fetch source content. Review the text you supplied before sharing.\n\n${checked.skillRefs.trim() || "No Skillz references recorded."}\n`,
   });
 
+  files.push({
+    path: "origin/source.json",
+    content:
+      JSON.stringify(
+        {
+          schemaVersion: 1,
+          sourceType: checked.sourceType,
+          reference: checked.sourceRef,
+          inventory: checked.sourceInventory,
+          sourceRevision: null,
+          licenseReview: "pending",
+          publicSourceReview: "pending",
+          imported: false,
+        },
+        null,
+        2,
+      ) + "\n",
+  });
+  files.push({
+    path: "docs/conversion.md",
+    content: `# Conversion dossier\n\nSource: ${checked.sourceType}\n\nThis is an authored plan. No GPT, repository, knowledge file, or tool was fetched or converted automatically.\n\n${markdownSection("Source reference", checked.sourceRef ?? "")}\n${markdownSection("Asset inventory and availability", checked.sourceInventory ?? "")}\n${markdownSection("Behavior to skill or adapter map", checked.behaviorMap ?? "")}\n${markdownSection("Semantic loss, mitigation and acceptance tests", checked.semanticLoss ?? "")}\n## Evaluation plan\n\nBefore release, run a semantic-preservation case, a platform-adapter or loss case, and a boundary case. Record inputs, expected results, host/version, observed results and evidence. Authored criteria are not test results.\n`,
+  });
+  files.push({
+    path: "adapters/compatibility.json",
+    content:
+      JSON.stringify(
+        {
+          schemaVersion: 1,
+          delivery: checked.delivery,
+          requestedHosts: (checked.runtimeTargets ?? "")
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean),
+          toolRequirements: checked.toolRequirements,
+          evidenceNotes: checked.compatibilityEvidence,
+          verifiedHosts: [],
+          status: "unverified",
+          installable: false,
+        },
+        null,
+        2,
+      ) + "\n",
+  });
+  files.push({
+    path: "adapters/packaging-plan.md",
+    content: `# Platform packaging plan\n\nDelivery: ${checked.delivery}\n\nKeep the canonical skill independent of host manifests. This file is a packaging plan, not an installable plugin or connector.\n\n${markdownSection("Requested hosts and versions", checked.runtimeTargets ?? "")}\n${markdownSection("Tools, MCP servers, APIs and permissions", checked.toolRequirements ?? "")}\n${markdownSection("Compatibility evidence and gaps", checked.compatibilityEvidence ?? "")}\n## Adapter implementation\n\nFor each host, verify its current packaging format and skill support. Build the host wrapper under adapters/<host>/; reference or reproducibly copy the canonical skills into its required layout. Record the source revision and wrapper version. Keep credentials out of source. Implement and test tool authentication, least required permissions, unavailable-tool recovery, and installation/removal. A connector needs an actual integration; a manifest alone does not supply it.\n`,
+  });
+
   if (checked.kind === "prompt") {
     files.push({
       path: "prompts/prompt-contract.md",
@@ -513,7 +639,7 @@ export function buildCapabilityFiles(
   } else if (checked.kind === "skill") {
     const description = `Use when an OverKill Hill user needs ${cleanHeading(checked.purpose, "this capability")}. Scope: ${cleanHeading(checked.constraints, "follow the package constraints")}.`;
     files.push({
-      path: "skill/SKILL.md",
+      path: `skills/${safeSkillName(name)}/SKILL.md`,
       content: `---\nname: ${yamlString(safeSkillName(name))}\ndescription: ${yamlString(description.slice(0, 1024))}\n---\n\n# ${name}\n\n## Trigger\n\nUse this skill only for the OverKill Hill audience when the request matches the purpose stated below.\n\n${markdownSection("Purpose", checked.purpose)}\n${markdownSection("Scope and constraints", checked.constraints)}\n${markdownSection("Instructions", checked.instructions)}\n${markdownSection("Acceptance criteria", checked.acceptance)}`,
     });
   } else if (checked.kind === "workflow") {

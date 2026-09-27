@@ -16,7 +16,8 @@ import {
 } from "../lib/capability-workbench";
 import "../capability-workbench.css";
 
-type Stage = "brief" | "contract" | "build" | "validate" | "package";
+type Stage =
+  "brief" | "contract" | "build" | "validate" | "package" | "convert";
 
 const STAGES: Array<{
   id: Stage;
@@ -26,24 +27,30 @@ const STAGES: Array<{
 }> = [
   { id: "brief", number: "01", label: "Brief", note: "Purpose and audience" },
   {
-    id: "contract",
+    id: "convert",
     number: "02",
+    label: "Convert & adapt",
+    note: "GPT sources and host packages",
+  },
+  {
+    id: "contract",
+    number: "03",
     label: "Contract",
     note: "Inputs, outputs, boundaries",
   },
-  { id: "build", number: "03", label: "Build", note: "Method and components" },
+  { id: "build", number: "04", label: "Build", note: "Method and components" },
   {
     id: "validate",
-    number: "04",
+    number: "05",
     label: "Validate",
     note: "Observed evidence",
   },
-  { id: "package", number: "05", label: "Package", note: "Reviewable handoff" },
+  { id: "package", number: "06", label: "Package", note: "Reviewable handoff" },
 ];
 
 const KINDS: Array<{ value: CapabilityKind; label: string; detail: string }> = [
-  { value: "prompt", label: "Prompt", detail: "A reusable instruction asset" },
   { value: "skill", label: "Skill", detail: "A portable SKILL.md capability" },
+  { value: "prompt", label: "Prompt", detail: "A reusable instruction asset" },
   {
     value: "workflow",
     label: "Workflow",
@@ -252,9 +259,9 @@ export default function CapabilityWorkbench({
           <p className="cw-kicker">OverKill Hill P³ / FoundRy</p>
           <h1>Capability workbench</h1>
           <p className="cw-deck">
-            Make a clear, portable starter for a real system. Your project stays
-            in this browser. Author and export without a model account or usage
-            fees.
+            Create portable Agent Skills, recover the useful methods in existing
+            GPTs, and plan plugins and connectors for your chosen hosts. Author
+            locally, then export the source for implementation and testing.
           </p>
         </div>
         <div className="cw-header-actions">
@@ -414,7 +421,7 @@ export default function CapabilityWorkbench({
           className="cw-creator-link"
           onClick={onOpenCreator}
         >
-          Open Custom GPT studio →
+          Open legacy Custom GPT studio →
         </button>
       </section>
       {importError && (
@@ -483,6 +490,95 @@ export default function CapabilityWorkbench({
           </p>
         </aside>
         <div className="cw-editor">
+          {stage === "convert" && (
+            <>
+              <div className="cw-section-heading">
+                <p className="cw-kicker">Conversion and distribution</p>
+                <h2>Preserve the method. Adapt the platform.</h2>
+              </div>
+              <p className="cw-note">
+                Inventory a GPT or existing skill, map its behaviors, then build
+                a portable skill in Build. Plugin and connector choices add a
+                packaging plan; each host still needs implementation and
+                testing.
+              </p>
+              <div className="cw-fields cw-fields--two">
+                <label>
+                  Starting point
+                  <select
+                    value={project.sourceType ?? "new"}
+                    onChange={(event) =>
+                      update("sourceType", event.target.value)
+                    }
+                  >
+                    <option value="new">New capability</option>
+                    <option value="custom-gpt">Existing Custom GPT</option>
+                    <option value="existing-skill">Existing Agent Skill</option>
+                  </select>
+                </label>
+                <label>
+                  Delivery package
+                  <select
+                    value={project.delivery ?? "source"}
+                    onChange={(event) => update("delivery", event.target.value)}
+                  >
+                    <option value="source">Portable source</option>
+                    <option value="plugin">Plugin packaging plan</option>
+                    <option value="connector">Connector packaging plan</option>
+                  </select>
+                </label>
+              </div>
+              {(
+                [
+                  [
+                    "sourceRef",
+                    "Source reference",
+                    "Repository URL and exact revision, or supplied GPT export and date. No secrets.",
+                  ],
+                  [
+                    "sourceInventory",
+                    "Source asset inventory",
+                    "Instructions, knowledge files, actions, starters, examples and rights. Mark available, partial, missing or unverified.",
+                  ],
+                  [
+                    "behaviorMap",
+                    "Behavior map",
+                    "For each behavior: portable skill procedure, reference, tool adapter, explicit drop or blocker.",
+                  ],
+                  [
+                    "semanticLoss",
+                    "Semantic loss and tests",
+                    "What may change (retrieval, memory, permissions)? Record impact, mitigation and an observable acceptance test.",
+                  ],
+                  [
+                    "runtimeTargets",
+                    "Target hosts",
+                    "One host and intended version per line: Claude, ChatGPT/Codex, OpenClaw, Perplexity, another runtime. Support remains unverified until tested.",
+                  ],
+                  [
+                    "toolRequirements",
+                    "Tools and permissions",
+                    "MCP servers, APIs, apps, authentication method, required permissions and missing-tool recovery; write none if unnecessary.",
+                  ],
+                  [
+                    "compatibilityEvidence",
+                    "Host compatibility evidence",
+                    "Host/version, skill revision, installation and behavior results, date and evidence link; record untested gaps.",
+                  ],
+                ] as const
+              ).map(([field, label, placeholder]) => (
+                <label key={field}>
+                  {label}
+                  <textarea
+                    aria-label={label}
+                    value={project[field] ?? ""}
+                    placeholder={placeholder}
+                    onChange={(event) => update(field, event.target.value)}
+                  />
+                </label>
+              ))}
+            </>
+          )}
           {stage === "brief" && (
             <>
               <div className="cw-section-heading">
@@ -533,7 +629,7 @@ export default function CapabilityWorkbench({
                 />
               </label>
               <fieldset>
-                <legend>Target form</legend>
+                <legend>Canonical source form</legend>
                 <div className="cw-kinds">
                   {KINDS.map((kind) => (
                     <button
@@ -551,12 +647,17 @@ export default function CapabilityWorkbench({
                   ))}
                 </div>
               </fieldset>
+              <p className="cw-note">
+                Start with a skill for reusable agent behavior. Use Convert
+                &amp; adapt to capture an existing GPT and plan host-specific
+                packaging.
+              </p>
             </>
           )}
           {stage === "contract" && (
             <>
               <div className="cw-section-heading">
-                <p className="cw-kicker">02 / contract</p>
+                <p className="cw-kicker">03 / contract</p>
                 <h2>State what comes in, what leaves, and where it stops.</h2>
               </div>
               <div className="cw-fields">
@@ -606,7 +707,7 @@ export default function CapabilityWorkbench({
           {stage === "build" && (
             <>
               <div className="cw-section-heading">
-                <p className="cw-kicker">03 / method</p>
+                <p className="cw-kicker">04 / method</p>
                 <h2>
                   Capture the canonical method, then point to shared sources.
                 </h2>
@@ -685,7 +786,7 @@ export default function CapabilityWorkbench({
           {stage === "validate" && (
             <>
               <div className="cw-section-heading">
-                <p className="cw-kicker">04 / observed evidence</p>
+                <p className="cw-kicker">05 / observed evidence</p>
                 <h2>Record what was actually checked.</h2>
               </div>
               <label>
@@ -721,12 +822,14 @@ export default function CapabilityWorkbench({
           {stage === "package" && (
             <>
               <div className="cw-section-heading">
-                <p className="cw-kicker">05 / handoff</p>
+                <p className="cw-kicker">06 / handoff</p>
                 <h2>Inspect the source bundle before sharing it.</h2>
               </div>
               <p className="cw-note">
                 Exports are local starter files. They do not publish, deploy,
                 provision repositories, or establish production readiness.
+                Plugin and connector exports include packaging plans, not
+                installed integrations.
               </p>
               <div className="cw-package">
                 <div className="cw-file-list" aria-label="Generated files">

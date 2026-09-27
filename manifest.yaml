@@ -5,7 +5,7 @@ repo:
   type: foundry-relay
   lifecycle_status: active
   visibility: public
-  purpose: Public OverKill Hill governance relay, capability workbench, and mentor pattern for distinct regional FoundRys and OKH child repositories.
+  purpose: Public OverKill Hill governance relay and workbench for portable Agent Skills, GPT-to-skill conversion, and host-specific plugin and connector packages; mentor pattern for distinct regional FoundRys.
 brand_domain: overkillhill
 author: Jamie Hill
 governance:

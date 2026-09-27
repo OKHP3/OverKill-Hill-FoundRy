@@ -2,14 +2,22 @@
 
 ## Capability workbench
 
-The application opens a browser-local workbench for prompts, Agent Skills,
-workflows, and software starters. Define a capability, keep named projects,
-record its input/output contract and evidence, inspect generated files, and
-export a portable source ZIP. The existing nine-station **Custom GPT studio**
-remains available at `#creator`, with its original projects and backups.
+FoundRy creates **portable Agent Skills and their plugins and connectors**.
+Start with an existing Custom GPT, an existing skill, or a new capability.
+Preserve its source, extract reusable methods into skills, then implement and
+test the adapters needed by each target host. OpenAI is one possible target.
+
+The browser-local workbench supports source inventories, behavior maps,
+semantic-loss reviews, tool requirements and host packaging plans. Inspect and
+export the generated source ZIP for implementation and evaluation. Packaging
+plans are not installable integrations or verified cross-platform support.
+The nine-station **legacy Custom GPT studio** remains at `#creator`, with its
+original projects and backups.
 
 - [Open FoundRy](https://okhp3.github.io/OverKill-Hill-FoundRy/)
 - [Run locally and build a capability](docs/capability-workbench.md)
+- [Portable skill direction and subtree migration contract](docs/portable-skill-foundry.md)
+- [Capability project home](capabilities/README.md)
 - [Seven-element universe research](docs/universe-research.md)
 - [Implementation and validation plan](docs/foundry-implementation-plan.md)
 - [Current-state assessment and maturation](docs/capability-workbench-maturation.md)
@@ -96,7 +104,11 @@ A repository should preserve the durable capability, not merely the latest platf
 
 ## Capability Catalog
 
-The 16 capability folders in this repository span the full lifecycle of GPT construction, validation, and governance within the OverKill Hill P³ / GPT Found‑Rᵧ ecosystem — from raw ideation through canon-sealed export.
+The 16 folders below preserve the original GPT construction, validation and
+governance methods. They are source material for skill conversion, not claims
+of completed skill or plugin releases. Their existing links and historical
+names remain stable until each reviewed migration is complete. New consolidated
+projects belong under `capabilities/<slug>/`; see the [migration contract](docs/portable-skill-foundry.md).
 
 ### Pipeline Diagram
 
