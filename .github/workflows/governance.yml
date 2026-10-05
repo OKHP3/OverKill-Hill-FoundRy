@@ -13,6 +13,8 @@ on:
       - "scripts/registry-audit.py"
       - "scripts/capability-migration-audit.py"
       - "tests/test-capability-migration-audit.py"
+      - "scripts/refoldec-holdout-evaluate.py"
+      - "tests/test-refoldec-holdout-evaluate.py"
       - "capabilities/**"
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
@@ -35,6 +37,8 @@ on:
       - "scripts/registry-audit.py"
       - "scripts/capability-migration-audit.py"
       - "tests/test-capability-migration-audit.py"
+      - "scripts/refoldec-holdout-evaluate.py"
+      - "tests/test-refoldec-holdout-evaluate.py"
       - "capabilities/**"
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
@@ -64,6 +68,8 @@ jobs:
         run: python3 tests/test-governance-check.py
       - name: Test capability migration gates
         run: python3 tests/test-capability-migration-audit.py
+      - name: Test protected holdout packaging boundaries
+        run: python3 tests/test-refoldec-holdout-evaluate.py
       - name: Run complete governance validation
         run: |
           runner_output="$(mktemp)"

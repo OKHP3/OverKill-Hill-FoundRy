@@ -13,7 +13,7 @@ test("convert a GPT into a portable skill and retain unverified plugin and conne
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
-  await expect(page).toHaveTitle(/FoundRy Capability Workbench/);
+  await expect(page).toHaveTitle(/OverKill Hill FoundRy.*Capability Workbench/);
   await expect(page.getByRole("button", { name: /Skill.*portable SKILL.md/ })).toHaveAttribute("aria-pressed", "true");
   await page.getByLabel("Capability name", { exact: true }).fill("Source review");
   const gptBefore = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));

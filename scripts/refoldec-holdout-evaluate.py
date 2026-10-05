@@ -284,13 +284,13 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
             text = content.decode("utf-8")
         except UnicodeDecodeError as exc:
             errors.append(
-                f"{relative}: undecodable release artifact ({exc}); remove it "
+                f"{relative.as_posix()}: undecodable release artifact ({exc}); remove it "
                 "from the release shelf or convert it to UTF-8 before retrying"
             )
             continue
         if "\x00" in text:
             errors.append(
-                f"{relative}: mixed-binary release artifact (NUL byte found); "
+                f"{relative.as_posix()}: mixed-binary release artifact (NUL byte found); "
                 "remove it from the release shelf or convert it to UTF-8 text "
                 "before retrying"
             )
@@ -321,9 +321,9 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
                 if lookalike_matches - canonical_matches
                 else "protected holdout content found"
             )
-            errors.append(f"{relative}: {descriptor}")
+            errors.append(f"{relative.as_posix()}: {descriptor}")
         if any(placeholder in text.lower() for placeholder in PLACEHOLDER_HASHES):
-            errors.append(f"{relative}: placeholder SHA-256 found")
+            errors.append(f"{relative.as_posix()}: placeholder SHA-256 found")
     for value in protected_values:
         if value in single_file_matches:
             continue
