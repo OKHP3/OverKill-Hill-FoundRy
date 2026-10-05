@@ -14,10 +14,12 @@ published story at [`/writings/murderbird/`](https://overkillhill.com/writings/m
 its site shell, and any copies needed for distribution. Editorial publication
 remains owned by the website.
 
-FoundRy builds and maintains reusable prompts, Agent Skills, workflows, software
-starters, and related capabilities. The existing Custom GPT studio remains part
-of that broader workbench. Do not duplicate the MurderBird app or keep its
-creative source assets here.
+FoundRy builds portable Agent Skills and their plugin/connector adapters, including
+conversion of existing GPT methods. Consolidated products use `capabilities/<slug>/`
+under the [migration contract](portable-skill-foundry.md). Supporting prompts,
+workflows and software starters remain available; the GPT studio is retained as a
+legacy workspace. Do not duplicate the MurderBird app or keep its creative source
+assets here.
 
 Keep all MurderBird creative assets and app implementation in MurderBird
 Uncaged. Its supplied snapshot of the published story provides creative

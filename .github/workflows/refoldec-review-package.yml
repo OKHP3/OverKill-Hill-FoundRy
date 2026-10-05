@@ -1,0 +1,131 @@
+name: Package ReFolDec review skill
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-review-skill:
+    # Keep the maintainer-only secret unavailable to runs dispatched from
+    # unreviewed branches.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Materialize maintainer holdout outside the workspace
+        env:
+          REFOLDEC_PROTECTED_HOLDOUT_JSON: ${{ secrets.REFOLDEC_PROTECTED_HOLDOUT_JSON }}
+        run: |
+          set -euo pipefail
+          fixture="$RUNNER_TEMP/refoldec-protected-holdout.json"
+          if [[ -z "${REFOLDEC_PROTECTED_HOLDOUT_JSON:-}" ]]; then
+            echo "::error::Missing repository secret REFOLDEC_PROTECTED_HOLDOUT_JSON. Add the maintainer-only holdout JSON before packaging."
+            exit 1
+          fi
+
+          umask 077
+          printf '%s' "$REFOLDEC_PROTECTED_HOLDOUT_JSON" > "$fixture"
+          if ! python3 - "$fixture" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          try:
+              case = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError):
+              case = None
+
+          valid = (
+              isinstance(case, dict)
+              and isinstance(case.get("id"), str)
+              and bool(case.get("id", "").strip())
+              and case.get("partition") == "holdout"
+              and isinstance(case.get("prompt"), str)
+              and bool(case.get("prompt", "").strip())
+              and isinstance(case.get("expectations"), list)
+              and len(case.get("expectations", [])) == 3
+              and all(
+                  isinstance(item, str) and item.strip()
+                  for item in case.get("expectations", [])
+              )
+          )
+          raise SystemExit(0 if valid else 1)
+          PY
+          then
+            echo "::error::REFOLDEC_PROTECTED_HOLDOUT_JSON must contain a JSON holdout with a non-empty id, partition 'holdout', a non-empty prompt, and exactly three non-empty expectation strings."
+            exit 1
+          fi
+
+      - name: Reject a tracked or workspace copy of the holdout
+        run: |
+          set -euo pipefail
+          fixture_path="examples/release-candidates/skill/tests/protected-holdout.json"
+          if git ls-files --error-unmatch -- "$fixture_path" >/dev/null 2>&1; then
+            echo "::error::$fixture_path is tracked. Remove it from the repository; the protected fixture must remain maintainer-only."
+            exit 1
+          fi
+          if [[ -e "$fixture_path" ]]; then
+            echo "::error::$fixture_path exists in the checkout. Remove it; the workflow supplies the fixture from runner temp."
+            exit 1
+          fi
+
+      - name: Scan tracked release artifacts
+        run: |
+          set -euo pipefail
+          scan_output="$RUNNER_TEMP/refoldec-release-scan.log"
+          set +e
+          python3 scripts/refoldec-holdout-evaluate.py \
+            --scan-release-artifacts \
+            --holdout-file "$RUNNER_TEMP/refoldec-protected-holdout.json" \
+            2>&1 | tee "$scan_output"
+          scan_status="${PIPESTATUS[0]}"
+          set -e
+
+          if [[ "$scan_status" -ne 0 ]]; then
+            {
+              echo "## Protected release-artifact scan failed"
+              echo
+              echo "The review package was not created. Fix the listed paths using the scanner's remediation, then rerun this workflow."
+              echo
+              echo '```text'
+              cat "$scan_output"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit "$scan_status"
+          fi
+
+      - name: Create the review-skill archive
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/refoldec-skill-review.zip"
+          git archive \
+            --format=zip \
+            --prefix=skill/ \
+            --output="$archive" \
+            HEAD:examples/release-candidates/skill
+          {
+            echo "## Review package created"
+            echo
+            echo "The protected artifact scan passed. The uploaded ZIP contains the tracked portable skill package only; it is a review artifact, not release or deployment approval."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload review package
+        uses: actions/upload-artifact@v7
+        with:
+          name: refoldec-skill-review
+          path: ${{ runner.temp }}/refoldec-skill-review.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove maintainer holdout
+        if: always()
+        run: rm -f "$RUNNER_TEMP/refoldec-protected-holdout.json"

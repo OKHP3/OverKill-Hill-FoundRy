@@ -25,7 +25,8 @@
 Bring the idea. Work the contract. Keep the source.
 
 FoundRy is the OverKill Hill P³ capability workbench: a browser-local workshop for
-**prompts, Agent Skills, workflows, software starters, and Custom GPT specifications**.
+**portable Agent Skills and plans for their host-specific plugins and connectors**,
+with prompt, workflow, software starter and retained Custom GPT authoring.
 Give an idea a purpose, define what goes in and what comes out, record the evidence,
 and leave with a portable source package. Your work stays in your browser until you
 export it.
@@ -33,6 +34,12 @@ export it.
 [What you can build](#what-you-can-build) · [Start a project](#start-a-project) ·
 [Brand and sharing assets](#brand-and-sharing-assets) · [Run locally](#run-it-locally) ·
 [Capability catalog](#capability-catalog) · [Project guide](#project-guide)
+
+Start with a new capability, an existing skill, or a preserved Custom GPT.
+Record the source inventory, behavior map, semantic losses, tool requirements,
+and compatibility evidence. Packaging plans require implementation and testing
+in each destination host. See the [portable skill direction](docs/portable-skill-foundry.md)
+and [capability project home](capabilities/README.md).
 
 ## What you can build
 

@@ -17,6 +17,12 @@ RELEASE_ARTIFACT_ROOT = Path("examples/release-candidates")
 MAINTAINER_FIXTURE = Path("examples/release-candidates/skill/tests/protected-holdout.json")
 REGRESSION_TEST = Path("tests/test-refoldec-holdout-evaluate.py")
 MIN_SPLIT_FRAGMENT_LENGTH = 12
+HOLDOUT_EXPECTATION_COUNT = 3
+HOLDOUT_SETUP_GUIDANCE = (
+    "Supply the maintainer-only JSON with --holdout-file and keep it untracked; "
+    "see examples/release-candidates/release-checklist.md for local and "
+    "GitHub Actions setup."
+)
 PLACEHOLDER_HASHES = {
     "0" * 64,
     "f" * 64,
@@ -46,6 +52,61 @@ def load_json(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{path} must contain an object")
     return value
+
+
+def load_protected_holdout(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        raise ValueError(
+            f"required maintainer-only protected holdout fixture is missing at {path}. "
+            f"{HOLDOUT_SETUP_GUIDANCE}"
+        )
+    if not path.is_file():
+        raise ValueError(
+            f"required maintainer-only protected holdout fixture is not a file: {path}. "
+            f"{HOLDOUT_SETUP_GUIDANCE}"
+        )
+
+    try:
+        case = load_json(path)
+    except (OSError, ValueError) as exc:
+        if isinstance(exc, json.JSONDecodeError):
+            reason = f"invalid JSON at line {exc.lineno}, column {exc.colno}"
+        elif isinstance(exc, UnicodeDecodeError):
+            reason = "fixture is not valid UTF-8"
+        else:
+            reason = "fixture could not be read"
+        raise ValueError(
+            f"required maintainer-only protected holdout fixture at {path} is "
+            f"malformed or unreadable ({reason}). {HOLDOUT_SETUP_GUIDANCE}"
+        ) from None
+
+    if not isinstance(case.get("id"), str) or not case["id"].strip():
+        raise ValueError(
+            f"maintainer-only protected holdout fixture at {path} has an invalid "
+            f"'id' field. {HOLDOUT_SETUP_GUIDANCE}"
+        )
+    if case.get("partition") != "holdout":
+        raise ValueError(
+            f"maintainer-only protected holdout fixture at {path} must declare "
+            f"partition 'holdout'. {HOLDOUT_SETUP_GUIDANCE}"
+        )
+    if not isinstance(case.get("prompt"), str) or not case["prompt"].strip():
+        raise ValueError(
+            f"maintainer-only protected holdout fixture at {path} needs a non-empty "
+            f"'prompt' string. {HOLDOUT_SETUP_GUIDANCE}"
+        )
+    expectations = case.get("expectations")
+    if (
+        not isinstance(expectations, list)
+        or len(expectations) != HOLDOUT_EXPECTATION_COUNT
+        or not all(isinstance(item, str) and item.strip() for item in expectations)
+    ):
+        raise ValueError(
+            f"maintainer-only protected holdout fixture at {path} needs exactly "
+            f"{HOLDOUT_EXPECTATION_COUNT} non-empty 'expectations' strings. "
+            f"{HOLDOUT_SETUP_GUIDANCE}"
+        )
+    return case
 
 
 def package_version(skill_path: Path) -> str:
@@ -205,7 +266,7 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
     transliteration, fuzzy matching, semantic similarity, spelling changes,
     or reordered text.
     """
-    protected = load_json(holdout_path)
+    protected = load_protected_holdout(holdout_path)
     protected_values = [
         value
         for value in [protected.get("prompt"), *protected.get("expectations", [])]
@@ -223,13 +284,13 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
             text = content.decode("utf-8")
         except UnicodeDecodeError as exc:
             errors.append(
-                f"{relative}: undecodable release artifact ({exc}); remove it "
+                f"{relative.as_posix()}: undecodable release artifact ({exc}); remove it "
                 "from the release shelf or convert it to UTF-8 before retrying"
             )
             continue
         if "\x00" in text:
             errors.append(
-                f"{relative}: mixed-binary release artifact (NUL byte found); "
+                f"{relative.as_posix()}: mixed-binary release artifact (NUL byte found); "
                 "remove it from the release shelf or convert it to UTF-8 text "
                 "before retrying"
             )
@@ -260,9 +321,9 @@ def scan_release_artifacts(root: Path, holdout_path: Path) -> list[str]:
                 if lookalike_matches - canonical_matches
                 else "protected holdout content found"
             )
-            errors.append(f"{relative}: {descriptor}")
+            errors.append(f"{relative.as_posix()}: {descriptor}")
         if any(placeholder in text.lower() for placeholder in PLACEHOLDER_HASHES):
-            errors.append(f"{relative}: placeholder SHA-256 found")
+            errors.append(f"{relative.as_posix()}: placeholder SHA-256 found")
     for value in protected_values:
         if value in single_file_matches:
             continue
@@ -295,7 +356,7 @@ def evaluate(
     holdout_metadata = evals.get("release_holdout", {})
     if any(case.get("partition") == "holdout" for case in evals.get("evals", [])):
         raise ValueError("protected holdout content must not be stored in development evals")
-    case = load_json(holdout_path)
+    case = load_protected_holdout(holdout_path)
     if case.get("partition") != "holdout" or case.get("id") != holdout_metadata.get("case_id"):
         raise ValueError("protected holdout file does not match package metadata")
     expectations = case.get("expectations", [])
@@ -404,7 +465,15 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--executed-at", help="UTC ISO-8601 timestamp for reproducible records")
     parser.add_argument("--runtime-adapter", type=Path, help="Approved adapter; omit to use the repository reference runtime")
-    parser.add_argument("--holdout-file", type=Path, required=True, help="Maintainer-only protected case file, kept outside tracked development fixtures")
+    parser.add_argument(
+        "--holdout-file",
+        type=Path,
+        required=True,
+        help=(
+            "Required maintainer-only protected case JSON; keep it untracked. "
+            "See examples/release-candidates/release-checklist.md for setup."
+        ),
+    )
     parser.add_argument(
         "--scan-release-artifacts",
         action="store_true",
@@ -431,7 +500,8 @@ def main() -> int:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
-        print(f"FAIL holdout evaluation: {exc}", file=sys.stderr)
+        label = "release artifact scan" if args.scan_release_artifacts else "holdout evaluation"
+        print(f"FAIL {label}: {exc}", file=sys.stderr)
         return 1
     print(f"OK holdout evaluation: {record['verdict']} ({record['input']['case_id']})")
     return 0

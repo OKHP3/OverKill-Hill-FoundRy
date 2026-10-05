@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { marked } from "marked";
@@ -125,11 +125,34 @@ async function replaceProjectData(page: Page, data: Record<string, unknown>, com
 }
 
 async function importAuditEvidence(page: Page, content: string) {
-  await page.getByLabel("Import audit evidence JSON").setInputFiles({
+  await page.getByTestId("input-audit-evidence-file").setInputFiles({
     name: "audit-evidence.json",
     mimeType: "application/json",
     buffer: Buffer.from(content, "utf8"),
   });
+}
+
+async function importAuditEvidenceWithKeyboard(page: Page, content: string) {
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  const importButton = page.getByRole("button", { name: "Import audit evidence JSON", exact: true });
+  if (!(await importButton.evaluate((element) => document.activeElement === element))) {
+    throw new Error("The audit evidence import button must have keyboard focus before opening its file chooser.");
+  }
+  await page.keyboard.press("Enter");
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles({
+    name: "audit-evidence.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(content, "utf8"),
+  });
+}
+
+async function tabToByKeyboard(page: Page, target: Locator, direction: "Tab" | "Shift+Tab" = "Tab") {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (await target.evaluate((element) => document.activeElement === element)) return;
+    await page.keyboard.press(direction);
+  }
+  throw new Error(`Could not reach ${await target.getAttribute("aria-label") ?? "the requested control"} with keyboard navigation.`);
 }
 
 async function expectExportActionsToProduceMarkdown(page: Page) {
@@ -214,6 +237,53 @@ test("switches export formats before copying and downloading", async ({ page }) 
   });
   expect(jsonContent).not.toBe(instructionsContent);
   await expectSelectedExportActions(page, "switching-formats-gpt-spec.json", "json");
+});
+
+test("clears copy confirmation immediately when the selected export format changes", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Copy Confirmation GPT" },
+    "step-2": {
+      1: "Markdown-only copy marker.",
+      2: "The copied confirmation follows the selected export.",
+    },
+  });
+  await page.clock.install();
+
+  const copyButton = page.getByRole("button", { name: "📋 Copy" });
+  const copiedButton = page.getByRole("button", { name: "✓ Copied!" });
+  const clipboardValue = () =>
+    page.evaluate(() => (window as Window & { __copiedExport?: string }).__copiedExport);
+  const markdownContent = await page.locator("pre").textContent();
+  expect(markdownContent).not.toBeNull();
+
+  await copyButton.click();
+  await expect(copiedButton).toBeVisible();
+  await expect.poll(clipboardValue).toBe(markdownContent);
+
+  await page.getByRole("button", { name: "Instructions Only" }).click();
+  await expect(copyButton).toBeVisible();
+  const instructionsContent = await page.locator("pre").textContent();
+  expect(instructionsContent).not.toBe(markdownContent);
+
+  // The old Markdown confirmation timer must not clear a later format's confirmation.
+  await page.clock.fastForward(1500);
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  await expect(copyButton).toBeVisible();
+  const jsonContent = await page.locator("pre").textContent();
+  expect(jsonContent).not.toBeNull();
+  expect(jsonContent).not.toBe(markdownContent);
+
+  await copyButton.click();
+  await expect(copiedButton).toBeVisible();
+  await expect.poll(clipboardValue).toBe(jsonContent);
+  await page.clock.fastForward(600);
+  await expect(copiedButton).toBeVisible();
+
+  await page.getByRole("button", { name: "Full Spec (Markdown)" }).click();
+  await expect(copyButton).toBeVisible();
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  await expect(copyButton).toBeVisible();
 });
 
 test("preserves composed and decomposed Unicode code points in Evidence JSON", async ({ page }) => {
@@ -941,6 +1011,8 @@ test("restores compatible audit findings into the active project", async ({ page
     "step-0": { gptName: "Restorable Evidence GPT" },
     "audit-mode": {
       gptName: "Offline reviewer identity",
+      rubricVersion: "v0.9",
+      shipGateThresholds: { averageMinimum: 4.5, safetyMinimum: 3.5 },
       scores,
       notes: { 1: "Reviewed from the evidence package." },
       shipGateDecision: "failed",
@@ -965,10 +1037,17 @@ test("restores compatible audit findings into the active project", async ({ page
   const preflight = page.getByTestId("audit-import-preflight");
   await expect(preflight).toBeVisible();
   await expect(preflight).toContainText("Offline reviewer identity");
+  await expect(preflight.getByText("Rubric version", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("v0.9", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("Average threshold", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("≥ 4.5 / 5", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("Safety threshold (item 6)", { exact: true })).toBeVisible();
+  await expect(preflight.getByText("≥ 3.5 / 5", { exact: true })).toBeVisible();
   await expect(preflight).toContainText("Scored items");
   await expect(preflight).toContainText("10 / 10");
   await expect(preflight).toContainText("Normalized ship-gate");
   await expect(preflight).toContainText("PASSED");
+  await expect(preflight.locator("input, select, textarea")).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
 
   await page.getByRole("button", { name: "Confirm replacement" }).click();
@@ -982,14 +1061,19 @@ test("restores compatible audit findings into the active project", async ({ page
   expect(restored.audit.shipGateDecision).toBe("passed");
   expect(restored.audit.shipGateDecisionExplanation).toContain("average and safety thresholds are met");
 
-  const verifyRestoredAuditMode = async () => {
+  const verifyRestoredAuditMode = async ({
+    safetyScore = 5,
+    note = "Reviewed from the evidence package.",
+    decision = "passed",
+  }: { safetyScore?: number; note?: string; decision?: "passed" | "failed" | "incomplete" } = {}) => {
     await expect(page.locator("h1")).toContainText("Audit Mode");
     await expect(page.getByLabel("GPT name / URL being audited")).toHaveValue("Offline reviewer identity");
     for (const itemId of Object.keys(scores)) {
-      await expect(page.getByRole("button", { name: `Score 5 for audit item ${itemId}`, exact: true })).toHaveAttribute("aria-pressed", "true");
+      const expectedScore = itemId === "6" ? safetyScore : 5;
+      await expect(page.getByRole("button", { name: `Score ${expectedScore} for audit item ${itemId}`, exact: true })).toHaveAttribute("aria-pressed", "true");
     }
-    await expect(page.getByRole("textbox", { name: "Notes for audit item 1", exact: true })).toHaveValue("Reviewed from the evidence package.");
-    await expect(page.getByTestId("audit-ship-gate-decision")).toHaveAttribute("data-decision", "passed");
+    await expect(page.getByRole("textbox", { name: "Notes for audit item 1", exact: true })).toHaveValue(note);
+    await expect(page.getByTestId("audit-ship-gate-decision")).toHaveAttribute("data-decision", decision);
   };
 
   const navigation = page.getByRole("navigation", { name: "Creator workflow" });
@@ -1012,6 +1096,71 @@ test("restores compatible audit findings into the active project", async ({ page
 
   await page.getByRole("button", { name: "Test GPT", exact: true }).click();
   await verifyRestoredAuditMode();
+
+  const updatedNote = "Edited after returning to the project.";
+  await page.getByRole("button", { name: "Score 3 for audit item 6", exact: true }).click();
+  await page.getByRole("textbox", { name: "Notes for audit item 1", exact: true }).fill(updatedNote);
+  await expect.poll(() => page.evaluate(() => {
+    const rawWorkspace = localStorage.getItem("cgpt-workspace");
+    if (!rawWorkspace) return null;
+    const workspace = JSON.parse(rawWorkspace);
+    const project = workspace.projects.find((item: { name: string }) => item.name === "Test GPT");
+    const audit = project?.data["audit-mode"];
+    return audit ? {
+      safetyScore: audit.scores["6"],
+      note: audit.notes["1"],
+      decision: audit.shipGateDecision,
+    } : null;
+  })).toEqual({ safetyScore: 3, note: updatedNote, decision: "failed" });
+
+  await page.reload();
+  await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
+
+  await page.getByRole("button", { name: /Current project/ }).click();
+  const projectManager = page.getByRole("region", { name: "Project manager" });
+  await projectManager.getByRole("button", { name: "Duplicate", exact: true }).click();
+  await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
+
+  const copiedNote = "Changed only in the copied project.";
+  await page.getByRole("button", { name: "Score 4 for audit item 6", exact: true }).click();
+  await page.getByRole("textbox", { name: "Notes for audit item 1", exact: true }).fill(copiedNote);
+  await expect.poll(() => page.evaluate(() => {
+    const rawWorkspace = localStorage.getItem("cgpt-workspace");
+    if (!rawWorkspace) return null;
+    const workspace = JSON.parse(rawWorkspace) as {
+      projects: Array<{ name: string; data: Record<string, unknown> }>;
+    };
+    type StoredAudit = {
+      scores: Record<string, number>;
+      notes: Record<string, string>;
+      shipGateDecision: string;
+    };
+    const original = workspace.projects.find((item) => item.name === "Test GPT")?.data["audit-mode"] as StoredAudit | undefined;
+    const copy = workspace.projects.find((item) => item.name === "Test GPT (copy)")?.data["audit-mode"] as StoredAudit | undefined;
+    if (!original || !copy) return null;
+    return {
+      original: {
+        safetyScore: original.scores["6"],
+        note: original.notes["1"],
+        decision: original.shipGateDecision,
+      },
+      copy: {
+        safetyScore: copy.scores["6"],
+        note: copy.notes["1"],
+        decision: copy.shipGateDecision,
+      },
+    };
+  })).toEqual({
+    original: { safetyScore: 3, note: updatedNote, decision: "failed" },
+    copy: { safetyScore: 4, note: copiedNote, decision: "passed" },
+  });
+
+  await page.reload();
+  await verifyRestoredAuditMode({ safetyScore: 4, note: copiedNote, decision: "passed" });
+  await page.getByRole("button", { name: /Current project/ }).click();
+  await page.getByRole("region", { name: "Project manager" })
+    .getByRole("button", { name: "Test GPT", exact: true }).click();
+  await verifyRestoredAuditMode({ safetyScore: 3, note: updatedNote, decision: "failed" });
 });
 
 test("cancels a valid audit replacement without changing existing findings", async ({ page }) => {
@@ -1052,6 +1201,158 @@ test("cancels a valid audit replacement without changing existing findings", asy
   expect(unchanged.audit.gptName).toBe("Existing reviewer identity");
   expect(unchanged.audit.scores).toEqual({ "1": 2 });
   expect(unchanged.audit.notes).toEqual({ "1": "Keep this finding." });
+});
+
+test("keeps audit replacement review usable with the keyboard", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Keyboard Evidence GPT" },
+    "audit-mode": {
+      gptName: "Existing reviewer identity",
+      scores: { 1: 1 },
+      notes: { 1: "Keep until replacement is confirmed." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  const evidenceButton = page.getByRole("button", { name: "Evidence (JSON)" });
+  await tabToByKeyboard(page, evidenceButton);
+  await page.keyboard.press("Enter");
+  const exportedPackage = JSON.parse(await page.locator("pre").innerText());
+  const importedScores = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [index + 1, 5]));
+  exportedPackage.audit = {
+    ...exportedPackage.audit,
+    gptName: "Keyboard restored reviewer",
+    scores: importedScores,
+    notes: { 1: "Imported from the keyboard." },
+    items: exportedPackage.audit.items.map((item: { id: number; question: string }) => ({
+      ...item,
+      score: 5,
+      notes: item.id === 1 ? "Imported from the keyboard." : "",
+    })),
+  };
+  const beforeImport = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+  const trigger = page.getByRole("button", { name: "Import audit evidence JSON", exact: true });
+  const dialog = page.getByTestId("audit-import-preflight");
+  const confirm = page.getByRole("button", { name: "Confirm replacement" });
+  const cancel = page.getByRole("button", { name: "Cancel" });
+
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  await expect(trigger).toBeFocused();
+  await importAuditEvidenceWithKeyboard(page, JSON.stringify(exportedPackage));
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.getByText("Import canceled. Existing audit findings were not changed.", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
+
+  await importAuditEvidenceWithKeyboard(page, JSON.stringify(exportedPackage));
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(beforeImport);
+
+  await importAuditEvidenceWithKeyboard(page, JSON.stringify(exportedPackage));
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirm).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.getByText("Audit findings restored to the active project.", { exact: true })).toBeVisible();
+
+  const restoredWorkspace = JSON.parse(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))!);
+  const restoredAudit = restoredWorkspace.projects[0].data["audit-mode"];
+  expect(restoredAudit.gptName).toBe("Keyboard restored reviewer");
+  expect(restoredAudit.scores).toEqual(importedScores);
+  expect(restoredAudit.notes).toEqual({ "1": "Imported from the keyboard." });
+});
+
+test("rejects a pending audit replacement after another tab changes the active project", async ({ page }) => {
+  await openExportPackage(page);
+  await replaceProjectData(page, {
+    "step-0": { gptName: "Cross-tab Evidence GPT" },
+    "audit-mode": {
+      gptName: "Reviewer from package",
+      scores: { 1: 5 },
+      notes: { 1: "Packaged finding." },
+      shipGateDecision: "incomplete",
+    },
+  });
+  await page.getByRole("button", { name: "Evidence (JSON)" }).click();
+  const exportedPackage = JSON.parse(await page.locator("pre").innerText());
+
+  await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  const preflight = page.getByTestId("audit-import-preflight");
+  await expect(preflight).toBeVisible();
+  const beforeChange = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+
+  const otherTab = await page.context().newPage();
+  try {
+    await otherTab.goto("./#creator");
+    await otherTab.evaluate((key) => {
+      const workspace = JSON.parse(localStorage.getItem(key)!);
+      const previousProject = workspace.projects.find(
+        (project: { id: string }) => project.id === workspace.activeProjectId,
+      );
+      const nextProject = {
+        ...previousProject,
+        id: "project-selected-in-another-tab",
+        name: "Project selected in another tab",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        data: {
+          "step-0": { gptName: "Project selected in another tab" },
+          "audit-mode": {
+            gptName: "Newer reviewer findings",
+            scores: { 2: 4 },
+            notes: { 2: "Saved in the other tab." },
+            shipGateDecision: "incomplete",
+          },
+        },
+      };
+      workspace.projects.push(nextProject);
+      workspace.activeProjectId = nextProject.id;
+      localStorage.setItem(key, JSON.stringify(workspace));
+    }, workspaceKey);
+  } finally {
+    await otherTab.close();
+  }
+
+  const afterOtherTabChange = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+  expect(afterOtherTabChange).not.toBe(beforeChange);
+  await page.getByRole("button", { name: "Confirm replacement" }).click();
+
+  await expect(preflight).toBeHidden();
+  await expect(page.getByText(/Project data changed while this package was waiting for confirmation/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import audit evidence JSON", exact: true })).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(afterOtherTabChange);
+  const savedWorkspace = JSON.parse(afterOtherTabChange!);
+  expect(savedWorkspace.activeProjectId).toBe("project-selected-in-another-tab");
+  expect(savedWorkspace.projects.at(-1).data["audit-mode"].gptName).toBe("Newer reviewer findings");
+
+  await page.reload();
+  await page.getByRole("button", { name: "Export Package" }).click();
+  await importAuditEvidence(page, JSON.stringify(exportedPackage));
+  await expect(page.getByText(/not the active project "Project selected in another tab"/)).toBeVisible();
+  const reloadedWorkspace = JSON.parse(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))!);
+  expect(reloadedWorkspace.activeProjectId).toBe("project-selected-in-another-tab");
+  expect(reloadedWorkspace.projects.at(-1).data["audit-mode"].gptName).toBe("Newer reviewer findings");
 });
 
 test("rejects invalid, incomplete, and mismatched audit packages atomically", async ({ page }) => {
@@ -1234,18 +1535,44 @@ test("renders uncommon Markdown safely and preserves the downloaded export", asy
   await expect(preview.locator("img")).toHaveCount(0);
   await expect(preview.locator("script")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Raw Markdown" }).click();
-  await expect(page.locator("pre")).toHaveText(exactRawMarkdown);
+  const markdownFormatButton = page.getByRole("button", { name: "Full Spec (Markdown)" });
+  const rawViewButton = page.getByRole("button", { name: "Raw Markdown" });
+  const renderedViewButton = page.getByRole("button", { name: "Rendered Preview" });
+  const copyButton = page.getByRole("button", { name: "📋 Copy" });
+  const downloadButton = page.getByRole("button", { name: "⬇ Download .md" });
+  await expect(markdownFormatButton).toBeVisible();
+  await expect(rawViewButton).toBeVisible();
+  await expect(renderedViewButton).toBeVisible();
+  await expect(copyButton).toBeVisible();
+  await expect(downloadButton).toBeVisible();
+
+  await copyButton.click();
+  await expect(page.getByRole("button", { name: "✓ Copied!" })).toBeVisible();
+  const copiedMarkdown = await page.evaluate(
+    () => (window as Window & { __copiedExport?: string }).__copiedExport,
+  );
+  expect(copiedMarkdown).toBe(exactRawMarkdown);
+  await expect(preview).toBeVisible();
+  await expect(downloadButton).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "⬇ Download .md" }).click();
+  await downloadButton.click();
   const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("uncommon-markdown-日本語-gpt-spec.md");
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
   const downloadedBytes = await readFile(downloadPath!);
   expect(downloadedBytes).toEqual(Buffer.from(exactRawMarkdown, "utf8"));
   const downloadedMarkdown = downloadedBytes.toString("utf8");
   expect(downloadedMarkdown).toBe(exactRawMarkdown);
+  await expect(preview).toBeVisible();
+  await expect(markdownFormatButton).toBeVisible();
+  await expect(rawViewButton).toBeVisible();
+  await expect(renderedViewButton).toBeVisible();
+  await expect(downloadButton).toBeVisible();
+
+  await rawViewButton.click();
+  await expect(page.locator("pre")).toHaveText(exactRawMarkdown);
 
   // Profile 1: markdown-it is a CommonMark-oriented parser with raw HTML disabled.
   // The independent viewer therefore shows intentionally unsupported HTML as literal

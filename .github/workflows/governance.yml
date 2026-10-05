@@ -11,12 +11,18 @@ on:
       - "scripts/governance-check.py"
       - "scripts/manifest-audit.py"
       - "scripts/registry-audit.py"
+      - "scripts/capability-migration-audit.py"
+      - "tests/test-capability-migration-audit.py"
+      - "scripts/refoldec-holdout-evaluate.py"
+      - "tests/test-refoldec-holdout-evaluate.py"
+      - "capabilities/**"
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
       - "tests/test-public-graduation-audit.py"
       - "tests/test-governance-check.py"
       - ".agents/skills/okhp3-replit-repl-janitor/**"
       - ".github/workflows/governance.yml"
+      - ".github/workflows/refoldec-review-package.yml"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   pull_request:
@@ -29,12 +35,18 @@ on:
       - "scripts/governance-check.py"
       - "scripts/manifest-audit.py"
       - "scripts/registry-audit.py"
+      - "scripts/capability-migration-audit.py"
+      - "tests/test-capability-migration-audit.py"
+      - "scripts/refoldec-holdout-evaluate.py"
+      - "tests/test-refoldec-holdout-evaluate.py"
+      - "capabilities/**"
       - "scripts/foundry-sync.py"
       - "scripts/public-graduation-audit.py"
       - "tests/test-public-graduation-audit.py"
       - "tests/test-governance-check.py"
       - ".agents/skills/okhp3-replit-repl-janitor/**"
       - ".github/workflows/governance.yml"
+      - ".github/workflows/refoldec-review-package.yml"
       - "examples/release-candidates/**"
       - "docs/publication-boundary.md"
   workflow_dispatch:
@@ -54,6 +66,10 @@ jobs:
         run: python3 .agents/skills/okhp3-replit-repl-janitor/tests/test_audit_repo.py
       - name: Test governance runner failure propagation
         run: python3 tests/test-governance-check.py
+      - name: Test capability migration gates
+        run: python3 tests/test-capability-migration-audit.py
+      - name: Test protected holdout packaging boundaries
+        run: python3 tests/test-refoldec-holdout-evaluate.py
       - name: Run complete governance validation
         run: |
           runner_output="$(mktemp)"

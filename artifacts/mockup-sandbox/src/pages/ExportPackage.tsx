@@ -1,4 +1,4 @@
-import { useState, useCallback, type ChangeEvent, type ReactNode } from "react";
+import { useState, useCallback, useEffect, useRef, type ChangeEvent, type ReactNode } from "react";
 import {
   AUDIT_ITEMS,
   AUDIT_RUBRIC_VERSION,
@@ -10,8 +10,8 @@ import {
   type AuditEvidence,
   type CreatorWorkspace,
   importAuditEvidence,
-  loadWorkspace,
   persistWorkspace,
+  readWorkspaceSnapshot,
   readProjectValue,
 } from "../lib/creatorStorage";
 import { calculateReadiness, type ReadinessState } from "../lib/readiness";
@@ -610,10 +610,16 @@ function renderMarkdownPreview(markdown: string): ReactNode[] {
 export default function ExportPackage({ completedSteps: liveCompletedSteps }: { completedSteps?: Set<number> }) {
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "instructions" | "json">("markdown");
+  const formatRef = useRef(format);
   const [markdownView, setMarkdownView] = useState<"raw" | "preview">("raw");
+  const copyConfirmationTimeoutRef = useRef<number | null>(null);
   const [auditImportMessage, setAuditImportMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const auditImportTriggerRef = useRef<HTMLButtonElement>(null);
+  const auditImportFileRef = useRef<HTMLInputElement>(null);
+  const auditImportDialogRef = useRef<HTMLDivElement>(null);
   const [pendingAuditImport, setPendingAuditImport] = useState<{
     workspace: CreatorWorkspace;
+    sourceStorageValue: string;
     artifactName: string;
     audit: AuditEvidence;
   } | null>(null);
@@ -634,6 +640,9 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
   const content = format === "markdown" ? fullMarkdown : format === "json" ? structuredJson : instructionsOnly;
   const ship = loadStepRecord("step-8");
   const tests = loadStepRecord("step-7");
+  const restoreAuditImportFocus = useCallback(() => {
+    window.requestAnimationFrame(() => auditImportTriggerRef.current?.focus());
+  }, []);
   const maturity = evidencePackage.readiness.state === "blocked"
     ? "Blocked"
     : evidencePackage.readiness.state === "confirmed"
@@ -642,10 +651,42 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
         ? "Ready for review"
         : "Incomplete";
 
+  const clearCopyConfirmation = useCallback(() => {
+    if (copyConfirmationTimeoutRef.current !== null) {
+      window.clearTimeout(copyConfirmationTimeoutRef.current);
+      copyConfirmationTimeoutRef.current = null;
+    }
+    setCopied(false);
+  }, []);
+
+  const selectFormat = useCallback((nextFormat: typeof format) => {
+    if (nextFormat === format) return;
+    // "Copied" applies only to the selected export; changing formats invalidates it.
+    formatRef.current = nextFormat;
+    clearCopyConfirmation();
+    setFormat(nextFormat);
+  }, [format, clearCopyConfirmation]);
+
+  useEffect(() => () => {
+    if (copyConfirmationTimeoutRef.current !== null) {
+      window.clearTimeout(copyConfirmationTimeoutRef.current);
+      copyConfirmationTimeoutRef.current = null;
+    }
+  }, []);
+
   const copy = useCallback(async () => {
-    await navigator.clipboard.writeText(content);
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
-  }, [content]);
+    const copiedFormat = format;
+    const copiedContent = content;
+    await navigator.clipboard.writeText(copiedContent);
+    if (formatRef.current !== copiedFormat) return;
+
+    clearCopyConfirmation();
+    setCopied(true);
+    copyConfirmationTimeoutRef.current = window.setTimeout(() => {
+      setCopied(false);
+      copyConfirmationTimeoutRef.current = null;
+    }, 2000);
+  }, [content, format, clearCopyConfirmation]);
 
   const download = () => {
     const brief = loadStepRecord("step-0");
@@ -666,7 +707,13 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
 
     const reader = new FileReader();
     reader.onload = () => {
-      const result = importAuditEvidence(String(reader.result), loadWorkspace());
+      const snapshot = readWorkspaceSnapshot();
+      if (!snapshot.persisted || snapshot.serialized === null) {
+        setPendingAuditImport(null);
+        setAuditImportMessage({ type: "error", text: "The current project could not be verified in browser storage. Refresh the page and try again." });
+        return;
+      }
+      const result = importAuditEvidence(String(reader.result), snapshot.workspace);
       if (!result.workspace || !result.preview) {
         setPendingAuditImport(null);
         setAuditImportMessage({ type: "error", text: result.error ?? "The audit evidence could not be imported." });
@@ -675,6 +722,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
       setAuditImportMessage(null);
       setPendingAuditImport({
         workspace: result.workspace,
+        sourceStorageValue: snapshot.serialized,
         artifactName: result.preview.artifactName,
         audit: result.preview.audit,
       });
@@ -687,6 +735,16 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
 
   const confirmAuditImport = () => {
     if (!pendingAuditImport) return;
+    const currentSnapshot = readWorkspaceSnapshot();
+    if (!currentSnapshot.persisted || currentSnapshot.serialized !== pendingAuditImport.sourceStorageValue) {
+      setPendingAuditImport(null);
+      setAuditImportMessage({
+        type: "error",
+        text: "Project data changed while this package was waiting for confirmation. Refresh the page, then select the package again to review it against the current project.",
+      });
+      restoreAuditImportFocus();
+      return;
+    }
     if (!persistWorkspace(pendingAuditImport.workspace)) {
       setAuditImportMessage({ type: "error", text: "The audit evidence was valid, but could not be saved in this browser." });
       return;
@@ -694,12 +752,66 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
     setPendingAuditImport(null);
     setAuditImportMessage({ type: "success", text: "Audit findings restored to the active project." });
     setAuditImportRevision((revision) => revision + 1);
+    restoreAuditImportFocus();
   };
 
-  const cancelAuditImport = () => {
+  const cancelAuditImport = useCallback(() => {
     setPendingAuditImport(null);
     setAuditImportMessage({ type: "success", text: "Import canceled. Existing audit findings were not changed." });
-  };
+    restoreAuditImportFocus();
+  }, [restoreAuditImportFocus]);
+
+  useEffect(() => {
+    if (!pendingAuditImport) return;
+    const dialog = auditImportDialogRef.current;
+    if (!dialog) return;
+
+    dialog.focus();
+    const getFocusableElements = () => Array.from(dialog.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )).filter((element) => element.getAttribute("aria-hidden") !== "true" && element.getClientRects().length > 0);
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        cancelAuditImport();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = getFocusableElements();
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const keepDialogFocus = (event: FocusEvent) => {
+      if (event.target instanceof Node && dialog.contains(event.target)) return;
+      (getFocusableElements()[0] ?? dialog).focus();
+    };
+
+    document.addEventListener("keydown", handleDialogKeyDown);
+    document.addEventListener("focusin", keepDialogFocus);
+    return () => {
+      document.removeEventListener("keydown", handleDialogKeyDown);
+      document.removeEventListener("focusin", keepDialogFocus);
+    };
+  }, [pendingAuditImport, cancelAuditImport]);
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -768,23 +880,38 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
         <span style={{ display: "block", color: "var(--color-forge-muted-fg)", fontSize: "0.85rem", marginBottom: "0.65rem" }}>
           Import a compatible Evidence (JSON) package to restore scores and notes for this project. Existing project data is unchanged when validation fails.
         </span>
-        <label style={{ ...secondaryBtn, display: "inline-block", cursor: "pointer" }}>
+        <button
+          type="button"
+          ref={auditImportTriggerRef}
+          data-testid="button-import-audit-evidence"
+          aria-haspopup="dialog"
+          aria-expanded={Boolean(pendingAuditImport)}
+          aria-controls={pendingAuditImport ? "audit-import-preflight" : undefined}
+          onClick={() => auditImportFileRef.current?.click()}
+          style={secondaryBtn}
+        >
           Import audit evidence JSON
-          <input
-            type="file"
-            accept="application/json,.json"
-            aria-label="Import audit evidence JSON"
-            onChange={importAudit}
-            style={{ display: "none" }}
-          />
-        </label>
+        </button>
+        <input
+          ref={auditImportFileRef}
+          type="file"
+          accept="application/json,.json"
+          aria-hidden="true"
+          tabIndex={-1}
+          data-testid="input-audit-evidence-file"
+          onChange={importAudit}
+          style={{ display: "none" }}
+        />
         {pendingAuditImport && (
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="audit-import-preflight-title"
             aria-describedby="audit-import-preflight-description"
+            id="audit-import-preflight"
             data-testid="audit-import-preflight"
+            ref={auditImportDialogRef}
+            tabIndex={-1}
             style={{
               marginTop: "0.9rem",
               padding: "1rem",
@@ -804,14 +931,20 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
               <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.artifactName}</dd>
               <dt style={{ color: "var(--color-forge-muted-fg)" }}>Audited identity</dt>
               <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.audit.gptName || "(not recorded)"}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Rubric version</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{pendingAuditImport.audit.rubricVersion}</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Average threshold</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>≥ {pendingAuditImport.audit.shipGateThresholds.averageMinimum} / 5</dd>
+              <dt style={{ color: "var(--color-forge-muted-fg)" }}>Safety threshold (item {SAFETY_AUDIT_ID})</dt>
+              <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>≥ {pendingAuditImport.audit.shipGateThresholds.safetyMinimum} / 5</dd>
               <dt style={{ color: "var(--color-forge-muted-fg)" }}>Scored items</dt>
               <dd style={{ margin: 0, color: "var(--color-forge-fg)" }}>{Object.keys(pendingAuditImport.audit.scores).length} / {pendingAuditImport.audit.items.length}</dd>
               <dt style={{ color: "var(--color-forge-muted-fg)" }}>Normalized ship-gate</dt>
               <dd style={{ margin: 0, color: "var(--color-forge-fg)", fontWeight: 700 }}>{pendingAuditImport.audit.shipGateDecision.toUpperCase()}</dd>
             </dl>
             <div style={{ display: "flex", gap: "0.55rem" }}>
-              <button type="button" onClick={confirmAuditImport} style={primaryBtn}>Confirm replacement</button>
-              <button type="button" onClick={cancelAuditImport} style={secondaryBtn}>Cancel</button>
+              <button type="button" data-testid="button-confirm-audit-replacement" onClick={confirmAuditImport} style={primaryBtn}>Confirm replacement</button>
+              <button type="button" data-testid="button-cancel-audit-replacement" onClick={cancelAuditImport} style={secondaryBtn}>Cancel</button>
             </div>
           </div>
         )}
@@ -832,7 +965,7 @@ export default function ExportPackage({ completedSteps: liveCompletedSteps }: { 
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem", alignItems: "center" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {(["markdown", "instructions", "json"] as const).map(f => (
-            <button key={f} onClick={() => setFormat(f)}
+            <button key={f} onClick={() => selectFormat(f)}
               style={{
                 padding: "0.4rem 0.75rem", borderRadius: "var(--radius-md)", cursor: "pointer",
                 background: format === f ? "var(--color-forge-accent)" : "var(--color-forge-panel)",

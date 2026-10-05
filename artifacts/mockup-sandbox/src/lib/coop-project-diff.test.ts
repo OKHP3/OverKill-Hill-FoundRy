@@ -3,6 +3,16 @@ import test from "node:test";
 import { diffCapabilityProjects } from "./coop-project-diff.ts";
 import { newProject, type CapabilityProject } from "./capability-workbench.ts";
 
+test("conversion edits appear in revision review while absent legacy defaults do not", () => {
+  const before = project();
+  delete before.sourceType;
+  delete before.delivery;
+  const after = { ...before, sourceType: "new" as const, delivery: "source" as const, semanticLoss: "Retrieval loss requires comparison" };
+  assert.deepEqual(diffCapabilityProjects(before, after).authored, [
+    { field: "semanticLoss", before: "", after: "Retrieval loss requires comparison" },
+  ]);
+});
+
 function project(): CapabilityProject {
   return {
     ...newProject("prompt"),
