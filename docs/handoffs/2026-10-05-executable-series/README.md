@@ -4,7 +4,7 @@ This series converts all 48 findings from the [five-pass review](../../reviews/2
 
 ## Budgets and dispatch
 
-The coordinator goal has the requested 20,000,000-token ceiling. Every worker starts with `gpt-6-luna`, effort `low`. Ordinary configured goals use 200,000 tokens; the preserved concurrent-save implementation uses a 1,000,000 ceiling with a smaller 15,000-50,000-token working target. A02's old 50,000 goal stopped at its limit; its next duty will reuse the completed A03 thread. Every worker retains the owner's absolute 2,000,000-token ceiling. These are ceilings, not spending targets. Spawn APIs have no token-quota field: workers must record the returned goal configuration and usage, or mark controls unavailable and stop at the soft bound. Account capacity is not reserved or purchased. The 28 current duty budgets total 6,400,000 tokens; three stopped attempts had 100,000 combined in configured budgets. A03, its two scoped corrections, A02 and A04 together allocate at most 1,650,000 to one worker, below the individual ceiling. Actual usage can overshoot a goal at a tool/message boundary and must be recorded separately. A future amendment must remain under each owner ceiling.
+The coordinator goal has the requested 20,000,000-token ceiling. Every worker starts with `gpt-6-luna`, effort `low`. Ordinary configured goals use 200,000 tokens; the preserved concurrent-save implementation uses a 1,000,000 ceiling with a smaller 15,000-50,000-token working target. A02's old 50,000 goal stopped at its limit; its next duty will reuse the completed A03 thread. Every worker retains the owner's absolute 2,000,000-token ceiling. These are ceilings, not spending targets. Spawn APIs have no token-quota field: workers must record the returned goal configuration and usage, or mark controls unavailable and stop at the soft bound. Account capacity is not reserved or purchased. The 28 current duty budgets total 6,400,000 tokens; three stopped attempts had 100,000 combined in configured budgets. A03, its two scoped corrections and A02 together allocate at most 1,450,000. The requirements worker receives A04 and later A24, with 600,000 combined allocated goals. Both stay below the individual ceiling. Actual usage can overshoot a goal at a tool/message boundary and must be recorded separately. A future amendment must remain under each owner ceiling.
 
 At most three workers run at once in this series. Dispatch only a ready dependency frontier, publish each claim, and wait for its exact acknowledgement. Independent writers use separate branches/worktrees. Shared application files are sequenced A02 -> A05 -> A06; A17-A20 can propose decisions but have no implementation file ownership. Root alone writes tasks.json, this README and the assignment index. Each worker alone writes its receipt until handback. Initial workers are A01, A02 and A03; A25 is independently ready for the next free slot. Unseen-task custody must happen before exemplar optimization, and human/authentication/private-fixture gates cannot be supplied by an agent's invented assumptions.
 
@@ -12,9 +12,9 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 
 | Agent task | Review findings | Duty | Current state | Goal ceiling | Launch prompt |
 | --- | --- | --- | --- | ---: | --- |
-| A01 | FND-01 | Current requirements ledger | dispatched | 200,000 | [a01](prompts/a01.md) |
-| A02 | FND-02, FND-43 | Concurrent saves and immediate memory recovery | transferred; acceptance pending | 1,000,000 | [a02](prompts/a02.md) |
-| A03 | FND-03, FND-21 | Clipboard rejection and controlled copy races | ready-for-review | 200,000 | [a03](prompts/a03.md) |
+| A01 | FND-01 | Current requirements ledger | ready-for-review | 200,000 | [a01](prompts/a01.md) |
+| A02 | FND-02, FND-43 | Concurrent saves and immediate memory recovery | in-progress | 1,000,000 | [a02](prompts/a02.md) |
+| A03 | FND-03, FND-21 | Clipboard rejection and controlled copy races | verified source/CI/Pages | 200,000 | [a03](prompts/a03.md) |
 | A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | queued | 200,000 | [a04](prompts/a04.md) |
 | A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | queued | 200,000 | [a05](prompts/a05.md) |
 | A06 | FND-44 | Exact malformed-source recovery export | queued | 200,000 | [a06](prompts/a06.md) |
@@ -36,7 +36,7 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A22 | FND-31, FND-33 | Prompt and controlled workflow outcomes | queued | 200,000 | [a22](prompts/a22.md) |
 | A23 | FND-34 | Useful bounded software starter outcome | queued | 200,000 | [a23](prompts/a23.md) |
 | A24 | FND-35, FND-36 | Replit authentication and per-release surface receipts | external-gate | 200,000 | [a24](prompts/a24.md) |
-| A25 | FND-37 | Separate dependency PR reviews | ready-for-review | 200,000 | [a25](prompts/a25.md) |
+| A25 | FND-37 | Separate dependency PR reviews | review published; update gates remain | 200,000 | [a25](prompts/a25.md) |
 | A26 | FND-38, FND-39 | Protected ReFolDec evaluation and review-package operation | external-gate | 200,000 | [a26](prompts/a26.md) |
 | A27 | FND-40 | ReFolDec release decision and permitted publication | external-gate | 200,000 | [a27](prompts/a27.md) |
 | A28 | FND-41, FND-42 | Additional host and sibling adoption decisions | external-gate | 200,000 | [a28](prompts/a28.md) |
@@ -88,3 +88,10 @@ Overall roster amendment: count /root/equilibrium_evidence, /root/equilibrium_ou
 PR56 published the 28-task execution packet at main `aaf41daf882f14907323f34aa9325f05f354285f`. A03 now has three passing focused Chromium cases and source typecheck evidence; publication waits for the protected first-results PR. A25 returned a separate five-PR dependency review, with conditional checks and defer decisions preserved. A03's completed thread has been sent the A02 transfer on a prepared clone at that newer main, with all three prior partial files preserved. Implementation waits for its exact receipt and root publication acknowledgement. A01 is still waiting on its host approval; no ledger or received acknowledgement is claimed.
 
 Later checkpoint: A02 transfer receipt `0e81e8287988dc23ef93c6dad199b3a9f87ce88c` was published and explicitly acknowledged; implementation may resume. A01's unaccepted host-stalled dispatch was withdrawn and a separate in-session agent receives its scope, with both prior checkouts preserved. Seven new workers plus the three earlier reviewers now total ten; the overall plan remains at most 30 through the reuse assignments above. Root reproduced and repaired a delayed clipboard rejection after a project change, extending the final focused suite to four passing cases. The prior full suite passed 55 cases; fresh CI must test the final source.
+
+
+## Published first results and next frontier
+
+PR57 merged exact head 4dcd46ed08b0d9d418b19bbbc879e1fa7f74c2eb to main 8a8147845d65730deb9d4f59e5e73055e6d65db7 after both browser jobs, both typecheck jobs and filename checks passed. Pages run 37381492327 succeeded at that main. Windows tracked source and Replit source both have equal HEAD/origin/main and 0/0; primary package cache is preserved. Replit preview renders the workbench, while its external connector freshly requires reauthentication. Notion execution receipt was inserted in the existing project anchor and fetched back, preserving the prior 48 findings and child pages. These are separately observed receipts, not one interchangeable proof.
+
+A01 returned its ledger at 29fc526b4f268908df860fa38ffab750824c032a with governance/filename/whitespace checks passed and 51,693/200,000 tokens used. Root reviewed it and prepares a protected checkpoint. A04 now reuses A01 after its completed goal; root supplies a separate clone at 8a81478 and requires exact new acceptance before implementation. This supersedes the earlier A03->A04 plan. A02 remains the sole page/library writer and is implementing a smaller fail-closed stale-save guard. The largest planned combined allocation is now 1,450,000; seven new workers and three existing reviewers total ten. Human acceptance has been requested and remains pending; it is not inferred from agent fixtures.
