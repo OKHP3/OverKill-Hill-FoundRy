@@ -43,6 +43,14 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 
 ## Execution order and closure
 
+Inspect coverage, token ceilings, active file ownership and the next manually approved frontier with:
+
+```powershell
+python scripts/agent-series-status.py
+```
+
+The command reads the ledger and never spawns agents or assumes a dependency has passed. Dispatch the reported prompt with its recorded model/effort, then record the returned thread ID in tasks.json. Current thread IDs and acknowledgement evidence are in that ledger; initial table gates above remain the dated dispatch plan.
+
 1. Freeze requirements and repair the two reproduced defects. Preserve any pre-upgrade originals before applying app/schema changes to personal data. Synthetic fixtures may verify source behavior without accessing personal browser projects.
 2. Freeze the current backup contract and run stale-import/raw-recovery work with one page/library writer at a time. Verify transfer on actual origins, then other browser engines and human assistive technology. An automation accessibility tree does not prove screen-reader speech.
 3. Name an independent custodian and freeze unseen task/rubric before optimizing a source-safe exemplar. A11 builds a candidate; A12 discovers/runs it; A13 checks behavior/boundaries; A15 returns results to the saved revision. Those shared receipts close A11, FND-04 and FND-32 once; do not count them as multiple capabilities. A16's execution phase follows the frozen candidate, independent of its earlier custody phase.

@@ -64,8 +64,8 @@
         "FND-02",
         "FND-43"
       ],
-      "status": "dispatched",
-      "phase": "awaiting-acknowledgement",
+      "status": "in-progress",
+      "phase": "implementation",
       "thread_id": "01a10de7-1a4d-7ad0-852e-a8297318bc3f",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -108,7 +108,12 @@
       "retry_bound": "Two failed attempts on the same cause; return exact error and partial patch for escalation. No automatic model escalation or extra agents.",
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a02.md",
-      "prompt": "prompts/a02.md"
+      "prompt": "prompts/a02.md",
+      "acknowledgement": {
+        "commit": "cdc8397b643821bcd2eaa5fc32a065e19cc01f2f",
+        "utc": "2026-10-05T21:11:15.5305281Z",
+        "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a02.md"
+      }
     },
     {
       "id": "A03",
