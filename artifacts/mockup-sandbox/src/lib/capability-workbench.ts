@@ -82,6 +82,43 @@ let memoryWorkspace: CapabilityWorkspace | null = null;
 let persistedWorkspace: CapabilityWorkspace | null = null;
 let unsavedInMemory = false;
 
+export interface CapabilityRawRecovery {
+  id: number;
+  source: string;
+  recoveryKeyVerified: boolean;
+}
+
+type CapabilityRawRecoveryEntry = CapabilityRawRecovery & {
+  recoveryKeyAttempted: boolean;
+};
+
+const rawRecoveryEntries: CapabilityRawRecoveryEntry[] = [];
+
+function findRawRecovery(source: string): CapabilityRawRecoveryEntry | undefined {
+  return rawRecoveryEntries.find((entry) => entry.source === source);
+}
+
+function retainRawRecoverySource(source: string): CapabilityRawRecoveryEntry {
+  const existing = findRawRecovery(source);
+  if (existing) return existing;
+  const entry: CapabilityRawRecoveryEntry = {
+    id: rawRecoveryEntries.length + 1,
+    source,
+    recoveryKeyVerified: false,
+    recoveryKeyAttempted: false,
+  };
+  rawRecoveryEntries.push(entry);
+  return entry;
+}
+
+export function getCapabilityRawRecoveries(): CapabilityRawRecovery[] {
+  return rawRecoveryEntries.map(({ id, source, recoveryKeyVerified }) => ({
+    id,
+    source,
+    recoveryKeyVerified,
+  }));
+}
+
 function timestamp(): string {
   return new Date().toISOString();
 }
@@ -285,27 +322,35 @@ export function newProject(kind: CapabilityKind = "skill"): CapabilityProject {
 export function loadCapabilityWorkspace(): {
   workspace: CapabilityWorkspace;
   warning: string;
+  rawRecoveries: CapabilityRawRecovery[];
 } {
   if (unsavedInMemory && memoryWorkspace) {
     return {
       workspace: cloneWorkspace(memoryWorkspace),
       warning:
         "Storage unavailable — changes remain in this tab only. Download a backup before refreshing.",
+      rawRecoveries: getCapabilityRawRecoveries(),
     };
   }
+  let raw: string | null = null;
   try {
     if (typeof localStorage === "undefined")
       throw new Error("Browser storage is unavailable.");
-    const raw = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
+    raw = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
     if (raw === null) {
       const workspace = memoryWorkspace
         ? cloneWorkspace(memoryWorkspace)
         : blankWorkspace();
       memoryWorkspace = cloneWorkspace(workspace);
       persistedWorkspace = cloneWorkspace(workspace);
-      return { workspace, warning: "" };
+      return {
+        workspace,
+        warning: "",
+        rawRecoveries: getCapabilityRawRecoveries(),
+      };
     }
     if (byteLength(raw) > MAX_CAPABILITY_IMPORT_BYTES) {
+      retainRawRecoverySource(raw);
       const workspace = memoryWorkspace
         ? cloneWorkspace(memoryWorkspace)
         : blankWorkspace();
@@ -313,13 +358,15 @@ export function loadCapabilityWorkspace(): {
         workspace,
         warning:
           "The saved workspace is oversized and was left unchanged. A temporary workspace is open.",
+        rawRecoveries: getCapabilityRawRecoveries(),
       };
     }
     const { workspace } = parseCapabilityWorkspaceStorageValue(raw);
     memoryWorkspace = cloneWorkspace(workspace);
     persistedWorkspace = cloneWorkspace(workspace);
-    return { workspace, warning: "" };
+    return { workspace, warning: "", rawRecoveries: getCapabilityRawRecoveries() };
   } catch (error) {
+    if (raw !== null) retainRawRecoverySource(raw);
     const workspace = memoryWorkspace
       ? cloneWorkspace(memoryWorkspace)
       : blankWorkspace();
@@ -329,6 +376,7 @@ export function loadCapabilityWorkspace(): {
     return {
       workspace,
       warning: `The saved capability workspace could not be loaded and was left unchanged. A temporary workspace is open. ${detail}`,
+      rawRecoveries: getCapabilityRawRecoveries(),
     };
   }
 }
@@ -389,12 +437,18 @@ export function saveCapabilityWorkspaceRevisionAware(
     let revision = legacyRevision ?? "legacy-revision";
     if (previous !== null) {
       let remote: CapabilityWorkspace | null = null;
-      try {
-        const stored = parseCapabilityWorkspaceStorageValue(previous);
-        revision = stored.revision ?? revision;
-        remote = stored.workspace;
-      } catch {
-        // The existing recovery path below preserves malformed source exactly.
+      let rawRecovery = findRawRecovery(previous);
+      if (!rawRecovery && byteLength(previous) > MAX_CAPABILITY_IMPORT_BYTES) {
+        rawRecovery = retainRawRecoverySource(previous);
+      }
+      if (!rawRecovery) {
+        try {
+          const stored = parseCapabilityWorkspaceStorageValue(previous);
+          revision = stored.revision ?? revision;
+          remote = stored.workspace;
+        } catch {
+          // The existing recovery path below preserves malformed source exactly.
+        }
       }
       if (remote && baseline && !sameCapabilityWorkspaceContent(baseline, remote)) {
         const conflict: CapabilityConflictRecovery = {
@@ -424,12 +478,19 @@ export function saveCapabilityWorkspaceRevisionAware(
         unsavedInMemory = true;
         return { saved: false, workspace: safe, conflict };
       }
-      if (!remote) {
-        // Preserve corrupt source before a deliberate edit replaces the active store.
-        localStorage.setItem(
-          `${CAPABILITY_WORKSPACE_KEY}-recovery-${createId()}`,
-          previous,
-        );
+      if (!remote) rawRecovery ??= retainRawRecoverySource(previous);
+      if (rawRecovery && !rawRecovery.recoveryKeyAttempted) {
+        // Keep an independent local copy when storage permits. A denied or
+        // unverifiable write must not erase the in-memory raw download.
+        rawRecovery.recoveryKeyAttempted = true;
+        try {
+          const recoveryKey = `${CAPABILITY_WORKSPACE_KEY}-recovery-${createId()}`;
+          localStorage.setItem(recoveryKey, rawRecovery.source);
+          rawRecovery.recoveryKeyVerified =
+            localStorage.getItem(recoveryKey) === rawRecovery.source;
+        } catch {
+          rawRecovery.recoveryKeyVerified = false;
+        }
       }
     }
     const nextRevision = revisionId();

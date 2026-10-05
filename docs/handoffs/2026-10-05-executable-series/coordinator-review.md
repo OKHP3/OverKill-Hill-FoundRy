@@ -154,3 +154,12 @@ Host token counters were read for the three metering-gap threads. Whole-thread n
 A18 returned decisionb8481259 and completed its whole-duty goal at72,720/200,000. Root reviewed its evidence-based deferral and prospective deterministic collision/capacity/cancel/stale-preview contract. The decision duty is complete; FND23 feature adoption remains deferred, pending actual need evidence. A06 remains the sole application writer.
 
 D06 is a reproduced regression in reviewed candidate5d47484: a second malformed original is silently discarded after deliberate repair while the first raw recovery remains. This is existing FND44, not an optional history requirement. Root publishes a same-scope correction amendment and reuses A06 with a200,000 goal after its completed204,006-token first duty. Combined A06/correction/A07 allocations remain1,200,000; total roster13 and maximum planned30 do not change. No production release precedes the correction.
+
+
+## Raw recovery correction review — October 5, 2026
+
+A06 handed back frozen correction f9a9c3bc06c0835a77f218e6f262761eb39ed3e3 and receipt cf0458367bc97435ad47aaefd213601a493e078b, with scope relinquished. Its correction goal completed at 96,666 / 200,000; original goal used 204,006 / 500,000. Root repeated D06 independently against the frozen module and verified per-source records and truthful first/second copy statuses under a denied second write. Root integrated the exact three source/test files and retained both dated handbacks and the coordinator amendment.
+
+Final local integration checks: 82 core tests, full workspace typecheck, 6 import-confirmation plus 4 raw-recovery Chromium cases, and 5 concurrency Chromium cases passed. Creator production build passed. Governance, filename dry run, dispatch-ledger validation and whitespace passed. The first focused command used a nonexistent concurrency filename, so it selected only the 10 import/raw cases; root then ran the actual capability-concurrency file separately and verified all 5 cases. No omitted file is counted as tested. These synthetic Windows/Chromium checks do not establish owner-original recovery or human assistive technology. Required hosted checks and Pages publication remain pending.
+
+A18 defer decision joins this protected checkpoint; it does not adopt merge import or close its conditional feature finding. Firefox 155.0 / Playwright build1543 and WebKit26.6 / build2359 were installed through pinned Playwright1.63.0 for future A08 checks, without source/dependency changes. Installation is not runtime acceptance.

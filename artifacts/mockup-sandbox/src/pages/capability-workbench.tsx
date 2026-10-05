@@ -6,6 +6,7 @@ import {
   buildCapabilityZip,
   createCapabilityBackup,
   createCapabilityConflictBackup,
+  getCapabilityRawRecoveries,
   loadCapabilityWorkspace,
   MAX_CAPABILITY_BACKUP_BYTES,
   MAX_CAPABILITY_PROJECTS,
@@ -139,6 +140,7 @@ export default function CapabilityWorkbench({
   );
   const [recoveryNeeded, setRecoveryNeeded] = useState(Boolean(initial.warning));
   const [recoveryAnnouncement, setRecoveryAnnouncement] = useState(initial.warning);
+  const [rawRecoveries, setRawRecoveries] = useState(initial.rawRecoveries);
   const [conflictRecovery, setConflictRecovery] = useState<ReturnType<typeof saveCapabilityWorkspaceRevisionAware>['conflict']>();
   const [stage, setStage] = useState<Stage>("brief");
   const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
@@ -213,6 +215,7 @@ export default function CapabilityWorkbench({
           : saveCapabilityWorkspaceRevisionAware(candidate, persistedWorkspace.current));
         if (!result) return;
         if (result.saved) {
+          setRawRecoveries(getCapabilityRawRecoveries());
           persistedWorkspace.current = result.workspace;
           if (sameCapabilityWorkspaceContent(workspaceRef.current, candidate)) {
             workspaceRef.current = result.workspace;
@@ -225,12 +228,14 @@ export default function CapabilityWorkbench({
           }
           return;
         }
+        setRawRecoveries(getCapabilityRawRecoveries());
         setConflictRecovery(result.conflict);
         setRecoveryNeeded(true);
         setStorageState(result.conflict
           ? "Concurrent edit conflict — both snapshots are retained. Download recovery before refreshing or closing."
           : "Unsaved — storage denied this write. Your latest edits remain in this tab and will be lost on refresh or closure. Download a backup now.");
       } catch (error) {
+        setRawRecoveries(getCapabilityRawRecoveries());
         setConflictRecovery(undefined);
         setRecoveryNeeded(true);
         const detail = error instanceof Error ? ` ${error.message}` : "";
@@ -402,6 +407,7 @@ export default function CapabilityWorkbench({
           pending.persistedBase,
           workspaceRef.current,
         );
+        setRawRecoveries(getCapabilityRawRecoveries());
         if (result.saved) {
           // Obsolete queued saves belong to the replaced workspace. Invalidate
           // them while holding the lock, before another queued writer can run.
@@ -465,6 +471,32 @@ export default function CapabilityWorkbench({
           >
             {recoveryAnnouncement}
           </span>
+          {rawRecoveries.map((rawRecovery) => (
+            <div
+              className="cw-raw-recovery"
+              role="group"
+              aria-label={`Raw source recovery ${rawRecovery.id}`}
+              key={rawRecovery.id}
+            >
+              <p>
+                Raw source {rawRecovery.id} is unparsed and unvalidated.
+                {rawRecovery.recoveryKeyVerified
+                  ? ` A separate local recovery copy for source ${rawRecovery.id} was verified.`
+                  : ` A separate local recovery copy for source ${rawRecovery.id} is not confirmed; download it before refreshing or closing.`}
+              </p>
+              <button
+                className="cw-button"
+                type="button"
+                onClick={() => triggerDownload(
+                  `foundry-raw-recovery-${rawRecovery.id}-unparsed-unvalidated.txt`,
+                  rawRecovery.source,
+                  "text/plain;charset=utf-8",
+                )}
+              >
+                {`Download raw source ${rawRecovery.id} (unparsed, unvalidated)`}
+              </button>
+            </div>
+          ))}
           {recoveryNeeded && (
             <button
               className="cw-button"

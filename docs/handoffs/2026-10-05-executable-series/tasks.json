@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T23:28:54.986152+00:00",
+  "updated_at": "2026-10-05T23:57:08.727270+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -471,8 +471,8 @@
       "finding_ids": [
         "FND-44"
       ],
-      "status": "dispatched",
-      "phase": "second-source-preservation-correction-awaiting-ack",
+      "status": "ready-for-review",
+      "phase": "corrected-frozen-source-under-integration-review",
       "thread_id": "01a10e63-7336-7172-a89f-f3587f61477a",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -519,11 +519,20 @@
         "published_by": "coordinator",
         "confirmed_utc": "2026-10-05T23:28Z"
       },
-      "candidate_commit": "5d47484659e8323186980d116f50278600a222cc",
-      "handoff_commit": "c7d9adeb3a651854e6daa6b43e44ccd8929c727c",
+      "candidate_commit": "f9a9c3bc06c0835a77f218e6f262761eb39ed3e3",
+      "handoff_commit": "cf0458367bc97435ad47aaefd213601a493e078b",
       "additional_goal_allocations": [
         200000
-      ]
+      ],
+      "correction_acknowledgement": {
+        "commit": "9ad311a500d35e2a6075f0006e0ede7f0f222899",
+        "published_by": "coordinator",
+        "confirmed_utc": "2026-10-05T23:48Z",
+        "goal_token_budget": 200000,
+        "usage_at_acceptance": 1689
+      },
+      "correction_usage": 96666,
+      "known_completed_goal_usage_sum": 300672
     },
     {
       "id": "A07",
@@ -545,7 +554,7 @@
       "dependencies": [
         "A04: field/version contract",
         "A05 and A06: candidate frozen; original backups preserved",
-        "A06: completed duty and acknowledged transfer; new goal within cumulative1000000 allocation"
+        "A06: completed duty and acknowledged transfer; new goal within cumulative1200000 allocation"
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/origin-transfer.md",
@@ -1769,10 +1778,11 @@
       "title": "A second malformed source was overwritten without any recovery copy",
       "deduplicated_into": "A06 / FND-44",
       "owner": "A06 amendment pending acknowledgement",
-      "status": "reproduced-correction-pending",
+      "status": "corrected-frozen-candidate; integration checks and protected publication pending",
       "reproduction": "Fresh5d47484 module; load malformedA, deliberately repair it, externally replace active key with distinct malformedB, then save another valid edit. Both saves succeed; A is preserved, B absent from all storage values and active key.",
       "expected": "Preserve every raw original that a deliberate repair replaces and offer its exact download independently of storage-copy confirmation.",
-      "source_sha": "5d47484659e8323186980d116f50278600a222cc"
+      "source_sha": "5d47484659e8323186980d116f50278600a222cc",
+      "corrected_candidate": "f9a9c3bc06c0835a77f218e6f262761eb39ed3e3"
     }
   ],
   "replacement_worker_slots": 4,

@@ -91,8 +91,13 @@ The existing app loads fonts from Google Fonts; browser storage is specific to t
 origin, so localhost, Pages and Replit do not share a workspace automatically.
 
 If browser storage is unavailable, the application warns that edits remain in
-memory. Download a backup before refreshing. If stored JSON is malformed, its
-original value is preserved so recovery remains possible. Before an intentional edit replaces malformed data, the raw value is retained under a browser storage key beginning `okh-capability-workspace-recovery-`. Import accepts only the
+memory. Download a backup before refreshing. Malformed or oversized stored text
+has a separate raw download labeled unparsed and unvalidated. Each distinct raw
+source retained in this tab has its own download and recovery-copy status, and
+stays available after an intentional edit. The app attempts a separate browser
+storage copy before replacing that source; if the copy cannot be confirmed,
+download it before refreshing or closing. The regular workspace backup contains
+the validated current workspace and excludes these raw sources. Import accepts only the
 known workspace version and validates project identities, field types and size.
 A backup replacement affects capability projects only, not Custom GPT projects.
 
