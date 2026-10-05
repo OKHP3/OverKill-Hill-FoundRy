@@ -21,15 +21,15 @@
       "finding_ids": [
         "FND-01"
       ],
-      "status": "accepted",
-      "phase": "published-replacement-implementation-authorized",
-      "thread_id": "/root/a01_requirements",
+      "status": "ready-for-review",
+      "phase": "requirements-ledger-handback",
+      "thread_id": "01a10e1f-ee49-7bc2-80a6-f9e026155973",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
+      "usage": 51693,
       "base_sha": "aaf41daf882f14907323f34aa9325f05f354285f",
       "branch": "codex/foundry-series-a01-r2-20261005",
       "dependencies": [],
@@ -80,7 +80,9 @@
         "utc": "2026-10-05T22:12:39Z",
         "published_by": "coordinator",
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a01.md"
-      }
+      },
+      "agent_identity": "/root/a01_requirements",
+      "candidate_commit": "29fc526b4f268908df860fa38ffab750824c032a"
     },
     {
       "id": "A02",
@@ -89,8 +91,8 @@
         "FND-02",
         "FND-43"
       ],
-      "status": "accepted",
-      "phase": "published-transfer-implementation-authorized",
+      "status": "in-progress",
+      "phase": "fail-closed-stale-save-and-recovery-implementation",
       "thread_id": "01a10ded-4b33-71e1-abd7-67d454858324",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -168,8 +170,8 @@
         "FND-03",
         "FND-21"
       ],
-      "status": "ready-for-review",
-      "phase": "focused-checks-passed-awaiting-protected-pr",
+      "status": "verified",
+      "phase": "protected-main-and-pages-verified",
       "thread_id": "01a10ded-4b33-71e1-abd7-67d454858324",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -239,7 +241,14 @@
       "additional_goal_allocations": [
         200000,
         50000
-      ]
+      ],
+      "integration": {
+        "pr": 57,
+        "head": "4dcd46ed08b0d9d418b19bbbc879e1fa7f74c2eb",
+        "main": "8a8147845d65730deb9d4f59e5e73055e6d65db7",
+        "pages_run": 37381492327,
+        "limitation": "Source/CI/Pages verified; real native clipboard and human AT remain outside this task"
+      }
     },
     {
       "id": "A04",
@@ -249,20 +258,20 @@
         "FND-47",
         "FND-48"
       ],
-      "status": "queued",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "accepted",
+      "phase": "published-reused-worker-implementation-authorized",
+      "thread_id": "01a10e1f-ee49-7bc2-80a6-f9e026155973",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
+      "base_sha": "8a8147845d65730deb9d4f59e5e73055e6d65db7",
       "branch": "codex/foundry-series-a04-20261005",
       "dependencies": [
-        "A01: requirements ledger; original preservation inventory may start immediately",
-        "A03: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
+        "A01: coordinator-reviewed ledger; original preservation inventory may start immediately",
+        "A01 receiving thread finished preceding goal and must acknowledge this scope before implementation"
       ],
       "allowed_files": [
         "docs/workbench-backup-migration-design.md",
@@ -304,7 +313,15 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a04.md",
       "prompt": "prompts/a04.md",
       "working_token_target": 25000,
-      "reuse_worker_of": "A03"
+      "reuse_worker_of": "A01",
+      "control_surface": "collaboration",
+      "agent_identity": "/root/a01_requirements",
+      "acknowledgement": {
+        "commit": "f2981eeadadc695be9373e7a1625abf17c8e5ff6",
+        "utc": "2026-10-05T22:24:08Z",
+        "published_by": "coordinator",
+        "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a04.md"
+      }
     },
     {
       "id": "A05",
@@ -1367,8 +1384,8 @@
       "finding_ids": [
         "FND-37"
       ],
-      "status": "ready-for-review",
-      "phase": "report-handback-budgetLimited",
+      "status": "verified",
+      "phase": "review-report-published-with-defer-gates",
       "thread_id": "01a10dfc-1df9-7000-a689-cae3ce696ea3",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -1419,6 +1436,11 @@
         "result": "Report reviewed; exact open heads refreshed; closed PR48/49 and immutable plugin metadata resolved in dated addendum",
         "publication": "First-results PR pending",
         "limitation": "No dependency update or candidate-local compatibility tests performed; all conditional merge gates retained"
+      },
+      "integration": {
+        "pr": 57,
+        "main": "8a8147845d65730deb9d4f59e5e73055e6d65db7",
+        "limitation": "Five dependency decisions published; no candidate update merged or local compatibility tests claimed"
       }
     },
     {
@@ -1605,6 +1627,14 @@
       "owner": "coordinator",
       "id": "C02",
       "title": "Centralize authorized Git publication and installed-environment validation"
+    },
+    {
+      "id": "C03",
+      "title": "Preserve generated package cache and exclude it from source commits",
+      "owner": "coordinator",
+      "status": "implemented",
+      "evidence": "Pinned offline worker bootstrap produced primary .pnpm-store/; source inventory showed it untracked",
+      "closure": "Scoped ignore preserves cache bytes and prevents accidental staging; no cache deleted"
     }
   ],
   "preexisting_review_agents": [
