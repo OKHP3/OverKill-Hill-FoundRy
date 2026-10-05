@@ -5,17 +5,17 @@ import { newProject } from "../../mockup-sandbox/src/lib/capability-workbench";
 const storeKey = "okh-capability-workspace";
 const malformedSource = ` {"version":1,"activeId":"before-edit"}\r\n<unparsed \u2603 source>\n`;
 
-async function downloadRawSource(page: Page): Promise<string> {
+async function downloadRawSource(page: Page, id = 1): Promise<string> {
   const started = page.waitForEvent("download");
   await page
     .getByRole("button", {
-      name: "Download raw recovery (unparsed, unvalidated)",
+      name: `Download raw source ${id} (unparsed, unvalidated)`,
       exact: true,
     })
     .click();
   const download = await started;
   expect(download.suggestedFilename()).toBe(
-    "foundry-raw-recovery-unparsed-unvalidated.txt",
+    `foundry-raw-recovery-${id}-unparsed-unvalidated.txt`,
   );
   return readFile((await download.path())!, "utf8");
 }
@@ -39,10 +39,10 @@ test("malformed source downloads byte-for-byte before and after an edit beside t
   );
   await page.goto("./");
 
-  await expect(page.getByLabel("Raw source recovery")).toContainText(
-    "Unparsed, unvalidated",
+  await expect(page.getByLabel("Raw source recovery 1")).toContainText(
+    "unparsed and unvalidated",
   );
-  await expect(page.getByLabel("Raw source recovery")).toContainText(
+  await expect(page.getByLabel("Raw source recovery 1")).toContainText(
     "not confirmed",
   );
   expect(await downloadRawSource(page)).toBe(malformedSource);
@@ -65,6 +65,58 @@ test("malformed source downloads byte-for-byte before and after an edit beside t
   expect(afterEditBackup).not.toHaveProperty("rawSource");
 });
 
+test("two distinct raw sources stay downloadable with independent recovery-key status", async ({
+  page,
+}) => {
+  const secondMalformedSource = `\n{"version":1,"projects":[1,],"source":"B"}\r\n`;
+  await page.addInitScript(
+    ({ key, first, second }) => {
+      localStorage.setItem(key, first);
+      const originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (itemKey, value) {
+        if (itemKey.startsWith(`${key}-recovery-`) && value === second) {
+          throw new DOMException("Second recovery copy denied", "QuotaExceededError");
+        }
+        originalSetItem.call(this, itemKey, value);
+      };
+    },
+    { key: storeKey, first: malformedSource, second: secondMalformedSource },
+  );
+  await page.goto("./");
+
+  await page.getByLabel("Capability name", { exact: true }).fill("After source A");
+  await expect(page.locator(".cw-storage")).toHaveText("Saved locally");
+  await expect(page.getByLabel("Raw source recovery 1")).toContainText(
+    "for source 1 was verified",
+  );
+
+  await page.evaluate(
+    ({ key, source }) => localStorage.setItem(key, source),
+    { key: storeKey, source: secondMalformedSource },
+  );
+  await page.getByLabel("Capability name", { exact: true }).fill("After source B");
+  await expect(page.locator(".cw-storage")).toHaveText("Saved locally");
+
+  await expect(page.getByLabel("Raw source recovery 1")).toContainText(
+    "for source 1 was verified",
+  );
+  await expect(page.getByLabel("Raw source recovery 2")).toContainText(
+    "for source 2 is not confirmed",
+  );
+  expect(await downloadRawSource(page, 1)).toBe(malformedSource);
+  expect(await downloadRawSource(page, 2)).toBe(secondMalformedSource);
+
+  const afterEditBackup = await downloadCurrentBackup(page);
+  expect(afterEditBackup.schema).toBe("okh-capability-workspace-backup");
+  expect(afterEditBackup.workspace.projects[0].name).toBe("After source B");
+  expect(afterEditBackup).not.toHaveProperty("rawSource");
+  const savedCopies = await page.evaluate((key) =>
+    Object.keys(localStorage)
+      .filter((itemKey) => itemKey.startsWith(`${key}-recovery-`))
+      .map((itemKey) => localStorage.getItem(itemKey)), storeKey);
+  expect(savedCopies).toEqual([malformedSource]);
+});
+
 test("denied raw-recovery-key writes keep the exact download available without claiming durable recovery", async ({
   page,
 }) => {
@@ -84,7 +136,7 @@ test("denied raw-recovery-key writes keep the exact download available without c
   await page.goto("./");
   await page.getByLabel("Capability name", { exact: true }).fill("Edited with denied recovery copy");
   await expect(page.locator(".cw-storage")).toHaveText("Saved locally");
-  await expect(page.getByLabel("Raw source recovery")).toContainText(
+  await expect(page.getByLabel("Raw source recovery 1")).toContainText(
     "not confirmed",
   );
   expect(await downloadRawSource(page)).toBe(malformedSource);

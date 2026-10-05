@@ -81,25 +81,42 @@ const stringFields = [
 let memoryWorkspace: CapabilityWorkspace | null = null;
 let persistedWorkspace: CapabilityWorkspace | null = null;
 let unsavedInMemory = false;
-let rawRecoverySource: string | null = null;
-let rawRecoveryKeyVerified = false;
 
 export interface CapabilityRawRecovery {
+  id: number;
   source: string;
   recoveryKeyVerified: boolean;
 }
 
-function retainRawRecoverySource(source: string): void {
-  if (rawRecoverySource === null) {
-    rawRecoverySource = source;
-    rawRecoveryKeyVerified = false;
-  }
+type CapabilityRawRecoveryEntry = CapabilityRawRecovery & {
+  recoveryKeyAttempted: boolean;
+};
+
+const rawRecoveryEntries: CapabilityRawRecoveryEntry[] = [];
+
+function findRawRecovery(source: string): CapabilityRawRecoveryEntry | undefined {
+  return rawRecoveryEntries.find((entry) => entry.source === source);
 }
 
-export function getCapabilityRawRecovery(): CapabilityRawRecovery | null {
-  return rawRecoverySource === null
-    ? null
-    : { source: rawRecoverySource, recoveryKeyVerified: rawRecoveryKeyVerified };
+function retainRawRecoverySource(source: string): CapabilityRawRecoveryEntry {
+  const existing = findRawRecovery(source);
+  if (existing) return existing;
+  const entry: CapabilityRawRecoveryEntry = {
+    id: rawRecoveryEntries.length + 1,
+    source,
+    recoveryKeyVerified: false,
+    recoveryKeyAttempted: false,
+  };
+  rawRecoveryEntries.push(entry);
+  return entry;
+}
+
+export function getCapabilityRawRecoveries(): CapabilityRawRecovery[] {
+  return rawRecoveryEntries.map(({ id, source, recoveryKeyVerified }) => ({
+    id,
+    source,
+    recoveryKeyVerified,
+  }));
 }
 
 function timestamp(): string {
@@ -305,20 +322,21 @@ export function newProject(kind: CapabilityKind = "skill"): CapabilityProject {
 export function loadCapabilityWorkspace(): {
   workspace: CapabilityWorkspace;
   warning: string;
-  rawRecovery: CapabilityRawRecovery | null;
+  rawRecoveries: CapabilityRawRecovery[];
 } {
   if (unsavedInMemory && memoryWorkspace) {
     return {
       workspace: cloneWorkspace(memoryWorkspace),
       warning:
         "Storage unavailable — changes remain in this tab only. Download a backup before refreshing.",
-      rawRecovery: getCapabilityRawRecovery(),
+      rawRecoveries: getCapabilityRawRecoveries(),
     };
   }
+  let raw: string | null = null;
   try {
     if (typeof localStorage === "undefined")
       throw new Error("Browser storage is unavailable.");
-    const raw = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
+    raw = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
     if (raw === null) {
       const workspace = memoryWorkspace
         ? cloneWorkspace(memoryWorkspace)
@@ -328,11 +346,11 @@ export function loadCapabilityWorkspace(): {
       return {
         workspace,
         warning: "",
-        rawRecovery: getCapabilityRawRecovery(),
+        rawRecoveries: getCapabilityRawRecoveries(),
       };
     }
-    retainRawRecoverySource(raw);
     if (byteLength(raw) > MAX_CAPABILITY_IMPORT_BYTES) {
+      retainRawRecoverySource(raw);
       const workspace = memoryWorkspace
         ? cloneWorkspace(memoryWorkspace)
         : blankWorkspace();
@@ -340,17 +358,15 @@ export function loadCapabilityWorkspace(): {
         workspace,
         warning:
           "The saved workspace is oversized and was left unchanged. A temporary workspace is open.",
-        rawRecovery: getCapabilityRawRecovery(),
+        rawRecoveries: getCapabilityRawRecoveries(),
       };
     }
     const { workspace } = parseCapabilityWorkspaceStorageValue(raw);
-    // A valid current workspace is not a raw recovery source. Keep a source
-    // captured earlier in this tab so an intentional repair cannot discard it.
-    if (rawRecoverySource === raw) rawRecoverySource = null;
     memoryWorkspace = cloneWorkspace(workspace);
     persistedWorkspace = cloneWorkspace(workspace);
-    return { workspace, warning: "", rawRecovery: getCapabilityRawRecovery() };
+    return { workspace, warning: "", rawRecoveries: getCapabilityRawRecoveries() };
   } catch (error) {
+    if (raw !== null) retainRawRecoverySource(raw);
     const workspace = memoryWorkspace
       ? cloneWorkspace(memoryWorkspace)
       : blankWorkspace();
@@ -360,7 +376,7 @@ export function loadCapabilityWorkspace(): {
     return {
       workspace,
       warning: `The saved capability workspace could not be loaded and was left unchanged. A temporary workspace is open. ${detail}`,
-      rawRecovery: getCapabilityRawRecovery(),
+      rawRecoveries: getCapabilityRawRecoveries(),
     };
   }
 }
@@ -421,7 +437,11 @@ export function saveCapabilityWorkspaceRevisionAware(
     let revision = legacyRevision ?? "legacy-revision";
     if (previous !== null) {
       let remote: CapabilityWorkspace | null = null;
-      if (previous !== rawRecoverySource) {
+      let rawRecovery = findRawRecovery(previous);
+      if (!rawRecovery && byteLength(previous) > MAX_CAPABILITY_IMPORT_BYTES) {
+        rawRecovery = retainRawRecoverySource(previous);
+      }
+      if (!rawRecovery) {
         try {
           const stored = parseCapabilityWorkspaceStorageValue(previous);
           revision = stored.revision ?? revision;
@@ -458,17 +478,18 @@ export function saveCapabilityWorkspaceRevisionAware(
         unsavedInMemory = true;
         return { saved: false, workspace: safe, conflict };
       }
-      if (!remote) retainRawRecoverySource(previous);
-      if (rawRecoverySource === previous && !rawRecoveryKeyVerified) {
+      if (!remote) rawRecovery ??= retainRawRecoverySource(previous);
+      if (rawRecovery && !rawRecovery.recoveryKeyAttempted) {
         // Keep an independent local copy when storage permits. A denied or
         // unverifiable write must not erase the in-memory raw download.
+        rawRecovery.recoveryKeyAttempted = true;
         try {
           const recoveryKey = `${CAPABILITY_WORKSPACE_KEY}-recovery-${createId()}`;
-          localStorage.setItem(recoveryKey, rawRecoverySource);
-          rawRecoveryKeyVerified =
-            localStorage.getItem(recoveryKey) === rawRecoverySource;
+          localStorage.setItem(recoveryKey, rawRecovery.source);
+          rawRecovery.recoveryKeyVerified =
+            localStorage.getItem(recoveryKey) === rawRecovery.source;
         } catch {
-          rawRecoveryKeyVerified = false;
+          rawRecovery.recoveryKeyVerified = false;
         }
       }
     }
