@@ -4,7 +4,7 @@ import {
   SAFETY_AUDIT_ID,
   AUDIT_RUBRIC_VERSION,
   AUDIT_SHIP_GATE_THRESHOLDS,
-} from "../data/knowledge";
+} from "../data/knowledge.ts";
 
 export const WORKSPACE_KEY = "cgpt-workspace";
 export const WORKSPACE_VERSION = 1;
@@ -29,6 +29,12 @@ export interface CreatorWorkspace {
   version: 1;
   activeProjectId: string;
   projects: CreatorProject[];
+}
+
+export interface CreatorWorkspaceSnapshot {
+  workspace: CreatorWorkspace;
+  serialized: string | null;
+  persisted: boolean;
 }
 
 type ShipGateDecision = "incomplete" | "passed" | "failed";
@@ -350,6 +356,28 @@ export function loadWorkspace(): CreatorWorkspace {
     fallback.activeProjectId ||= fallback.projects[0].id;
     memoryWorkspace = fallback;
     return fallback;
+  }
+}
+
+export function readWorkspaceSnapshot(): CreatorWorkspaceSnapshot {
+  try {
+    const serialized = localStorage.getItem(WORKSPACE_KEY);
+    if (serialized === null) {
+      return { workspace: loadWorkspace(), serialized, persisted: false };
+    }
+
+    const parsed: unknown = JSON.parse(serialized);
+    if (!validWorkspace(parsed)) {
+      return { workspace: loadWorkspace(), serialized, persisted: false };
+    }
+
+    const workspace = { ...parsed, projects: parsed.projects.map(normalizeProject) };
+    memoryWorkspace = workspace;
+    lastHealth = "persisted";
+    return { workspace, serialized, persisted: true };
+  } catch {
+    lastHealth = "unavailable";
+    return { workspace: loadWorkspace(), serialized: null, persisted: false };
   }
 }
 

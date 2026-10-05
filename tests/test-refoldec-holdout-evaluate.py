@@ -13,10 +13,92 @@ TOOL = ROOT / "scripts" / "refoldec-holdout-evaluate.py"
 PACKAGE = ROOT / "examples" / "release-candidates" / "skill"
 
 
+def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(TOOL), *args],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory(prefix="refoldec-holdout-") as directory:
         output = Path(directory) / "holdout.json"
         holdout = Path(directory) / "protected-holdout.json"
+        missing_fixture = Path(directory) / "missing-protected-holdout.json"
+        missing_fixture_result = run_cli(
+            "--scan-release-artifacts",
+            "--holdout-file",
+            str(missing_fixture),
+        )
+        if (
+            missing_fixture_result.returncode == 0
+            or not missing_fixture_result.stderr.startswith("FAIL release artifact scan: ")
+            or "required maintainer-only protected holdout fixture is missing" not in missing_fixture_result.stderr
+            or str(missing_fixture) not in missing_fixture_result.stderr
+            or "release-checklist.md" not in missing_fixture_result.stderr
+        ):
+            print(
+                "FAIL missing protected fixture did not explain maintainer setup",
+                missing_fixture_result.stdout,
+                missing_fixture_result.stderr,
+            )
+            return 1
+
+        protected_marker = "DO_NOT_ECHO_PROTECTED_FIXTURE_MARKER"
+        malformed_fixture = Path(directory) / "malformed-protected-holdout.json"
+        malformed_fixture.write_text(
+            '{"prompt":"' + protected_marker + '",',
+            encoding="utf-8",
+        )
+        malformed_fixture_result = run_cli(
+            "--scan-release-artifacts",
+            "--holdout-file",
+            str(malformed_fixture),
+        )
+        malformed_output = malformed_fixture_result.stdout + malformed_fixture_result.stderr
+        if (
+            malformed_fixture_result.returncode == 0
+            or not malformed_fixture_result.stderr.startswith("FAIL release artifact scan: ")
+            or "malformed or unreadable" not in malformed_fixture_result.stderr
+            or "line 1, column" not in malformed_fixture_result.stderr
+            or "release-checklist.md" not in malformed_fixture_result.stderr
+            or protected_marker in malformed_output
+        ):
+            print(
+                "FAIL malformed protected fixture was not diagnosed safely",
+                malformed_fixture_result.stdout,
+                malformed_fixture_result.stderr,
+            )
+            return 1
+
+        invalid_shape_fixture = Path(directory) / "invalid-shape-protected-holdout.json"
+        invalid_shape_fixture.write_text(json.dumps({
+            "id": "invalid-shape",
+            "partition": "holdout",
+            "prompt": protected_marker,
+            "expectations": [],
+        }), encoding="utf-8")
+        invalid_shape_result = run_cli(
+            "--scan-release-artifacts",
+            "--holdout-file",
+            str(invalid_shape_fixture),
+        )
+        invalid_shape_output = invalid_shape_result.stdout + invalid_shape_result.stderr
+        if (
+            invalid_shape_result.returncode == 0
+            or not invalid_shape_result.stderr.startswith("FAIL release artifact scan: ")
+            or "exactly 3 non-empty 'expectations' strings" not in invalid_shape_result.stderr
+            or protected_marker in invalid_shape_output
+        ):
+            print(
+                "FAIL malformed protected fixture structure was not diagnosed safely",
+                invalid_shape_result.stdout,
+                invalid_shape_result.stderr,
+            )
+            return 1
+
         holdout.write_text(json.dumps({
             "id": "unseen-holdout",
             "partition": "holdout",
@@ -396,7 +478,11 @@ def main() -> int:
             "partition": "holdout",
             "risk": "high",
             "prompt": "H Z M N Y H I J",
-            "expectations": ["The uppercase look-alike boundary is checked."],
+            "expectations": [
+                "Uppercase look-alike sample expectation alpha.",
+                "Uppercase look-alike sample expectation beta.",
+                "Uppercase look-alike sample expectation gamma.",
+            ],
         }), encoding="utf-8")
         uppercase_original = transformed.read_text(encoding="utf-8")
         transformed.write_text(
