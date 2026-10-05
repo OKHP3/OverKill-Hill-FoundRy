@@ -21,10 +21,15 @@ if len(ids) != len(set(ids)):
     errors.append('Duplicate task IDs')
 if len(findings) != len(set(findings)) or set(findings) != expected:
     errors.append('Review finding coverage is incomplete or duplicated')
-if len(tasks) + ledger['reserved_new_task_slots'] > ledger['maximum_new_worker_threads']:
+planned_workers = sum(not t.get('reuse_worker_of') for t in tasks)
+if planned_workers + ledger['reserved_new_task_slots'] + ledger.get('replacement_worker_slots', 0) > ledger['maximum_new_worker_threads']:
     errors.append('Planned workers exceed the owner ceiling')
 if ledger['spawned_new_worker_threads'] > 30:
     errors.append('Spawned workers exceed the owner ceiling')
+known_workers = {t['thread_id'] for t in tasks if t['thread_id']}
+known_workers.update(worker['thread_id'] for t in tasks for worker in t.get('previous_workers', []))
+if len(known_workers) != ledger['spawned_new_worker_threads']:
+    errors.append('Spawned worker count does not match current and preserved thread identities')
 active = [t for t in tasks if t['status'] in ('dispatched', 'accepted', 'in-progress')]
 if len(active) > ledger['concurrency_limit']:
     errors.append('Active writers exceed the series concurrency limit')
@@ -35,6 +40,13 @@ for t in tasks:
         errors.append(f"{t['id']}: missing launch prompt")
     if t['status'] in ('accepted', 'in-progress', 'ready-for-review', 'integrated', 'verified') and not (root / t['receipt']).is_file():
         errors.append(f"{t['id']}: accepted status has no published receipt in this checkout")
+allocations = Counter()
+for t in tasks:
+    allocations[t.get('reuse_worker_of', t['id'])] += t['goal_token_budget']
+    for worker in t.get('previous_workers', []):
+        allocations[worker['thread_id']] += worker['goal_token_budget']
+if any(amount > 2000000 for amount in allocations.values()):
+    errors.append('Combined planned goals exceed an individual worker allocation ceiling')
 for i, left in enumerate(active):
     for right in active[i+1:]:
         # Wildcard/subtree scopes are not active in the initial wave. Treat any
@@ -50,6 +62,8 @@ print(json.dumps(dict(
     validation='FAIL' if errors else 'PASS', errors=errors,
     source_finding_count=len(expected), mapped_finding_count=len(findings),
     planned_tasks=len(tasks), spawned_workers=ledger['spawned_new_worker_threads'],
+    planned_distinct_workers=planned_workers + ledger.get('replacement_worker_slots', 0),
+    maximum_individual_allocated_goals=max(allocations.values()),
     reserved_slots=ledger['reserved_new_task_slots'], active=[t['id'] for t in active],
     free_worker_slots=capacity, states=dict(Counter(t['status'] for t in tasks)),
     next_dispatch=[dict(id=t['id'], model=t['model'], effort=t['reasoning_effort'],
