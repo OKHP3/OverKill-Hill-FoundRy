@@ -471,15 +471,15 @@
       "finding_ids": [
         "FND-44"
       ],
-      "status": "in-progress",
-      "phase": "published-acceptance-implementation-authorized",
+      "status": "dispatched",
+      "phase": "second-source-preservation-correction-awaiting-ack",
       "thread_id": "01a10e63-7336-7172-a89f-f3587f61477a",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
+      "usage": 204006,
       "base_sha": "0df2217f3612324cd8af2d835cfaab1467cddb73",
       "branch": "codex/foundry-series-a06-20261005",
       "dependencies": [
@@ -518,7 +518,12 @@
         "commit": "b0b69ffa32842392db93af693c9828c59a556372",
         "published_by": "coordinator",
         "confirmed_utc": "2026-10-05T23:28Z"
-      }
+      },
+      "candidate_commit": "5d47484659e8323186980d116f50278600a222cc",
+      "handoff_commit": "c7d9adeb3a651854e6daa6b43e44ccd8929c727c",
+      "additional_goal_allocations": [
+        200000
+      ]
     },
     {
       "id": "A07",
@@ -1758,6 +1763,16 @@
       "resolution": "Replacement save retains the current draft on failure; ordinary save behavior stays unchanged. Successful replacement invalidates obsolete queued saves under the lock.",
       "checks": "Final denied-import and lock-wait regressions PASS atfcd4df2. No owner projects used.",
       "publication": "PR61 final85c32fa merged to main0df2217 after protected checks"
+    },
+    {
+      "id": "D06",
+      "title": "A second malformed source was overwritten without any recovery copy",
+      "deduplicated_into": "A06 / FND-44",
+      "owner": "A06 amendment pending acknowledgement",
+      "status": "reproduced-correction-pending",
+      "reproduction": "Fresh5d47484 module; load malformedA, deliberately repair it, externally replace active key with distinct malformedB, then save another valid edit. Both saves succeed; A is preserved, B absent from all storage values and active key.",
+      "expected": "Preserve every raw original that a deliberate repair replaces and offer its exact download independently of storage-copy confirmation.",
+      "source_sha": "5d47484659e8323186980d116f50278600a222cc"
     }
   ],
   "replacement_worker_slots": 4,
