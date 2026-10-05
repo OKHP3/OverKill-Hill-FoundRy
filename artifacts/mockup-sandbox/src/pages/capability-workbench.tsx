@@ -1,18 +1,22 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   assessCapability,
   buildCapabilityFiles,
   buildCapabilityZip,
   createCapabilityBackup,
+  createCapabilityConflictBackup,
   loadCapabilityWorkspace,
   MAX_CAPABILITY_BACKUP_BYTES,
   MAX_CAPABILITY_PROJECTS,
   newProject,
+  parseCapabilityWorkspaceStorageValue,
   parseCapabilityBackup,
-  saveCapabilityWorkspace,
+  saveCapabilityWorkspaceRevisionAware,
+  sameCapabilityWorkspaceContent,
   type CapabilityKind,
   type CapabilityProject,
   type Workspace,
+  withCapabilityWorkspaceWriter,
 } from "../lib/capability-workbench";
 import "../capability-workbench.css";
 
@@ -110,19 +114,55 @@ export default function CapabilityWorkbench({
 }) {
   const initial = useMemo(() => loadCapabilityWorkspace(), []);
   const [workspace, setWorkspace] = useState<Workspace>(initial.workspace);
+  const workspaceRef = useRef(workspace);
+  workspaceRef.current = workspace;
   const [storageState, setStorageState] = useState(
     initial.warning || "Local workspace · saves when you edit",
   );
+  const [recoveryNeeded, setRecoveryNeeded] = useState(Boolean(initial.warning));
+  const [recoveryAnnouncement, setRecoveryAnnouncement] = useState(initial.warning);
+  const [conflictRecovery, setConflictRecovery] = useState<ReturnType<typeof saveCapabilityWorkspaceRevisionAware>['conflict']>();
   const [stage, setStage] = useState<Stage>("brief");
   const [pendingImport, setPendingImport] = useState<Workspace | null>(null);
   const [importError, setImportError] = useState("");
   const [selectedFile, setSelectedFile] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const importRevision = useRef(0);
+  const persistedWorkspace = useRef(initial.workspace);
+  const saveQueue = useRef<Promise<void>>(Promise.resolve());
   const project =
     workspace.projects.find((item) => item.id === workspace.activeId) ||
     workspace.projects[0];
   const canAddProject = workspace.projects.length < MAX_CAPABILITY_PROJECTS;
+
+  useEffect(() => {
+    // Ordinary save progress stays readable without announcing every keystroke.
+    // Announce recovery transitions once; identical failure messages stay stable.
+    setRecoveryAnnouncement((previous) => recoveryNeeded
+      ? storageState
+      : previous ? "Workspace saved. Your latest edits are now stored locally." : "");
+  }, [recoveryNeeded, storageState]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== "okh-capability-workspace" || !event.newValue) return;
+      try {
+        const { workspace: remote } = parseCapabilityWorkspaceStorageValue(event.newValue);
+        // Refresh a clean tab, but keep a dirty tab's original base so its next
+        // locked save can identify this update as stale and preserve both sides.
+        if (sameCapabilityWorkspaceContent(workspaceRef.current, persistedWorkspace.current)) {
+          persistedWorkspace.current = remote;
+          workspaceRef.current = remote;
+          setWorkspace(remote);
+        }
+      } catch {
+        // A malformed external value is surfaced on the next explicit save/load.
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   if (!project) return null;
 
@@ -138,12 +178,41 @@ export default function CapabilityWorkbench({
       );
       return;
     }
+    workspaceRef.current = next;
     setWorkspace(next);
-    setStorageState(
-      saveCapabilityWorkspace(next)
-        ? "Saved locally"
-        : "Storage unavailable — changes remain in this tab only",
-    );
+    // Once recovery is needed, keep the same live message while the user types.
+    if (!recoveryNeeded) setStorageState("Saving locally…");
+    saveQueue.current = saveQueue.current.catch(() => undefined).then(async () => {
+      const candidate = workspaceRef.current;
+      try {
+        const result = await withCapabilityWorkspaceWriter(() =>
+          saveCapabilityWorkspaceRevisionAware(candidate, persistedWorkspace.current),
+        );
+        if (result.saved) {
+          persistedWorkspace.current = result.workspace;
+          if (sameCapabilityWorkspaceContent(workspaceRef.current, candidate)) {
+            workspaceRef.current = result.workspace;
+            setWorkspace(result.workspace);
+            setConflictRecovery(undefined);
+            setRecoveryNeeded(false);
+            setStorageState("Saved locally");
+          } else {
+            setStorageState("Saving locally…");
+          }
+          return;
+        }
+        setConflictRecovery(result.conflict);
+        setRecoveryNeeded(true);
+        setStorageState(result.conflict
+          ? "Concurrent edit conflict — both snapshots are retained. Download recovery before refreshing or closing."
+          : "Unsaved — storage denied this write. Your latest edits remain in this tab and will be lost on refresh or closure. Download a backup now.");
+      } catch (error) {
+        setConflictRecovery(undefined);
+        setRecoveryNeeded(true);
+        const detail = error instanceof Error ? ` ${error.message}` : "";
+        setStorageState(`Unsaved — your latest edits remain in this tab and will be lost on refresh or closure. Download a backup now.${detail}`);
+      }
+    });
   };
 
   const update = (field: keyof CapabilityProject, value: string | boolean) => {
@@ -266,10 +335,39 @@ export default function CapabilityWorkbench({
         </div>
         <div className="cw-header-actions">
           <span
+            role="status"
+            aria-live="off"
             className={`cw-storage ${storageState.startsWith("Saved") ? "is-good" : "is-warning"}`}
           >
             {storageState}
           </span>
+          <span
+            className="cw-save-announcement"
+            aria-live="polite"
+            aria-atomic="true"
+            style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" }}
+          >
+            {recoveryAnnouncement}
+          </span>
+          {recoveryNeeded && (
+            <button
+              className="cw-button"
+              type="button"
+              onClick={() => triggerDownload(
+                conflictRecovery ? "foundry-conflict-recovery.json" : "foundry-unsaved-backup.json",
+                conflictRecovery
+                  ? createCapabilityConflictBackup({
+                      ...conflictRecovery,
+                      competingSnapshot: workspace,
+                      competingSerialized: JSON.stringify(workspace),
+                    })
+                  : createCapabilityBackup(workspace),
+                "application/json",
+              )}
+            >
+              {conflictRecovery ? "Download both snapshots" : "Download newest backup"}
+            </button>
+          )}
           <button
             className="cw-button cw-button--solid"
             type="button"

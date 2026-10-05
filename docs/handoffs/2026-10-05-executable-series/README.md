@@ -12,10 +12,10 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 
 | Agent task | Review findings | Duty | Current state | Goal ceiling | Launch prompt |
 | --- | --- | --- | --- | ---: | --- |
-| A01 | FND-01 | Current requirements ledger | ready-for-review | 200,000 | [a01](prompts/a01.md) |
-| A02 | FND-02, FND-43 | Concurrent saves and immediate memory recovery | in-progress | 1,000,000 | [a02](prompts/a02.md) |
+| A01 | FND-01 | Current requirements ledger | verified | 200,000 | [a01](prompts/a01.md) |
+| A02 | FND-02, FND-43 | Concurrent saves and immediate memory recovery | ready-for-review; AT pending | 1,000,000 | [a02](prompts/a02.md) |
 | A03 | FND-03, FND-21 | Clipboard rejection and controlled copy races | verified source/CI/Pages | 200,000 | [a03](prompts/a03.md) |
-| A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | queued | 200,000 | [a04](prompts/a04.md) |
+| A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | in-progress | 200,000 | [a04](prompts/a04.md) |
 | A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | queued | 200,000 | [a05](prompts/a05.md) |
 | A06 | FND-44 | Exact malformed-source recovery export | queued | 200,000 | [a06](prompts/a06.md) |
 | A07 | FND-25 | Transfer and rollback across actual browser origins | queued | 200,000 | [a07](prompts/a07.md) |
@@ -95,3 +95,8 @@ Later checkpoint: A02 transfer receipt `0e81e8287988dc23ef93c6dad199b3a9f87ce88c
 PR57 merged exact head 4dcd46ed08b0d9d418b19bbbc879e1fa7f74c2eb to main 8a8147845d65730deb9d4f59e5e73055e6d65db7 after both browser jobs, both typecheck jobs and filename checks passed. Pages run 37381492327 succeeded at that main. Windows tracked source and Replit source both have equal HEAD/origin/main and 0/0; primary package cache is preserved. Replit preview renders the workbench, while its external connector freshly requires reauthentication. Notion execution receipt was inserted in the existing project anchor and fetched back, preserving the prior 48 findings and child pages. These are separately observed receipts, not one interchangeable proof.
 
 A01 returned its ledger at 29fc526b4f268908df860fa38ffab750824c032a with governance/filename/whitespace checks passed and 51,693/200,000 tokens used. Root reviewed it and prepares a protected checkpoint. A04 now reuses A01 after its completed goal; root supplies a separate clone at 8a81478 and requires exact new acceptance before implementation. This supersedes the earlier A03->A04 plan. A02 remains the sole page/library writer and is implementing a smaller fail-closed stale-save guard. The largest planned combined allocation is now 1,450,000; seven new workers and three existing reviewers total ten. Human acceptance has been requested and remains pending; it is not inferred from agent fixtures.
+
+
+## Concurrent-save checkpoint and remaining gates
+
+PR58 published the requirements ledger at main `621ea5893420e91712825c53b849c622b0c99173`; exact protected checks and Pages passed. A02 has relinquished its frozen implementation to root. Central Windows validation passes81core tests, full workspace typecheck/build and61Chromium cases, with3opt-in fixture-refresh skips. The conflict route preserves both snapshots and identifies the authoritative revision, and denied writes retain the newest editable backup. Normal typing does not repeatedly change the recovery live announcement. Publication waits for the final exact-head protected checks; real assistive technology remains A09. A04 is active after published acceptance; A05 remains gated on both prerequisite handbacks and integration. See their dated receipts for source and runtime boundaries.
