@@ -88,3 +88,19 @@ field; the coordinator reports that `createCapabilityBackup` strips it and
 leaves portable backup schema version 1 unchanged. The A04 source/test base
 predates A02. This is coordinator-provided candidate evidence pending
 publication, not an A04 runtime test of the metadata or read-back behavior.
+
+
+## Coordinator pinned-parser addendum - October 5, 2026, 22:56 UTC
+
+After the A04 handback, root located the pre-conversion source in repository history at commit `6d48317fece4769dd8cb5e774779ad646def461b` (September 26). Its unchanged library module has SHA-256 `0d27d3e3de23c2d78ee9d9d8d53463fda301d0b9f064e5e27f5b125793d53ae7`. Root preserved those source bytes in an ignored version-matrix directory and executed only that parser module, alongside current source `e26381266527d70e348cc5fb49e7c0039db4a3c3`, using Node `v24.11.1` on win32. This supplies a bounded parser-pair receipt beyond the worker's earlier unavailable-runtime conclusion; it does not turn that historical conclusion into a claimed test.
+
+All four tracked fixture hashes above match. The pinned older parser accepts each original legacy backup with all supplied values intact. Each current export of the same workspace includes conversion defaults, and that older parser rejects it with `unknown project field "sourceType"`. A disposable storage sentinel remains unchanged, with zero writes during parsing. The current parser's acceptance/defaulting remains covered by the existing 82 core cases and prior fixture probe.
+
+| Legacy fixture | Current export bytes in this probe | Current export SHA-256 | Older-parser outcome |
+| --- | ---: | --- | --- |
+| prompt-example |2243|e71c51ecd87304474a087d17235eed79dcbab3a206daf835df5689dac16341a6|Reject; zero writes|
+| skill-example |2378|1c4a7a17a165536c3d7e0b3c33e0407ddd65fea53d0bc502acfa92aedf2db7ca|Reject; zero writes|
+| software-example |1875|14f1ce3c30f21e6edbc0c612f020af2e14d7c297f739b77ad10d4445adc7b072|Reject; zero writes|
+| workflow-example |2374|e5fc96e1866e840dd07bb4883fc529966df7de4f0a12cc1338761fc8d8b01f3c|Reject; zero writes|
+
+Export hashes identify these dated probe bytes; exportedAt makes later exports differ. No personal backup, older browser build, application downgrade/rollback, or broad all-older-build claim is established. A03/A02 releases and this source-module probe do not substitute for actual origin transfer or human acceptance. The machine probe result is preserved locally; its public-safe facts are recorded here.

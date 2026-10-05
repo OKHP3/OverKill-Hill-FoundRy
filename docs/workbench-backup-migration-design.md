@@ -133,3 +133,8 @@ the version-1 portable envelope. The coordinator also reports a local-save
 read-back change in that PR59 candidate. The A04 test base predates these
 changes, so this note does not claim that A04 independently ran the concurrency
 candidate, tested marker persistence, or validated the newer read-back path.
+
+
+### Pinned parser-pair follow-up - October 5, 2026
+
+The coordinator subsequently tested pre-conversion parser source `6d48317` against current source `e263812` on Node `24.11.1`. That pinned older parser accepts all four original legacy examples and rejects their current exports containing conversion fields, before any storage write. The [dated preservation receipt](handoffs/2026-10-05-executable-series/evidence/backup-preservation.md) supplies exact hashes and runtime. This is source-module evidence for one parser pair; actual older application-runtime, browser and rollback behavior remain untested. The earlier A04 unavailable-runtime record remains dated evidence.

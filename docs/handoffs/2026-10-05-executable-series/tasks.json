@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T22:46:02.736195+00:00",
+  "updated_at": "2026-10-05T23:04:38.347770+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -9,7 +9,7 @@
   "coordinator_token_ceiling": 20000000,
   "maximum_new_worker_threads": 30,
   "reserved_new_task_slots": 0,
-  "spawned_new_worker_threads": 7,
+  "spawned_new_worker_threads": 8,
   "concurrency_limit": 3,
   "task_count": 28,
   "finding_count": 48,
@@ -96,8 +96,8 @@
         "FND-02",
         "FND-43"
       ],
-      "status": "ready-for-review",
-      "phase": "coordinator-validated-awaiting-protected-publication",
+      "status": "integrated",
+      "phase": "source-and-ci-published-human-at-pending",
       "thread_id": "01a10ded-4b33-71e1-abd7-67d454858324",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -174,6 +174,12 @@
         "changes_after_handback": "Stable recovery live announcement and exact-byte retention assertion; two existing regression selectors updated to the new accessible status. Required final-head CI pending.",
         "limitations": "Real screen-reader observation remains A09; browsers without Web Locks retain editable memory and backup but cannot persist.",
         "latest_delta": "Project-order preservation regression failed on90a0bc0, repaired;82core and13focused Chromium PASS; final-head CI pending."
+      },
+      "integration": {
+        "pr": 59,
+        "head_sha": "e3be322fc66b44bc42e5378f54ce4561db773fe7",
+        "main_sha": "e26381266527d70e348cc5fb49e7c0039db4a3c3",
+        "checks": "Both e2e jobs, both typecheck jobs and filename check passed on final head; human AT remains A09."
       }
     },
     {
@@ -271,8 +277,8 @@
         "FND-47",
         "FND-48"
       ],
-      "status": "ready-for-review",
-      "phase": "docs-and-version-evidence-handback",
+      "status": "integrated",
+      "phase": "tested-contract-published-with-version-limits",
       "thread_id": "01a10e1f-ee49-7bc2-80a6-f9e026155973",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -337,7 +343,13 @@
       },
       "candidate_commit": "074e758d1c98fc32ffd706ca1a65c1d27e019863",
       "implementation_commit": "93d9236c1b86ed90b2cf557af80200bc5d0709b8",
-      "validation": "13 parser cases, four selected browser cases, PowerShell preview/build and required repository checks passed at8a81478; root relays missing receipt after explicit handback. Older runtime and owner originals unavailable."
+      "validation": "13 parser cases, four selected browser cases, PowerShell preview/build and required repository checks passed at8a81478; root relays missing receipt after explicit handback. Older runtime and owner originals unavailable.",
+      "integration": {
+        "pr": 59,
+        "main_sha": "e26381266527d70e348cc5fb49e7c0039db4a3c3",
+        "limitations": "Four tracked examples are not owner originals; dated source and Windows parser/browser/command evidence only; old runtime unavailable."
+      },
+      "follow_up": "Coordinator pinned-parser pair6d48317/e263812 passed four legacy acceptance/current-export rejection cases on Node24.11.1, without storage writes. Source-module only; actual old runtime and owner originals unknown."
     },
     {
       "id": "A05",
@@ -346,16 +358,16 @@
         "FND-22",
         "FND-45"
       ],
-      "status": "queued",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "in-progress",
+      "phase": "guard-and-backup-regression-implementation",
+      "thread_id": "01a10e45-a27a-79b0-bb3f-ab412e285b5d",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
+      "usage": 19619,
+      "base_sha": "e26381266527d70e348cc5fb49e7c0039db4a3c3",
       "branch": "codex/foundry-series-a05-20261005",
       "dependencies": [
         "A02: reviewed concurrent save implementation",
@@ -394,7 +406,16 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a05.md",
       "prompt": "prompts/a05.md",
       "working_token_target": 40000,
-      "budget_reason": "A04 committed its bounded docs at a200000 limit before final bookkeeping;500000 allows a focused coding/test duty without new host setup, while40000 remains a working target and no retry/model escalation is automatic."
+      "budget_reason": "A04 committed its bounded docs at a200000 limit before final bookkeeping;500000 allows a focused coding/test duty without new host setup, while40000 remains a working target and no retry/model escalation is automatic.",
+      "agent_identity": "/root/a05_import_confirmation",
+      "control_surface": "collaboration",
+      "acknowledgement": {
+        "commit": "ee25b4233891f7f3804ae0c0fc8bcf53fb6012a0",
+        "utc": "2026-10-05T22:53:52Z",
+        "published_by": "coordinator",
+        "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a05.md"
+      },
+      "usage_observation": "19619 is the acceptance checkpoint; implementation total pending handback."
     },
     {
       "id": "A06",
@@ -585,7 +606,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a09.md",
       "prompt": "prompts/a09.md",
-      "working_token_target": 20000
+      "working_token_target": 20000,
+      "preparation": "Coordinator prepared evidence/accessibility.md checklist; no tester or spoken-behavior receipt, so external gate remains pending."
     },
     {
       "id": "A10",
@@ -1633,20 +1655,22 @@
       "title": "Ordinary save progress would repeatedly announce during typing",
       "deduplicated_into": "A02 / FND-43",
       "owner": "coordinator after explicit handback",
-      "status": "repaired-awaiting-protected-ci",
+      "status": "verified-source-and-final-ci",
       "reproduction": "Candidate toggles the polite status text between Saving locally and Saved locally for each ordinary edit.",
       "resolution": "Keep progress readable with aria-live off; announce stable recovery transitions in a separate polite region.",
-      "checks": "Chromium MutationObserver sees zero live-region changes during ordinary typing and one persistent message during repeated denied writes; full suite 61 PASS, 3 opt-in SKIP; real AT remains A09."
+      "checks": "Chromium MutationObserver sees zero live-region changes during ordinary typing and one persistent message during repeated denied writes; full suite 61 PASS, 3 opt-in SKIP; real AT remains A09.",
+      "publication": "PR59 final e3be322 merged to e263812; actual human AT remains pending."
     },
     {
       "id": "D03",
       "title": "Stale saves could silently replace an imported project order",
       "deduplicated_into": "A02 / FND-02",
       "owner": "coordinator after handback",
-      "status": "repaired-awaiting-protected-ci",
+      "status": "verified-source-and-final-ci",
       "reproduction": "At reviewed head90a0bc0, persist two projects, save the reversed imported order, then save a field edit from the old order; expected rejection but observed saved=true.",
       "resolution": "Compare project arrays in their original order while ignoring updatedAt alone.",
-      "checks": "New core regression reproduced failure before fix; final82core PASS and13focused browser cases PASS. Older full61-case browser result is prior-source evidence; final-head CI pending."
+      "checks": "New core regression reproduced failure before fix; final82core PASS and13focused browser cases PASS. Older full61-case browser result is prior-source evidence; final-head CI pending.",
+      "publication": "PR59 final e3be322 merged to e263812; actual human AT remains pending."
     }
   ],
   "replacement_worker_slots": 4,
