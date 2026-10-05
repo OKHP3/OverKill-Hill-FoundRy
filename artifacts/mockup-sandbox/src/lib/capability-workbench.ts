@@ -362,10 +362,14 @@ function revisionId(): string {
   return `${Date.now()}-${createId()}`;
 }
 
-/** Save only when the tab's baseline still matches persisted content. */
+/** Save only when the tab's baseline still matches persisted content.
+ * Replacement imports retain the current draft as failureWorkspace until a
+ * readback-verified replacement succeeds. Ordinary edits retain their candidate.
+ */
 export function saveCapabilityWorkspaceRevisionAware(
   workspace: CapabilityWorkspace,
   baseWorkspace?: CapabilityWorkspace,
+  failureWorkspace: CapabilityWorkspace = workspace,
 ): CapabilitySaveResult {
   let safe: CapabilityWorkspace;
   try {
@@ -375,7 +379,7 @@ export function saveCapabilityWorkspaceRevisionAware(
   }
   try {
     if (typeof localStorage === "undefined") {
-      memoryWorkspace = cloneWorkspace(safe);
+      memoryWorkspace = cloneWorkspace(failureWorkspace);
       unsavedInMemory = true;
       return { saved: false, workspace: safe };
     }
@@ -402,7 +406,7 @@ export function saveCapabilityWorkspaceRevisionAware(
           authoritativeSerialized: previous,
           competingSerialized: JSON.stringify(safe),
         };
-        memoryWorkspace = cloneWorkspace(safe);
+        memoryWorkspace = cloneWorkspace(failureWorkspace);
         unsavedInMemory = true;
         return { saved: false, workspace: safe, conflict };
       }
@@ -416,7 +420,7 @@ export function saveCapabilityWorkspaceRevisionAware(
           authoritativeSerialized: previous,
           competingSerialized: JSON.stringify(safe),
         };
-        memoryWorkspace = cloneWorkspace(safe);
+        memoryWorkspace = cloneWorkspace(failureWorkspace);
         unsavedInMemory = true;
         return { saved: false, workspace: safe, conflict };
       }
@@ -434,7 +438,7 @@ export function saveCapabilityWorkspaceRevisionAware(
       [CAPABILITY_REVISION_FIELD]: nextRevision,
     });
     if (byteLength(serialized) > MAX_CAPABILITY_IMPORT_BYTES) {
-      memoryWorkspace = cloneWorkspace(safe);
+      memoryWorkspace = cloneWorkspace(failureWorkspace);
       unsavedInMemory = true;
       return { saved: false, workspace: safe };
     }
@@ -461,7 +465,7 @@ export function saveCapabilityWorkspaceRevisionAware(
         authoritativeSerialized: written ?? "",
         competingSerialized: JSON.stringify(safe),
       };
-      memoryWorkspace = cloneWorkspace(safe);
+      memoryWorkspace = cloneWorkspace(failureWorkspace);
       unsavedInMemory = true;
       return { saved: false, workspace: safe, conflict };
     }
@@ -470,7 +474,7 @@ export function saveCapabilityWorkspaceRevisionAware(
     unsavedInMemory = false;
     return { saved: true, workspace: safe };
   } catch {
-    memoryWorkspace = cloneWorkspace(safe);
+    memoryWorkspace = cloneWorkspace(failureWorkspace);
     unsavedInMemory = true;
     return { saved: false, workspace: safe };
   }

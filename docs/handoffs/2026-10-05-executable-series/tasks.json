@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T23:04:38.347770+00:00",
+  "updated_at": "2026-10-05T23:22:00.208164+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -358,15 +358,15 @@
         "FND-22",
         "FND-45"
       ],
-      "status": "in-progress",
-      "phase": "guard-and-backup-regression-implementation",
+      "status": "ready-for-review",
+      "phase": "central-validation-passed-protected-publication-pending",
       "thread_id": "01a10e45-a27a-79b0-bb3f-ab412e285b5d",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": 19619,
+      "usage": "unknown after acceptance-only goal completed at19619; implementation usage not exposed",
       "base_sha": "e26381266527d70e348cc5fb49e7c0039db4a3c3",
       "branch": "codex/foundry-series-a05-20261005",
       "dependencies": [
@@ -415,7 +415,15 @@
         "published_by": "coordinator",
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a05.md"
       },
-      "usage_observation": "19619 is the acceptance checkpoint; implementation total pending handback."
+      "usage_observation": "19619 is the acceptance checkpoint; implementation total pending handback.",
+      "candidate_commit": "4202a45cf7e4c53897221f4e887b9f311377260d",
+      "handoff_commit": "1fb2d80560f9421ecbf4b0cdf5efd68b99c8075d",
+      "coordinator_source_commit": "fcd4df2",
+      "validation": {
+        "coordinator": "82 core PASS; full workspace typecheck PASS;11 focused Chromium PASS, final6 import cases PASS; governance/filename/whitespace PASS",
+        "limits": "Actual AT remains A09; cross-origin transfer A07; full final-head protected CI required",
+        "changes_after_handback": "Actual saved bytes/revision separated from live draft and import; failed imports retain prior memory; current-backup escape is inside confirmation; queued obsolete writers invalidated on successful replacement"
+      }
     },
     {
       "id": "A06",
@@ -429,7 +437,7 @@
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 200000,
+      "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -478,7 +486,7 @@
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 200000,
+      "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -486,7 +494,7 @@
       "dependencies": [
         "A04: field/version contract",
         "A05 and A06: candidate frozen; original backups preserved",
-        "A06: completed duty and acknowledged transfer; new goal within cumulative400000 allocation"
+        "A06: completed duty and acknowledged transfer; new goal within cumulative1000000 allocation"
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/origin-transfer.md",
@@ -527,7 +535,7 @@
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 200000,
+      "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -1671,14 +1679,34 @@
       "resolution": "Compare project arrays in their original order while ignoring updatedAt alone.",
       "checks": "New core regression reproduced failure before fix; final82core PASS and13focused browser cases PASS. Older full61-case browser result is prior-source evidence; final-head CI pending.",
       "publication": "PR59 final e3be322 merged to e263812; actual human AT remains pending."
+    },
+    {
+      "id": "D04",
+      "title": "Import recovery mislabeled current draft as saved authority and lost its exact revision",
+      "deduplicated_into": "A05 / FND-22",
+      "owner": "coordinator after explicit handback",
+      "status": "repaired-local-protected-ci-pending",
+      "reproduction": "Normal storage event updates clean tab after confirmation opens; candidate4202a45 export uses constant import-confirmation-current and omits saved revision bytes. Controlled case failed before correction.",
+      "resolution": "Separate import recovery schema records actual persisted bytes/revision or unavailable/unvalidated status, current draft and imported snapshot. Current snapshot is refreshed at download.",
+      "checks": "6 final import cases and5 concurrency cases PASS; sourcefcd4df2; real AT not claimed."
+    },
+    {
+      "id": "D05",
+      "title": "Denied replacement import displaced the prior workspace in module memory",
+      "deduplicated_into": "A05 / FND-22",
+      "owner": "coordinator after explicit handback",
+      "status": "repaired-local-protected-ci-pending",
+      "reproduction": "With original e263812 library, denied import followed immediately by studio/workbench navigation shows Rejected import instead of Prior draft; controlled regression failed. Exact log preserved locally.",
+      "resolution": "Replacement save retains the current draft on failure; ordinary save behavior stays unchanged. Successful replacement invalidates obsolete queued saves under the lock.",
+      "checks": "Final denied-import and lock-wait regressions PASS atfcd4df2. No owner projects used."
     }
   ],
   "replacement_worker_slots": 4,
   "coordinator_tasks": [
     {
-      "status": "implemented",
-      "closure": "Future workers request200000 ceilings and smaller work targets; actual usage remains reported independently",
-      "evidence": "A01 initial get_goal reported budgetLimited at25868 of20000; A03 reported goal budget reached before implementation",
+      "status": "implemented-with-measurement-gap",
+      "closure": "Future workers request200000 ceilings and smaller work targets; actual usage remains reported independently; future whole-duty goals remain active through acceptance-only pause; A05 implementation usage remains unknown rather than retroactively counted",
+      "evidence": "A01 initial get_goal reported budgetLimited at25868 of20000; A03 reported goal budget reached before implementation; A05 marked a500000 goal complete at19619 before implementation, so continuation was not metered by that completed goal",
       "owner": "coordinator",
       "id": "C01",
       "title": "Calibrate setup budgets and verify actual goal controls"

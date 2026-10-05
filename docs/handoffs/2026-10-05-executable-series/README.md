@@ -16,10 +16,10 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A02 | FND-02, FND-43 | Concurrent saves and immediate memory recovery | integrated; AT pending | 1,000,000 | [a02](prompts/a02.md) |
 | A03 | FND-03, FND-21 | Clipboard rejection and controlled copy races | verified source/CI/Pages | 200,000 | [a03](prompts/a03.md) |
 | A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | integrated with version limits | 200,000 | [a04](prompts/a04.md) |
-| A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | in-progress | 500,000 | [a05](prompts/a05.md) |
-| A06 | FND-44 | Exact malformed-source recovery export | queued | 200,000 | [a06](prompts/a06.md) |
-| A07 | FND-25 | Transfer and rollback across actual browser origins | queued | 200,000 | [a07](prompts/a07.md) |
-| A08 | FND-26 | Firefox and WebKit acceptance | queued | 200,000 | [a08](prompts/a08.md) |
+| A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | ready for central publication | 500,000 | [a05](prompts/a05.md) |
+| A06 | FND-44 | Exact malformed-source recovery export | queued | 500,000 | [a06](prompts/a06.md) |
+| A07 | FND-25 | Transfer and rollback across actual browser origins | queued | 500,000 | [a07](prompts/a07.md) |
+| A08 | FND-26 | Firefox and WebKit acceptance | queued | 500,000 | [a08](prompts/a08.md) |
 | A09 | FND-27 | Keyboard and real assistive technology acceptance | external-gate | 200,000 | [a09](prompts/a09.md) |
 | A10 | FND-06, FND-07, FND-08 | Existing-source selection, rights and import parity | external-gate | 200,000 | [a10](prompts/a10.md) |
 | A11 | FND-04, FND-09, FND-46 | Build one source-safe intent-to-use exemplar | queued | 200,000 | [a11](prompts/a11.md) |
@@ -116,3 +116,9 @@ PR59 merged final head `e3be322fc66b44bc42e5378f54ce4561db773fe7` to main `e2638
 A05 is agent `/root/a05_import_confirmation`, actual thread 01a10e45-a27a-79b0-bb3f-ab412e285b5d. Its receipt-only acceptance ee25b4233891f7f3804ae0c0fc8bcf53fb6012a0 was published and explicitly confirmed before source edits. Root prepared pinned dependencies and updated the clean branch to exact published main. Its 500,000-token goal reported 19,619 tokens at the acceptance checkpoint, not final implementation usage. Eight new workers and three earlier reviewers now use eleven slots; the current reuse plan remains at most 30 overall.
 
 The root-prepared [human accessibility checklist](evidence/accessibility.md) is ready for a named tester and actual technology. It contains no observations or passed human steps. A09/A16 remain gated, and unseen-task custody must precede exemplar optimization. Root separately tested a pinned pre-conversion parser against current exports; [the version receipt](evidence/backup-preservation.md) names exact modules and hashes, and keeps older application-runtime and owner-original recovery unknown.
+
+## Import review and goal lifecycle correction
+
+PR60 merged exact d2ecf39 to main12c07b1ae249860321073150c65042ac61bf89f2 after all protected checks passed. A05 returned source4202a45 and final handback1fb2d80. Root reproduced missing authority bytes/revision and failed-import memory replacement, then corrected both under FND22, with six import and five existing concurrency cases passed. A05 is ready for protected publication; its original tooltip assertion and restore claim were strengthened with an actual replace-then-restore case. Sourcefcd4df2 preserves current, imported and actual saved states separately.
+
+A05 prematurely completed its acceptance-only goal at19,619; later implementation usage is unknown. Future prompts configure the whole duty and retain an active goal at the acceptance pause. The A06/A07/A08 ceilings are calibrated to500,000 each, with the same smaller working targets; A06+A07 allocate1,000,000 combined and A08+A24 allocate700,000. Current duty ceilings total7,600,000; the maximum planned individual remains1,450,000. Eleven overall slots are used. No missing usage is invented and no account capacity is reserved.
