@@ -8,7 +8,7 @@
   "coordinator_thread_id": "01a1096a-9ad8-7011-9cc5-25c41ff67308",
   "coordinator_token_ceiling": 20000000,
   "maximum_new_worker_threads": 30,
-  "reserved_new_task_slots": 2,
+  "reserved_new_task_slots": 0,
   "spawned_new_worker_threads": 3,
   "concurrency_limit": 3,
   "task_count": 28,
@@ -21,17 +21,17 @@
       "finding_ids": [
         "FND-01"
       ],
-      "status": "dispatched",
-      "phase": "awaiting-acknowledgement",
-      "thread_id": "01a10de7-0e7d-7f03-a469-dc32649b5b88",
+      "status": "ready",
+      "phase": "replacement-dispatch-pending",
+      "thread_id": null,
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 20000,
+      "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
-      "branch": "codex/foundry-series-a01-20261005",
+      "branch": "codex/foundry-series-a01-r1-20261005",
       "dependencies": [],
       "allowed_files": [
         "docs/foundry-requirements-ledger.md",
@@ -55,7 +55,16 @@
       "retry_bound": "Two failed attempts on the same cause; return exact error and partial patch for escalation. No automatic model escalation or extra agents.",
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a01.md",
-      "prompt": "prompts/a01.md"
+      "prompt": "prompts/a01.md",
+      "previous_workers": [
+        {
+          "thread_id": "01a10de7-0e7d-7f03-a469-dc32649b5b88",
+          "implementation": "none",
+          "reason": "Setup budget exhausted and shared metadata sandbox access unavailable",
+          "goal_token_budget": 20000,
+          "status": "budgetLimited"
+        }
+      ]
     },
     {
       "id": "A02",
@@ -122,17 +131,17 @@
         "FND-03",
         "FND-21"
       ],
-      "status": "dispatched",
-      "phase": "awaiting-acknowledgement",
-      "thread_id": "01a10de7-29df-7fe3-98c3-69a5e9666141",
+      "status": "ready",
+      "phase": "replacement-dispatch-pending",
+      "thread_id": null,
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 30000,
+      "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
-      "branch": "codex/foundry-series-a03-20261005",
+      "branch": "codex/foundry-series-a03-r1-20261005",
       "dependencies": [],
       "allowed_files": [
         "artifacts/mockup-sandbox/src/pages/ExportPackage.tsx",
@@ -164,7 +173,16 @@
       "retry_bound": "Two failed attempts on the same cause; return exact error and partial patch for escalation. No automatic model escalation or extra agents.",
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a03.md",
-      "prompt": "prompts/a03.md"
+      "prompt": "prompts/a03.md",
+      "previous_workers": [
+        {
+          "thread_id": "01a10de7-29df-7fe3-98c3-69a5e9666141",
+          "implementation": "none",
+          "reason": "Setup budget exhausted and shared metadata sandbox access unavailable",
+          "goal_token_budget": 30000,
+          "status": "budgetLimited"
+        }
+      ]
     },
     {
       "id": "A04",
@@ -1454,5 +1472,6 @@
       "prompt": "prompts/a28.md"
     }
   ],
-  "discoveries": []
+  "discoveries": [],
+  "replacement_worker_slots": 2
 }
