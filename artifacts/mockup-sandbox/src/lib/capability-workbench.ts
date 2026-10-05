@@ -81,6 +81,26 @@ const stringFields = [
 let memoryWorkspace: CapabilityWorkspace | null = null;
 let persistedWorkspace: CapabilityWorkspace | null = null;
 let unsavedInMemory = false;
+let rawRecoverySource: string | null = null;
+let rawRecoveryKeyVerified = false;
+
+export interface CapabilityRawRecovery {
+  source: string;
+  recoveryKeyVerified: boolean;
+}
+
+function retainRawRecoverySource(source: string): void {
+  if (rawRecoverySource === null) {
+    rawRecoverySource = source;
+    rawRecoveryKeyVerified = false;
+  }
+}
+
+export function getCapabilityRawRecovery(): CapabilityRawRecovery | null {
+  return rawRecoverySource === null
+    ? null
+    : { source: rawRecoverySource, recoveryKeyVerified: rawRecoveryKeyVerified };
+}
 
 function timestamp(): string {
   return new Date().toISOString();
@@ -285,12 +305,14 @@ export function newProject(kind: CapabilityKind = "skill"): CapabilityProject {
 export function loadCapabilityWorkspace(): {
   workspace: CapabilityWorkspace;
   warning: string;
+  rawRecovery: CapabilityRawRecovery | null;
 } {
   if (unsavedInMemory && memoryWorkspace) {
     return {
       workspace: cloneWorkspace(memoryWorkspace),
       warning:
         "Storage unavailable — changes remain in this tab only. Download a backup before refreshing.",
+      rawRecovery: getCapabilityRawRecovery(),
     };
   }
   try {
@@ -303,8 +325,13 @@ export function loadCapabilityWorkspace(): {
         : blankWorkspace();
       memoryWorkspace = cloneWorkspace(workspace);
       persistedWorkspace = cloneWorkspace(workspace);
-      return { workspace, warning: "" };
+      return {
+        workspace,
+        warning: "",
+        rawRecovery: getCapabilityRawRecovery(),
+      };
     }
+    retainRawRecoverySource(raw);
     if (byteLength(raw) > MAX_CAPABILITY_IMPORT_BYTES) {
       const workspace = memoryWorkspace
         ? cloneWorkspace(memoryWorkspace)
@@ -313,12 +340,16 @@ export function loadCapabilityWorkspace(): {
         workspace,
         warning:
           "The saved workspace is oversized and was left unchanged. A temporary workspace is open.",
+        rawRecovery: getCapabilityRawRecovery(),
       };
     }
     const { workspace } = parseCapabilityWorkspaceStorageValue(raw);
+    // A valid current workspace is not a raw recovery source. Keep a source
+    // captured earlier in this tab so an intentional repair cannot discard it.
+    if (rawRecoverySource === raw) rawRecoverySource = null;
     memoryWorkspace = cloneWorkspace(workspace);
     persistedWorkspace = cloneWorkspace(workspace);
-    return { workspace, warning: "" };
+    return { workspace, warning: "", rawRecovery: getCapabilityRawRecovery() };
   } catch (error) {
     const workspace = memoryWorkspace
       ? cloneWorkspace(memoryWorkspace)
@@ -329,6 +360,7 @@ export function loadCapabilityWorkspace(): {
     return {
       workspace,
       warning: `The saved capability workspace could not be loaded and was left unchanged. A temporary workspace is open. ${detail}`,
+      rawRecovery: getCapabilityRawRecovery(),
     };
   }
 }
@@ -389,12 +421,14 @@ export function saveCapabilityWorkspaceRevisionAware(
     let revision = legacyRevision ?? "legacy-revision";
     if (previous !== null) {
       let remote: CapabilityWorkspace | null = null;
-      try {
-        const stored = parseCapabilityWorkspaceStorageValue(previous);
-        revision = stored.revision ?? revision;
-        remote = stored.workspace;
-      } catch {
-        // The existing recovery path below preserves malformed source exactly.
+      if (previous !== rawRecoverySource) {
+        try {
+          const stored = parseCapabilityWorkspaceStorageValue(previous);
+          revision = stored.revision ?? revision;
+          remote = stored.workspace;
+        } catch {
+          // The existing recovery path below preserves malformed source exactly.
+        }
       }
       if (remote && baseline && !sameCapabilityWorkspaceContent(baseline, remote)) {
         const conflict: CapabilityConflictRecovery = {
@@ -424,12 +458,18 @@ export function saveCapabilityWorkspaceRevisionAware(
         unsavedInMemory = true;
         return { saved: false, workspace: safe, conflict };
       }
-      if (!remote) {
-        // Preserve corrupt source before a deliberate edit replaces the active store.
-        localStorage.setItem(
-          `${CAPABILITY_WORKSPACE_KEY}-recovery-${createId()}`,
-          previous,
-        );
+      if (!remote) retainRawRecoverySource(previous);
+      if (rawRecoverySource === previous && !rawRecoveryKeyVerified) {
+        // Keep an independent local copy when storage permits. A denied or
+        // unverifiable write must not erase the in-memory raw download.
+        try {
+          const recoveryKey = `${CAPABILITY_WORKSPACE_KEY}-recovery-${createId()}`;
+          localStorage.setItem(recoveryKey, rawRecoverySource);
+          rawRecoveryKeyVerified =
+            localStorage.getItem(recoveryKey) === rawRecoverySource;
+        } catch {
+          rawRecoveryKeyVerified = false;
+        }
       }
     }
     const nextRevision = revisionId();
