@@ -70,7 +70,7 @@ test("workbench and studio keep independent projects across history and reload",
     page.getByRole("heading", { name: "Seeded capability", exact: true }),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Open Custom GPT studio →" }).click();
+  await page.getByRole("button", { name: "Open legacy Custom GPT studio →" }).click();
   await expect(
     page.getByRole("heading", { name: /Step 0.*Build Brief/ }),
   ).toBeVisible();

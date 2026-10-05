@@ -1,4 +1,7 @@
-import type { CapabilityProject } from "./capability-workbench.ts";
+import {
+  PORTABILITY_DEFAULTS,
+  type CapabilityProject,
+} from "./capability-workbench.ts";
 
 export type ProjectDiffField = keyof CapabilityProject;
 
@@ -29,20 +32,34 @@ const AUTHORED_FIELDS = [
   "skillRefs",
   "evidence",
   "reviewed",
+  ...(Object.keys(
+    PORTABILITY_DEFAULTS,
+  ) as (keyof typeof PORTABILITY_DEFAULTS)[]),
 ] as const satisfies readonly (keyof CapabilityProject)[];
 
-const METADATA_FIELDS = ["id", "createdAt", "updatedAt"] as const satisfies
-  readonly (keyof CapabilityProject)[];
+const METADATA_FIELDS = [
+  "id",
+  "createdAt",
+  "updatedAt",
+] as const satisfies readonly (keyof CapabilityProject)[];
 
 function changesFor(
   before: CapabilityProject,
   after: CapabilityProject,
   fields: readonly (keyof CapabilityProject)[],
 ): ProjectFieldChange[] {
+  const normalizedBefore = { ...PORTABILITY_DEFAULTS, ...before };
+  const normalizedAfter = { ...PORTABILITY_DEFAULTS, ...after };
   return fields.flatMap((field) =>
-    Object.is(before[field], after[field])
+    Object.is(normalizedBefore[field], normalizedAfter[field])
       ? []
-      : [{ field, before: before[field], after: after[field] }],
+      : [
+          {
+            field,
+            before: normalizedBefore[field],
+            after: normalizedAfter[field],
+          },
+        ],
   );
 }
 

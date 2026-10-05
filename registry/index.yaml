@@ -4,6 +4,9 @@ brand_domain: overkillhill
 last_reviewed: 2026-09-07
 review_owner: Jamie Hill
 review_interval_days: 180
+capability_project_root: capabilities
+capability_migration_contract: docs/portable-skill-foundry.md
+capability_migration_registry: registry/capability-migrations.json
 hosted_capabilities:
   - name: ReFolDec
     type: capability

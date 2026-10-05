@@ -9,6 +9,49 @@ import {
 
 const storeKey = "okh-capability-workspace";
 
+test("convert a GPT into a portable skill and retain unverified plugin and connector plans", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("./");
+  await expect(page).toHaveTitle(/FoundRy Capability Workbench/);
+  await expect(page.getByRole("button", { name: /Skill.*portable SKILL.md/ })).toHaveAttribute("aria-pressed", "true");
+  await page.getByLabel("Capability name", { exact: true }).fill("Source review");
+  const gptBefore = await page.evaluate(() => localStorage.getItem("cgpt-workspace"));
+  const stages = page.getByRole("navigation", { name: "Workbench stages" });
+  await stages.getByRole("button", { name: /Convert & adapt/ }).click();
+  await page.getByLabel("Starting point").selectOption("custom-gpt");
+  await page.getByLabel("Delivery package").selectOption("plugin");
+  await page.getByLabel("Source reference", { exact: true }).fill("Supplied GPT export, 2026-09-27");
+  await page.getByLabel("Source asset inventory").fill("Instructions available; knowledge files missing");
+  await page.getByLabel("Behavior map").fill("Review rubric becomes skill procedure; search becomes adapter");
+  await page.getByLabel("Semantic loss and tests").fill("Retrieval parity unknown; compare fixture results");
+  await page.getByLabel("Target hosts").fill("Claude\nChatGPT/Codex\nOpenClaw\nPerplexity");
+  await page.getByLabel("Tools and permissions").fill("Search API; read access; report unavailable tools");
+  await page.getByLabel("Host compatibility evidence").fill("All hosts untested");
+  await page.reload();
+  await stages.getByRole("button", { name: /Convert & adapt/ }).click();
+  await expect(page.getByLabel("Starting point")).toHaveValue("custom-gpt");
+  await expect(page.getByLabel("Delivery package")).toHaveValue("plugin");
+  await expect(page.getByLabel("Source asset inventory")).toHaveValue("Instructions available; knowledge files missing");
+  await page.getByLabel("Delivery package").selectOption("connector");
+  await stages.getByRole("button", { name: /Package/ }).click();
+  await page.getByRole("button", { name: "adapters/compatibility.json", exact: true }).click();
+  await expect(page.getByLabel("Selected generated file")).toContainText('"installable": false');
+  await expect(page.getByLabel("Selected generated file")).toContainText('"delivery": "connector"');
+  await page.getByRole("button", { name: "skills/source-review/SKILL.md", exact: true }).click();
+  await expect(page.getByLabel("Selected generated file")).toContainText('name: "source-review"');
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download workspace backup", exact: true }).click();
+  const backup = JSON.parse(await readFile((await (await download).path())!, "utf8"));
+  expect(backup.workspace.projects[0].behaviorMap).toContain("skill procedure");
+  expect(await page.evaluate(() => localStorage.getItem("cgpt-workspace"))).toBe(gptBefore);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await stages.getByRole("button", { name: /Convert & adapt/ }).click();
+  await expect(page.getByLabel("Target hosts")).toHaveValue("Claude\nChatGPT/Codex\nOpenClaw\nPerplexity");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
 test("build, persist, inspect, export and restore a capability without touching GPT projects", async ({
   page,
 }) => {
@@ -34,7 +77,7 @@ test("build, persist, inspect, export and restore a capability without touching 
     .getByRole("button", { name: /Software.*local runnable starter/ })
     .click();
   const stages = page.getByRole("navigation", { name: "Workbench stages" });
-  await stages.getByRole("button").nth(1).click();
+  await stages.getByRole("button", { name: /Contract/ }).click();
   await page.getByLabel("Inputs", { exact: true }).fill("JSON source records");
   await page
     .getByLabel("Outputs", { exact: true })
@@ -45,7 +88,7 @@ test("build, persist, inspect, export and restore a capability without touching 
   await page
     .getByLabel("Acceptance criteria", { exact: true })
     .fill("Valid objects show field types; invalid JSON reports an error.");
-  await stages.getByRole("button").nth(2).click();
+  await stages.getByRole("button", { name: /Build/ }).click();
   await page
     .getByLabel("Instructions", { exact: true })
     .fill(
@@ -57,12 +100,12 @@ test("build, persist, inspect, export and restore a capability without touching 
   await page
     .getByLabel("Skillz and canonical references")
     .fill("https://github.com/OKHP3/skillz/tree/7616ccd");
-  await stages.getByRole("button").nth(3).click();
+  await stages.getByRole("button", { name: /Validate/ }).click();
   await page
     .getByLabel("Evidence and validation notes")
     .fill("Design reviewed today. Bespoke system behavior is not yet tested.");
   await page.getByRole("checkbox", { name: /I reviewed this starter/ }).check();
-  await stages.getByRole("button").nth(4).click();
+  await stages.getByRole("button", { name: /Package/ }).click();
   await page
     .getByRole("button", { name: "capability.json", exact: true })
     .click();
@@ -82,7 +125,7 @@ test("build, persist, inspect, export and restore a capability without touching 
   const zipPath = (await (await zipDownload).path())!;
   const archive = JSON.parse(
     execFileSync(
-      "python3",
+      process.platform === "win32" ? "py" : "python3",
       [
         "-c",
         "import zipfile,json,sys; z=zipfile.ZipFile(sys.argv[1]); assert z.testzip() is None; print(json.dumps({'paths':z.namelist(),'package':json.loads(z.read('capability.json'))}))",
@@ -99,7 +142,7 @@ test("build, persist, inspect, export and restore a capability without touching 
     "Evidence inspector — Ω",
   );
   await page.getByLabel("Purpose", { exact: true }).fill("Changed contract");
-  await stages.getByRole("button").nth(3).click();
+  await stages.getByRole("button", { name: /Validate/ }).click();
   await expect(
     page.getByRole("checkbox", { name: /I reviewed this starter/ }),
   ).not.toBeChecked();
@@ -116,14 +159,14 @@ test("build, persist, inspect, export and restore a capability without touching 
   await page
     .getByRole("button", { name: "Replace workspace", exact: true })
     .click();
-  await stages.getByRole("button").nth(0).click();
+  await stages.getByRole("button", { name: /Brief/ }).click();
   await expect(page.getByLabel("Purpose", { exact: true })).toHaveValue(
     "Inspect source records before a system handoff.",
   );
   expect(
     await page.evaluate(() => localStorage.getItem("cgpt-workspace")),
   ).toBe(gptBefore);
-  await page.getByRole("button", { name: "Open Custom GPT studio →" }).click();
+  await page.getByRole("button", { name: "Open legacy Custom GPT studio →" }).click();
   await expect(
     page.getByRole("heading", { name: /Step 0.*Build Brief/ }),
   ).toBeVisible();
@@ -230,8 +273,7 @@ test("mobile workbench stays usable and keeps region labels readable", async ({
     .fill("Mobile capability");
   await page
     .getByRole("navigation", { name: "Workbench stages" })
-    .getByRole("button")
-    .nth(4)
+    .getByRole("button", { name: /Package/ })
     .click();
   await expect(
     page.getByRole("button", { name: "Download starter ZIP" }),
@@ -264,22 +306,22 @@ test("project lifecycle, kind changes and oversized edits preserve a usable work
     .getByRole("button", { name: /Software.*local runnable starter/ })
     .click();
   const stages = page.getByRole("navigation", { name: "Workbench stages" });
-  await stages.getByRole("button").nth(4).click();
+  await stages.getByRole("button", { name: /Package/ }).click();
   await page
     .getByRole("button", { name: "app/index.html", exact: true })
     .click();
   await expect(page.getByLabel("Selected generated file")).toContainText(
     "<!doctype html>",
   );
-  await stages.getByRole("button").nth(0).click();
+  await stages.getByRole("button", { name: /Brief/ }).click();
   await page
     .getByRole("button", { name: /Prompt.*reusable instruction/ })
     .click();
-  await stages.getByRole("button").nth(4).click();
+  await stages.getByRole("button", { name: /Package/ }).click();
   await expect(page.getByLabel("Selected generated file")).toContainText(
     '"schema": "okh-capability-package"',
   );
-  await stages.getByRole("button").nth(0).click();
+  await stages.getByRole("button", { name: /Brief/ }).click();
   await page.getByLabel("Purpose", { exact: true }).fill("x".repeat(40_001));
   await expect(page.getByText(/exceeds the 40000-byte limit/)).toBeVisible();
   await expect(page.getByLabel("Purpose", { exact: true })).toHaveValue("");
