@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   assessCapability,
+  CAPABILITY_WORKSPACE_KEY,
   buildCapabilityFiles,
   buildCapabilityZip,
   createCapabilityBackup,
@@ -22,6 +23,23 @@ import "../capability-workbench.css";
 
 type Stage =
   "brief" | "contract" | "build" | "validate" | "package" | "convert";
+
+type PendingImport = {
+  workspace: Workspace;
+  displayBase: Workspace;
+  persistedBase: Workspace;
+};
+
+type ImportRecovery = {
+  schema: "okh-capability-import-recovery";
+  schemaVersion: 1;
+  persistedRevision: string | null;
+  persistedSnapshot: Workspace | null;
+  persistedSerialized: string | null;
+  storageRead: "read" | "unavailable" | "unvalidated";
+  currentSnapshot: Workspace;
+  importedSnapshot: Workspace;
+};
 
 const STAGES: Array<{
   id: Stage;
@@ -123,13 +141,16 @@ export default function CapabilityWorkbench({
   const [recoveryAnnouncement, setRecoveryAnnouncement] = useState(initial.warning);
   const [conflictRecovery, setConflictRecovery] = useState<ReturnType<typeof saveCapabilityWorkspaceRevisionAware>['conflict']>();
   const [stage, setStage] = useState<Stage>("brief");
-  const [pendingImport, setPendingImport] = useState<Workspace | null>(null);
+  const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
+  const [importApplying, setImportApplying] = useState(false);
+  const [importRecovery, setImportRecovery] = useState<ImportRecovery | null>(null);
   const [importError, setImportError] = useState("");
   const [selectedFile, setSelectedFile] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const importRevision = useRef(0);
   const persistedWorkspace = useRef(initial.workspace);
   const saveQueue = useRef<Promise<void>>(Promise.resolve());
+  const workspaceEpoch = useRef(0);
   const project =
     workspace.projects.find((item) => item.id === workspace.activeId) ||
     workspace.projects[0];
@@ -182,12 +203,15 @@ export default function CapabilityWorkbench({
     setWorkspace(next);
     // Once recovery is needed, keep the same live message while the user types.
     if (!recoveryNeeded) setStorageState("Saving locally…");
+    const epoch = workspaceEpoch.current;
     saveQueue.current = saveQueue.current.catch(() => undefined).then(async () => {
+      if (epoch !== workspaceEpoch.current) return;
       const candidate = workspaceRef.current;
       try {
-        const result = await withCapabilityWorkspaceWriter(() =>
-          saveCapabilityWorkspaceRevisionAware(candidate, persistedWorkspace.current),
-        );
+        const result = await withCapabilityWorkspaceWriter(() => epoch !== workspaceEpoch.current
+          ? null
+          : saveCapabilityWorkspaceRevisionAware(candidate, persistedWorkspace.current));
+        if (!result) return;
         if (result.saved) {
           persistedWorkspace.current = result.workspace;
           if (sameCapabilityWorkspaceContent(workspaceRef.current, candidate)) {
@@ -292,6 +316,14 @@ export default function CapabilityWorkbench({
     if (!file) return;
     event.target.value = "";
     const revision = ++importRevision.current;
+    // Freeze the visible draft and saved baseline while the file is read. A
+    // later confirmation must not silently replace intervening edits.
+    const displayBase = parseCapabilityBackup(
+      createCapabilityBackup(workspaceRef.current),
+    );
+    const persistedBase = parseCapabilityBackup(
+      createCapabilityBackup(persistedWorkspace.current),
+    );
     setPendingImport(null);
     setImportError("");
     if (file.size > MAX_CAPABILITY_BACKUP_BYTES) {
@@ -304,7 +336,11 @@ export default function CapabilityWorkbench({
     reader.onload = () => {
       if (revision !== importRevision.current) return;
       try {
-        setPendingImport(parseCapabilityBackup(String(reader.result)));
+        setPendingImport({
+          workspace: parseCapabilityBackup(String(reader.result)),
+          displayBase,
+          persistedBase,
+        });
         setImportError("");
       } catch (error) {
         setImportError(
@@ -319,6 +355,86 @@ export default function CapabilityWorkbench({
       setImportError("This backup could not be read.");
     };
     reader.readAsText(file);
+  };
+
+  const confirmImport = async () => {
+    if (!pendingImport || importApplying) return;
+    setImportApplying(true);
+    const pending = pendingImport;
+    const captureRecovery = (): ImportRecovery => {
+      const recovery: ImportRecovery = {
+        schema: "okh-capability-import-recovery",
+        schemaVersion: 1,
+        persistedRevision: null,
+        persistedSnapshot: null,
+        persistedSerialized: null,
+        storageRead: "unavailable",
+        currentSnapshot: workspaceRef.current,
+        importedSnapshot: pending.workspace,
+      };
+      try {
+        recovery.persistedSerialized = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
+        recovery.storageRead = "read";
+        if (recovery.persistedSerialized !== null) {
+          try {
+            const stored = parseCapabilityWorkspaceStorageValue(recovery.persistedSerialized);
+            recovery.persistedSnapshot = stored.workspace;
+            recovery.persistedRevision = stored.revision;
+          } catch { recovery.storageRead = "unvalidated"; }
+        }
+      } catch { /* The visible draft and import remain downloadable without storage. */ }
+      return recovery;
+    };
+    try {
+      const result = await withCapabilityWorkspaceWriter(() => {
+        const recovery = captureRecovery();
+        // Catch same-tab edits, even when their save is still queued. The
+        // revision-aware save checks persisted changes under this same lock.
+        if (!sameCapabilityWorkspaceContent(workspaceRef.current, pending.displayBase)) {
+          return {
+            saved: false,
+            workspace: workspaceRef.current,
+            recovery,
+          };
+        }
+        const result = saveCapabilityWorkspaceRevisionAware(
+          pending.workspace,
+          pending.persistedBase,
+          workspaceRef.current,
+        );
+        if (result.saved) {
+          // Obsolete queued saves belong to the replaced workspace. Invalidate
+          // them while holding the lock, before another queued writer can run.
+          workspaceEpoch.current += 1;
+          persistedWorkspace.current = result.workspace;
+          workspaceRef.current = result.workspace;
+          setWorkspace(result.workspace);
+        }
+        return { ...result, recovery: result.saved ? recovery : captureRecovery() };
+      });
+      setPendingImport(null);
+      if (!result.saved) {
+        setImportRecovery(result.recovery);
+        setImportError(
+          "The current workspace changed or could not be saved. The saved state, current draft and imported snapshot are available in import recovery. Download recovery before refreshing or closing.",
+        );
+        return;
+      }
+      setImportRecovery(null);
+      setImportError("");
+      setConflictRecovery(undefined);
+      setRecoveryNeeded(false);
+      setStorageState("Saved locally · imported workspace");
+      setStage("brief");
+    } catch (error) {
+      setPendingImport(null);
+      setImportRecovery(captureRecovery());
+      setImportError(
+        "The current workspace could not be checked. Current and imported snapshots remain downloadable; saved-state availability is recorded in the recovery file. Download recovery before refreshing or closing.",
+      );
+    } finally {
+      setImportApplying(false);
+    }
   };
 
   return (
@@ -490,6 +606,7 @@ export default function CapabilityWorkbench({
         <button
           type="button"
           className="cw-button"
+          title="Download a backup of the current capability workspace"
           onClick={() =>
             triggerDownload(
               "foundry-workspace-backup.json",
@@ -503,6 +620,7 @@ export default function CapabilityWorkbench({
         <button
           type="button"
           className="cw-button"
+          disabled={importApplying}
           onClick={() => inputRef.current?.click()}
         >
           Import backup
@@ -527,19 +645,60 @@ export default function CapabilityWorkbench({
           Import stopped: {importError}
         </p>
       )}
+      {importRecovery && (
+        <button className="cw-button" type="button" onClick={() => triggerDownload(
+          "foundry-import-recovery.json",
+          JSON.stringify({
+            ...importRecovery,
+            currentSnapshot: workspace,
+            currentSerialized: JSON.stringify(workspace),
+            importedSerialized: JSON.stringify(importRecovery.importedSnapshot),
+          }, null, 2),
+          "application/json",
+        )}>
+          Download import recovery
+        </button>
+      )}
       {pendingImport && (
         <section className="cw-confirm" role="alert">
           <div>
             <strong>Replace this workspace?</strong>
             <p>
-              The imported backup has {pendingImport.projects.length} project
-              {pendingImport.projects.length === 1 ? "" : "s"}. Replacing
-              overwrites this browser’s current FoundRy workspace.
+              Replacing affects the {workspace.projects.length} capability
+              project{workspace.projects.length === 1 ? "" : "s"} currently
+              open in this browser and imports {pendingImport.workspace.projects.length}
+              project{pendingImport.workspace.projects.length === 1 ? "" : "s"}.
+              Custom GPT projects are not affected. Download the current backup
+              first if you may want to restore it.
             </p>
+            <div className="cw-fields cw-fields--two">
+              <div>
+                <strong>Current projects</strong>
+                <ul aria-label="Current projects to be replaced">
+                  {workspace.projects.map((item) => (
+                    <li key={item.id}>{titleFor(item)}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <strong>Imported projects</strong>
+                <ul aria-label="Projects in imported backup">
+                  {pendingImport.workspace.projects.map((item) => (
+                    <li key={item.id}>{titleFor(item)}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
+          <button className="cw-button" type="button" onClick={() => triggerDownload(
+            "foundry-current-workspace-backup.json", createCapabilityBackup(workspace), "application/json",
+          )}>
+            Download current backup
+          </button>
           <button
             className="cw-button"
             type="button"
+            disabled={importApplying}
             onClick={() => setPendingImport(null)}
           >
             Keep current
@@ -547,9 +706,9 @@ export default function CapabilityWorkbench({
           <button
             className="cw-button cw-button--danger"
             type="button"
+            disabled={importApplying}
             onClick={() => {
-              replaceWorkspace(pendingImport);
-              setPendingImport(null);
+              void confirmImport();
             }}
           >
             Replace workspace
