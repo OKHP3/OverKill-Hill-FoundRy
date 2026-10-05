@@ -22,9 +22,11 @@ if len(ids) != len(set(ids)):
 if len(findings) != len(set(findings)) or set(findings) != expected:
     errors.append('Review finding coverage is incomplete or duplicated')
 planned_workers = sum(not t.get('reuse_worker_of') for t in tasks)
-if planned_workers + ledger['reserved_new_task_slots'] + ledger.get('replacement_worker_slots', 0) > ledger['maximum_new_worker_threads']:
+existing_reviewers = len(ledger.get('preexisting_review_agents', []))
+planned_total = planned_workers + ledger['reserved_new_task_slots'] + ledger.get('replacement_worker_slots', 0) + existing_reviewers
+if planned_total > ledger['maximum_new_worker_threads']:
     errors.append('Planned workers exceed the owner ceiling')
-if ledger['spawned_new_worker_threads'] > 30:
+if ledger['spawned_new_worker_threads'] + existing_reviewers > 30:
     errors.append('Spawned workers exceed the owner ceiling')
 known_workers = {t['thread_id'] for t in tasks if t['thread_id']}
 known_workers.update(worker['thread_id'] for t in tasks for worker in t.get('previous_workers', []))
@@ -43,6 +45,7 @@ for t in tasks:
 allocations = Counter()
 for t in tasks:
     allocations[t.get('reuse_worker_of', t['id'])] += t['goal_token_budget']
+    allocations[t.get('reuse_worker_of', t['id'])] += sum(t.get('additional_goal_allocations', []))
     for worker in t.get('previous_workers', []):
         allocations[worker['thread_id']] += worker['goal_token_budget']
 if any(amount > 2000000 for amount in allocations.values()):
@@ -62,7 +65,8 @@ print(json.dumps(dict(
     validation='FAIL' if errors else 'PASS', errors=errors,
     source_finding_count=len(expected), mapped_finding_count=len(findings),
     planned_tasks=len(tasks), spawned_workers=ledger['spawned_new_worker_threads'],
-    planned_distinct_workers=planned_workers + ledger.get('replacement_worker_slots', 0),
+    preexisting_reviewers=existing_reviewers, total_spawned_and_preexisting=ledger['spawned_new_worker_threads']+existing_reviewers,
+    planned_distinct_workers=planned_total,
     maximum_individual_allocated_goals=max(allocations.values()),
     reserved_slots=ledger['reserved_new_task_slots'], active=[t['id'] for t in active],
     free_worker_slots=capacity, states=dict(Counter(t['status'] for t in tasks)),

@@ -1,0 +1,75 @@
+# A25 — dependency PR review
+
+Review date: 2026-10-05. Coordinator is the sole integration owner. This is a review of the coordinator's refreshed open-PR capture in `.local/dependency-input/pr-{42,50,51,54,55}.json`; checks below are the actual GitHub check rollups in those captures, not checks rerun locally. The reviewed candidate heads are pinned explicitly so later PR updates require a new review.
+
+## Scope and evidence boundary
+
+The refreshed candidate set supplied for this assignment contains PRs 42, 50, 51, 54 and 55. PRs 48 and 49 are absent from that set; their terminal state is not present in these inputs, so this report does not claim they merged or closed. The prepared snapshots cover metadata, changed paths, PR bodies and check rollups. They do not include a fresh state query by this worker.
+
+The current source baseline is `74ffadb447f702065e7912ca9fce5c9e8f36a22d`. PRs 42, 50 and 51 report older base SHAs (`37cb2ea…`, `23b961f…`, and `23b961f…` respectively). Even a successful check on those heads is not evidence against the current baseline. PRs 54 and 55 report the current baseline SHA.
+
+## Per-PR decisions
+
+### PR 42 — `@vitejs/plugin-react` 5.2.0 → 6.1.1
+
+- Exact head: `027881927d63eb721757aa6ec7a1d5208c480297`; captured base: `37cb2ea40deffc751926e27208b17eef139b9f95`.
+- **Decision: defer.** The current workspace catalog pins Vite `^7.3.6`; the exact 6.1.1 package declares Vite `^8.0.0` as a peer. Its 6.0.0 release also drops Vite 7 and earlier and removes the plugin's Babel-related options. This is a coordinated Vite-major migration, not a standalone plugin refresh. [6.1.1 package metadata](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/package.json), [plugin React changelog](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/CHANGELOG.md).
+- Captured CI: two `e2e` failures ([run 35572671708](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/35572671708), [run 35572668304](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/35572668304)); typecheck and audit checks passed in both matrices; filename check passed. The Mermaid sync check was skipped. Failure cause is not included in the capture and remains unknown.
+- Next evidence: only reconsider as part of an explicitly scoped Vite 8 migration. Rebase/update to the current main SHA, resolve the Vite/plugin peer range, review config for removed Babel APIs, then require fresh build, typecheck, audit and browser checks. Do not merge this head as-is.
+
+### PR 50 — `react-day-picker` 9.14.0 → 10.0.1
+
+- Exact head: `b3b8ed5da5d57eb2e9825ce776b406eb7096f32d`; captured base: `23b961f456324d7281ea8912eec983341882b3d0`.
+- **Decision: defer.** This is a major API/style migration. The official v10 guide removes deprecated v9 compatibility keys; specifically `table` becomes `month_grid`. The repository has five copied Calendar wrappers that still set `table`, including the custom GPT Creator wrapper. The old `react-day-picker` package name remains available for compatibility, but the guide recommends `@daypicker/react` for upgraded code. [DayPicker v10 migration](https://daypicker.dev/upgrading).
+- Captured CI: both `e2e` and both `typecheck` checks failed; both audit checks and the filename check passed. ([e2e run 1](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391186274), [e2e run 2](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391182826); [typecheck run 1](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391186374), [typecheck run 2](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391182779)). Failure causes are not in the capture. The base is also older than the current main SHA.
+- Next evidence: migrate every affected wrapper/API/style key in a scoped change, then run install with the frozen lockfile, typecheck, Calendar-focused browser coverage and the full relevant e2e matrix on current main. Current failed checks already block acceptance.
+
+### PR 51 — `marked` 15.0.12 → 18.0.14
+
+- Exact head: `33e8ecb3040419913a1aefad626bee189172c89e`; captured base: `23b961f456324d7281ea8912eec983341882b3d0`.
+- **Decision: conditionally accept the update for integration after rebasing and refreshing required checks.** It crosses three majors, but local source search found only the `marked.parse(...)` call in the custom GPT Creator's GitHub-Markdown export e2e test; Marked's current API documentation still documents that import/call shape. This narrows the migration surface but does not replace the fixture regression. [Marked parse API](https://marked.js.org/using_advanced#the-parse-function).
+- Captured CI on the old base: both e2e, both typecheck, both audit and filename checks succeeded. ([e2e run 1](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391213147), [e2e run 2](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391208198); [typecheck run 1](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391213136), [typecheck run 2](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/36391208005)). The Mermaid sync check was skipped. Refresh the head against current main and rerun before treating these as acceptance evidence.
+- Security note: the upstream high-severity tokenizer OOM advisory affects Marked 18.0.0 and 18.0.1 and lists 18.0.2 as patched. Candidate 18.0.14 is beyond the affected range; the captured audit jobs also passed. [Upstream GHSA-6v9c-7cg6-27q7](https://github.com/markedjs/marked/security/advisories/GHSA-6v9c-7cg6-27q7). Marked does not sanitize generated HTML; preserve an explicit sanitizer boundary anywhere parsed output can reach a browser sink. [Marked security guidance](https://marked.js.org/#security).
+- Focused evidence: after rebase, rerun the GitHub-Markdown fixture/browser regression and typecheck. Confirm the generated HTML contract (links, GFM tables/task lists, code blocks and raw HTML behavior) against the test fixture. No local candidate tests were run in this review.
+
+### PR 54 — grouped npm minor updates (4 packages)
+
+- Exact head: `024f82f9d7b2ae225a06be1c4e9921a122809bfe`; captured base: `74ffadb447f702065e7912ca9fce5c9e8f36a22d`.
+- Updates: `react-hook-form` 7.88.0→7.89.0, `wouter` 3.11.0→3.13.0, `orval` 8.33.0→8.39.0, and `@tanstack/react-query` 5.102.8→5.104.0. These stay within their current major lines. Upstream notes for React Hook Form 7.89.0 list a peer-type addition and validation/state fixes; Orval 8.39.0 contains generator features and fixes; TanStack Query's 5.104.0 core entry is a minor change. [React Hook Form changelog](https://github.com/react-hook-form/react-hook-form/blob/master/CHANGELOG.md), [Orval 8.39.0 release](https://github.com/orval-labs/orval/releases), [TanStack Query changelog](https://github.com/TanStack/query/blob/main/packages/query-core/CHANGELOG.md).
+- **Decision: defer the grouped PR pending an Orval output check.** `lib/api-spec` exposes a `codegen` script that runs Orval and then library typecheck. The captured PR changes the generator version but has no generated-code paths, and its successful generic checks do not establish whether output remains stable or needs regeneration.
+- Captured CI at the current base: both e2e, both typecheck, both audit and filename checks succeeded ([e2e run 37277456820](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37277456820), [e2e run 37277448804](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37277448804); [typecheck run 37277456863](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37277456863), [typecheck run 37277448699](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37277448699)). The Mermaid sync check was skipped. The captured run date is 2026-10-05; Orval 8.39.0 was released 2026-09-30, so the three-day Dependabot cooldown and one-day pnpm release-age gates had elapsed for that newest update. [Orval release date and notes](https://github.com/orval-labs/orval/releases).
+- Next evidence: in an isolated candidate checkout, run `pnpm --filter @workspace/api-spec run codegen`; inspect and explain any generated diff, then require library typecheck and fresh e2e/audit checks. Preserve the frozen lockfile and release-age policy.
+
+### PR 55 — grouped npm patch updates (6 packages)
+
+- Exact head: `330c7fd0e9f11a30e1225624fe954142ee0cb94a`; captured base: `74ffadb447f702065e7912ca9fce5c9e8f36a22d`.
+- Updates: `prettier` 3.9.6→3.9.9, `pg` 8.23.0→8.23.1, `drizzle-kit` 0.31.10→0.31.11, `@types/node` 26.6.2→26.6.4, `drizzle-orm` 0.45.2→0.45.3, and `tsx` 4.23.13→4.23.15. All are patch-level within the existing major/minor lines. Drizzle Kit's release adds CLI/SDK capabilities; this workspace's existing database scripts remain the key behavior to protect. [Drizzle release notes](https://github.com/drizzle-team/drizzle-orm/releases), [tsx 4.23.15 release](https://github.com/privatenumber/tsx/releases).
+- **Decision: acceptable candidate for coordinator integration, subject to a fresh exact-head check and focused database smoke.** Captured CI at the current base reports both e2e, both typecheck, both audit and filename checks successful ([e2e run 37277469129](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37277469129), [e2e run 37277464498](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37277464498)). The Mermaid sync check was skipped. The lockfile and all changed manifests are included; e2e/typecheck workflows install with `pnpm install --frozen-lockfile`, so those green runs provide lockfile consistency evidence. The one-day pnpm minimum-release-age policy remains configured and was not edited.
+- Focused evidence before merge: run the non-database `drizzle-kit check` against the repository's migration history and a database package test/typecheck using a disposable test database or mock. Do not use `push`, `migrate`, or production credentials as a dependency smoke test. The upstream docs define `drizzle-kit check` as checking consistency of generated migration history. [Drizzle Kit check](https://orm.drizzle.team/docs/drizzle-kit-check).
+
+## Checks and limitations
+
+- No dependencies were installed and no local test/build command was run. This review checkout is a prepared metadata snapshot and must not be used for package or lockfile mutation.
+- Required evidence to refresh before integration: current open/merged state, exact PR head, fresh required CI checks on current main, and then the focused checks named above. Captured CI result links are historical evidence for the listed SHA/base only.
+- The candidate set is not a blanket latest-version upgrade. PRs 42 and 50 remain deferred for concrete incompatibility and failed CI; PR 54 is deferred for an unverified code-generation boundary; PR 51 is conditionally acceptable after a fresh current-base run; PR 55 is acceptable for coordinator review with the database smoke noted above.
+
+## Coordinator verification addendum - October 5, 2026
+
+Root refreshed all seven PR states after receiving this draft. PRs 42, 50, 51,
+54 and 55 remain open at the exact heads above. PR 48 closed without merge at
+2026-10-05T07:23:09Z; PR 49 closed without merge at 2026-10-05T07:22:56Z. This
+resolves the earlier capture's unknown terminal states without claiming this
+worker queried them.
+
+The original plugin metadata link follows moving upstream main, which now shows
+6.1.2. Root separately fetched the [immutable npm registry metadata for
+6.1.1](https://registry.npmjs.org/@vitejs%2fplugin-react/6.1.1), confirming its
+`vite: ^8.0.0` peer range. That version-specific observation supports the deferral;
+the moving main link alone does not pin the candidate version. Root also checked
+the linked DayPicker v10 migration and Marked advisory directly.
+
+The database smoke is conditional on real migration history being present. If
+this scaffold has no generated migrations, record that limitation and use an
+appropriate config/typecheck/disposable-database check. Do not invent migration
+history or use production credentials. These remain proposed focused checks;
+no dependency update has been merged by this task.

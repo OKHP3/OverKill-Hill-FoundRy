@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T21:38:01.8490331Z",
+  "updated_at": "2026-10-05T22:08:14.431234+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -9,7 +9,7 @@
   "coordinator_token_ceiling": 20000000,
   "maximum_new_worker_threads": 30,
   "reserved_new_task_slots": 0,
-  "spawned_new_worker_threads": 6,
+  "spawned_new_worker_threads": 7,
   "concurrency_limit": 3,
   "task_count": 28,
   "finding_count": 48,
@@ -21,17 +21,17 @@
       "finding_ids": [
         "FND-01"
       ],
-      "status": "dispatched",
-      "phase": "waiting-on-host-approval",
-      "thread_id": "01a10ded-3187-7961-9fc5-881e14ad91d5",
+      "status": "accepted",
+      "phase": "published-replacement-implementation-authorized",
+      "thread_id": "/root/a01_requirements",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
-      "branch": "codex/foundry-series-a01-r1-20261005",
+      "base_sha": "aaf41daf882f14907323f34aa9325f05f354285f",
+      "branch": "codex/foundry-series-a01-r2-20261005",
       "dependencies": [],
       "allowed_files": [
         "docs/foundry-requirements-ledger.md",
@@ -64,9 +64,23 @@
           "goal_token_budget": 20000,
           "status": "budgetLimited",
           "actual_tokens_used": 25868
+        },
+        {
+          "thread_id": "01a10ded-3187-7961-9fc5-881e14ad91d5",
+          "goal_token_budget": 200000,
+          "implementation": "none; clean clone and all queued messages preserved; no receipt accepted",
+          "status": "dispatch-withdrawn",
+          "reason": "Host SSH approval prevented acknowledgement; replacement assigned separate clone via in-session collaboration"
         }
       ],
-      "working_token_target": 20000
+      "working_token_target": 20000,
+      "control_surface": "collaboration",
+      "acknowledgement": {
+        "commit": "3355d76af06a2b0febfebad99c2b99f782127df7",
+        "utc": "2026-10-05T22:12:39Z",
+        "published_by": "coordinator",
+        "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a01.md"
+      }
     },
     {
       "id": "A02",
@@ -75,19 +89,19 @@
         "FND-02",
         "FND-43"
       ],
-      "status": "blocked",
-      "phase": "awaiting-transfer-after-A25",
-      "thread_id": null,
+      "status": "accepted",
+      "phase": "published-transfer-implementation-authorized",
+      "thread_id": "01a10ded-4b33-71e1-abd7-67d454858324",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 200000,
+      "goal_token_budget": 1000000,
       "absolute_token_ceiling": 2000000,
-      "usage": 50653,
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
-      "branch": "codex/foundry-series-a02-20261005",
+      "usage": 33562,
+      "base_sha": "aaf41daf882f14907323f34aa9325f05f354285f",
+      "branch": "codex/foundry-series-a02-r1-20261005",
       "dependencies": [
-        "A25: bounded dependency review handback and goal completion, followed by published file-scope transfer",
+        "A03: clipboard candidate reviewed and receiving thread has completed its preceding goal before published scope transfer",
         "Root prepares preserved A02 partial candidate in writable isolated clone; no new worker thread needed"
       ],
       "allowed_files": [
@@ -124,12 +138,13 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a02.md",
       "prompt": "prompts/a02.md",
       "acknowledgement": {
-        "commit": "cdc8397b643821bcd2eaa5fc32a065e19cc01f2f",
-        "utc": "2026-10-05T21:11:15.5305281Z",
+        "commit": "0e81e8287988dc23ef93c6dad199b3a9f87ce88c",
+        "utc": "2026-10-05T22:07:31Z",
+        "published_by": "coordinator",
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a02.md"
       },
       "working_token_target": 50000,
-      "blocker": "Configured goal budgetLimited; partial library/page/core-test patch preserved, no implementation checks or e2e completed",
+      "blocker": null,
       "previous_workers": [
         {
           "goal_token_budget": 50000,
@@ -144,7 +159,7 @@
           "status": "budgetLimited"
         }
       ],
-      "reuse_worker_of": "A25"
+      "reuse_worker_of": "A03"
     },
     {
       "id": "A03",
@@ -153,8 +168,8 @@
         "FND-03",
         "FND-21"
       ],
-      "status": "in-progress",
-      "phase": "candidate-regression-correction",
+      "status": "ready-for-review",
+      "phase": "focused-checks-passed-awaiting-protected-pr",
       "thread_id": "01a10ded-4b33-71e1-abd7-67d454858324",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -214,12 +229,17 @@
         "limitation": "Initial source edits preceded confirmed publication; receipt now shared before further work"
       },
       "coordinator_review": {
-        "test_sha256": "27cf3179b482c2ab056bd6a687a699cef2f3b0b3134e4af3eca3330e880854e4",
-        "browser": "1 pass/1 failure: ambiguous alert selector; environment startup failure resolved",
-        "source_sha256": "87e96cf28282550169efda5701f1bce5e4957a37a8f79ed1157b684df8b495c3",
+        "test_sha256": "604489013070a3888782d66c05d2032e815f2abf16f1f76f4b8e52301c35f5b8",
+        "browser": "PASS: 4 focused Chromium cases (9.6 seconds), including reproduced stale rejection repaired by root",
+        "source_sha256": "beb87ead6fba9aba309136acf2e5156fa224102a0e246b30e2c75f62dee63adc",
         "evidence": "docs/handoffs/2026-10-05-executable-series/coordinator-review.md",
-        "typecheck": "PASS on frozen uncommitted candidate"
-      }
+        "typecheck": "PASS final Creator typecheck and build; prior workspace build and75core/55browser cases passed on preceding source",
+        "limitation": "Mocked Chromium evidence; real native clipboard and human assistive technology remain unverified"
+      },
+      "additional_goal_allocations": [
+        200000,
+        50000
+      ]
     },
     {
       "id": "A04",
@@ -241,7 +261,8 @@
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
       "branch": "codex/foundry-series-a04-20261005",
       "dependencies": [
-        "A01: requirements ledger; original preservation inventory may start immediately"
+        "A01: requirements ledger; original preservation inventory may start immediately",
+        "A03: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
       ],
       "allowed_files": [
         "docs/workbench-backup-migration-design.md",
@@ -282,7 +303,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a04.md",
       "prompt": "prompts/a04.md",
-      "working_token_target": 25000
+      "working_token_target": 25000,
+      "reuse_worker_of": "A03"
     },
     {
       "id": "A05",
@@ -408,7 +430,8 @@
       "branch": "codex/foundry-series-a07-20261005",
       "dependencies": [
         "A04: field/version contract",
-        "A05 and A06: candidate frozen; original backups preserved"
+        "A05 and A06: candidate frozen; original backups preserved",
+        "A06: completed duty and acknowledged transfer; new goal within cumulative400000 allocation"
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/origin-transfer.md",
@@ -434,7 +457,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a07.md",
       "prompt": "prompts/a07.md",
-      "working_token_target": 30000
+      "working_token_target": 30000,
+      "reuse_worker_of": "A06"
     },
     {
       "id": "A08",
@@ -1104,7 +1128,8 @@
       "branch": "codex/foundry-series-a20-20261005",
       "dependencies": [
         "A13: reference dependency evidence; need established",
-        "Read-only Skillz reference; no sibling writes"
+        "Read-only Skillz reference; no sibling writes",
+        "A25: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/skillz-selection-decision.md",
@@ -1129,7 +1154,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a20.md",
       "prompt": "prompts/a20.md",
-      "working_token_target": 15000
+      "working_token_target": 15000,
+      "reuse_worker_of": "A25"
     },
     {
       "id": "A21",
@@ -1299,7 +1325,8 @@
       "branch": "codex/foundry-series-a24-20261005",
       "dependencies": [
         "Owner completes visible authentication if required; never bypass passkey",
-        "Root authorizes specific release SHA before runtime/production operations; existing synchronization job checkpoint first"
+        "Root authorizes specific release SHA before runtime/production operations; existing synchronization job checkpoint first",
+        "A01: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/release-receipts.md",
@@ -1331,7 +1358,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a24.md",
       "prompt": "prompts/a24.md",
-      "working_token_target": 20000
+      "working_token_target": 20000,
+      "reuse_worker_of": "A01"
     },
     {
       "id": "A25",
@@ -1339,8 +1367,8 @@
       "finding_ids": [
         "FND-37"
       ],
-      "status": "in-progress",
-      "phase": "dependency-review",
+      "status": "ready-for-review",
+      "phase": "report-handback-budgetLimited",
       "thread_id": "01a10dfc-1df9-7000-a689-cae3ce696ea3",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -1383,6 +1411,14 @@
         "commit": "6a9eac55365558612aaf1472393efc539f5a6005",
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a25.md",
         "published_by": "coordinator"
+      },
+      "blocker": "Review report returned at goal budget limit; parent validation/publication pending before any objective completion or reuse",
+      "reviewed_report": "docs/handoffs/2026-10-05-executable-series/evidence/dependency-prs.md",
+      "coordinator_review": {
+        "checked_at": "2026-10-05T22:08:14.431234+00:00",
+        "result": "Report reviewed; exact open heads refreshed; closed PR48/49 and immutable plugin metadata resolved in dated addendum",
+        "publication": "First-results PR pending",
+        "limitation": "No dependency update or candidate-local compatibility tests performed; all conditional merge gates retained"
       }
     },
     {
@@ -1540,8 +1576,19 @@
       "working_token_target": 20000
     }
   ],
-  "discoveries": [],
-  "replacement_worker_slots": 3,
+  "discoveries": [
+    {
+      "id": "D01",
+      "title": "Delayed clipboard rejection after project change mislabels failure",
+      "deduplicated_into": "A03 / FND-21",
+      "owner": "coordinator after handback",
+      "status": "repaired-awaiting-protected-ci",
+      "reproduction": "Controlled clipboard promise rejects after cgpt-workspace.activeProjectId changes; expected no copy-error, observed one alert",
+      "resolution": "Use same project/content/format/request predicate for both success and rejection",
+      "checks": "Reproduced failure before fix;4focusedChromium cases pass;Creator typecheck/build pass; final exact-head CI pending"
+    }
+  ],
+  "replacement_worker_slots": 4,
   "coordinator_tasks": [
     {
       "status": "implemented",
@@ -1559,5 +1606,10 @@
       "id": "C02",
       "title": "Centralize authorized Git publication and installed-environment validation"
     }
+  ],
+  "preexisting_review_agents": [
+    "/root/equilibrium_evidence",
+    "/root/equilibrium_outcome",
+    "/root/equilibrium_safety"
   ]
 }
