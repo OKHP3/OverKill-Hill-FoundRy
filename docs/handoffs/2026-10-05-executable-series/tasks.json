@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T22:37:51.574435+00:00",
+  "updated_at": "2026-10-05T22:46:02.736195+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -172,7 +172,8 @@
       "validation": {
         "coordinator": "81 core tests PASS; full workspace typecheck/build PASS; 61 Chromium PASS, 3 opt-in fixture-refresh SKIP",
         "changes_after_handback": "Stable recovery live announcement and exact-byte retention assertion; two existing regression selectors updated to the new accessible status. Required final-head CI pending.",
-        "limitations": "Real screen-reader observation remains A09; browsers without Web Locks retain editable memory and backup but cannot persist."
+        "limitations": "Real screen-reader observation remains A09; browsers without Web Locks retain editable memory and backup but cannot persist.",
+        "latest_delta": "Project-order preservation regression failed on90a0bc0, repaired;82core and13focused Chromium PASS; final-head CI pending."
       }
     },
     {
@@ -270,15 +271,15 @@
         "FND-47",
         "FND-48"
       ],
-      "status": "in-progress",
-      "phase": "backup-contract-and-windows-evidence",
+      "status": "ready-for-review",
+      "phase": "docs-and-version-evidence-handback",
       "thread_id": "01a10e1f-ee49-7bc2-80a6-f9e026155973",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
+      "usage": "unknown actual; configured 200000 goal reached its limit after committed deliverables",
       "base_sha": "8a8147845d65730deb9d4f59e5e73055e6d65db7",
       "branch": "codex/foundry-series-a04-20261005",
       "dependencies": [
@@ -333,7 +334,10 @@
         "utc": "2026-10-05T22:24:08Z",
         "published_by": "coordinator",
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a04.md"
-      }
+      },
+      "candidate_commit": "074e758d1c98fc32ffd706ca1a65c1d27e019863",
+      "implementation_commit": "93d9236c1b86ed90b2cf557af80200bc5d0709b8",
+      "validation": "13 parser cases, four selected browser cases, PowerShell preview/build and required repository checks passed at8a81478; root relays missing receipt after explicit handback. Older runtime and owner originals unavailable."
     },
     {
       "id": "A05",
@@ -348,7 +352,7 @@
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 200000,
+      "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -389,7 +393,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a05.md",
       "prompt": "prompts/a05.md",
-      "working_token_target": 40000
+      "working_token_target": 40000,
+      "budget_reason": "A04 committed its bounded docs at a200000 limit before final bookkeeping;500000 allows a focused coding/test duty without new host setup, while40000 remains a working target and no retry/model escalation is automatic."
     },
     {
       "id": "A06",
@@ -1158,7 +1163,8 @@
       "dependencies": [
         "A13: reference dependency evidence; need established",
         "Read-only Skillz reference; no sibling writes",
-        "A25: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
+        "A25: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer",
+        "Reuse A05 only after completed duty/goal; A25 goal reached its limit and will not be silently reset."
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/skillz-selection-decision.md",
@@ -1184,7 +1190,7 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a20.md",
       "prompt": "prompts/a20.md",
       "working_token_target": 15000,
-      "reuse_worker_of": "A25"
+      "reuse_worker_of": "A05"
     },
     {
       "id": "A21",
@@ -1355,7 +1361,8 @@
       "dependencies": [
         "Owner completes visible authentication if required; never bypass passkey",
         "Root authorizes specific release SHA before runtime/production operations; existing synchronization job checkpoint first",
-        "A01: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
+        "A01: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer",
+        "Reuse A08 only after its duty and goal are complete; A01/A04 host goal reached its limit, so no reset or assumed resume."
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/release-receipts.md",
@@ -1388,7 +1395,7 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a24.md",
       "prompt": "prompts/a24.md",
       "working_token_target": 20000,
-      "reuse_worker_of": "A01"
+      "reuse_worker_of": "A08"
     },
     {
       "id": "A25",
@@ -1630,6 +1637,16 @@
       "reproduction": "Candidate toggles the polite status text between Saving locally and Saved locally for each ordinary edit.",
       "resolution": "Keep progress readable with aria-live off; announce stable recovery transitions in a separate polite region.",
       "checks": "Chromium MutationObserver sees zero live-region changes during ordinary typing and one persistent message during repeated denied writes; full suite 61 PASS, 3 opt-in SKIP; real AT remains A09."
+    },
+    {
+      "id": "D03",
+      "title": "Stale saves could silently replace an imported project order",
+      "deduplicated_into": "A02 / FND-02",
+      "owner": "coordinator after handback",
+      "status": "repaired-awaiting-protected-ci",
+      "reproduction": "At reviewed head90a0bc0, persist two projects, save the reversed imported order, then save a field edit from the old order; expected rejection but observed saved=true.",
+      "resolution": "Compare project arrays in their original order while ignoring updatedAt alone.",
+      "checks": "New core regression reproduced failure before fix; final82core PASS and13focused browser cases PASS. Older full61-case browser result is prior-source evidence; final-head CI pending."
     }
   ],
   "replacement_worker_slots": 4,

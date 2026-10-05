@@ -231,9 +231,7 @@ export function sameCapabilityWorkspaceContent(
   const comparable = (workspace: CapabilityWorkspace) => ({
     version: workspace.version,
     activeId: workspace.activeId,
-    projects: [...workspace.projects]
-      .sort((a, b) => a.id.localeCompare(b.id))
-      .map(({ updatedAt: _updatedAt, ...project }) => project),
+    projects: workspace.projects.map(({ updatedAt: _updatedAt, ...project }) => project),
   });
   return JSON.stringify(comparable(left)) === JSON.stringify(comparable(right));
 }

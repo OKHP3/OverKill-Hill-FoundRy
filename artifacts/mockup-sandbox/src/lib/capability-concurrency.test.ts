@@ -91,6 +91,28 @@ test("same-field stale writes keep authority and export both inspectable snapsho
   }
 });
 
+test("a stale save cannot silently replace imported project order", () => {
+  const storage = installStorage();
+  try {
+    const base = makeWorkspace();
+    base.projects.push(newProject());
+    assert.equal(saveCapabilityWorkspaceRevisionAware(base).saved, true);
+    const reordered = structuredClone(base);
+    reordered.projects.reverse();
+    assert.equal(saveCapabilityWorkspaceRevisionAware(reordered, base).saved, true);
+    const authorityBytes = storage.values.get(CAPABILITY_WORKSPACE_KEY);
+    const stale = structuredClone(base);
+    stale.projects[0].purpose = "A later edit from the stale order";
+    const result = saveCapabilityWorkspaceRevisionAware(stale, base);
+    assert.equal(result.saved, false);
+    assert.equal(storage.values.get(CAPABILITY_WORKSPACE_KEY), authorityBytes);
+    assert.deepEqual(result.conflict?.authoritativeSnapshot.projects.map(p => p.id), reordered.projects.map(p => p.id));
+    assert.deepEqual(result.conflict?.competingSnapshot.projects.map(p => p.id), base.projects.map(p => p.id));
+  } finally {
+    storage.restore();
+  }
+});
+
 test("updatedAt alone does not create a stale-content conflict", () => {
   const storage = installStorage();
   try {
