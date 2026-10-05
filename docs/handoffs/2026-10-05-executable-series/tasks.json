@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T21:09:06.360062+00:00",
+  "updated_at": "2026-10-05T21:10:56.1576508Z",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -9,7 +9,7 @@
   "coordinator_token_ceiling": 20000000,
   "maximum_new_worker_threads": 30,
   "reserved_new_task_slots": 2,
-  "spawned_new_worker_threads": 0,
+  "spawned_new_worker_threads": 3,
   "concurrency_limit": 3,
   "task_count": 28,
   "finding_count": 48,
@@ -21,9 +21,9 @@
       "finding_ids": [
         "FND-01"
       ],
-      "status": "ready",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "dispatched",
+      "phase": "awaiting-acknowledgement",
+      "thread_id": "01a10de7-0e7d-7f03-a469-dc32649b5b88",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
@@ -64,9 +64,9 @@
         "FND-02",
         "FND-43"
       ],
-      "status": "ready",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "dispatched",
+      "phase": "awaiting-acknowledgement",
+      "thread_id": "01a10de7-1a4d-7ad0-852e-a8297318bc3f",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
@@ -117,9 +117,9 @@
         "FND-03",
         "FND-21"
       ],
-      "status": "ready",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "dispatched",
+      "phase": "awaiting-acknowledgement",
+      "thread_id": "01a10de7-29df-7fe3-98c3-69a5e9666141",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
@@ -297,7 +297,8 @@
       "branch": "codex/foundry-series-a06-20261005",
       "dependencies": [
         "A02: immediate memory recovery; relinquished page/library scope",
-        "A04: original preservation inventory"
+        "A04: original preservation inventory",
+        "A05: replacement-confirmation writer has handed back the shared page/library files"
       ],
       "allowed_files": [
         "artifacts/mockup-sandbox/src/pages/capability-workbench.tsx",
