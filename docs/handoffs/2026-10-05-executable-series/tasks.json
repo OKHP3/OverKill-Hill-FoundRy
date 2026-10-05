@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T22:08:14.431234+00:00",
+  "updated_at": "2026-10-05T22:46:02.736195+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -21,8 +21,8 @@
       "finding_ids": [
         "FND-01"
       ],
-      "status": "ready-for-review",
-      "phase": "requirements-ledger-handback",
+      "status": "verified",
+      "phase": "requirements-ledger-published",
       "thread_id": "01a10e1f-ee49-7bc2-80a6-f9e026155973",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -82,7 +82,12 @@
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a01.md"
       },
       "agent_identity": "/root/a01_requirements",
-      "candidate_commit": "29fc526b4f268908df860fa38ffab750824c032a"
+      "candidate_commit": "29fc526b4f268908df860fa38ffab750824c032a",
+      "integration": {
+        "pr": 58,
+        "main_sha": "621ea5893420e91712825c53b849c622b0c99173",
+        "checks": "Both e2e jobs, both typecheck jobs and filename check passed; Pages 37383196429 succeeded; primary Windows source exact parity."
+      }
     },
     {
       "id": "A02",
@@ -91,15 +96,15 @@
         "FND-02",
         "FND-43"
       ],
-      "status": "in-progress",
-      "phase": "fail-closed-stale-save-and-recovery-implementation",
+      "status": "ready-for-review",
+      "phase": "coordinator-validated-awaiting-protected-publication",
       "thread_id": "01a10ded-4b33-71e1-abd7-67d454858324",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 1000000,
       "absolute_token_ceiling": 2000000,
-      "usage": 33562,
+      "usage": "unknown after resumption; last exposed observation 33562",
       "base_sha": "aaf41daf882f14907323f34aa9325f05f354285f",
       "branch": "codex/foundry-series-a02-r1-20261005",
       "dependencies": [
@@ -161,7 +166,15 @@
           "status": "budgetLimited"
         }
       ],
-      "reuse_worker_of": "A03"
+      "reuse_worker_of": "A03",
+      "candidate_commit": "10541ff8125928868882678687532e1a0e2b8ab5",
+      "handoff_commit": "83ac23c231dd21255e8df39fee2bf7cd023f2cdb",
+      "validation": {
+        "coordinator": "81 core tests PASS; full workspace typecheck/build PASS; 61 Chromium PASS, 3 opt-in fixture-refresh SKIP",
+        "changes_after_handback": "Stable recovery live announcement and exact-byte retention assertion; two existing regression selectors updated to the new accessible status. Required final-head CI pending.",
+        "limitations": "Real screen-reader observation remains A09; browsers without Web Locks retain editable memory and backup but cannot persist.",
+        "latest_delta": "Project-order preservation regression failed on90a0bc0, repaired;82core and13focused Chromium PASS; final-head CI pending."
+      }
     },
     {
       "id": "A03",
@@ -258,15 +271,15 @@
         "FND-47",
         "FND-48"
       ],
-      "status": "accepted",
-      "phase": "published-reused-worker-implementation-authorized",
+      "status": "ready-for-review",
+      "phase": "docs-and-version-evidence-handback",
       "thread_id": "01a10e1f-ee49-7bc2-80a6-f9e026155973",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 200000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
+      "usage": "unknown actual; configured 200000 goal reached its limit after committed deliverables",
       "base_sha": "8a8147845d65730deb9d4f59e5e73055e6d65db7",
       "branch": "codex/foundry-series-a04-20261005",
       "dependencies": [
@@ -305,7 +318,7 @@
           "action": "Immediately preserve available pre-upgrade originals and current exports before recovery/schema edits. Record which originals exist and which are unavailable. Then record a version matrix and exercise current acceptance of old backups plus explicit older-build rejection of new fields without mutation.",
           "done": "Rollback can recover the original project using its compatible original backup. New conversion fields remain preserved in the current export; unsupported backward imports fail visibly and never mutate the stored workspace.",
           "source": "docs/capability-workbench.md:49; docs/workbench-backup-migration-design.md:3",
-          "conditional_dependencies": "Immediately preserve and identify any existing pre-upgrade originals before recovery/schema changes; do not invent missing old backups. FND-24â€“25 supply later matrix/transfer evidence before broader rollback claims."
+          "conditional_dependencies": "Immediately preserve and identify any existing pre-upgrade originals before recovery/schema changes; do not invent missing old backups. FND-24\u00e2\u20ac\u201c25 supply later matrix/transfer evidence before broader rollback claims."
         }
       ],
       "retry_bound": "Two failed attempts on the same cause; return exact error and partial patch for escalation. No automatic model escalation or extra agents.",
@@ -321,7 +334,10 @@
         "utc": "2026-10-05T22:24:08Z",
         "published_by": "coordinator",
         "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a04.md"
-      }
+      },
+      "candidate_commit": "074e758d1c98fc32ffd706ca1a65c1d27e019863",
+      "implementation_commit": "93d9236c1b86ed90b2cf557af80200bc5d0709b8",
+      "validation": "13 parser cases, four selected browser cases, PowerShell preview/build and required repository checks passed at8a81478; root relays missing receipt after explicit handback. Older runtime and owner originals unavailable."
     },
     {
       "id": "A05",
@@ -336,7 +352,7 @@
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
-      "goal_token_budget": 200000,
+      "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
       "usage": "unknown",
       "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -377,7 +393,8 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a05.md",
       "prompt": "prompts/a05.md",
-      "working_token_target": 40000
+      "working_token_target": 40000,
+      "budget_reason": "A04 committed its bounded docs at a200000 limit before final bookkeeping;500000 allows a focused coding/test duty without new host setup, while40000 remains a working target and no retry/model escalation is automatic."
     },
     {
       "id": "A06",
@@ -673,10 +690,10 @@
       "acceptance": [
         {
           "finding_id": "FND-04",
-          "action": "Choose one measurable repository-handoff task and newly authored owner-cleared source, or complete FND-06â€“08 first when reusing/importing existing material. Build through FoundRy, export permitted bytes, run one intended environment only after its necessary contract/adapter boundaries are checked, and record assistance and manual work.",
+          "action": "Choose one measurable repository-handoff task and newly authored owner-cleared source, or complete FND-06\u00e2\u20ac\u201c08 first when reusing/importing existing material. Build through FoundRy, export permitted bytes, run one intended environment only after its necessary contract/adapter boundaries are checked, and record assistance and manual work.",
           "done": "A versioned project, exported source, expected rubric, observed output, host/version and friction record demonstrate one useful result. Report limitations; one case does not establish universal usefulness.",
           "source": "docs/capability-workbench-maturation.md:119; examples/workbench/skill-example/README.md:5",
-          "conditional_dependencies": "Choose source and freeze task first; complete discovery/read-order/evidence-return acceptance subtasks before closing this epic. Existing-source reuse requires FND-06â€“08 as applicable; tools require FND-14â€“16. One run closes multiple criteria, never multiple capability counts."
+          "conditional_dependencies": "Choose source and freeze task first; complete discovery/read-order/evidence-return acceptance subtasks before closing this epic. Existing-source reuse requires FND-06\u00e2\u20ac\u201c08 as applicable; tools require FND-14\u00e2\u20ac\u201c16. One run closes multiple criteria, never multiple capability counts."
         },
         {
           "finding_id": "FND-09",
@@ -793,14 +810,14 @@
           "action": "Freeze matched inputs and expected outcomes. Execute at least a semantic-preservation case, a platform-loss/tool case and a boundary case against the source and converted method where available.",
           "done": "Source and target observations, revisions, host versions and results are retained. Unavailable source baselines stay unverified; failures produce specific work rather than a parity claim.",
           "source": "docs/portable-skill-foundry.md:73; artifacts/custom-gpt-creator/tests/capability-workbench.e2e.ts:12",
-          "conditional_dependencies": "If tools are required, run FND-14â€“16 before corresponding behavioral cases. If references are necessary, FND-17 becomes a P1 prerequisite. Manual fallback is narrower evidence, never adapter equivalence."
+          "conditional_dependencies": "If tools are required, run FND-14\u00e2\u20ac\u201c16 before corresponding behavioral cases. If references are necessary, FND-17 becomes a P1 prerequisite. Manual fallback is narrower evidence, never adapter equivalence."
         },
         {
           "finding_id": "FND-12",
           "action": "Review the exemplar's authority chain and escalation/cancellation rules. Run a fixture with conflicting instructions in source material and verify they remain data.",
           "done": "The host follows the approved method, ignores unauthorized source instructions, stops at the action boundary and records an honest refusal or escalation. No browser injection defect is inferred from this missing host evidence.",
           "source": "docs/portable-skill-foundry.md:70; .agents/skills/okhp3-gpt-skill-conversion-plan/SKILL.md:40",
-          "conditional_dependencies": "Run before broad preservation approval; host/tool execution follows FND-14â€“15 controls when applicable."
+          "conditional_dependencies": "Run before broad preservation approval; host/tool execution follows FND-14\u00e2\u20ac\u201c15 controls when applicable."
         },
         {
           "finding_id": "FND-17",
@@ -855,7 +872,7 @@
         {
           "finding_id": "FND-14",
           "action": "Choose one host/version after defining the exemplar's required tools. Design its auth, least permissions and side-effect boundary before installation; build a reproducible isolated wrapper around the canonical skill with source digest, wrapper revision and dependencies.",
-          "done": "An implemented installable candidate has an inspectable tool contract and reproducible wrapper. Useful side-effect execution and verified-support labels remain gated by FND-15â€“16; unsupported hosts remain unverified.",
+          "done": "An implemented installable candidate has an inspectable tool contract and reproducible wrapper. Useful side-effect execution and verified-support labels remain gated by FND-15\u00e2\u20ac\u201c16; unsupported hosts remain unverified.",
           "source": "artifacts/mockup-sandbox/src/lib/capability-workbench.ts:609; docs/portable-skill-foundry.md:76",
           "conditional_dependencies": null
         },
@@ -1146,7 +1163,8 @@
       "dependencies": [
         "A13: reference dependency evidence; need established",
         "Read-only Skillz reference; no sibling writes",
-        "A25: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
+        "A25: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer",
+        "Reuse A05 only after completed duty/goal; A25 goal reached its limit and will not be silently reset."
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/skillz-selection-decision.md",
@@ -1172,7 +1190,7 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a20.md",
       "prompt": "prompts/a20.md",
       "working_token_target": 15000,
-      "reuse_worker_of": "A25"
+      "reuse_worker_of": "A05"
     },
     {
       "id": "A21",
@@ -1343,7 +1361,8 @@
       "dependencies": [
         "Owner completes visible authentication if required; never bypass passkey",
         "Root authorizes specific release SHA before runtime/production operations; existing synchronization job checkpoint first",
-        "A01: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer"
+        "A01: receiving thread finishes its preceding accepted duty before acknowledging this file-scope transfer",
+        "Reuse A08 only after its duty and goal are complete; A01/A04 host goal reached its limit, so no reset or assumed resume."
       ],
       "allowed_files": [
         "docs/handoffs/2026-10-05-executable-series/evidence/release-receipts.md",
@@ -1376,7 +1395,7 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a24.md",
       "prompt": "prompts/a24.md",
       "working_token_target": 20000,
-      "reuse_worker_of": "A01"
+      "reuse_worker_of": "A08"
     },
     {
       "id": "A25",
@@ -1412,7 +1431,7 @@
       "acceptance": [
         {
           "finding_id": "FND-37",
-          "action": "Review PRs 42 and 48â€“51 against current compatibility and advisories. Integrate only tested useful changes through the existing protections; retain minimum-age and lockfile policy.",
+          "action": "Review PRs 42 and 48\u00e2\u20ac\u201c51 against current compatibility and advisories. Integrate only tested useful changes through the existing protections; retain minimum-age and lockfile policy.",
           "done": "Each accepted update has migration notes and meaningful build/browser/governance evidence; rejected or deferred changes have a reason. No blanket latest-version upgrade is treated as completion.",
           "source": ".github/dependabot.yml:1; docs/technology-update-plan.md:1",
           "conditional_dependencies": null
@@ -1604,10 +1623,30 @@
       "title": "Delayed clipboard rejection after project change mislabels failure",
       "deduplicated_into": "A03 / FND-21",
       "owner": "coordinator after handback",
-      "status": "repaired-awaiting-protected-ci",
+      "status": "verified-source-ci-pages",
       "reproduction": "Controlled clipboard promise rejects after cgpt-workspace.activeProjectId changes; expected no copy-error, observed one alert",
       "resolution": "Use same project/content/format/request predicate for both success and rejection",
-      "checks": "Reproduced failure before fix;4focusedChromium cases pass;Creator typecheck/build pass; final exact-head CI pending"
+      "checks": "Final clipboard implementation published by PR57; protected checks PASS; Pages 37381492327 SUCCESS at 8a81478; native clipboard and human AT remain unclaimed."
+    },
+    {
+      "id": "D02",
+      "title": "Ordinary save progress would repeatedly announce during typing",
+      "deduplicated_into": "A02 / FND-43",
+      "owner": "coordinator after explicit handback",
+      "status": "repaired-awaiting-protected-ci",
+      "reproduction": "Candidate toggles the polite status text between Saving locally and Saved locally for each ordinary edit.",
+      "resolution": "Keep progress readable with aria-live off; announce stable recovery transitions in a separate polite region.",
+      "checks": "Chromium MutationObserver sees zero live-region changes during ordinary typing and one persistent message during repeated denied writes; full suite 61 PASS, 3 opt-in SKIP; real AT remains A09."
+    },
+    {
+      "id": "D03",
+      "title": "Stale saves could silently replace an imported project order",
+      "deduplicated_into": "A02 / FND-02",
+      "owner": "coordinator after handback",
+      "status": "repaired-awaiting-protected-ci",
+      "reproduction": "At reviewed head90a0bc0, persist two projects, save the reversed imported order, then save a field edit from the old order; expected rejection but observed saved=true.",
+      "resolution": "Compare project arrays in their original order while ignoring updatedAt alone.",
+      "checks": "New core regression reproduced failure before fix; final82core PASS and13focused browser cases PASS. Older full61-case browser result is prior-source evidence; final-head CI pending."
     }
   ],
   "replacement_worker_slots": 4,
