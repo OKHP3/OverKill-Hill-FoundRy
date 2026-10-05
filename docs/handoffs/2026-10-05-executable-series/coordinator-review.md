@@ -97,3 +97,17 @@ the dispatch/evidence packet; it does not publish incomplete application repairs
    publication tasks retain their explicit gates. Record new source/candidate
    SHAs and surface receipts for actual releases; do not reuse October 4 receipts
    as proof that these new findings have closed.
+
+
+## Superseding first-results checkpoint - October 5, 2026
+
+PR56 is merged at main `aaf41daf882f14907323f34aa9325f05f354285f`. The clipboard source is unchanged from the earlier snapshot. The ambiguous alert locator was fixed; a second run exposed a missing init-script callback parameter. The worker corrected that parameter at `5bfaf9dbadaa4ff020dfa8717803dce114e9fa0e`; root's final focused run passed all three cases in 11.4 seconds. These controlled tests cover rejection, absent API, retry, exact download bytes and latest-request/project/content/format guards. They do not establish native clipboard behavior or real assistive technology observation. The ready-for-review handback is in a03.md.
+
+A25 delivered its five-PR report before its goal stopped at the ceiling. Root refreshed the exact heads/states, resolved PR48/49 terminal states and verified immutable plugin6.1.1 metadata in a dated report addendum. No dependency update is merged; focused candidate checks are still needed. Required repository checks and protected publication are root-owned.
+
+The earlier proposed A25->A02 transfer is superseded: A03's completed thread now receives A02 on a writable, pinned, offline-prepared clone at `aaf41daf882f14907323f34aa9325f05f354285f`. The three original partial files remain preserved in both original and receiving checkout. The receiving worker must publish exact transfer acceptance before implementation. A01 still has no confirmed receipt and awaits host approval. Prompt headers now match current JSON allocations and parent-managed publication; older small setup goals remain dated evidence. Count six new threads plus three existing review agents, nine overall. The full plan uses at most30 overall; the largest combined worker allocation is1,650,000. A generated `.pnpm-store/` in the primary checkout is preserved and excluded from commits.
+
+
+## Coordinator final candidate checkpoint
+
+Root reproduced a late rejected clipboard write after the active project changed: the pre-fix regression found one stale error alert. Root applied the same current-project/content/format/request predicate to both rejection and success. All four final focused cases passed in9.6seconds; final Creator typecheck and build passed. Prior full workspace build,75coretests and55Chromium cases (3opt-in refresh skips) passed on the preceding source. Required CI must validate the final exact head. This is D01, deduplicated into existing FND21/A03, not a new worker assignment. No native clipboard or real assistive-technology claim is made.
