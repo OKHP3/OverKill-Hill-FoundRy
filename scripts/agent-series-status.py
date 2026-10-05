@@ -2,6 +2,7 @@
 """Inspect the FoundRy dispatch ledger without spawning, editing, or inferring gates."""
 import argparse
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -38,8 +39,14 @@ if len(active) > ledger['concurrency_limit']:
 for t in tasks:
     if not 0 < t['goal_token_budget'] <= t['absolute_token_ceiling'] <= 2000000:
         errors.append(f"{t['id']}: invalid worker token ceiling")
-    if not (path.parent / t['prompt']).is_file():
+    prompt_path = path.parent / t['prompt']
+    if not prompt_path.is_file():
         errors.append(f"{t['id']}: missing launch prompt")
+    else:
+        prompt = prompt_path.read_text(encoding='utf-8-sig')
+        configured = re.search(r'token_budget=(\d+)', prompt)
+        if not configured or int(configured.group(1)) != t['goal_token_budget']:
+            errors.append(f"{t['id']}: prompt goal ceiling differs from ledger")
     if t['status'] in ('accepted', 'in-progress', 'ready-for-review', 'integrated', 'verified') and not (root / t['receipt']).is_file():
         errors.append(f"{t['id']}: accepted status has no published receipt in this checkout")
 allocations = Counter()
