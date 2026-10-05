@@ -59,3 +59,43 @@ criteria; there is no separately named current workbench PRD. Do not substitute
 the ReFolDec specification or MurderBird PRD. Prior completed task batches are
 historical evidence, while actual host installation, source rights, protected
 evaluation, and publication require their own proof.
+
+## Delivery and review addendum — October 4, 2026
+
+[PR #52](https://github.com/OKHP3/overkill-hill-foundry/pull/52) merged after all
+required hosted checks passed. Implementation source:
+`aa14c3af07903171c4594294076af19b5ccc4463`.
+[Pages run 37248266854](https://github.com/OKHP3/overkill-hill-foundry/actions/runs/37248266854)
+succeeded on that exact revision, including 52 passing Chromium cases, three
+opt-in refresh cases skipped, and live application asset checks. The live page
+was independently navigated through conversion controls and the retained studio.
+Windows main and Replit main were clean at the same revision with zero ahead or
+behind; Replit governance and evaluator regressions passed and its preview was
+current. The Notion project anchor received this release receipt with readback.
+
+The pre-existing Windows AGENTS addition is retained in production and a recovery
+stash. A zero-length October 2 index lock with no running Git process was moved
+to a recovery name before fast-forwarding. Recovery branch and bundle remain.
+These preservation actions do not establish working Replit connector credentials.
+
+Clarification of the earlier workflow paragraph: the main-only ReFolDec workflow
+**scans for protected material and creates a review ZIP**. It does not execute
+behavioral holdout evaluation. The phrase “evaluates them outside the checkout”
+must not be treated as a runtime evaluation receipt. Current protected evaluation
+and separately approved capability publication remain deferred.
+
+The [five-pass equilibrium review](../reviews/2026-10-04-equilibrium-review.md)
+and [machine-readable record](../reviews/2026-10-04-equilibrium-review.json)
+contain 15 separate role reports, conditional disruption/adjudication and 48
+backlog entries. Root reproduced silent two-tab capability edit loss and an
+unhandled rejected clipboard write in disposable local Chromium contexts.
+Delayed/stale-copy behavior remains unconfirmed. The review supports bounded
+planning, rejects unrestricted failure-safe concurrency claims and defers broader
+outcomes without real user/host or unseen holdout evidence.
+
+Next series: preserve available original backups; repair the two reproduced
+defects with narrow regression evidence; freeze the requirements ledger; then
+complete one rights-cleared useful capability and its evidence-return loop.
+An independent evaluator freezes the representative task before optimization.
+Optional integration, sibling adoption and ReFolDec release remain separately
+selected lanes. No next-series receiver or file scope is assigned by this record.
