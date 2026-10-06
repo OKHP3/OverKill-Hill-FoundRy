@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-06T00:22:52.015245+00:00",
+  "updated_at": "2026-10-06T00:38:48.486557+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -9,7 +9,7 @@
   "coordinator_token_ceiling": 20000000,
   "maximum_new_worker_threads": 30,
   "reserved_new_task_slots": 0,
-  "spawned_new_worker_threads": 10,
+  "spawned_new_worker_threads": 11,
   "concurrency_limit": 3,
   "task_count": 28,
   "finding_count": 48,
@@ -550,8 +550,8 @@
       "finding_ids": [
         "FND-25"
       ],
-      "status": "ready-for-review",
-      "phase": "actual-origin-transfer and restore verified by coordinator; integration pending",
+      "status": "verified",
+      "phase": "actual runtime acceptance verified; protected checkpoint tracked by integration branch PR",
       "thread_id": "01a10e63-7336-7172-a89f-f3587f61477a",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -601,7 +601,12 @@
       },
       "worker_handoff_commit": "331032a78c7b59852f33a31e3be02424b67baa62",
       "evidence": "docs/handoffs/2026-10-05-executable-series/evidence/origin-transfer.md",
-      "known_completed_goal_usage_sum_for_thread": 490089
+      "known_completed_goal_usage_sum_for_thread": 490089,
+      "integration": {
+        "branch": "codex/foundry-series-verification-20261005",
+        "application_source_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
+        "publication_receipt": "Exact protected merge/check/Pages receipts are recorded in this branch PR and the project Notion record; this ledger does not invent the resulting merge SHA."
+      }
     },
     {
       "id": "A08",
@@ -609,16 +614,16 @@
       "finding_ids": [
         "FND-26"
       ],
-      "status": "queued",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "verified",
+      "phase": "actual runtime acceptance verified; protected checkpoint tracked by integration branch PR",
+      "thread_id": "01a10e99-7a3e-7d50-b4c5-042532cebd3c",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
+      "usage": 101439,
+      "base_sha": "91925c8d87f0cb5387ff4100e44c41097573fe4f",
       "branch": "codex/foundry-series-a08-20261005",
       "dependencies": [
         "A02: reviewed saves",
@@ -648,7 +653,22 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a08.md",
       "prompt": "prompts/a08.md",
-      "working_token_target": 25000
+      "working_token_target": 25000,
+      "agent_identity": "/root/a08_non_chromium",
+      "checkout": "C:\\Users\\jamie\\OKH-Local\\04_GitHub_Mirrors\\overkill-hill-foundry\\.local\\agent-series\\a08",
+      "acknowledgement": {
+        "commit": "d9eae294fea4a5bda947a1ec51683e8bbe9b64e9",
+        "published_by": "coordinator",
+        "confirmed_utc": "2026-10-06T00:29:38Z"
+      },
+      "integration": {
+        "branch": "codex/foundry-series-verification-20261005",
+        "application_source_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
+        "publication_receipt": "Exact protected merge/check/Pages receipts are recorded in this branch PR and the project Notion record; this ledger does not invent the resulting merge SHA."
+      },
+      "worker_handoff_commit": "a2d44536b533225f336c8824143fbb13ea68dbb2",
+      "candidate_commit": "4885a594f5334daa2f91c5386a6d37929fcb1e37",
+      "evidence": "docs/handoffs/2026-10-05-executable-series/evidence/non-chromium.md"
     },
     {
       "id": "A09",
