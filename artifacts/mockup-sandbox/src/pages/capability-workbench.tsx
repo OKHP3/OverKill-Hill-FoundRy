@@ -1,15 +1,16 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   assessCapability,
   buildCapabilityFiles,
   buildCapabilityZip,
   createCapabilityBackup,
+  createCapabilityConflictBackup,
   loadCapabilityWorkspace,
   MAX_CAPABILITY_BACKUP_BYTES,
   MAX_CAPABILITY_PROJECTS,
   newProject,
   parseCapabilityBackup,
-  saveCapabilityWorkspace,
+  saveCapabilityWorkspaceRevisionAware,
   type CapabilityKind,
   type CapabilityProject,
   type Workspace,
@@ -113,16 +114,38 @@ export default function CapabilityWorkbench({
   const [storageState, setStorageState] = useState(
     initial.warning || "Local workspace · saves when you edit",
   );
+  const [recoveryNeeded, setRecoveryNeeded] = useState(Boolean(initial.warning));
+  const [conflictRecovery, setConflictRecovery] = useState<ReturnType<typeof saveCapabilityWorkspaceRevisionAware>['conflict']>();
   const [stage, setStage] = useState<Stage>("brief");
   const [pendingImport, setPendingImport] = useState<Workspace | null>(null);
   const [importError, setImportError] = useState("");
   const [selectedFile, setSelectedFile] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const importRevision = useRef(0);
+  const persistedWorkspace = useRef(initial.workspace);
   const project =
     workspace.projects.find((item) => item.id === workspace.activeId) ||
     workspace.projects[0];
   const canAddProject = workspace.projects.length < MAX_CAPABILITY_PROJECTS;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== "okh-capability-workspace" || !event.newValue) return;
+      try {
+        const remote = JSON.parse(event.newValue) as Workspace;
+        persistedWorkspace.current = remote;
+        setWorkspace((current) => {
+          if (JSON.stringify(current) === JSON.stringify(workspace)) return remote;
+          return current;
+        });
+      } catch {
+        // A malformed external value is surfaced on the next explicit save/load.
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [workspace]);
 
   if (!project) return null;
 
@@ -139,11 +162,20 @@ export default function CapabilityWorkbench({
       return;
     }
     setWorkspace(next);
-    setStorageState(
-      saveCapabilityWorkspace(next)
-        ? "Saved locally"
-        : "Storage unavailable — changes remain in this tab only",
-    );
+    const result = saveCapabilityWorkspaceRevisionAware(next, persistedWorkspace.current);
+    if (result.saved) {
+      persistedWorkspace.current = result.workspace;
+      setWorkspace(result.workspace);
+      setConflictRecovery(undefined);
+      setRecoveryNeeded(false);
+      setStorageState("Saved locally");
+    } else {
+      setConflictRecovery(result.conflict);
+      setRecoveryNeeded(true);
+      setStorageState(result.conflict
+        ? "Concurrent edit conflict — both snapshots are retained. Download recovery before refreshing or closing."
+        : "Unsaved — storage denied this write. Your latest edits remain in this tab and will be lost on refresh or closure. Download a backup now.");
+    }
   };
 
   const update = (field: keyof CapabilityProject, value: string | boolean) => {
@@ -266,10 +298,25 @@ export default function CapabilityWorkbench({
         </div>
         <div className="cw-header-actions">
           <span
+            role="status"
+            aria-live="polite"
             className={`cw-storage ${storageState.startsWith("Saved") ? "is-good" : "is-warning"}`}
           >
             {storageState}
           </span>
+          {recoveryNeeded && (
+            <button
+              className="cw-button"
+              type="button"
+              onClick={() => triggerDownload(
+                conflictRecovery ? "foundry-conflict-recovery.json" : "foundry-unsaved-backup.json",
+                conflictRecovery ? createCapabilityConflictBackup(conflictRecovery) : createCapabilityBackup(workspace),
+                "application/json",
+              )}
+            >
+              {conflictRecovery ? "Download both snapshots" : "Download newest backup"}
+            </button>
+          )}
           <button
             className="cw-button cw-button--solid"
             type="button"

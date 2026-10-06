@@ -44,6 +44,7 @@ export interface CapabilityWorkspace {
 export type Workspace = CapabilityWorkspace;
 
 export const CAPABILITY_WORKSPACE_KEY = "okh-capability-workspace";
+const CAPABILITY_REVISION_KEY = `${CAPABILITY_WORKSPACE_KEY}-revision`;
 export const MAX_CAPABILITY_PROJECTS = 20;
 export const MAX_CAPABILITY_BACKUP_BYTES = 2_000_000;
 export const MAX_CAPABILITY_IMPORT_BYTES = MAX_CAPABILITY_BACKUP_BYTES;
@@ -294,31 +295,122 @@ export function loadCapabilityWorkspace(): {
 export function saveCapabilityWorkspace(
   workspace: CapabilityWorkspace,
 ): boolean {
+  return saveCapabilityWorkspaceRevisionAware(workspace).saved;
+}
+
+export interface CapabilityConflictRecovery {
+  schema: "okh-capability-workspace-conflict-recovery";
+  schemaVersion: 1;
+  authoritativeRevision: string;
+  authoritativeSnapshot: CapabilityWorkspace;
+  competingSnapshot: CapabilityWorkspace;
+}
+
+export interface CapabilitySaveResult {
+  saved: boolean;
+  workspace: CapabilityWorkspace;
+  conflict?: CapabilityConflictRecovery;
+}
+
+function revisionId(): string {
+  return `${Date.now()}-${createId()}`;
+}
+
+function sameValue(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function mergeWorkspace(
+  base: CapabilityWorkspace,
+  local: CapabilityWorkspace,
+  remote: CapabilityWorkspace,
+): { workspace: CapabilityWorkspace; conflicting: boolean } {
+  const baseById = new Map(base.projects.map((project) => [project.id, project]));
+  const localById = new Map(local.projects.map((project) => [project.id, project]));
+  const remoteById = new Map(remote.projects.map((project) => [project.id, project]));
+  const conflicts: CapabilityProject[] = [];
+  const projects = remote.projects.map((remoteProject) => {
+    const localProject = localById.get(remoteProject.id);
+    const baseProject = baseById.get(remoteProject.id);
+    if (!localProject || !baseProject) return remoteProject;
+    const merged = { ...remoteProject };
+    for (const key of Object.keys(localProject) as Array<keyof CapabilityProject>) {
+      const baseValue = baseProject[key];
+      const localValue = localProject[key];
+      const remoteValue = remoteProject[key];
+      if (sameValue(localValue, baseValue)) continue;
+      if (sameValue(remoteValue, baseValue) || sameValue(localValue, remoteValue)) {
+        (merged as unknown as Record<string, unknown>)[key] = localValue;
+      } else {
+        conflicts.push(localProject);
+      }
+    }
+    return merged;
+  });
+  // New local projects are independent additions. A matching id is treated as a conflict.
+  for (const localProject of local.projects) {
+    if (baseById.has(localProject.id)) continue;
+    if (remoteById.has(localProject.id)) conflicts.push(localProject);
+    else projects.push(localProject);
+  }
+  const activeId = local.activeId === base.activeId ? remote.activeId : local.activeId;
+  const validActiveId = projects.some((project) => project.id === activeId)
+    ? activeId
+    : remote.activeId;
+  return {
+    workspace: requireWorkspace({ version: 1, activeId: validActiveId, projects }),
+    conflicting: conflicts.length > 0,
+  };
+}
+
+/** Save against the tab's last persisted snapshot, merging independent field edits.
+ * Same-field stale edits are retained in a two-snapshot recovery record while the
+ * previously persisted revision stays authoritative.
+ */
+export function saveCapabilityWorkspaceRevisionAware(
+  workspace: CapabilityWorkspace,
+  baseWorkspace?: CapabilityWorkspace,
+): CapabilitySaveResult {
   let safe: CapabilityWorkspace;
   try {
     safe = requireWorkspace(workspace);
   } catch {
-    return false;
+    return { saved: false, workspace: cloneWorkspace(workspace) };
   }
-  const serialized = JSON.stringify(safe);
-  if (byteLength(serialized) > MAX_CAPABILITY_IMPORT_BYTES) {
-    return false;
-  }
-  memoryWorkspace = cloneWorkspace(safe);
+  let candidate = safe;
+  let conflict: CapabilityConflictRecovery | undefined;
   try {
     if (typeof localStorage === "undefined") {
+      memoryWorkspace = cloneWorkspace(safe);
       unsavedInMemory = true;
-      return false;
+      return { saved: false, workspace: safe };
     }
     const previous = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
+    const revision = localStorage.getItem(CAPABILITY_REVISION_KEY) ?? "legacy-revision";
     if (previous !== null) {
-      let malformed = false;
+      let remote: CapabilityWorkspace | null = null;
       try {
-        requireWorkspace(JSON.parse(previous));
+        remote = requireWorkspace(JSON.parse(previous));
       } catch {
-        malformed = true;
+        // The existing recovery path below preserves malformed source exactly.
       }
-      if (malformed) {
+      if (remote && baseWorkspace && !sameValue(baseWorkspace, remote)) {
+        const merged = mergeWorkspace(requireWorkspace(baseWorkspace), safe, remote);
+        candidate = merged.workspace;
+        if (merged.conflicting) {
+          conflict = {
+            schema: "okh-capability-workspace-conflict-recovery",
+            schemaVersion: 1,
+            authoritativeRevision: revision,
+            authoritativeSnapshot: remote,
+            competingSnapshot: safe,
+          };
+          memoryWorkspace = cloneWorkspace(safe);
+          unsavedInMemory = true;
+          return { saved: false, workspace: safe, conflict };
+        }
+      }
+      if (!remote) {
         // Preserve corrupt source before a deliberate edit replaces the active store.
         localStorage.setItem(
           `${CAPABILITY_WORKSPACE_KEY}-recovery-${createId()}`,
@@ -326,13 +418,44 @@ export function saveCapabilityWorkspace(
         );
       }
     }
+    const serialized = JSON.stringify(candidate);
+    if (byteLength(serialized) > MAX_CAPABILITY_IMPORT_BYTES) {
+      memoryWorkspace = cloneWorkspace(safe);
+      unsavedInMemory = true;
+      return { saved: false, workspace: safe };
+    }
+    const nextRevision = revisionId();
     localStorage.setItem(CAPABILITY_WORKSPACE_KEY, serialized);
+    localStorage.setItem(CAPABILITY_REVISION_KEY, nextRevision);
+    const written = localStorage.getItem(CAPABILITY_WORKSPACE_KEY);
+    const writtenRevision = localStorage.getItem(CAPABILITY_REVISION_KEY);
+    if (written !== serialized || writtenRevision !== nextRevision) {
+      const authoritative = written ? requireWorkspace(JSON.parse(written)) : candidate;
+      conflict = {
+        schema: "okh-capability-workspace-conflict-recovery",
+        schemaVersion: 1,
+        authoritativeRevision: writtenRevision ?? "revision-unavailable",
+        authoritativeSnapshot: authoritative,
+        competingSnapshot: safe,
+      };
+      memoryWorkspace = cloneWorkspace(safe);
+      unsavedInMemory = true;
+      return { saved: false, workspace: safe, conflict };
+    }
+    memoryWorkspace = cloneWorkspace(candidate);
     unsavedInMemory = false;
-    return true;
+    return { saved: true, workspace: candidate };
   } catch {
+    memoryWorkspace = cloneWorkspace(safe);
     unsavedInMemory = true;
-    return false;
+    return { saved: false, workspace: safe, ...(conflict ? { conflict } : {}) };
   }
+}
+
+export function createCapabilityConflictBackup(
+  conflict: CapabilityConflictRecovery,
+): string {
+  return JSON.stringify(conflict, null, 2);
 }
 
 export function createCapabilityBackup(workspace: CapabilityWorkspace): string {
