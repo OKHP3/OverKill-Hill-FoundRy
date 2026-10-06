@@ -17,8 +17,8 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A03 | FND-03, FND-21 | Clipboard rejection and controlled copy races | verified source/CI/Pages | 200,000 | [a03](prompts/a03.md) |
 | A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | integrated with version limits | 200,000 | [a04](prompts/a04.md) |
 | A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | integrated; origin/AT gates pending | 500,000 | [a05](prompts/a05.md) |
-| A06 | FND-44 | Exact malformed-source recovery export | corrected; integration checks passed | 500,000 | [a06](prompts/a06.md) |
-| A07 | FND-25 | Transfer and rollback across actual browser origins | queued | 500,000 | [a07](prompts/a07.md) |
+| A06 | FND-44 | Exact malformed-source recovery export | integrated; exact Pages receipt verified | 500,000 | [a06](prompts/a06.md) |
+| A07 | FND-25 | Transfer and rollback across actual browser origins | accepted; test implementation active | 500,000 | [a07](prompts/a07.md) |
 | A08 | FND-26 | Firefox and WebKit acceptance | queued | 500,000 | [a08](prompts/a08.md) |
 | A09 | FND-27 | Keyboard and real assistive technology acceptance | external-gate | 200,000 | [a09](prompts/a09.md) |
 | A10 | FND-06, FND-07, FND-08 | Existing-source selection, rights and import parity | external-gate | 200,000 | [a10](prompts/a10.md) |
@@ -29,7 +29,7 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A15 | FND-13, FND-18, FND-19 | Observed results, revision binding and stale invalidation | queued | 200,000 | [a15](prompts/a15.md) |
 | A16 | FND-05 | Independent unseen-task custody and user acceptance | external-gate | 200,000 | [a16](prompts/a16.md) |
 | A17 | FND-20 | Revision history decision and recoverable diff | conditional | 200,000 | [a17](prompts/a17.md) |
-| A18 | FND-23 | Conflict-aware merge import decision | reviewed defer; publication pending | 200,000 | [a18](prompts/a18.md) |
+| A18 | FND-23 | Conflict-aware merge import decision | published defer decision | 200,000 | [a18](prompts/a18.md) |
 | A19 | FND-28 | Structured contract decision | conditional | 200,000 | [a19](prompts/a19.md) |
 | A20 | FND-29 | Canonical Skillz selection decision | conditional | 200,000 | [a20](prompts/a20.md) |
 | A21 | FND-30 | Bounded external-agent handoff | queued | 200,000 | [a21](prompts/a21.md) |
