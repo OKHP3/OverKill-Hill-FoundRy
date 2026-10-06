@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-06T00:08:21.917727+00:00",
+  "updated_at": "2026-10-06T00:22:52.015245+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -550,15 +550,15 @@
       "finding_ids": [
         "FND-25"
       ],
-      "status": "accepted",
-      "phase": "published acceptance; actual-origin test work authorized",
+      "status": "ready-for-review",
+      "phase": "actual-origin-transfer and restore verified by coordinator; integration pending",
       "thread_id": "01a10e63-7336-7172-a89f-f3587f61477a",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
+      "usage": 189417,
       "base_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
       "branch": "codex/foundry-series-a07-20261005",
       "dependencies": [
@@ -598,7 +598,10 @@
         "commit": "2512cc83afdc746b6a37369d2ad049f0331d862b",
         "published_by": "coordinator",
         "confirmed_utc": "2026-10-06T00:06:43.717652+00:00"
-      }
+      },
+      "worker_handoff_commit": "331032a78c7b59852f33a31e3be02424b67baa62",
+      "evidence": "docs/handoffs/2026-10-05-executable-series/evidence/origin-transfer.md",
+      "known_completed_goal_usage_sum_for_thread": 490089
     },
     {
       "id": "A08",

@@ -18,7 +18,7 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | integrated with version limits | 200,000 | [a04](prompts/a04.md) |
 | A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | integrated; origin/AT gates pending | 500,000 | [a05](prompts/a05.md) |
 | A06 | FND-44 | Exact malformed-source recovery export | integrated; exact Pages receipt verified | 500,000 | [a06](prompts/a06.md) |
-| A07 | FND-25 | Transfer and rollback across actual browser origins | accepted; test implementation active | 500,000 | [a07](prompts/a07.md) |
+| A07 | FND-25 | Transfer and rollback across actual browser origins | actual journey verified; integration pending | 500,000 | [a07](prompts/a07.md) |
 | A08 | FND-26 | Firefox and WebKit acceptance | queued | 500,000 | [a08](prompts/a08.md) |
 | A09 | FND-27 | Keyboard and real assistive technology acceptance | external-gate | 200,000 | [a09](prompts/a09.md) |
 | A10 | FND-06, FND-07, FND-08 | Existing-source selection, rights and import parity | external-gate | 200,000 | [a10](prompts/a10.md) |
