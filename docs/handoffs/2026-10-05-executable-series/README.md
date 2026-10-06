@@ -2,11 +2,19 @@
 
 This series converts all 48 findings from the [five-pass review](../../reviews/2026-10-04-equilibrium-review.md) into 28 bounded worker assignments. Four stopped or withdrawn attempts are preserved. Planned reuse is A03 -> A02, A01 -> A04, A05 -> A20, A06 -> A07, and A08 -> A24. Together with the three earlier review agents, this keeps the full plan within the owner's maximum of 30 agents overall. New findings can use a capable thread after its prior duty closes and within its remaining cumulative allocation. The original review remains dated evidence; this [machine ledger](tasks.json) owns current assignment status. The coordinator is thread `01a1096a-9ad8-7011-9cc5-25c41ff67308`, the sole integration owner.
 
+## Current checkpoint
+
+Fourteen overall agent slots are used: eleven new worker threads (including four preserved stopped or withdrawn attempts) and three earlier reviewers. Ten duties have reviewed deliveries or decisions; no worker is currently active. A01-A06, A18 and A25 have published deliveries or decisions. A07 has a completed actual Pages/local transfer and exact restore receipt, and A08 has final Firefox/WebKit acceptance. Their tests and evidence share the protected checkpoint on `codex/foundry-series-verification-20261005`; exact merge/check/Pages receipts are recorded in its PR and the project Notion record. No additional ready duty is silently assumed from an unanswered human or authorization gate.
+
+The next series has eighteen duties with their executable prompts below. Its first gates are a named human/assistive-technology tester (A09), independent unseen-task/rubric custody (A16), exact existing-source selection if needed (A10), and Replit connector authentication (A24). After custody freezes, A11-A15 form one source-safe exemplar and observed recipient-use chain; A14 runs only if a tool adapter is needed. A17/A19/A20 make bounded adopt/defer decisions. A21-A23 trial the requested external handoff, prompt/workflow and software outcomes after that exemplar. A26-A28 retain separate protected-fixture, capability-publication and additional-host/sibling authorization gates. A25's dependency report names separate candidate checks; its review does not merge those upgrades. A18's published defer decision does not implement merge import.
+
+Each launch prompt is a complete assignment with scope, exclusions, dependency evidence, model/effort, working target, goal ceiling, retry bound and required handback. Refresh its frozen base only after the coordinator verifies prerequisite publication. Current machine status and usage are in [tasks.json](tasks.json); historical checkpoints below remain dated evidence.
+
 ## Budgets and dispatch
 
 The coordinator goal has the requested 20,000,000-token ceiling. Every new worker uses `gpt-6-luna`, effort `low`. Ordinary duties configure 200,000-token goals; A05-A08 configure 500,000 and A02 configures 1,000,000. Smaller working targets guide effort. These are ceilings, not spending targets. The 28 duty budgets total 7,600,000; recorded corrections add 450,000, and three stopped attempts had 100,000 combined configured budgets. A03/corrections/A02 have the largest combined planned allocation, 1,450,000. A06/correction/A07 allocate 1,200,000; every planned worker remains below the owner's cumulative 2,000,000 ceiling. Spawn APIs have no token-quota field: workers record goal configuration and actual usage separately, including unknown usage and tool-boundary overshoot. Goals do not reserve or purchase account capacity. A future amendment must preserve the cumulative owner ceiling.
 
-At most three workers run at once in this series. Dispatch only a ready dependency frontier, publish each claim, and wait for its exact acknowledgement. Independent writers use separate branches/worktrees. Shared application files are sequenced A02 -> A05 -> A06; A17-A20 can propose decisions but have no implementation file ownership. Root alone writes tasks.json, this README and the assignment index. Each worker alone writes its receipt until handback. The current frontier is A06's reviewed recovery correction, then A07 actual-origin transfer and A08 other browser engines. Unseen-task custody must happen before exemplar optimization; human, authentication and private-fixture gates require actual evidence.
+At most three workers run at once in this series. Dispatch only a ready dependency frontier, publish each claim, and wait for its exact acknowledgement. Independent writers use separate branches/worktrees. Shared application files are sequenced A02 -> A05 -> A06; A17-A20 can propose decisions but have no implementation file ownership. Root alone writes tasks.json, this README and the assignment index. Each worker alone writes its receipt until handback. The current frontier is the shared protected checkpoint for verified A07/A08 runtime evidence; the preceding recovery correction is published. The next eighteen duties retain their documented gates. Unseen-task custody must happen before exemplar optimization; human, authentication and private-fixture gates require actual evidence.
 
 ## Assignment index
 
@@ -16,10 +24,10 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A02 | FND-02, FND-43 | Concurrent saves and immediate memory recovery | integrated; AT pending | 1,000,000 | [a02](prompts/a02.md) |
 | A03 | FND-03, FND-21 | Clipboard rejection and controlled copy races | verified source/CI/Pages | 200,000 | [a03](prompts/a03.md) |
 | A04 | FND-24, FND-47, FND-48 | Backup contract, original preservation and Windows commands | integrated with version limits | 200,000 | [a04](prompts/a04.md) |
-| A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | integrated; origin/AT gates pending | 500,000 | [a05](prompts/a05.md) |
-| A06 | FND-44 | Exact malformed-source recovery export | corrected; integration checks passed | 500,000 | [a06](prompts/a06.md) |
-| A07 | FND-25 | Transfer and rollback across actual browser origins | queued | 500,000 | [a07](prompts/a07.md) |
-| A08 | FND-26 | Firefox and WebKit acceptance | queued | 500,000 | [a08](prompts/a08.md) |
+| A05 | FND-22, FND-45 | Stale import confirmation and current backup escape | integrated; AT/owner originals pending | 500,000 | [a05](prompts/a05.md) |
+| A06 | FND-44 | Exact malformed-source recovery export | integrated; exact Pages receipt verified | 500,000 | [a06](prompts/a06.md) |
+| A07 | FND-25 | Transfer and rollback across actual browser origins | runtime verified; shared checkpoint | 500,000 | [a07](prompts/a07.md) |
+| A08 | FND-26 | Firefox and WebKit acceptance | runtime verified; shared checkpoint | 500,000 | [a08](prompts/a08.md) |
 | A09 | FND-27 | Keyboard and real assistive technology acceptance | external-gate | 200,000 | [a09](prompts/a09.md) |
 | A10 | FND-06, FND-07, FND-08 | Existing-source selection, rights and import parity | external-gate | 200,000 | [a10](prompts/a10.md) |
 | A11 | FND-04, FND-09, FND-46 | Build one source-safe intent-to-use exemplar | queued | 200,000 | [a11](prompts/a11.md) |
@@ -29,7 +37,7 @@ At most three workers run at once in this series. Dispatch only a ready dependen
 | A15 | FND-13, FND-18, FND-19 | Observed results, revision binding and stale invalidation | queued | 200,000 | [a15](prompts/a15.md) |
 | A16 | FND-05 | Independent unseen-task custody and user acceptance | external-gate | 200,000 | [a16](prompts/a16.md) |
 | A17 | FND-20 | Revision history decision and recoverable diff | conditional | 200,000 | [a17](prompts/a17.md) |
-| A18 | FND-23 | Conflict-aware merge import decision | reviewed defer; publication pending | 200,000 | [a18](prompts/a18.md) |
+| A18 | FND-23 | Conflict-aware merge import decision | published defer decision | 200,000 | [a18](prompts/a18.md) |
 | A19 | FND-28 | Structured contract decision | conditional | 200,000 | [a19](prompts/a19.md) |
 | A20 | FND-29 | Canonical Skillz selection decision | conditional | 200,000 | [a20](prompts/a20.md) |
 | A21 | FND-30 | Bounded external-agent handoff | queued | 200,000 | [a21](prompts/a21.md) |
@@ -128,3 +136,15 @@ A05 prematurely completed its acceptance-only goal at19,619; later implementatio
 PR61 is merged at exact main `0df2217f3612324cd8af2d835cfaab1467cddb73` after all required checks passed. Primary Windows source is clean at the same fresh main with zero ahead/behind. Pages and Replit receipts are independent. A06 receipt `b0b69ffa32842392db93af693c9828c59a556372` and A18 receipt `0d3393d63bdad3340fafabe017de7f5d37c1deee` were published and explicitly confirmed before implementation on separate prepared checkouts. Their whole-duty goals remain active at the acknowledgement pause. Ten new workers plus three earlier reviewers now use thirteen overall slots; maximum planned roster and combined budgets remain unchanged.
 
 A06 correction allocation amendment: root reproduced loss of the second malformed source on frozen candidate5d47484 after the first successful repair. The same worker receives a bounded200,000 correction goal after its completed204,006/500,000 first goal. A06/correction/A07 allocate1,200,000 combined, and the maximum individual remains1,450,000. Duty ceilings remain7,600,000; recorded correction allocations add450,000, for8,050,000 across current duties/corrections. No new task or worker slot is created, and raw source preservation does not adopt optional project history. Source publication waits for the regression correction.
+
+
+## Browser-engine dispatch - October 6, 2026 00:29 UTC
+
+A08 exact receipt-only acknowledgement `d9eae294fea4a5bda947a1ec51683e8bbe9b64e9` was published and explicitly confirmed before implementation. Its whole-duty 500,000-token goal stays active through this pause. The separate checkout is frozen at `91925c8d87f0cb5387ff4100e44c41097573fe4f`; application source equals protected main `ded3d5fad6c415ce8894025ca4057be9928f068c`. Installed Firefox/WebKit engines are preparation evidence only until the actual journeys run. Eleven new threads and three earlier reviewers use fourteen overall slots; the complete plan remains at most thirty. A07 and A08 evidence will share one protected integration checkpoint.
+
+
+## Completed ready frontier - October 6, 2026
+
+A07 verified actual Pages -> clean local -> Pages transfer, exact supplied-field/timestamp restoration and independent legacy-store sentinels on published application source. Its completed goal used189,417/500,000; A06/correction/A07 configured1,200,000 and known completed usage490,089. A08 final test blob `df6157e100b48033f71c98e94b92a608227f3052` passed one meaningful journey each in Firefox155.0 and WebKit26.6 on Windows11 Home10.0.26300 x64. Persistence/reload, Unicode backup, import restoration, studio navigation and denied-storage download were observed. Legacy-store exact bytes remain checked in the workbench; the deliberate studio visit normally initializes fields/timestamp and is reported separately. A08 completed its same500,000 goal at101,439. No application source changed in these duties.
+
+Ten duties now have reviewed deliveries/decisions; eighteen remain queued, conditional or externally gated. This is not a claim that all48 findings are closed. Remaining human AT, owner-original/old-runtime recovery, independent unseen-task custody, source/right selection, needed adapters, authenticated connector and protected capability/host/sibling release evidence retain their exact prompts. The ledger validator checks48-once coverage,28 duties,14 used slots,30 planned maximum,exclusive active scopes and1,450,000 maximum combined configured worker allocation. No idle gated workers were spawned.

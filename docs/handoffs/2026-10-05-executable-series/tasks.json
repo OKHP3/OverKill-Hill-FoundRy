@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-05T23:57:08.727270+00:00",
+  "updated_at": "2026-10-06T00:38:48.486557+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -9,7 +9,7 @@
   "coordinator_token_ceiling": 20000000,
   "maximum_new_worker_threads": 30,
   "reserved_new_task_slots": 0,
-  "spawned_new_worker_threads": 10,
+  "spawned_new_worker_threads": 11,
   "concurrency_limit": 3,
   "task_count": 28,
   "finding_count": 48,
@@ -471,8 +471,8 @@
       "finding_ids": [
         "FND-44"
       ],
-      "status": "ready-for-review",
-      "phase": "corrected-frozen-source-under-integration-review",
+      "status": "integrated",
+      "phase": "protected source and exact Pages release verified; human-original limits retained",
       "thread_id": "01a10e63-7336-7172-a89f-f3587f61477a",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -532,7 +532,17 @@
         "usage_at_acceptance": 1689
       },
       "correction_usage": 96666,
-      "known_completed_goal_usage_sum": 300672
+      "known_completed_goal_usage_sum": 300672,
+      "publication": {
+        "pr": 62,
+        "head_sha": "18c6d3c439c8e17003af5ab3963893a00653fbf3",
+        "main_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
+        "ci_e2e": 37391530673,
+        "ci_cases": 71,
+        "optional_skips": 3,
+        "pages_run": 37391811383,
+        "live_asset": "index-DtWzygSY.js"
+      }
     },
     {
       "id": "A07",
@@ -540,16 +550,16 @@
       "finding_ids": [
         "FND-25"
       ],
-      "status": "queued",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "verified",
+      "phase": "actual runtime acceptance verified; protected checkpoint tracked by integration branch PR",
+      "thread_id": "01a10e63-7336-7172-a89f-f3587f61477a",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
+      "usage": 189417,
+      "base_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
       "branch": "codex/foundry-series-a07-20261005",
       "dependencies": [
         "A04: field/version contract",
@@ -581,7 +591,22 @@
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a07.md",
       "prompt": "prompts/a07.md",
       "working_token_target": 30000,
-      "reuse_worker_of": "A06"
+      "reuse_worker_of": "A06",
+      "agent_identity": "/root/a06_raw_recovery",
+      "checkout": "C:/Users/jamie/OKH-Local/04_GitHub_Mirrors/overkill-hill-foundry/.local/agent-series/a07",
+      "acknowledgement": {
+        "commit": "2512cc83afdc746b6a37369d2ad049f0331d862b",
+        "published_by": "coordinator",
+        "confirmed_utc": "2026-10-06T00:06:43.717652+00:00"
+      },
+      "worker_handoff_commit": "331032a78c7b59852f33a31e3be02424b67baa62",
+      "evidence": "docs/handoffs/2026-10-05-executable-series/evidence/origin-transfer.md",
+      "known_completed_goal_usage_sum_for_thread": 490089,
+      "integration": {
+        "branch": "codex/foundry-series-verification-20261005",
+        "application_source_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
+        "publication_receipt": "Exact protected merge/check/Pages receipts are recorded in this branch PR and the project Notion record; this ledger does not invent the resulting merge SHA."
+      }
     },
     {
       "id": "A08",
@@ -589,16 +614,16 @@
       "finding_ids": [
         "FND-26"
       ],
-      "status": "queued",
-      "phase": "not-dispatched",
-      "thread_id": null,
+      "status": "verified",
+      "phase": "actual runtime acceptance verified; protected checkpoint tracked by integration branch PR",
+      "thread_id": "01a10e99-7a3e-7d50-b4c5-042532cebd3c",
       "host": "local Codex",
       "model": "gpt-6-luna",
       "reasoning_effort": "low",
       "goal_token_budget": 500000,
       "absolute_token_ceiling": 2000000,
-      "usage": "unknown",
-      "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
+      "usage": 101439,
+      "base_sha": "91925c8d87f0cb5387ff4100e44c41097573fe4f",
       "branch": "codex/foundry-series-a08-20261005",
       "dependencies": [
         "A02: reviewed saves",
@@ -628,7 +653,22 @@
       "integration_owner": "Coordinator thread 01a1096a-9ad8-7011-9cc5-25c41ff67308",
       "receipt": "docs/handoffs/2026-10-05-executable-series/receipts/a08.md",
       "prompt": "prompts/a08.md",
-      "working_token_target": 25000
+      "working_token_target": 25000,
+      "agent_identity": "/root/a08_non_chromium",
+      "checkout": "C:\\Users\\jamie\\OKH-Local\\04_GitHub_Mirrors\\overkill-hill-foundry\\.local\\agent-series\\a08",
+      "acknowledgement": {
+        "commit": "d9eae294fea4a5bda947a1ec51683e8bbe9b64e9",
+        "published_by": "coordinator",
+        "confirmed_utc": "2026-10-06T00:29:38Z"
+      },
+      "integration": {
+        "branch": "codex/foundry-series-verification-20261005",
+        "application_source_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c",
+        "publication_receipt": "Exact protected merge/check/Pages receipts are recorded in this branch PR and the project Notion record; this ledger does not invent the resulting merge SHA."
+      },
+      "worker_handoff_commit": "a2d44536b533225f336c8824143fbb13ea68dbb2",
+      "candidate_commit": "4885a594f5334daa2f91c5386a6d37929fcb1e37",
+      "evidence": "docs/handoffs/2026-10-05-executable-series/evidence/non-chromium.md"
     },
     {
       "id": "A09",
@@ -1148,8 +1188,8 @@
       "finding_ids": [
         "FND-23"
       ],
-      "status": "ready-for-review",
-      "phase": "decision-defer-reviewed-publication-pending",
+      "status": "verified",
+      "phase": "defer-decision-published; conditional feature remains deferred",
       "thread_id": "01a10e63-ac51-77a3-8392-f5bd09710af8",
       "host": "local Codex",
       "model": "gpt-6-luna",
@@ -1198,6 +1238,10 @@
         "duty": "conditional decision complete",
         "finding": "FND-23 remains deferred; no merge feature adopted",
         "trigger": "Observed actual-origin/representative task requires combining projects beyond safe replacement"
+      },
+      "publication": {
+        "pr": 62,
+        "main_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c"
       }
     },
     {
@@ -1748,7 +1792,7 @@
       "status": "verified-source-and-final-ci",
       "reproduction": "At reviewed head90a0bc0, persist two projects, save the reversed imported order, then save a field edit from the old order; expected rejection but observed saved=true.",
       "resolution": "Compare project arrays in their original order while ignoring updatedAt alone.",
-      "checks": "New core regression reproduced failure before fix; final82core PASS and13focused browser cases PASS. Older full61-case browser result is prior-source evidence; final-head CI pending.",
+      "checks": "New core regression reproduced failure before fix; final82core and13focused cases passed. Final PR59 CI passed61 cases with3 optional skips at e3be322; PR62 later passed71 cases with3 optional skips and includes the retained ordering regression.",
       "publication": "PR59 final e3be322 merged to e263812; actual human AT remains pending."
     },
     {
@@ -1777,12 +1821,13 @@
       "id": "D06",
       "title": "A second malformed source was overwritten without any recovery copy",
       "deduplicated_into": "A06 / FND-44",
-      "owner": "A06 amendment pending acknowledgement",
-      "status": "corrected-frozen-candidate; integration checks and protected publication pending",
+      "owner": "A06 correction handback; coordinator integration complete",
+      "status": "corrected and published through protected PR62",
       "reproduction": "Fresh5d47484 module; load malformedA, deliberately repair it, externally replace active key with distinct malformedB, then save another valid edit. Both saves succeed; A is preserved, B absent from all storage values and active key.",
       "expected": "Preserve every raw original that a deliberate repair replaces and offer its exact download independently of storage-copy confirmation.",
       "source_sha": "5d47484659e8323186980d116f50278600a222cc",
-      "corrected_candidate": "f9a9c3bc06c0835a77f218e6f262761eb39ed3e3"
+      "corrected_candidate": "f9a9c3bc06c0835a77f218e6f262761eb39ed3e3",
+      "main_sha": "ded3d5fad6c415ce8894025ca4057be9928f068c"
     }
   ],
   "replacement_worker_slots": 4,
