@@ -71,3 +71,13 @@ The first probe used relative prompt paths from its temporary fixture directory
 and failed on missing prompts; the harness was corrected to reference the actual
 frozen prompts. No product behavior or human acceptance is inferred from these
 control checks. Application source and dependency versions are unchanged.
+
+Scope adjudication: the original request explicitly placed the gap list and
+executable duties in the next series and next goals. This coordinator's
+deliverables are the published improvements, five-pass review, execution packet
+and verified surface receipts. The closure reviewer revised the earlier defer
+recommendation: requiring every downstream duty before coordinator archive was
+the wrong boundary. Closing this coordinator does not complete A09 or the product
+backlog. The optional scope question supplies no waiver of any acceptance
+criterion. Archive follows only after this correction passes protected checks
+and is verified on main, Replit Git and the existing Notion project record.

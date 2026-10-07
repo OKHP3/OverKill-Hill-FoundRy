@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "series_id": "foundry-2026-10-05",
-  "updated_at": "2026-10-07T00:08:57.644613+00:00",
+  "updated_at": "2026-10-07T00:15:00.517336+00:00",
   "repository": "OKHP3/overkill-hill-foundry",
   "source_review": "docs/reviews/2026-10-04-equilibrium-review.json",
   "base_sha": "74ffadb447f702065e7912ca9fce5c9e8f36a22d",
@@ -1863,7 +1863,7 @@
       "owner": "coordinator",
       "status": "implemented",
       "evidence": "One read-only closure review exposed missing supplemental-agent accounting; A02/FND-43 actual AT remains not run.",
-      "closure": "Checker includes supplemental reviewers and duplicate identities; future A09 reuses A08 within its cumulative ceiling. Archive scope question remains pending.",
+      "closure": "Checker includes supplemental reviewers and duplicate identities; future A09 reuses A08 within its cumulative ceiling. Original next-series scope supports coordinator archive after protected publication and independent GitHub/Replit Git/Notion receipts; all product acceptance gates remain pending.",
       "receipt": "docs/handoffs/2026-10-06-origin-main-reconciliation.md"
     }
   ],
