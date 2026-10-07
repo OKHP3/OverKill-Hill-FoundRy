@@ -24,10 +24,14 @@ if len(findings) != len(set(findings)) or set(findings) != expected:
     errors.append('Review finding coverage is incomplete or duplicated')
 planned_workers = sum(not t.get('reuse_worker_of') for t in tasks)
 existing_reviewers = len(ledger.get('preexisting_review_agents', []))
-planned_total = planned_workers + ledger['reserved_new_task_slots'] + ledger.get('replacement_worker_slots', 0) + existing_reviewers
+supplemental_reviewers = len(ledger.get('supplemental_review_agents', []))
+reviewer_ids = ledger.get('preexisting_review_agents', []) + ledger.get('supplemental_review_agents', [])
+if len(reviewer_ids) != len(set(reviewer_ids)):
+    errors.append('Duplicate reviewer identities')
+planned_total = planned_workers + ledger['reserved_new_task_slots'] + ledger.get('replacement_worker_slots', 0) + existing_reviewers + supplemental_reviewers
 if planned_total > ledger['maximum_new_worker_threads']:
     errors.append('Planned workers exceed the owner ceiling')
-if ledger['spawned_new_worker_threads'] + existing_reviewers > 30:
+if ledger['spawned_new_worker_threads'] + existing_reviewers + supplemental_reviewers > 30:
     errors.append('Spawned workers exceed the owner ceiling')
 known_workers = {t['thread_id'] for t in tasks if t['thread_id']}
 known_workers.update(worker['thread_id'] for t in tasks for worker in t.get('previous_workers', []))
@@ -72,7 +76,8 @@ print(json.dumps(dict(
     validation='FAIL' if errors else 'PASS', errors=errors,
     source_finding_count=len(expected), mapped_finding_count=len(findings),
     planned_tasks=len(tasks), spawned_workers=ledger['spawned_new_worker_threads'],
-    preexisting_reviewers=existing_reviewers, total_spawned_and_preexisting=ledger['spawned_new_worker_threads']+existing_reviewers,
+    preexisting_reviewers=existing_reviewers, supplemental_reviewers=supplemental_reviewers,
+    total_spawned_and_preexisting=ledger['spawned_new_worker_threads']+existing_reviewers+supplemental_reviewers,
     planned_distinct_workers=planned_total,
     maximum_individual_allocated_goals=max(allocations.values()),
     reserved_slots=ledger['reserved_new_task_slots'], active=[t['id'] for t in active],

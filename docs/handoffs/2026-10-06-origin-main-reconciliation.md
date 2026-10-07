@@ -34,3 +34,50 @@ PR checks. The actual resulting merge, deployment and per-surface receipts are
 resolved from that PR and the existing project record; no future SHA is invented
 in this self-published document. Source parity and connector authentication remain
 separate observations.
+
+## Closure retry and process correction - October 6, 2026
+
+A fresh retry confirmed PR64 merged to `40d615d8642b11b25f641e2d3bbb18ef4c9643de`,
+its Pages deployment succeeded, and Windows and Replit source each matched freshly
+fetched origin/main with clean working trees and zero ahead/behind. The existing
+Notion project record contains the same release, all 48 finding IDs and its child
+pages. Replit connector resolution still requires reauthentication; source parity
+does not certify that connection. The repository governance sequence passed again.
+
+The old A02 budget-limited draft is preserved and superseded. Repeating that
+implementation or recreating its exhausted goal would not supply the missing
+evidence. The closeout check reported no active goal for this calling task; it
+does not remove host or account limits or retroactively measure prior gaps.
+
+A bounded read-only review confirmed that A02/FND-43 still requires actual
+assistive-technology observation. The prepared A09 checklist has no tester result.
+Publication of a tested source change, delivery of the review/task packet and
+completion of every product acceptance criterion remain separate claims. The
+owner has been asked whether this coordinator closes with A09 retained for the
+next series or waits for that real observation. No acceptance criterion is waived
+and no archive is claimed while that scope clarification is pending.
+
+The retry exposed an agent-accounting gap: supplemental read-only reviewers were
+absent from the dispatch validator's overall count. The checker now includes
+them and rejects duplicate reviewer identities. This review uses one additional
+slot, making 15 actually used. Future A09 reuses the completed A08 worker;
+its A08, A09 and A24 planned duties allocate 900,000 combined, and the full plan remains at
+most 30 agents. No human test is simulated or silently dispatched by this change.
+
+Validation: governance, filename dry run, ledger and whitespace checks pass.
+Four isolated ledger probes pass: the real 15-used/30-planned roster is accepted;
+31 planned agents, 31 actual agents and duplicate reviewer identity are refused.
+The first probe used relative prompt paths from its temporary fixture directory
+and failed on missing prompts; the harness was corrected to reference the actual
+frozen prompts. No product behavior or human acceptance is inferred from these
+control checks. Application source and dependency versions are unchanged.
+
+Scope adjudication: the original request explicitly placed the gap list and
+executable duties in the next series and next goals. This coordinator's
+deliverables are the published improvements, five-pass review, execution packet
+and verified surface receipts. The closure reviewer revised the earlier defer
+recommendation: requiring every downstream duty before coordinator archive was
+the wrong boundary. Closing this coordinator does not complete A09 or the product
+backlog. The optional scope question supplies no waiver of any acceptance
+criterion. Archive follows only after this correction passes protected checks
+and is verified on main, Replit Git and the existing Notion project record.
